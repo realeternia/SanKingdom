@@ -75,10 +75,6 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     [CustomSerializeField]
     public int sodhp = 0; //士兵def强化
     [CustomSerializeField]
-    public int goldCostHero = 0;
-    [CustomSerializeField]
-    public int goldCostItem = 0;
-    [CustomSerializeField]
     public Dictionary<int, AttrInfo> attrAddons = new Dictionary<int, AttrInfo>();
 
     [CustomSerializeField]
@@ -170,11 +166,6 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         gold -= g;
         goldText.text = gold.ToString();
-
-        if(isHero)
-            goldCostHero += g;
-        else
-            goldCostItem += g;
     }
     
     public int SubFood(int f)

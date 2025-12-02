@@ -186,7 +186,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\BuffManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PlayerBook.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
-    <Compile Include="Assets\Resources\Scripts\Profile.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHelpInitTeach.cs" />
     <Compile Include="Assets\Resources\Scripts\Tooltip.cs" />
   </ItemGroup>

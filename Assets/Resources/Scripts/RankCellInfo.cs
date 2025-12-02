@@ -40,14 +40,6 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
         loveBtn.onClick.AddListener(() =>
         {
-            if (Profile.Instance.cardLoves.Contains(heroId))
-                Profile.Instance.cardLoves.Remove(heroId);
-            else if(Profile.Instance.cardLoves.Count < 5)
-                Profile.Instance.cardLoves.Add(heroId);
-            else
-                return;
-
-            Profile.Instance.SaveTextFile();
             UpdateLoveBtn();
         });
         UpdateLoveBtn();
@@ -158,10 +150,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
     private void UpdateLoveBtn()
     {
-        if (Profile.Instance.cardLoves.Contains(heroId))
-            loveBtn.GetComponent<Image>().sprite = Resources.Load<Sprite>("Textures/love");
-        else
-            loveBtn.GetComponent<Image>().sprite = Resources.Load<Sprite>("Textures/loveoff");
+        loveBtn.GetComponent<Image>().sprite = Resources.Load<Sprite>("Textures/loveoff");
     }
 
     // Update is called once per frame

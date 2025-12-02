@@ -242,16 +242,6 @@ public static class PlayerAI
                             score *= playerConfig.Findmasterrate;
                     }
                 }
-
-                if (!hasSameCard)
-                {
-                    if (playerInfo.goldCostHero > 200)
-                    {
-                        var heroRate = (playerInfo.goldCostHero / playerInfo.goldCostHero + playerInfo.goldCostItem);
-                        if (heroRate > playerConfig.HeroGoldRate)
-                            score *= 0.5f;
-                    }
-                }
             }
             else
             {
@@ -260,17 +250,6 @@ public static class PlayerAI
 
                 var itemCfg = ItemConfig.GetConfig(pickCard.cardId);
                 var itemCount = playerInfo.GetItemList("attr").Count;
-                if (!hasSameCard)
-                {
-                    if (itemCount >= playerConfig.Carditemlimit && itemCfg.Effect == "attr")
-                        continue; //武器太多了
-                    if (playerInfo.goldCostItem > 100)
-                    {
-                        var itemRate = (playerInfo.goldCostItem / playerInfo.goldCostHero + playerInfo.goldCostItem);
-                        if (itemRate > playerConfig.ItemGoldRate)
-                            score *= 0.5f;
-                    }
-                }
 
                 if (itemCfg.Effect == "attr" && !hasSameCard)
                 {
