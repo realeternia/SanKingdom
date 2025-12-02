@@ -36,7 +36,6 @@ public class PickPanelControl : MonoBehaviour
         {
             GameManager.Instance.PlaySound("Sounds/page");
             GameManager.Instance.InitHeros(false);
-            GameManager.Instance.InitFriend(false);            
             RefreshBtnClick();
         });
         finBtn.onClick.AddListener(() =>
@@ -70,7 +69,6 @@ public class PickPanelControl : MonoBehaviour
                 var isSuccess = GameManager.Instance.LoadFromSave();
                 if(isSuccess)
                 {
-                    GameManager.Instance.InitFriend(true);
                     GameManager.Instance.InitHeros(true);
                     PanelManager.Instance.ShowShop();
                     PanelManager.Instance.HidePick();
@@ -79,7 +77,6 @@ public class PickPanelControl : MonoBehaviour
                 {
                     loadGamePanel.SetActive(false);
                     GameManager.Instance.InitHeros(false);
-                    GameManager.Instance.InitFriend(false);
                     RefreshBtnClick();
                 }
             });
@@ -87,7 +84,6 @@ public class PickPanelControl : MonoBehaviour
             {
                 loadGamePanel.SetActive(false);
                 GameManager.Instance.InitHeros(false);
-                GameManager.Instance.InitFriend(false);
                 RefreshBtnClick();
             });            
         }
@@ -95,7 +91,6 @@ public class PickPanelControl : MonoBehaviour
         {
             loadGamePanel.SetActive(false);
             GameManager.Instance.InitHeros(false);
-            GameManager.Instance.InitFriend(false);
             RefreshBtnClick();
         }
 

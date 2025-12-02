@@ -150,10 +150,9 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
             return;
 
         var heroCfg = HeroConfig.GetConfig(heroId);
-        var friendInfo = ConfigManager.GetHeroFriendInfo(heroId);
-        if (heroCfg.Skills != null && heroCfg.Skills.Length > 0 || friendInfo != null)
+        if (heroCfg.Skills != null && heroCfg.Skills.Length > 0)
         {
-            Tooltip.Instance.ShowTooltip(heroCfg.Skills, friendInfo, heroId);
+            Tooltip.Instance.ShowTooltip(heroCfg.Skills, heroId);
         }
     }
 

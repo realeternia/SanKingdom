@@ -233,7 +233,7 @@ public class Chess : MonoBehaviour
         }
     }
 
-    public void CheckInitAttr(PlayerInfo player, int lv, List<int> friendIds)
+    public void CheckInitAttr(PlayerInfo player, int lv)
     {
         level = lv;
 
@@ -259,36 +259,6 @@ public class Chess : MonoBehaviour
             str += equipAttr.Str;
             leadShip += equipAttr.Lead;
             maxHp += equipAttr.Hp;
-        }
-
-        if (friendIds != null)
-        {
-            foreach (var friendId in friendIds)
-            {
-                var friendAttr = HeroSelectionTool.GetSupportAttr(heroId, friendId, lv);
-                if (friendAttr != null)
-                {
-                    supportAttrs[friendId] = friendAttr;
-                    var friendChess = BattleManager.Instance.FindByHeroIdAndSide(friendId, side);
-                    if (friendChess != null)
-                    {
-                        GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/LaserLine");
-                        GameObject heroInstance = Instantiate(heroPrefab, Vector3.zero, Quaternion.identity);
-                        heroInstance.transform.SetParent(transform);
-                        heroInstance.transform.localScale = new Vector3(1, 1, 1);
-                        var beam = heroInstance.transform.Find("Beam").GetComponent<GlowBeamController>();
-                        beam.SetSourceAndTarget(this, friendChess);
-                        beam.SetGlowColor(GetPlayerInfo().lineColor);
-                    }
-                }
-            }
-
-            foreach (var friendAttr in supportAttrs.Values)
-            {
-                inte += friendAttr.Inte;
-                str += friendAttr.Str;
-                leadShip += friendAttr.Lead;
-            }
         }
 
         hp = maxHp;

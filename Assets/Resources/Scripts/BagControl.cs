@@ -237,13 +237,6 @@ public class BagControl : MonoBehaviour, IPanelEvent
 
                 if(heroId1 == 0 || heroId2 == 0)
                     continue;
-                
-                // 检查是否是好友关系
-                if (ConfigManager.GetFriendLevel(heroId1, heroId2) > 0)
-                {
-                    // 创建连接线
-                    CreateConnectionLine(heroUnits[i].transform, heroUnits[j].transform, Color.white, Vector2.zero);
-                }
 
                 var helpSkillId = ConfigManager.GetShowHelpSkillId(heroId1, heroId2, i, j);
                 if(helpSkillId > 0)

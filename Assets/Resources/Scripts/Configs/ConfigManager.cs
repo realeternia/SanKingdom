@@ -7,8 +7,6 @@ using UnityEngine;
 
 public static class ConfigManager
 {
-    private static Dictionary<int, Dictionary<int, int>> heroFriendDict = new Dictionary<int, Dictionary<int, int>>();
-    private static Dictionary<int, HashSet<int>> heroFriendInfoDict = new Dictionary<int, HashSet<int>>(); // heroId, heroId, level
     private static Dictionary<string, JobConfig> jobDict = new Dictionary<string, JobConfig>();
     private static Dictionary<string, SkillConfig> skillDict = new Dictionary<string, SkillConfig>();
 
@@ -27,10 +25,10 @@ public static class ConfigManager
         SoldierConfig.Load();
         ShopConfig.Load();
         PlayerConfig.Load();
-        HeroFriendConfig.Load();
         FormulaLearnAttrConfig.Load();
         JobConfig.Load();
         WorldConfig.Load();
+        ForceConfig.Load();
 
         ConfigManager.PostModify();      
 
@@ -100,64 +98,6 @@ public static class ConfigManager
         }
 
     }
-
-    public static void InitFriend()
-    {
-        // 先收集需要移除的键，然后移除
-        List<int> idsToRemove = new List<int>();
-        foreach (var config in HeroFriendConfig.ConfigList)
-        {
-            if (config.Id >= 1000)  // 注意这里应该是Id而不是id
-                idsToRemove.Add(config.Id);
-        }
-        
-        foreach (int id in idsToRemove)
-            HeroFriendConfig.Remove(id);
-
-        foreach(var f in GameManager.Instance.friendRdData)
-        {
-            Debug.Log($"创建{f.id} / {f.name} 配对: {string.Join(",", f.friendIds.Select(id => HeroConfig.GetConfig(id).Name))}");
-            var config = new HeroFriendConfig(f.id, f.name, 2, f.friendIds);
-            HeroFriendConfig.Add(f.id, config);
-        }
-
-        heroFriendDict.Clear();
-        heroFriendInfoDict.Clear();
-        foreach (var heroFriendCfg in HeroFriendConfig.ConfigList)
-        {
-            var friendIds = heroFriendCfg.Heros;
-            for (int i = 0; i < friendIds.Length; i++)
-            {
-                for (int j = i + 1; j < friendIds.Length; j++)
-                {
-                    int id1 = friendIds[i];
-                    int id2 = friendIds[j];
-
-                    // 双向添加，确保两两配对
-                    if (!heroFriendDict.ContainsKey(id1))
-                        heroFriendDict.Add(id1, new Dictionary<int, int>());
-                    heroFriendDict[id1][id2] = Math.Max(heroFriendCfg.Level, heroFriendDict[id1].ContainsKey(id2) ? heroFriendDict[id1][id2] : 0);
-
-                    if (!heroFriendDict.ContainsKey(id2))
-                        heroFriendDict.Add(id2, new Dictionary<int, int>());
-                    heroFriendDict[id2][id1] = Math.Max(heroFriendCfg.Level, heroFriendDict[id2].ContainsKey(id1) ? heroFriendDict[id2][id1] : 0);
-
-                }
-                if (!heroFriendInfoDict.ContainsKey(friendIds[i]))
-                    heroFriendInfoDict.Add(friendIds[i], new HashSet<int>());
-                heroFriendInfoDict[friendIds[i]].Add(heroFriendCfg.Id);
-            }
-        }
-    }
-
-    public static int GetFriendLevel(int heroId, int friendId)
-    {
-        if (heroFriendDict.TryGetValue(heroId, out Dictionary<int, int> value))
-        {   
-            return value.ContainsKey(friendId) ? value[friendId] : 0;
-        }
-        return 0;
-    }
     
     public static int GetShowHelpSkillId(int heroId, int targetHeroId, int srcPos, int targetPos)
     {
@@ -182,15 +122,6 @@ public static class ConfigManager
         }
 
         return 0;
-    }
-
-    public static HashSet<int> GetHeroFriendInfo(int heroId)
-    {
-        if (heroFriendInfoDict.TryGetValue(heroId, out HashSet<int> value))
-        {
-            return value;
-        }
-        return null;
     }
 
     private static void AddSkill(HeroConfig heroCfg, int skillId)

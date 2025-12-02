@@ -29,10 +29,9 @@ public class Tooltip : MonoBehaviour
 
     }
 
-    public void ShowTooltip(int[] skillIds, HashSet<int> friendInfo, int heroId)
+    public void ShowTooltip(int[] skillIds, int heroId)
     {
         bool hasSkill = skillIds != null && skillIds.Length > 0;
-        bool hasFriend = friendInfo != null && friendInfo.Count > 0;
         
         // 重置所有控件位置
         for(int i = 0; i < textSkills.Length; i++)
@@ -40,7 +39,6 @@ public class Tooltip : MonoBehaviour
             textSkills[i].gameObject.SetActive(skillIds!=null && skillIds.Length > i);
             imageSkills[i].gameObject.SetActive(skillIds!=null && skillIds.Length > i);
         }
-        textFriend.gameObject.SetActive(hasFriend);
         
         float currentY = 10f; // 起始Y位置
         float spacing = 15f;   // 控件间距
@@ -69,46 +67,6 @@ public class Tooltip : MonoBehaviour
                 textSkills[i].rectTransform.sizeDelta = new Vector2(textSkills[i].rectTransform.sizeDelta.x, textSkills[i].preferredHeight);
                 currentY += Mathf.Max(textSkills[i].preferredHeight, 65f) + spacing;
             }
-        }
-        
-        if (hasFriend)
-        {
-            textFriend.text = "相性:";
-            foreach (var item in friendInfo)
-            {
-                var friendCfg = HeroFriendConfig.GetConfig(item);
-                textFriend.text += "\n<color=green>" + friendCfg.Name + "</color>\n  ";
-                foreach (var hid in friendCfg.Heros)
-                {
-                    var heroConfig = HeroConfig.GetConfig(hid);
-                    var friendAttr = HeroSelectionTool.GetSupportAttr(heroId, hid, 1);
-                    if(friendAttr == null)
-                        textFriend.text += heroConfig.Name + " ";
-                    else if(!HeroSelectionTool.HasHeroInPool(hid))
-                        textFriend.text += "<color=#808080>" + heroConfig.Name + "</color> ";                    
-                    else if(friendAttr.Total <= 10)
-                        textFriend.text += "<color=blue>" + heroConfig.Name + "</color> ";
-                    else if(friendAttr.Total <= 15)
-                        textFriend.text += "<color=green>" + heroConfig.Name + "</color> ";
-                    else if(friendAttr.Total <= 20)
-                        textFriend.text += "<color=yellow>" + heroConfig.Name + "</color> ";
-                    else if(friendAttr.Total <= 25)
-                        textFriend.text += "<color=#d96d00>" + heroConfig.Name + "</color> ";
-                    else if(friendAttr.Total < 30)
-                        textFriend.text += "<color=red>" + heroConfig.Name + "</color> ";
-                    else if(friendAttr.Total == 30)
-                        textFriend.text += "<color=#d900d9>" + heroConfig.Name + "</color> ";                        
-                    else
-                        textFriend.text += heroConfig.Name + " ";
-                }
-            }
-            
-            // 设置好友加成位置
-            textFriend.rectTransform.anchoredPosition = new Vector2(textFriend.rectTransform.anchoredPosition.x, -currentY);
-            
-            // 调整text组件高度以减少空白
-            textFriend.rectTransform.sizeDelta = new Vector2(textFriend.rectTransform.sizeDelta.x, textFriend.preferredHeight);
-            currentY += textFriend.preferredHeight + spacing;
         }
         
         // 调整背景大小

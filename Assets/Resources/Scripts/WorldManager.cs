@@ -34,30 +34,13 @@ public class WorldManager : MonoBehaviour
             yield break;
         }
         
-        // // 确保有Canvas组件作为UI父对象
-        // Canvas mapCanvas = GetComponent<Canvas>();
-        // if (mapCanvas == null)
-        // {
-        //     mapCanvas = gameObject.AddComponent<Canvas>();
-        //     mapCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            
-        //     // 添加CanvasScaler组件以确保UI正确缩放
-        //     CanvasScaler scaler = gameObject.AddComponent<CanvasScaler>();
-        //     scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        //     scaler.referenceResolution = new Vector2(1920, 1080);
-        //     scaler.matchWidthOrHeight = 0.5f;
-            
-        //     // 添加GraphicRaycaster以便UI可以接收事件
-        //     gameObject.AddComponent<GraphicRaycaster>();
-        // }
-        
         // 遍历所有地图配置
-        foreach (var mapConfig in WorldConfig.ConfigList)
+        foreach (var worldConfig in WorldConfig.ConfigList)
         {
             try
             {
                 // 构建图片路径（Resources/Textures/Maps/下的图片）
-                string texturePath = "Textures/Maps/" + mapConfig.Name;
+                string texturePath = "Textures/Maps/" + worldConfig.Name;
                 
                 // 加载图片资源
                 Texture2D texture = Resources.Load<Texture2D>(texturePath);
@@ -70,24 +53,31 @@ public class WorldManager : MonoBehaviour
                 // 创建精灵
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
                 
-                // 创建UI GameObject
-                GameObject mapPiece = new GameObject(mapConfig.Cname);
-                mapPiece.transform.SetParent(transform, false); // false表示不保持世界位置
+                // 从Prefabs/WorldPiece加载预设体
+                GameObject worldPiecePrefab = Resources.Load<GameObject>("Prefabs/WorldPiece");
+                if (worldPiecePrefab == null)
+                {
+                    Debug.LogError("找不到预设体: Prefabs/WorldPiece");
+                    continue;
+                }
                 
-                // 添加Image组件代替SpriteRenderer
-                Image image = mapPiece.AddComponent<Image>();
+                // 实例化预设体
+                GameObject mapPiece = Instantiate(worldPiecePrefab, transform, false);
+                mapPiece.name = worldConfig.Name;
+                
+                // 获取或添加Image组件
+                Image image = mapPiece.GetComponent<Image>();
                 image.sprite = sprite;
                 image.preserveAspect = true; // 保持宽高比
+
+                WorldPieceControl pieceControl = mapPiece.GetComponent<WorldPieceControl>();
+                pieceControl.pieceId = worldConfig.Id;
                 
                 // 使用RectTransform设置位置和大小
                 RectTransform rectTransform = mapPiece.GetComponent<RectTransform>();
                 if (rectTransform != null)
                 {
-                    // 设置锚点和位置（使用配置中的X,Y值，可能需要根据UI系统调整）
-                    rectTransform.anchorMin = new Vector2(0, 1);
-                    rectTransform.anchorMax = new Vector2(0, 1);
-                    rectTransform.pivot = new Vector2(0.5f, 0.5f);
-                    rectTransform.anchoredPosition = new Vector2(mapConfig.X/2+texture.width/2/2, -mapConfig.Y/2-texture.height/2/2);
+                    rectTransform.anchoredPosition = new Vector2(worldConfig.X/2+texture.width/2/2, -worldConfig.Y/2-texture.height/2/2);
                     
                     // 设置大小
                     rectTransform.sizeDelta = new Vector2(texture.width/2, texture.height/2);
@@ -95,12 +85,14 @@ public class WorldManager : MonoBehaviour
                     // 可以根据需要设置缩放
                     // rectTransform.localScale = new Vector3(mapConfig.Width / texture.width, mapConfig.Height / texture.height, 1);
                 }
+
+                pieceControl.InitForce();
                 
-                Debug.Log($"成功加载UI地图: {mapConfig.Cname} ({mapConfig.Name})");
+                Debug.Log($"成功加载UI地图: {worldConfig.Cname} ({worldConfig.Name})");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"加载UI地图 {mapConfig.Cname} 时出错: {e.Message}");
+                Debug.LogError($"加载UI地图 {worldConfig.Cname} 时出错: {e.Message}");
             }
         }
     }

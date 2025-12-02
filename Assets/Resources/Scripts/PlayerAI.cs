@@ -243,20 +243,6 @@ public static class PlayerAI
                     }
                 }
 
-                //朋友卡判定
-                var friendCount = HeroSelectionTool.CountFriendInPool(pickCard.cardId);
-                if (friendCount > 2)
-                    score *= 1 + playerConfig.FriendFactor * (friendCount - 2) * .1f;
-
-                var nowFriendCount = 0;
-                foreach (var hero in playerInfo.cards)
-                {
-                    if (ConfigManager.GetFriendLevel(pickCard.cardId, hero.Key) > 0)
-                        nowFriendCount++;
-                }
-                if(nowFriendCount > 0)
-                    score *= 1 + playerConfig.FriendFactor * nowFriendCount * .25f;
-
                 if (!hasSameCard)
                 {
                     if (playerInfo.goldCostHero > 200)

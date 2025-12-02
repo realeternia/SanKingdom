@@ -117,10 +117,9 @@ public class CardViewControl : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         if (isHeroCard)
         {
             var heroCfg = HeroConfig.GetConfig(cardId);
-            var friendInfo = ConfigManager.GetHeroFriendInfo(cardId);
-            if (heroCfg.Skills != null && heroCfg.Skills.Length > 0 || friendInfo != null)
+            if (heroCfg.Skills != null && heroCfg.Skills.Length > 0)
             { 
-                Tooltip.Instance.ShowTooltip(heroCfg.Skills, friendInfo, cardId);
+                Tooltip.Instance.ShowTooltip(heroCfg.Skills, cardId);
             }
         }
 
@@ -178,11 +177,6 @@ public class CardViewControl : MonoBehaviour, IPointerDownHandler, IPointerUpHan
                 effectGreen.SetActive(true);
                 effectYellow.SetActive(false);
             }
-            else if (player0.HasFriend(cardId))
-            {
-                effectGreen.SetActive(false);
-                effectYellow.SetActive(true);
-            }
             else
             {
                 effectGreen.SetActive(false);
@@ -193,12 +187,6 @@ public class CardViewControl : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             if (player1 != null && player1.HasCard(cardId))
             {
                 imagePlayerHead.sprite = Resources.Load<Sprite>(player1.imgPath);
-                imagePlayerHead.gameObject.SetActive(true);
-            }
-            else if (player1 != null && player1.HasFriend(cardId))
-            {
-                imagePlayerHead.sprite = Resources.Load<Sprite>(player1.imgPath);
-                imagePlayerHead.color = Color.yellow;
                 imagePlayerHead.gameObject.SetActive(true);
             }
             else
