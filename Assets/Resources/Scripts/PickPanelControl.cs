@@ -35,7 +35,6 @@ public class PickPanelControl : MonoBehaviour
         refreshBtn.onClick.AddListener(() =>
         {
             GameManager.Instance.PlaySound("Sounds/page");
-            GameManager.Instance.InitHeros(false);
             RefreshBtnClick();
         });
         finBtn.onClick.AddListener(() =>
@@ -69,28 +68,24 @@ public class PickPanelControl : MonoBehaviour
                 var isSuccess = GameManager.Instance.LoadFromSave();
                 if(isSuccess)
                 {
-                    GameManager.Instance.InitHeros(true);
                     PanelManager.Instance.ShowShop();
                     PanelManager.Instance.HidePick();
                 }
                 else
                 {
                     loadGamePanel.SetActive(false);
-                    GameManager.Instance.InitHeros(false);
                     RefreshBtnClick();
                 }
             });
             newGameBtn.onClick.AddListener(() =>
             {
                 loadGamePanel.SetActive(false);
-                GameManager.Instance.InitHeros(false);
                 RefreshBtnClick();
             });            
         }
         else
         {
             loadGamePanel.SetActive(false);
-            GameManager.Instance.InitHeros(false);
             RefreshBtnClick();
         }
 
