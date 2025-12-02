@@ -11,7 +11,7 @@ public class SkillHitTeleport : Skill
 
     public override void OnAttacked(Chess attacker, string damType, int damage)
     {
-        if(!WorldManager.Instance.CheckInRange(owner.transform.position, attacker.transform.position, skillCfg.Range) && CheckBurst(attacker))
+        if(!BattleManager.Instance.CheckInRange(owner.transform.position, attacker.transform.position, skillCfg.Range) && CheckBurst(attacker))
         {
             owner.PlayerAnim(skillCfg.Action);
 

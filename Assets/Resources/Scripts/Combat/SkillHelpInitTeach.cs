@@ -10,7 +10,7 @@ public class SkillHelpInitTeach : Skill
 
     public override void BattleBegin()
     {
-        var unitsInRange = WorldManager.Instance.GetUnitsMySidePosType(owner.side, owner.pos, true, skillCfg.UnitHelpType);
+        var unitsInRange = BattleManager.Instance.GetUnitsMySidePosType(owner.side, owner.pos, true, skillCfg.UnitHelpType);
         unitsInRange.Remove(owner);
         owner.PlayerAnim(skillCfg.Action);
 

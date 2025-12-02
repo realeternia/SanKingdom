@@ -78,7 +78,7 @@ public class Missile : MonoBehaviour
     {
         var targetPos = target.transform.position + new Vector3(0f, 5f, 0f);
 
-        float journeyLength = WorldManager.Instance.GetRange(missile.transform.position, targetPos);
+        float journeyLength = BattleManager.Instance.GetRange(missile.transform.position, targetPos);
         float totalLen = journeyLength;
         float realLen = 0;
         float startTime = Time.time;
@@ -87,7 +87,7 @@ public class Missile : MonoBehaviour
         float maxY = missileHight;
 
         var lastTime = Time.time;
-        while (missile != null && !WorldManager.Instance.CheckInRange(missile.transform.position, targetPos, 0.5f))
+        while (missile != null && !BattleManager.Instance.CheckInRange(missile.transform.position, targetPos, 0.5f))
         {
             // if (owner == null || owner.hp <= 0)
             // {
@@ -97,7 +97,7 @@ public class Missile : MonoBehaviour
             if(target != null && target.hp > 0)
                 targetPos = target.transform.position + new Vector3(0f, 5f, 0f); //修正目标点
             float distCovered = (Time.time - lastTime) * speed;
-            journeyLength = WorldManager.Instance.GetRange(missile.transform.position, targetPos);
+            journeyLength = BattleManager.Instance.GetRange(missile.transform.position, targetPos);
             float fractionOfJourney = distCovered / journeyLength;
             
             if (maxY > 0)
@@ -154,12 +154,12 @@ public class Missile : MonoBehaviour
 
             if (timePast - lastCheckTime >= 0.2f)
             {
-                var unitsInRange = WorldManager.Instance.GetUnitsInRange(currentPos, detectArea, owner.side, true);
+                var unitsInRange = BattleManager.Instance.GetUnitsInRange(currentPos, detectArea, owner.side, true);
                 unitsInRange.RemoveAll(x => checkedList.Contains(x) || x.hp <= 0); //每个单位结算一次
                 if (unitsInRange.Count > 0)
                 {
                     if (unitsInRange.Count + checkedList.Count > targetCount)
-                        WorldManager.Instance.RandomSelect(unitsInRange, targetCount - unitsInRange.Count - checkedList.Count);
+                        BattleManager.Instance.RandomSelect(unitsInRange, targetCount - unitsInRange.Count - checkedList.Count);
 
                     foreach (var unit in unitsInRange)
                     {

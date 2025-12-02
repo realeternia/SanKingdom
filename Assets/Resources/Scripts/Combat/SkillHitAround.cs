@@ -29,7 +29,7 @@ public class SkillHitAround : Skill
             var hitEffect = EffectManager.PlaySkillEffect(defender, skillCfg.HitEffect);
             hitEffect.transform.forward = (targetPos - startPos).normalized;
 
-            var unitsInRange = WorldManager.Instance.GetUnitsInRange(startPos, skillCfg.Range, owner.side, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(startPos, skillCfg.Range, owner.side, true);
             unitsInRange.Remove(defender);
             
             // 筛选startPos到targetPos方向，左右各60°开角内的单位
@@ -52,7 +52,7 @@ public class SkillHitAround : Skill
                 
                 if (filteredUnits.Count > 0)
                 {
-                    WorldManager.Instance.RandomSelect(filteredUnits, skillCfg.TargetCount);
+                    BattleManager.Instance.RandomSelect(filteredUnits, skillCfg.TargetCount);
                     var damage2 = (int)(damage * skillCfg.SkillDamageRate);
                     foreach(var unit in filteredUnits)
                         unit.OnSkillDamaged(owner, skillId, damage2);

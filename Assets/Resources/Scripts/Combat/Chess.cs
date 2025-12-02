@@ -164,7 +164,7 @@ public class Chess : MonoBehaviour
         GameObject hudPrefab = Resources.Load<GameObject>(isHero || isFakeHero ? "Prefabs/Hud" : "Prefabs/HudSmall");
 
         // 实例化HUD对象
-        GameObject hudObj = Instantiate(hudPrefab, WorldManager.Instance.HudNode.transform);
+        GameObject hudObj = Instantiate(hudPrefab, BattleManager.Instance.HudNode.transform);
         hudObj.name = "ChessHUD";
 
         // 获取ChessHUD组件
@@ -223,12 +223,12 @@ public class Chess : MonoBehaviour
     private void OnDestroy()
     {
         // 单位销毁时释放格子锁定
-        if (WorldManager.Instance != null)
+        if (BattleManager.Instance != null)
         {
             Collider collider = GetComponent<Collider>();
             if (collider != null)
             {
-                WorldManager.Instance.ReleaseGridPositions(this);
+                BattleManager.Instance.ReleaseGridPositions(this);
             }
         }
     }
@@ -269,7 +269,7 @@ public class Chess : MonoBehaviour
                 if (friendAttr != null)
                 {
                     supportAttrs[friendId] = friendAttr;
-                    var friendChess = WorldManager.Instance.FindByHeroIdAndSide(friendId, side);
+                    var friendChess = BattleManager.Instance.FindByHeroIdAndSide(friendId, side);
                     if (friendChess != null)
                     {
                         GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/LaserLine");
@@ -349,7 +349,7 @@ public class Chess : MonoBehaviour
             return;
 
         // 获取所有Chess组件
-        var allChess = WorldManager.Instance.GetUnitsInRange(transform.position, 0, side, true);
+        var allChess = BattleManager.Instance.GetUnitsInRange(transform.position, 0, side, true);
         List<(Chess chess, float distance)> validTargets = new List<(Chess, float)>();
 
         // 收集所有有效目标及其距离
@@ -357,7 +357,7 @@ public class Chess : MonoBehaviour
         {
             if (chess != this)
             {
-                float distance = WorldManager.Instance.GetRange(transform.position, chess.transform.position);
+                float distance = BattleManager.Instance.GetRange(transform.position, chess.transform.position);
                 validTargets.Add((chess, distance));
             }
         }
@@ -446,7 +446,7 @@ public class Chess : MonoBehaviour
             return;
 
         // 检查目标是否在攻击范围内
-        if (WorldManager.Instance.CheckInRange(transform.position, targetChess.transform.position, attackRange))
+        if (BattleManager.Instance.CheckInRange(transform.position, targetChess.transform.position, attackRange))
         {
             attackPoint += deltaTime * attackRate;
             // 检查攻击冷却
@@ -457,7 +457,7 @@ public class Chess : MonoBehaviour
                 SkillManager.AimTarget(this, targetChess);
                 if (attackRange >= 20)
                 {
-                    WorldManager.Instance.CreateAttackMissile(this, targetChess, hitEffect);
+                    BattleManager.Instance.CreateAttackMissile(this, targetChess, hitEffect);
                 }
                 else
                 {
@@ -472,11 +472,11 @@ public class Chess : MonoBehaviour
         if (noMoveCount > 0 || moveSpeed == 0)
             return;
 
-        if (moveDest == null || WorldManager.Instance.GetRange(targetChess.transform.position, moveDest.Value) > 40)
+        if (moveDest == null || BattleManager.Instance.GetRange(targetChess.transform.position, moveDest.Value) > 40)
             moveDest = targetChess.transform.position;
         
         //如果当前位置很接近moveDirection，就直接移动到moveDirection
-        if (WorldManager.Instance.GetRange(transform.position, moveDest.Value) <= moveSpeed * 0.1f)
+        if (BattleManager.Instance.GetRange(transform.position, moveDest.Value) <= moveSpeed * 0.1f)
         {
             moveDest = targetChess.transform.position;
         }
@@ -487,9 +487,9 @@ public class Chess : MonoBehaviour
             Vector3 nextPosition = Vector3.MoveTowards(transform.position, moveDest.Value, moveSpeed * 0.05f);
 
             // 尝试锁定目标格子
-            if (WorldManager.Instance.TryLockGridPositions(this, nextPosition, out List<Vector2Int> requiredGrids))
+            if (BattleManager.Instance.TryLockGridPositions(this, nextPosition, out List<Vector2Int> requiredGrids))
             {
-                WorldManager.Instance.DoLockGridPositions(this, requiredGrids);
+                BattleManager.Instance.DoLockGridPositions(this, requiredGrids);
                 // 锁定成功，移动到新位置
                 transform.position = nextPosition;
                 moveFailCount = 0; // 重置失败计数器
@@ -524,9 +524,9 @@ public class Chess : MonoBehaviour
                 nextPosition = transform.position + newDirection * moveSpeed * 0.05f;
 
                 // 尝试移动到新位置
-                if (WorldManager.Instance.TryLockGridPositions(this, nextPosition, out requiredGrids))
+                if (BattleManager.Instance.TryLockGridPositions(this, nextPosition, out requiredGrids))
                 {
-                    WorldManager.Instance.DoLockGridPositions(this, requiredGrids);
+                    BattleManager.Instance.DoLockGridPositions(this, requiredGrids);
                     transform.position = nextPosition;
                     moveDest = transform.position + newDirection * moveSpeed * 0.05f * 10;
                     moveFailCount = 0; // 重置失败计数器
@@ -554,7 +554,7 @@ public class Chess : MonoBehaviour
         if (critRate > 0 && UnityEngine.Random.value < critRate)
         {
             damageMulti += critDamageMulti;
-            WorldManager.Instance.AddBattleText("暴!", transform.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+            BattleManager.Instance.AddBattleText("暴!", transform.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
             isCrit = true;
         }
 
@@ -588,7 +588,7 @@ public class Chess : MonoBehaviour
             if (victim.dodgeRate > 0 && UnityEngine.Random.value < victim.dodgeRate)
             {
                 damage = 0;
-                WorldManager.Instance.AddBattleText("闪!", victim.transform.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+                BattleManager.Instance.AddBattleText("闪!", victim.transform.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
             }
             else
             {
@@ -658,7 +658,7 @@ public class Chess : MonoBehaviour
     public void Ondying()
     {
         buffs.Clear();
-        WorldManager.Instance.OnUnitDying(this, lastDamagedPlayerId);
+        BattleManager.Instance.OnUnitDying(this, lastDamagedPlayerId);
 
         Destroy(gameObject);
 
@@ -667,7 +667,7 @@ public class Chess : MonoBehaviour
 
         if (isHero)
         {
-            foreach (var chess in WorldManager.Instance.GetUnitsMySide(transform.position, 0, side))
+            foreach (var chess in BattleManager.Instance.GetUnitsMySide(transform.position, 0, side))
             {
                 if (!chess.isHero)
                     continue;
@@ -888,7 +888,7 @@ public class Chess : MonoBehaviour
 
     public bool MoveTo(Vector3 targetPosition, bool isForce = false)
     {
-        return WorldManager.Instance.MoveTo(this, targetPosition, isForce);
+        return BattleManager.Instance.MoveTo(this, targetPosition, isForce);
     }
 
     private Coroutine jumpCoroutine = null;

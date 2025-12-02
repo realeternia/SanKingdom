@@ -22,7 +22,7 @@ public class SkillAttackRunCrossPlus : Skill
         Vector3 mirrorPos = new Vector3(mirrorX, ownerPos.y, mirrorZ);
 
         // 检查是否可以移动到镜像位置
-        if (WorldManager.Instance.TryLockGridPositions(owner, mirrorPos, out _) && CheckBurst(defender))
+        if (BattleManager.Instance.TryLockGridPositions(owner, mirrorPos, out _) && CheckBurst(defender))
         {
             // 启动协程移动
             owner.noMoveCount++;
@@ -57,7 +57,7 @@ public class SkillAttackRunCrossPlus : Skill
             Vector3 currentPos = Vector3.Lerp(startPos, targetPos, t);
           //  currentPos.y += yOffset;
 
-            var enmeyList = WorldManager.Instance.GetUnitsInRange(currentPos, 12, owner.side, true);
+            var enmeyList = BattleManager.Instance.GetUnitsInRange(currentPos, 12, owner.side, true);
             foreach(var chess in enmeyList)
             {
                 if(pushedList.Contains(chess.id))

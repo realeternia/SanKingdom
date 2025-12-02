@@ -29,7 +29,7 @@ public class SkillDefFeedback : Skill
 
         if (skillCfg.Range > 0)
         {
-            var isInRange = WorldManager.Instance.CheckInRange(owner.transform.position, attacker.transform.position, skillCfg.Range);
+            var isInRange = BattleManager.Instance.CheckInRange(owner.transform.position, attacker.transform.position, skillCfg.Range);
             if (skillCfg.RangeOut && isInRange)
                 return;
             if (!skillCfg.RangeOut && !isInRange)
@@ -42,7 +42,7 @@ public class SkillDefFeedback : Skill
             attacker.OnSkillDamaged(owner, skillId, damageBack, true);
             EffectManager.PlaySkillEffect(attacker, skillCfg.HitEffect);
 
-            WorldManager.Instance.AddBattleText("反" + damageBack.ToString(), attacker.transform.position, new UnityEngine.Vector2(0, 150), new UnityEngine.Color(0.65f, 0.31f, 0), 3);
+            BattleManager.Instance.AddBattleText("反" + damageBack.ToString(), attacker.transform.position, new UnityEngine.Vector2(0, 150), new UnityEngine.Color(0.65f, 0.31f, 0), 3);
         }
     }
 

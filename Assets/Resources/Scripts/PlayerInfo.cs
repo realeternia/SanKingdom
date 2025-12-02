@@ -212,7 +212,7 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             // 计算时间差，每5s，扣10点粮食
             if(food < 10)
             {
-                var units = WorldManager.Instance.GetUnitsMySide(battleSide);
+                var units = BattleManager.Instance.GetUnitsMySide(battleSide);
                 foreach(var unit in units)
                     unit.LackFood((float)(10 - food) / 10);
             }

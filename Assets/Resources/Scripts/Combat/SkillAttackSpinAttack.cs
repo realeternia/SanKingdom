@@ -14,9 +14,9 @@ public class SkillAttackSpinAttack : Skill
         if(CheckBurst(defender))
         {
             owner.PlayerAnim(skillCfg.Action);
-            var unitsInRange = WorldManager.Instance.GetUnitsInRange(owner.transform.position, skillCfg.Range, owner.side, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.transform.position, skillCfg.Range, owner.side, true);
             unitsInRange.Remove(defender);
-            WorldManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
+            BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
             foreach(var unit in unitsInRange)
             {
                 unit.OnSkillDamaged(owner, skillId, (int)(damage * skillCfg.SkillDamageRate));

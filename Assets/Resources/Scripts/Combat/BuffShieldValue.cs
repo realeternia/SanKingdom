@@ -15,6 +15,6 @@ public class BuffShieldValue : Buff
             strength *= .75f;
 
         damageMulti -= strength;
-        WorldManager.Instance.AddBattleText("抵抗", owner.transform.position, new UnityEngine.Vector2(0, 60), Color.green, 3);
+        BattleManager.Instance.AddBattleText("抵抗", owner.transform.position, new UnityEngine.Vector2(0, 60), Color.green, 3);
     }
 }

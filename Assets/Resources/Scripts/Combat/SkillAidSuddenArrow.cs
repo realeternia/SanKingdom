@@ -13,7 +13,7 @@ public class SkillAidSuddenArrow : Skill
 
     public override bool CheckAidSkill()
     {
-        var unitsInRange = WorldManager.Instance.GetUnitsInRange(owner.transform.position, skillCfg.Range, owner.side, true);
+        var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.transform.position, skillCfg.Range, owner.side, true);
         unitsInRange.Remove(owner);
 
         if (unitsInRange.Count == 0)
@@ -39,7 +39,7 @@ public class SkillAidSuddenArrow : Skill
         owner.PlayerAnim(skillCfg.Action);
         var attrDiff = Math.Max(10, owner.GetAttr(skillCfg.Attr) - targetUnit.GetAttr(skillCfg.Attr));
         var damage = (int)(attrDiff * skillCfg.SkillDamageAttrRate);
-        WorldManager.Instance.CreateSpellMissile(owner, targetUnit, owner.transform.position, id, damage, skillCfg.HitEffect);
+        BattleManager.Instance.CreateSpellMissile(owner, targetUnit, owner.transform.position, id, damage, skillCfg.HitEffect);
 
         return true;
     }

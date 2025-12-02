@@ -20,11 +20,11 @@ public class SkillHitArea : Skill
             //创建一个hitEffect
             EffectManager.PlaySkillEffect(defender, skillCfg.HitEffect);
 
-            var unitsInRange = WorldManager.Instance.GetUnitsInRange(targetPos, skillCfg.Range, owner.side, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetPos, skillCfg.Range, owner.side, true);
             unitsInRange.Remove(defender);
             if (unitsInRange.Count > 0)
             {
-                WorldManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
+                BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
                 var damage2 = (int)(damage * skillCfg.SkillDamageRate);
                 foreach(var unit in unitsInRange)
                     unit.OnSkillDamaged(owner, skillId, damage2);

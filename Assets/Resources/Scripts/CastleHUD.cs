@@ -52,7 +52,7 @@ public class CastleHUD : MonoBehaviour
         Vector3 worldPosition = new Vector3(castleSpawn.transform.position.x + 5, castleSpawn.transform.position.y + 3f, castleSpawn.transform.position.z + 5);
         RectTransform rectTransform = GetComponent<RectTransform>();
         RectTransform parentCanvas = rectTransform.parent as RectTransform;
-        var screenPosition = WorldManager.Instance.TransformWorldToScreen(worldPosition, parentCanvas);
+        var screenPosition = BattleManager.Instance.TransformWorldToScreen(worldPosition, parentCanvas);
         rectTransform.anchoredPosition = screenPosition + new Vector2(-75, 0);
     }
 

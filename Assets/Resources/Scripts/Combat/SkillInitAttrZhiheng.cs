@@ -11,7 +11,7 @@ public class SkillInitAttrZhiheng : Skill
     public override void BattleBegin()
     {
         // 获取我方所有单位
-        var unitList = WorldManager.Instance.GetUnitsMySide(owner.transform.position, 0, owner.side);
+        var unitList = BattleManager.Instance.GetUnitsMySide(owner.transform.position, 0, owner.side);
         
         // 统计我方hero的不同Job数量
         System.Collections.Generic.HashSet<string> uniqueJobs = new System.Collections.Generic.HashSet<string>();
@@ -55,7 +55,7 @@ public class SkillInitAttrZhiheng : Skill
 
             EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
             owner.PlayerAnim(skillCfg.Action);
-            WorldManager.Instance.AddBattleText("制衡+" + attrValue.ToString(), owner.transform.position, new UnityEngine.Vector2(0, 60), new Color(1, .3f, .3f), 3);
+            BattleManager.Instance.AddBattleText("制衡+" + attrValue.ToString(), owner.transform.position, new UnityEngine.Vector2(0, 60), new Color(1, .3f, .3f), 3);
         }
     }
 }

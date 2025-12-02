@@ -104,7 +104,7 @@ public class PickPanelControl : MonoBehaviour
     IEnumerator DelaySetMode()
     {
         yield return new WaitForSeconds(0.1f);
-        WorldManager.Instance.isDebug = false;
+        BattleManager.Instance.isDebug = false;
     }
 
     // Update is called once per frame

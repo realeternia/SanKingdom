@@ -385,12 +385,12 @@ public class CardViewControl : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         RectTransform canvasRect = canvas.transform as RectTransform;
 
         // 计算起始位置：将当前卡片的屏幕坐标转换为Canvas局部坐标
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(WorldManager.Instance.uiCamera, transform.position);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, WorldManager.Instance.uiCamera, out Vector2 startLocalPos);
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(BattleManager.Instance.uiCamera, transform.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, BattleManager.Instance.uiCamera, out Vector2 startLocalPos);
         
         // 计算目标位置：将PlayerInfo的屏幕坐标转换为Canvas局部坐标
-        Vector2 targetScreenPoint = RectTransformUtility.WorldToScreenPoint(WorldManager.Instance.uiCamera, playerInfo.transform.position);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, targetScreenPoint, WorldManager.Instance.uiCamera, out Vector2 targetLocalPos);
+        Vector2 targetScreenPoint = RectTransformUtility.WorldToScreenPoint(BattleManager.Instance.uiCamera, playerInfo.transform.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, targetScreenPoint, BattleManager.Instance.uiCamera, out Vector2 targetLocalPos);
 
         targetLocalPos += new Vector2(80, 0);
 

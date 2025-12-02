@@ -16,6 +16,6 @@ public class SkillInitFood : Skill
         owner.GetPlayerInfo().AddFood((int)addon);
         owner.PlayerAnim(skillCfg.Action);
 
-        WorldManager.Instance.AddBattleText(addon.ToString() + "粮食", owner.transform.position, new UnityEngine.Vector2(0, 60), new Color(1, 0.8f, 0), 2);
+        BattleManager.Instance.AddBattleText(addon.ToString() + "粮食", owner.transform.position, new UnityEngine.Vector2(0, 60), new Color(1, 0.8f, 0), 2);
     }
 }

@@ -32,7 +32,7 @@ public class ChessHUD : MonoBehaviour
         // 将屏幕坐标转换为UI相机的Canvas局部坐标
         RectTransform rectTransform = GetComponent<RectTransform>();
         RectTransform parentCanvas = rectTransform.parent as RectTransform;
-        var screenPosition = WorldManager.Instance.TransformWorldToScreen(worldPosition, parentCanvas);
+        var screenPosition = BattleManager.Instance.TransformWorldToScreen(worldPosition, parentCanvas);
 
         rectTransform.anchoredPosition = screenPosition + new Vector2(chessUnit.isHero ? -70 : -55, 0);
 

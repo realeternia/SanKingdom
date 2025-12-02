@@ -23,7 +23,7 @@ public class SkillAttackRunCross : Skill
         Vector3 mirrorPos = new Vector3(mirrorX, ownerPos.y, mirrorZ);
 
         // 检查是否可以移动到镜像位置
-        if (WorldManager.Instance.TryLockGridPositions(owner, mirrorPos, out _) && CheckBurst(defender))
+        if (BattleManager.Instance.TryLockGridPositions(owner, mirrorPos, out _) && CheckBurst(defender))
         {
             // 启动协程移动
             owner.noMoveCount++;

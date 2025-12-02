@@ -13,7 +13,7 @@ public class SkillDefHpLow : Skill
     {
         if (owner.HpRate < skillCfg.ConditionParm && CheckBurst(attacker))
         {
-            WorldManager.Instance.AddBattleText("抵抗", owner.transform.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+            BattleManager.Instance.AddBattleText("抵抗", owner.transform.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
             damageMulti -= skillCfg.Strength;
         }
     }
@@ -24,7 +24,7 @@ public class SkillDefHpLow : Skill
             return;
         if (owner.HpRate < skillCfg.ConditionParm && CheckBurst(caster))
         {
-            WorldManager.Instance.AddBattleText("抵抗", owner.transform.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+            BattleManager.Instance.AddBattleText("抵抗", owner.transform.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
             damage = (int)(damage * (1 - skillCfg.Strength));
         }
     }

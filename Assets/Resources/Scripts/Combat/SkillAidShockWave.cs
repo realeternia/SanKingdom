@@ -16,7 +16,7 @@ public class SkillAidShockWave : Skill
         if (owner.targetChess == null)
             return false;
 
-        if (!WorldManager.Instance.CheckInRange(owner.transform.position, owner.targetChess.transform.position, skillCfg.Range))
+        if (!BattleManager.Instance.CheckInRange(owner.transform.position, owner.targetChess.transform.position, skillCfg.Range))
             return false;
 
         if (!CheckBurst(null))
@@ -26,7 +26,7 @@ public class SkillAidShockWave : Skill
 
         owner.PlayerAnim(skillCfg.Action);
         var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
-        WorldManager.Instance.CreateSpellMissile(owner, targetPos, GetSummonTime(), skillCfg.SummonSpeed, skillCfg.EffectSize, skillCfg.Id, damage, skillCfg.HitEffect);
+        BattleManager.Instance.CreateSpellMissile(owner, targetPos, GetSummonTime(), skillCfg.SummonSpeed, skillCfg.EffectSize, skillCfg.Id, damage, skillCfg.HitEffect);
 
         Debug.Log("SkillAidShockWave id=" + id.ToString() + " damage=" + damage.ToString());
 
