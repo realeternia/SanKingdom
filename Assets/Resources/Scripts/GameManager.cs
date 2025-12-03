@@ -156,6 +156,7 @@ public class GameManager : MonoBehaviour
         {
             var city = new SaveCityData();
             city.cityId = cityData.Id;
+            city.forceId = cityData.ForceId;
             city.gold = cityData.Gold;
             city.food = cityData.Food;
             city.soldier = cityData.Soldier;
@@ -164,6 +165,9 @@ public class GameManager : MonoBehaviour
             city.archFood = cityData.ArchFood;
             city.archGold = cityData.ArchGold;
             city.archPeople = cityData.ArchPeople;
+            city.leader = cityData.Leader;
+            if(cityData.Members != null)
+                city.members = new List<int>(cityData.Members);
             cityDatas.Add(city);
         }
     }

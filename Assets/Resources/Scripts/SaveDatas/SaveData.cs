@@ -14,6 +14,7 @@ public class SaveData
 public class SaveCityData
 {
     public int cityId;
+    public int forceId;
     public int archGold; //商业
     public int archFood; //农业
     public int archPeople; //人口
@@ -22,4 +23,6 @@ public class SaveCityData
     public int soldier; //士兵
     public int secure; //安全系数
     public int wall; //城防
+    public int leader;
+    public List<int> members;
 }

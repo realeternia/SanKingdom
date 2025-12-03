@@ -56,8 +56,8 @@ namespace CommonConfig
             config[1] = new ForceConfig(1, "刘备", 100001, "50,255,50");
             config[2] = new ForceConfig(2, "曹操", 100002, "50,50,255");
             config[3] = new ForceConfig(3, "孙权", 100003, "255,50,50");
-            config[4] = new ForceConfig(4, "袁绍", 100006, "100,100,100");
-            config[5] = new ForceConfig(5, "董卓", 100004, "200,150,0");
+            config[4] = new ForceConfig(4, "袁绍", 100006, "200,200,0");
+            config[5] = new ForceConfig(5, "董卓", 100004, "100,100,100");
 
         }
 
