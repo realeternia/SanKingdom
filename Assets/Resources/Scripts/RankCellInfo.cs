@@ -15,16 +15,16 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public TMP_Text heroStr;
     public TMP_Text heroInte;
     public TMP_Text heroLeadShip;
-    public TMP_Text heroHp;
-    public TMP_Text heroPrice;
+    public TMP_Text heroFair;
+    public TMP_Text heroCharm;
     public Button loveBtn;
 
     public int heroId;
     public int str;
     public int inte;
     public int leadShip;
-    public int hp;
-    public int price;
+    public int fair;
+    public int charm;
 
     // Start is called before the first frame update
     void Start()
@@ -35,19 +35,14 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         heroStr.raycastTarget = false;
         heroInte.raycastTarget = false;
         heroLeadShip.raycastTarget = false;
-        heroHp.raycastTarget = false;
-        heroPrice.raycastTarget = false;
+        heroFair.raycastTarget = false;
+        heroCharm.raycastTarget = false;
 
         loveBtn.onClick.AddListener(() =>
         {
             UpdateLoveBtn();
         });
         UpdateLoveBtn();
-
-        if(!HeroSelectionTool.HasHeroInPool(heroId))
-        {
-            heroName.color = Color.gray;
-        }
     }
 
     public void Init(HeroConfig heroConfig)
@@ -75,10 +70,8 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         str = heroConfig.Str;
         inte = heroConfig.Inte;
         leadShip = heroConfig.LeadShip;
-        hp = heroConfig.Hp;
-        price = HeroSelectionTool.GetPrice(heroConfig);
-        if (heroConfig.Job == "shuai")
-            loveBtn.gameObject.SetActive(false);
+        fair = heroConfig.Fair;
+        charm = heroConfig.Charm;
 
         var bg = GetComponent<Image>();
         bg.color = HeroSelectionTool.GetSideColor(heroConfig.Side);
@@ -101,14 +94,17 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         else if (heroConfig.LeadShip >= 90)
             heroLeadShip.text = "<color=yellow>" + heroConfig.LeadShip.ToString() + "</color>";
 
+        heroFair.text = heroConfig.Fair.ToString();
+        if (heroConfig.Fair >= 95)
+            heroFair.text = "<color=red>" + heroConfig.Fair.ToString() + "</color>";
+        else if (heroConfig.Fair >= 90)
+            heroFair.text = "<color=yellow>" + heroConfig.Fair.ToString() + "</color>";
 
-        heroPrice.text = price.ToString();
-        if (price >= 22)
-            heroPrice.text = "<color=red>" + price.ToString() + "</color>";
-        else if (price >= 19)
-            heroPrice.text = "<color=yellow>" + price.ToString() + "</color>";
-
-        heroHp.text = heroConfig.Hp.ToString();
+        heroCharm.text = heroConfig.Charm.ToString();
+        if (heroConfig.Charm >= 95)
+            heroCharm.text = "<color=red>" + heroConfig.Charm.ToString() + "</color>";
+        else if (heroConfig.Charm >= 90)
+            heroCharm.text = "<color=yellow>" + heroConfig.Charm.ToString() + "</color>";                        
     }
 
 

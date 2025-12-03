@@ -8,6 +8,7 @@ public class WorldManager : MonoBehaviour
 {
     public GameObject cityDetailObj;
     public CityDetail cityDetail;
+    public Button btnRank;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,6 +19,11 @@ public class WorldManager : MonoBehaviour
         BGMPlayer.Instance.PlaySound(roll == 0 ? "BGMs/chun" : (roll == 1 ? "BGMs/xia" : "BGMs/qiu"));        
 
         GameManager.Instance.SaveToFile();
+
+        btnRank.onClick.AddListener(() =>
+        {
+            PanelManager.Instance.ShowRank();
+        });        
     }
 
     // Update is called once per frame

@@ -14,8 +14,8 @@ public class RankPanelManager : MonoBehaviour
     public Button btnLeadShip;
     public Button btnStr;
     public Button btnInte;
-    public Button btnHp;
-    public Button btnPrice;
+    public Button btnFair;
+    public Button btnCharm;
 
     public Button closeBtn;
 
@@ -44,15 +44,15 @@ public class RankPanelManager : MonoBehaviour
             UnityEngine.Debug.Log("点击了btnInte，开始按智力排序");
             SortItems("Inte");
         });
-        btnHp.onClick.AddListener(() =>
+        btnFair.onClick.AddListener(() =>
         {
-            UnityEngine.Debug.Log("点击了btnHp，开始按生命值排序");
-            SortItems("Hp");
+            UnityEngine.Debug.Log("点击了btnFair，开始按公平排序");
+            SortItems("Fair");
         });
-        btnPrice.onClick.AddListener(() =>
+        btnCharm.onClick.AddListener(() =>
         {
-            UnityEngine.Debug.Log("点击了btnPrice，开始按价格排序");
-            SortItems("Price");
+            UnityEngine.Debug.Log("点击了btnCharm，开始按魅力排序");
+            SortItems("Charm");
         });
         closeBtn.onClick.AddListener(() =>
         {      
@@ -78,10 +78,10 @@ public class RankPanelManager : MonoBehaviour
                 return b.str.CompareTo(a.str);
             else if(rankType == "Inte")
                 return b.inte.CompareTo(a.inte);
-            else if(rankType == "Hp")
-                return b.hp.CompareTo(a.hp);
-            else if(rankType == "Price")
-                return b.price.CompareTo(a.price);
+            else if(rankType == "Fair")
+                return b.fair.CompareTo(a.fair);
+            else if(rankType == "Charm")
+                return b.charm.CompareTo(a.charm);
             return 0;
         });
 
