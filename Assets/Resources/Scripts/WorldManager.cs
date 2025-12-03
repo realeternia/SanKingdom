@@ -6,6 +6,8 @@ using CommonConfig;
 
 public class WorldManager : MonoBehaviour
 {
+    public GameObject cityDetailObj;
+    public CityDetail cityDetail;
     // Start is called before the first frame update
     void Start()
     {
@@ -76,6 +78,8 @@ public class WorldManager : MonoBehaviour
                 image.preserveAspect = true; // 保持宽高比
 
                 WorldPieceControl pieceControl = mapPiece.GetComponent<WorldPieceControl>();
+                pieceControl.worldManager = this;
+
                 pieceControl.pieceId = worldConfig.Id;
                 
                 // 使用RectTransform设置位置和大小

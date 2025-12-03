@@ -8,6 +8,7 @@ public class WorldPieceControl : MonoBehaviour
 {
     public int pieceId;
     public Image pieceImage;
+    public WorldManager worldManager;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,14 +36,8 @@ public class WorldPieceControl : MonoBehaviour
     /// </summary>
     private void OnPieceClicked()
     {
-        // 随机选择1-3之间的forceId
-        int randomForceId = Random.Range(1, 4); // Random.Range(min, max)在整数版本中是max不包含
-        
-        // 记录日志
-       // Debug.Log($"地块被点击，随机选择的forceId: {randomForceId}");
-        
-        // 设置对应颜色
-        SetColor(randomForceId);
+        worldManager.cityDetailObj.SetActive(true);
+        worldManager.cityDetail.SetCityDetail(pieceId);
     }
 
     // Update is called once per frame

@@ -105,6 +105,11 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
+    public SaveCityData GetCity(int cityId)
+    {
+        return cityDatas.FirstOrDefault(c => c.cityId == cityId);
+    }
+
     // 静态变量记录上次播放路径和 clip
     string lastPath = "";
     AudioClip lastClip = null;
