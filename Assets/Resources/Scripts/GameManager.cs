@@ -143,6 +143,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //新游戏开始数据初始化
+    public void NewGame()
+    {
+        cityDatas = new List<SaveCityData>();
+        foreach(var cityData in WorldConfig.ConfigList)
+        {
+            var city = new SaveCityData();
+            city.cityId = cityData.Id;
+            city.gold = cityData.Gold;
+            city.food = cityData.Food;
+            city.soldier = cityData.Soldier;
+            city.secure = cityData.Secure;
+            city.wall = cityData.Wall;
+            city.archFood = cityData.ArchFood;
+            city.archGold = cityData.ArchGold;
+            city.archPeople = cityData.ArchPeople;
+            cityDatas.Add(city);
+        }
+    }
+
     public bool IsGameSaveExist()
     {
         string savePath = Application.persistentDataPath + "/game_save.json";
@@ -162,17 +182,7 @@ public class GameManager : MonoBehaviour
             string json = File.ReadAllText(savePath);
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
             year = saveData.year;
-
-            // 确保players数组不为null且长度足够
-            if (saveData.players != null)
-            {
-                for (int i = 0; i < saveData.players.Count; i++)
-                {
-                    players[i].Deserialize(saveData.players[i]);
-                    players[i].SetPlayerData();
-                    players[i].UpdateView();
-                }
-            }
+            cityDatas = saveData.cities;
 
             Debug.Log("游戏数据加载成功 year=" + year);
         }
@@ -190,20 +200,8 @@ public class GameManager : MonoBehaviour
         try
         {
             SaveData saveData = new SaveData();
-
+            saveData.cities = cityDatas;
             saveData.year = year;
-            // 序列化每个PlayerInfo对象
-            foreach (PlayerInfo player in players)
-            {
-                if (player != null)
-                {
-                    string playerJson = player.Serialize();
-                    if (!string.IsNullOrEmpty(playerJson))
-                    {
-                        saveData.players.Add(playerJson);
-                    }
-                }
-            }
             
             // 使用JsonUtility序列化数据
             string json = JsonUtility.ToJson(saveData);

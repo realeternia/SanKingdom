@@ -14,6 +14,8 @@ public class WorldManager : MonoBehaviour
 
         var roll = UnityEngine.Random.Range(0, 3);
         BGMPlayer.Instance.PlaySound(roll == 0 ? "BGMs/chun" : (roll == 1 ? "BGMs/xia" : "BGMs/qiu"));        
+
+        GameManager.Instance.SaveToFile();
     }
 
     // Update is called once per frame

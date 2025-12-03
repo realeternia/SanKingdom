@@ -21,5 +21,5 @@ public class SaveCityData
     public int food; //现有粮食
     public int soldier; //士兵
     public int secure; //安全系数
-    public int defence; //城防
+    public int wall; //城防
 }

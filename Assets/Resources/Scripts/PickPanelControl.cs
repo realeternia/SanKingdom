@@ -37,6 +37,7 @@ public class PickPanelControl : MonoBehaviour
         });
         okBtn.onClick.AddListener(() =>
         {
+            GameManager.Instance.NewGame();
             PanelManager.Instance.ShowWorld();
             PanelManager.Instance.HidePick();
         });
@@ -54,7 +55,7 @@ public class PickPanelControl : MonoBehaviour
                 var isSuccess = GameManager.Instance.LoadFromSave();
                 if(isSuccess)
                 {
-                    PanelManager.Instance.ShowShop();
+                    PanelManager.Instance.ShowWorld();
                     PanelManager.Instance.HidePick();
                 }
                 else
