@@ -30,11 +30,15 @@ public class PanelManager : MonoBehaviour
     public void ShowWorld()
     {
         worldPanel.SetActive(true);
+
+        ChangePanelCount(worldPanel, true);
     }
 
     public void HideWorld()
     {
         worldPanel.SetActive(false);
+
+        ChangePanelCount(worldPanel, false);
     }
 
     public void ShowShop()

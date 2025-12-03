@@ -10,7 +10,10 @@ public class WorldManager : MonoBehaviour
     void Start()
     {
         // 加载地图块
-        StartCoroutine(LoadMapPieces());
+        LoadMapPieces();
+
+        var roll = UnityEngine.Random.Range(0, 3);
+        BGMPlayer.Instance.PlaySound(roll == 0 ? "BGMs/chun" : (roll == 1 ? "BGMs/xia" : "BGMs/qiu"));        
     }
 
     // Update is called once per frame
@@ -19,20 +22,20 @@ public class WorldManager : MonoBehaviour
         
     }
 
-    private IEnumerator LoadMapPieces()
+    private void LoadMapPieces()
     {
         UnityEngine.Debug.Log($"LoadMapPieces 地图数量: {WorldConfig.ConfigList.Count}");
         
-        // 检查地图配置是否为空
-        if (WorldConfig.ConfigList.Count == 0)
-        {
-            Debug.LogWarning("WorldConfig配置为空，等待0.2秒后重试...");
-            // 等待0.2秒
-            yield return new WaitForSeconds(0.2f);
-            // 重新调用自身
-            StartCoroutine(LoadMapPieces());
-            yield break;
-        }
+        // // 检查地图配置是否为空
+        // if (WorldConfig.ConfigList.Count == 0)
+        // {
+        //     Debug.LogWarning("WorldConfig配置为空，等待0.2秒后重试...");
+        //     // 等待0.2秒
+        //     yield return new WaitForSeconds(0.2f);
+        //     // 重新调用自身
+        //     StartCoroutine(LoadMapPieces());
+        //     yield break;
+        // }
         
         // 遍历所有地图配置
         foreach (var worldConfig in WorldConfig.ConfigList)

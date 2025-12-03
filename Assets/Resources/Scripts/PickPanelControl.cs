@@ -21,8 +21,6 @@ public class PickPanelControl : MonoBehaviour
     public Button loadGameBtn;
     public Button newGameBtn;
 
-    public Button finBtn;
-
 
     private void Awake()
     {
@@ -37,18 +35,12 @@ public class PickPanelControl : MonoBehaviour
             GameManager.Instance.PlaySound("Sounds/page");
             RefreshBtnClick();
         });
-        finBtn.onClick.AddListener(() =>
-        {
-            PanelManager.Instance.ShowShop();
-            PanelManager.Instance.HidePick();
-        });
         okBtn.onClick.AddListener(() =>
         {
-            refreshBtn.gameObject.SetActive(false); // ok后，不能再refresh
-            okBtn.gameObject.SetActive(false);
+            PanelManager.Instance.ShowWorld();
+            PanelManager.Instance.HidePick();
         });
 
-        finBtn.gameObject.SetActive(false);
         okBtn.gameObject.SetActive(false);
         refreshBtn.gameObject.SetActive(false);
 
@@ -117,6 +109,18 @@ public class PickPanelControl : MonoBehaviour
     }
 
 
+    // 取消除了指定单元格之外的所有选中状态
+    public void ClearAllSelectionsExcept(PickPanelCellControl exceptCell)
+    {
+        foreach (var cellControl in cellControls)
+        {
+            if (cellControl != exceptCell)
+            {
+                cellControl.SetSelected(false);
+            }
+        }
+    }
+
     void RefreshHeroPool()
     {
         // 销毁节点下所有子对象
@@ -167,6 +171,7 @@ public class PickPanelControl : MonoBehaviour
             // 设置单元格数据
             PickPanelCellControl cellControl = cell.GetComponent<PickPanelCellControl>();
             cellControl.heroId = heroId;
+            cellControl.SetParentControl(this); // 设置父控制类引用
             cellControls.Add(cellControl);
             if (cellControl != null)
             {

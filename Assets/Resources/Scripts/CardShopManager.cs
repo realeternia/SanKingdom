@@ -474,9 +474,6 @@ public class CardShopManager : MonoBehaviour
         if(hasEnterBattle) //存档拉起进入游戏，不会重复存储
             GameManager.Instance.SaveToFile();
 
-        var roll = UnityEngine.Random.Range(0, 3);
-        BGMPlayer.Instance.PlaySound(roll == 0 ? "BGMs/chun" : (roll == 1 ? "BGMs/xia" : "BGMs/qiu"));
-
         if (GameManager.Instance.year == 0)
         {
             UnityEngine.Debug.Log("FirstRound ck");
