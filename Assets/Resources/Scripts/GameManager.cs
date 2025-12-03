@@ -8,18 +8,13 @@ using CommonConfig;
 
 public class GameManager : MonoBehaviour
 {   
-    // 用于Unity JsonUtility序列化的辅助类
-    [System.Serializable]
-    private class SaveData
-    {
-        public List<string> players = new List<string>();
-        public int year;
-    }
-
     public static GameManager Instance;
     public PlayerInfo[] players; //不能new，都是配置好的
+    // todo 这里还有一个city数据列表
+    // todo playersavedata也可以单独放一个，然后set给player
     private StreamWriter logWriter;  // 日志写入器
     public int year;
+    public List<SaveCityData> cityDatas;
 
     private void Awake()
     {

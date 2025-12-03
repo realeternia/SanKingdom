@@ -46,60 +46,7 @@ public static class HeroSelectionTool
 
         return result;
     }
-
-
-    public static void UpdateHeroPoolCache(List<int> heroIds)
-    {
-        heroPoolCache.Clear();
-        foreach (var heroId in heroIds)
-        {
-            var config = HeroConfig.GetConfig(heroId);
-            var rate = 1000 / Math.Max(15, GetPrice(config));
-            if (config.Job == "shuai")
-                rate += 15;
-            heroPoolCache.Add(new Tuple<int, int>(heroId, rate));
-        }
-
-        heroPoolCache.Sort((a, b) =>
-        {
-            var configA = HeroConfig.GetConfig(a.Item1);
-            var configB = HeroConfig.GetConfig(b.Item1);
-            int sideCompare = configA.Side.CompareTo(configB.Side);
-            if (sideCompare != 0)
-            {
-                return sideCompare;
-            }
-
-            // 检查ID是否在100100以下
-            bool isBelow100100A = a.Item1 < 100100;
-            bool isBelow100100B = b.Item1 < 100100;
-            if (isBelow100100A != isBelow100100B)
-            {
-                return isBelow100100A ? -1 : 1;
-            }
-
-            // 按Total排序
-            return configB.Total.CompareTo(configA.Total);
-        });
-
-    }
-
-    public static List<int> GetHeroPoolCache()
-    {
-        // 返回只包含heroId的列表
-        List<int> result = new List<int>();
-        foreach (var hero in heroPoolCache)
-        {
-            result.Add(hero.Item1);
-        }
-        return result;
-    }
-
-    public static void SetBanList(List<int> banList)
-    {
-        heroPoolCache.RemoveAll(hero => banList.Contains(hero.Item1));
-    }
-
+    
     public static int GetRandomHeroId()
     {
         // 实现价格加权随机：价格越高，被选中的概率越低

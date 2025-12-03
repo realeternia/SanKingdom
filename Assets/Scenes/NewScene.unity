@@ -6741,8 +6741,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -742, y: -412}
-  m_SizeDelta: {x: 1420, y: 790}
+  m_AnchoredPosition: {x: -530, y: -374}
+  m_SizeDelta: {x: 1050, y: 700}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &885441728
 MonoBehaviour:
@@ -8290,7 +8290,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1181113650
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9760,7 +9760,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1568274805
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11005,6 +11005,7 @@ MonoBehaviour:
   - {fileID: 1130084956}
   - {fileID: 2065831910}
   year: 0
+  cityDatas: []
 --- !u!114 &1788356929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11367,6 +11368,7 @@ MonoBehaviour:
   rankPanel: {fileID: 1891025974}
   rankPlayerPanel: {fileID: 723496110}
   pickPanel: {fileID: 1568274804}
+  worldPanel: {fileID: 1181113649}
   bagPanel: {fileID: 2032091893}
   openPanelList: []
 --- !u!114 &1835018307

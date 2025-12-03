@@ -14,6 +14,7 @@ public class PanelManager : MonoBehaviour
     public GameObject rankPanel;
     public GameObject rankPlayerPanel;
     public GameObject pickPanel;
+    public GameObject worldPanel;
 
 
     public GameObject bagPanel;
@@ -24,6 +25,16 @@ public class PanelManager : MonoBehaviour
     void Start()
     {
        // ShowBag();
+    }
+
+    public void ShowWorld()
+    {
+        worldPanel.SetActive(true);
+    }
+
+    public void HideWorld()
+    {
+        worldPanel.SetActive(false);
     }
 
     public void ShowShop()

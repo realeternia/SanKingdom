@@ -74,9 +74,9 @@ namespace CommonConfig
         {
             config.Clear();
             config[10001] = new WorldConfig(10001, "wulin", "武陵", 630, 1442, 351, 266, 1);
-            config[10002] = new WorldConfig(10002, "luoyang", "洛阳", 704, 613, 328, 283, 2);
-            config[10003] = new WorldConfig(10003, "pingyuan", "平原", 1228, 514, 229, 173, 2);
-            config[10004] = new WorldConfig(10004, "nanpi", "南皮", 1229, 325, 273, 211, 2);
+            config[10002] = new WorldConfig(10002, "luoyang", "洛阳", 704, 613, 328, 283, 5);
+            config[10003] = new WorldConfig(10003, "pingyuan", "平原", 1228, 514, 229, 173, 4);
+            config[10004] = new WorldConfig(10004, "nanpi", "南皮", 1229, 325, 273, 211, 4);
             config[10005] = new WorldConfig(10005, "chenliu", "陈留", 987, 698, 305, 247, 2);
             config[10006] = new WorldConfig(10006, "puyang", "濮阳", 1085, 618, 398, 196, 2);
             config[10007] = new WorldConfig(10007, "xinye", "新野", 789, 1022, 261, 177, 2);
@@ -97,24 +97,24 @@ namespace CommonConfig
             config[10022] = new WorldConfig(10022, "yunnan", "云南", 42, 1646, 444, 395, 1);
             config[10023] = new WorldConfig(10023, "zitong", "梓潼", 43, 1004, 506, 274, 1);
             config[10024] = new WorldConfig(10024, "hanzhong", "汉中", 145, 770, 348, 311, 1);
-            config[10025] = new WorldConfig(10025, "changan", "长安", 370, 575, 415, 351, 2);
-            config[10026] = new WorldConfig(10026, "anding", "安定", 155, 412, 411, 335, 2);
-            config[10027] = new WorldConfig(10027, "tianshui", "天水", 42, 623, 322, 253, 2);
-            config[10028] = new WorldConfig(10028, "wuwei", "武威", 42, 253, 288, 386, 2);
-            config[10029] = new WorldConfig(10029, "jinyang", "晋阳", 679, 235, 498, 384, 2);
-            config[10030] = new WorldConfig(10030, "beiping", "北平", 1351, 54, 288, 317, 2);
+            config[10025] = new WorldConfig(10025, "changan", "长安", 370, 575, 415, 351, 5);
+            config[10026] = new WorldConfig(10026, "anding", "安定", 155, 412, 411, 335, 5);
+            config[10027] = new WorldConfig(10027, "tianshui", "天水", 42, 623, 322, 253, 5);
+            config[10028] = new WorldConfig(10028, "wuwei", "武威", 42, 253, 288, 386, 5);
+            config[10029] = new WorldConfig(10029, "jinyang", "晋阳", 679, 235, 498, 384, 4);
+            config[10030] = new WorldConfig(10030, "beiping", "北平", 1351, 54, 288, 317, 4);
             config[10031] = new WorldConfig(10031, "beihai", "北海", 1441, 494, 341, 213, 2);
             config[10032] = new WorldConfig(10032, "xiaopei", "小沛", 1279, 701, 248, 193, 2);
             config[10033] = new WorldConfig(10033, "xiapi", "下邳", 1457, 672, 286, 297, 2);
             config[10034] = new WorldConfig(10034, "shouchun", "寿春", 1264, 876, 297, 248, 2);
             config[10035] = new WorldConfig(10035, "jiangxia", "江夏", 949, 1115, 377, 215, 3);
             config[10036] = new WorldConfig(10036, "wu", "吴", 1617, 831, 314, 404, 3);
-            config[10037] = new WorldConfig(10037, "ye", "邺", 902, 356, 336, 357, 2);
-            config[10038] = new WorldConfig(10038, "ji", "蓟", 980, 105, 397, 280, 2);
+            config[10037] = new WorldConfig(10037, "ye", "邺", 902, 356, 336, 357, 4);
+            config[10038] = new WorldConfig(10038, "ji", "蓟", 980, 105, 397, 280, 4);
             config[10039] = new WorldConfig(10039, "jianye", "建业", 1469, 925, 277, 498, 3);
             config[10040] = new WorldConfig(10040, "caisang", "柴桑", 1111, 1265, 452, 503, 3);
             config[10041] = new WorldConfig(10041, "changsha", "长沙", 928, 1440, 379, 323, 3);
-            config[10042] = new WorldConfig(10042, "xiangping", "襄平", 1558, 13, 317, 357, 2);
+            config[10042] = new WorldConfig(10042, "xiangping", "襄平", 1558, 13, 317, 357, 4);
 
         }
 

@@ -15,15 +15,20 @@ namespace CommonConfig
         /// </summary>
         public string Cname;
         /// <summary>
+        ///影响id
+        /// </summary>
+        public int HeroId;
+        /// <summary>
         ///颜色
         /// </summary>
         public string Color;
 
 
-        public ForceConfig(int Id, string Cname, string Color)
+        public ForceConfig(int Id, string Cname, int HeroId, string Color)
         {
             this.Id = Id;
             this.Cname = Cname;
+            this.HeroId = HeroId;
             this.Color = Color;
 
         }
@@ -48,9 +53,11 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new ForceConfig(1, "刘备", "50,255,50");
-            config[2] = new ForceConfig(2, "曹操", "50,50,255");
-            config[3] = new ForceConfig(3, "孙权", "255,50,50");
+            config[1] = new ForceConfig(1, "刘备", 100001, "50,255,50");
+            config[2] = new ForceConfig(2, "曹操", 100002, "50,50,255");
+            config[3] = new ForceConfig(3, "孙权", 100003, "255,50,50");
+            config[4] = new ForceConfig(4, "董卓", 100004, "100,100,100");
+            config[5] = new ForceConfig(5, "袁绍", 100006, "200,150,0");
 
         }
 

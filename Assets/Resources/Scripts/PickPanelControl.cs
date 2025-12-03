@@ -39,18 +39,12 @@ public class PickPanelControl : MonoBehaviour
         });
         finBtn.onClick.AddListener(() =>
         {
-            HeroSelectionTool.SetBanList(GetBanList());
-
             PanelManager.Instance.ShowShop();
             PanelManager.Instance.HidePick();
         });
         okBtn.onClick.AddListener(() =>
         {
             refreshBtn.gameObject.SetActive(false); // ok后，不能再refresh
-            foreach (var cell in cellControls)
-                cell.canBan = true;
-
-            StartCoroutine(AllPlayerBans());
             okBtn.gameObject.SetActive(false);
         });
 
@@ -85,6 +79,7 @@ public class PickPanelControl : MonoBehaviour
         }
         else
         {
+            Debug.Log("No Game Save");
             loadGamePanel.SetActive(false);
             RefreshBtnClick();
         }
@@ -102,41 +97,6 @@ public class PickPanelControl : MonoBehaviour
     {
         
     }
-
-    // 玩家轮流ban
-    private IEnumerator AllPlayerBans()
-    {
-        // 等待1秒
-        yield return new WaitForSeconds(.3f);
-
-        for (int i = 1; i <= 14; i++)
-        {
-            var pid = (i % 7) + 1;
-            var player = GameManager.Instance.GetPlayer(pid);
-            if (player.banCount > 0)
-            {
-                PlayerAI.CheckBan(player, cellControls);
-                yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.3f));
-            }
-        }
-        
-        finBtn.gameObject.SetActive(true);
-
-    }    
-
-    private List<int> GetBanList()
-    {
-        List<int> banList = new List<int>();
-        foreach (var cell in cellControls)
-        {
-            if (cell.banState > 0)
-            {
-                banList.Add(cell.heroId);
-            }
-        }
-        return banList;
-    }
-
 
     private void RefreshBtnClick()
     {
@@ -168,23 +128,26 @@ public class PickPanelControl : MonoBehaviour
 
 
         // 获取英雄池缓存
-        List<int> heroPool = HeroSelectionTool.GetHeroPoolCache();
+        var forcePool = new List<int>();
+        foreach (var item in ForceConfig.ConfigList)
+            forcePool.Add(item.Id);
         
         // 每行显示10个，共5行
         int itemsPerRow = 13;
         int rows = 7;
-        int totalItems = Mathf.Min(heroPool.Count, itemsPerRow * rows);
+        int totalItems = Mathf.Min(forcePool.Count, itemsPerRow * rows);
         
         // 单元格大小和间距
-        float cellWidth = 108f;
-        float cellHeight = 108f;
-        float spacingX = 0f;
-        float spacingY = 2f;
+        float cellWidth = 200f;
+        float cellHeight = 276f;
+        float spacingX = 5f;
+        float spacingY = 5f;
 
         // 创建单元格
         for (int i = 0; i < totalItems; i++)
         {
-            int heroId = heroPool[i];
+            var forceCfg = ForceConfig.GetConfig(forcePool[i]);
+            int heroId = forceCfg.HeroId;
             HeroConfig heroCfg = HeroConfig.GetConfig(heroId);
 
             // 实例化单元格
@@ -194,8 +157,8 @@ public class PickPanelControl : MonoBehaviour
             // 计算位置
             int row = i / itemsPerRow;
             int col = i % itemsPerRow;
-            float posX = 5 + col * (cellWidth + spacingX) + 60;
-            float posY = -5 -row * (cellHeight + spacingY) - 60;
+            float posX = 5 + col * (cellWidth + spacingX) + 105;
+            float posY = -5 -row * (cellHeight + spacingY) - 140;
 
             // 设置位置
             RectTransform rectTransform = cell.GetComponent<RectTransform>();
@@ -208,20 +171,24 @@ public class PickPanelControl : MonoBehaviour
             if (cellControl != null)
             {
                 // 设置英雄图片
-                cellControl.heroImg.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
-                // 设置job图片
-                var icon = SkillConfig.GetConfig(heroCfg.Skills[0]).Icon;
-                cellControl.jobImg.sprite = Resources.Load<Sprite>("SkillPic/" + icon);
-
+                cellControl.heroImg.sprite = Resources.Load<Sprite>("SkinsBig/" + heroCfg.Icon);
                 // 设置英雄名称
                 cellControl.heroName.text = heroCfg.Name;
-                if(heroCfg.Str >= 90 || heroCfg.LeadShip >= 90 || heroCfg.Inte >= 90 || heroCfg.Total >= 240)
-                    cellControl.heroName.color = new Color(1, .7f, 0);
 
-                cellControl.bgImg.GetComponent<Image>().color = HeroSelectionTool.GetSideColor(heroCfg.Side);
-
-                // 默认隐藏禁止图标
-                cellControl.forbidImg.gameObject.SetActive(false);
+                string colorStr = forceCfg.Color;
+                // 分割颜色字符串为RGB组件
+                string[] rgbValues = colorStr.Split(',');
+                // 检查是否有3个组件
+                if (rgbValues.Length == 3)
+                {
+                    // 转换为数值并除以255（Unity颜色值范围为0-1）
+                    float r = float.Parse(rgbValues[0]) / 255f;
+                    float g = float.Parse(rgbValues[1]) / 255f;
+                    float b = float.Parse(rgbValues[2]) / 255f;
+                    
+                    // 设置颜色，添加alpha值为1（不透明）
+                    cellControl.bgImg.GetComponent<Image>().color = new Color(r, g, b, 1f);
+                }
             }
         }
     }
