@@ -9,6 +9,8 @@ using CommonConfig;
 
 public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
+    public RankPanelManager rankPanelManager;
+
     public Image heroPic;
     public Image[] heroSkill;
     public TMP_Text heroName;
@@ -104,7 +106,8 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         if (heroConfig.Charm >= 95)
             heroCharm.text = "<color=red>" + heroConfig.Charm.ToString() + "</color>";
         else if (heroConfig.Charm >= 90)
-            heroCharm.text = "<color=yellow>" + heroConfig.Charm.ToString() + "</color>";                        
+            heroCharm.text = "<color=yellow>" + heroConfig.Charm.ToString() + "</color>";      
+        heroPic.gameObject.SetActive(false);
     }
 
 
@@ -135,12 +138,16 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         }
 
         if (!isClickOnHeroSkill)
-            return;
-
-        var heroCfg = HeroConfig.GetConfig(heroId);
-        if (heroCfg.Skills != null && heroCfg.Skills.Length > 0)
         {
-            Tooltip.Instance.ShowTooltip(heroCfg.Skills, heroId);
+            rankPanelManager.OnSelectHero(this);
+        }
+        else
+        {
+            var heroCfg = HeroConfig.GetConfig(heroId);
+            if (heroCfg.Skills != null && heroCfg.Skills.Length > 0)
+            {
+                Tooltip.Instance.ShowTooltip(heroCfg.Skills, heroId);
+            }
         }
     }
 

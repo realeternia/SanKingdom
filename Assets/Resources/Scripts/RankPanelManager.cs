@@ -19,6 +19,8 @@ public class RankPanelManager : MonoBehaviour
 
     public Button closeBtn;
 
+    private RankCellInfo lastSelectedHero; // 缓存上次选中的英雄
+
 
     // Start is called before the first frame update
     void Start()
@@ -113,6 +115,7 @@ public class RankPanelManager : MonoBehaviour
 
             // 获取RankCellInfo组件
             RankCellInfo cellInfo = cell.GetComponent<RankCellInfo>();
+            cellInfo.rankPanelManager = this;
             if (cellInfo != null)
             {
                 cellInfo.Init(heroConfig);
@@ -132,6 +135,21 @@ public class RankPanelManager : MonoBehaviour
         {
             scrollRect.normalizedPosition = new Vector2(0, 1);
         }
+    }
+
+    public void OnSelectHero(RankCellInfo cellInfo)
+    {
+        // 取消上次选中的英雄
+        if (lastSelectedHero != null && lastSelectedHero != cellInfo)
+        {
+            lastSelectedHero.heroPic.gameObject.SetActive(false);
+        }
+        
+        // 选中当前英雄
+        cellInfo.heroPic.gameObject.SetActive(true);
+        
+        // 更新缓存的上次选中英雄
+        lastSelectedHero = cellInfo;
     }
 
     public void OnShow()
