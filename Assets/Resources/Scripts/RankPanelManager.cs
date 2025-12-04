@@ -59,7 +59,7 @@ public class RankPanelManager : MonoBehaviour
         closeBtn.onClick.AddListener(() =>
         {      
             PanelManager.Instance.HideRank();
-            CardShopManager.Instance.OnShow();
+          //  CardShopManager.Instance.OnShow();
         });
 
     }

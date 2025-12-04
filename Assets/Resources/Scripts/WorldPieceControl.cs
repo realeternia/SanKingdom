@@ -36,8 +36,7 @@ public class WorldPieceControl : MonoBehaviour
     /// </summary>
     private void OnPieceClicked()
     {
-        worldManager.cityDetailObj.SetActive(true);
-        worldManager.cityDetail.SetCityDetail(pieceId);
+        worldManager.OnPieceClick(pieceId);
     }
 
     // Update is called once per frame

@@ -19,6 +19,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public TMP_Text heroLeadShip;
     public TMP_Text heroFair;
     public TMP_Text heroCharm;
+    public TMP_Text ownerName;
     public Button loveBtn;
 
     public int heroId;
@@ -68,7 +69,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         }
 
         heroName.text = heroConfig.Name;
-        heroId = (int)heroConfig.Id;
+        heroId = heroConfig.Id;
         str = heroConfig.Str;
         inte = heroConfig.Inte;
         leadShip = heroConfig.LeadShip;
@@ -108,6 +109,20 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         else if (heroConfig.Charm >= 90)
             heroCharm.text = "<color=yellow>" + heroConfig.Charm.ToString() + "</color>";      
         heroPic.gameObject.SetActive(false);
+
+        var cityId = GameManager.Instance.GetHeroCity(heroId, out int forceId);
+        Debug.Log($"GetHeroCity {heroId} {cityId} {forceId}");
+        if (cityId >= 0)
+        {
+            var cityCfg = WorldConfig.GetConfig(cityId);
+            ownerName.text = "<color=yellow>" + cityCfg.Cname + "</color>-<color=green>" + ForceConfig.GetConfig(forceId).Cname + "</color>";
+        }
+        else
+        {
+            ownerName.text = "";
+        }
+
+        
     }
 
 

@@ -110,6 +110,20 @@ public class GameManager : MonoBehaviour
         return cityDatas.FirstOrDefault(c => c.cityId == cityId);
     }
 
+    public int GetHeroCity(int heroId, out int forceId)
+    {
+        forceId = -1;
+        foreach (var city in cityDatas)
+        {
+            forceId = city.forceId;
+            if (city.leader == heroId)
+                return city.cityId;
+            if (city.members != null && city.members.Contains(heroId))
+                return city.cityId;
+        }
+        return -1;
+    }
+
     // 静态变量记录上次播放路径和 clip
     string lastPath = "";
     AudioClip lastClip = null;

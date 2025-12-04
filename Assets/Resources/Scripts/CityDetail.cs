@@ -7,6 +7,8 @@ using CommonConfig;
 
 public class CityDetail : MonoBehaviour
 {
+    public int cityId;
+
     public TMP_Text textCityName;
     public TMP_Text textOwnerName;
     public TMP_Text textArchGold;
@@ -21,6 +23,7 @@ public class CityDetail : MonoBehaviour
 
     public void SetCityDetail(int cityId)
     {
+        this.cityId = cityId;
         var city = GameManager.Instance.GetCity(cityId);
         var worldCfg = WorldConfig.GetConfig(cityId);
         textCityName.text = worldCfg.Cname;

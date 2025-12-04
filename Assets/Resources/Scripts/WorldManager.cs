@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
+using TMPro;
 
 public class WorldManager : MonoBehaviour
 {
     public GameObject cityDetailObj;
     public CityDetail cityDetail;
     public Button btnRank;
+    public Button btnCity;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,10 +23,16 @@ public class WorldManager : MonoBehaviour
 
         GameManager.Instance.SaveToFile();
 
+        btnCity.gameObject.SetActive(false);
+
         btnRank.onClick.AddListener(() =>
         {
             PanelManager.Instance.ShowRank();
         });        
+        btnCity.onClick.AddListener(() =>
+        {
+            PanelManager.Instance.ShowCity(cityDetail.cityId);
+        });
     }
 
     // Update is called once per frame
@@ -110,5 +119,15 @@ public class WorldManager : MonoBehaviour
                 Debug.LogError($"加载UI地图 {worldConfig.Cname} 时出错: {e.Message}");
             }
         }
+    }
+
+    public void OnPieceClick(int pieceId)
+    {
+        cityDetailObj.SetActive(true);
+        cityDetail.SetCityDetail(pieceId);
+
+        var cityCfg = WorldConfig.GetConfig(pieceId);
+        btnCity.gameObject.GetComponentInChildren<TMP_Text>().text = "进入" + cityCfg.Cname;
+        btnCity.gameObject.SetActive(true);
     }
 }
