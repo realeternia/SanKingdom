@@ -20,6 +20,7 @@ public class CityDetail : MonoBehaviour
     public TMP_Text textSecure;
     public TMP_Text textWall;
     public TMP_Text textLeader;
+    public GameObject heroHeadRegion;
 
     public void SetCityDetail(int cityId)
     {
@@ -40,6 +41,39 @@ public class CityDetail : MonoBehaviour
             textLeader.text = HeroConfig.GetConfig(city.leader).Name;
         else
             textLeader.text = "无";
+        
+        var heroList = new List<int>();
+        if(city.leader > 0)
+            heroList.Add(city.leader);
+        for(int i = 0; i < city.members.Count; i++)
+        {
+            if(city.members[i] > 0)
+                heroList.Add(city.members[i]);    
+        }
+        //todo 清理一下heroHeadRegion.transform下所有对象
+        foreach (Transform child in heroHeadRegion.transform)
+            Destroy(child.gameObject);
+        for (int i = 0; i < heroList.Count; i++)
+        {
+            var hero = heroList[i]; // 恢复这一行，定义hero变量
+            var heroCfg = HeroConfig.GetConfig(hero);
+            if (heroCfg != null)
+            {
+                var heroHead = Instantiate(Resources.Load<GameObject>("Prefabs/CityHeroHead"), heroHeadRegion.transform);
+                heroHead.name = "HeroHead_" + i;
+
+                var rt = heroHead.GetComponent<RectTransform>();
+                // 设置头像位置偏移（水平排列）
+                rt.anchoredPosition = new Vector2(70 * (i % 4), -70 * (i / 4)); // 70为每个头像的水平间距
+                
+                // 新建Image组件并设置头像
+                var img = heroHead.GetComponent<Image>();
+                img.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+            }
+        }
+
+
+
     }
 
     // Start is called before the first frame update

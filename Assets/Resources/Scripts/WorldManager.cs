@@ -123,11 +123,39 @@ public class WorldManager : MonoBehaviour
 
     public void OnPieceClick(int pieceId)
     {
+        // 空值检查：cityDetail和cityDetailObj
+        if (cityDetail == null || cityDetailObj == null)
+        {
+            Debug.LogError("WorldManager.OnPieceClick: cityDetail or cityDetailObj is null");
+            return;
+        }
+        
+        // 参数验证
+        if (pieceId <= 0)
+        {
+            Debug.LogError("WorldManager.OnPieceClick: Invalid pieceId: " + pieceId);
+            return;
+        }
+        
+        // 激活城市详情面板并设置城市信息
         cityDetailObj.SetActive(true);
         cityDetail.SetCityDetail(pieceId);
 
+        // 获取城市配置并检查
         var cityCfg = WorldConfig.GetConfig(pieceId);
-        btnCity.gameObject.GetComponentInChildren<TMP_Text>().text = "进入" + cityCfg.Cname;
-        btnCity.gameObject.SetActive(true);
+        if (cityCfg != null && btnCity != null)
+        {
+            var btnText = btnCity.gameObject.GetComponentInChildren<TMP_Text>();
+            if (btnText != null)
+            {
+                btnText.text = "进入" + cityCfg.Cname;
+            }
+            btnCity.gameObject.SetActive(true);
+        }
+        else if (btnCity != null)
+        {
+            Debug.LogError("WorldManager.OnPieceClick: WorldConfig not found for pieceId: " + pieceId);
+            btnCity.gameObject.SetActive(false);
+        }
     }
 }

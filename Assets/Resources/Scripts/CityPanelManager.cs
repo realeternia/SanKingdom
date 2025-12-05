@@ -10,6 +10,8 @@ public class CityPanelManager : MonoBehaviour
     public int cityId;
     public Button closeBtn;
     public TMP_Text cityName;
+    public CityDetail cityDetail;
+    private GameObject currentCityView; // 当前加载的城市视图
     // Start is called before the first frame update
     void Start()
     {
@@ -29,7 +31,34 @@ public class CityPanelManager : MonoBehaviour
     public void SetCityId(int cityId)
     {
         this.cityId = cityId;
-        cityName.text = WorldConfig.GetConfig(cityId).Cname;
+        var cityCfg = WorldConfig.GetConfig(cityId);
+        cityName.text = cityCfg.Cname;
+        
+        // 加载城市视图预制件
+        LoadCityView(cityCfg.ViewPrefab);
+        cityDetail.SetCityDetail(cityId);
+    }
+    
+    private void LoadCityView(string viewPrefabPath)
+    {
+        // 先销毁当前的城市视图（如果存在）
+        if (currentCityView != null)
+        {
+            Destroy(currentCityView);
+        }
+
+        // 加载chengdu预制件
+        GameObject cityViewPrefab = Resources.Load<GameObject>("Prefabs/CityView/" + viewPrefabPath);
+        if (cityViewPrefab != null)
+        {
+            // 实例化预制件并挂载到父对象下
+            currentCityView = Instantiate(cityViewPrefab, transform);
+            currentCityView.transform.localScale = Vector3.one;
+        }
+        else
+        {
+            Debug.LogError("Failed to load city view prefab or cityViewParent is not assigned.");
+        }
     }
 
     public void OnShow()
