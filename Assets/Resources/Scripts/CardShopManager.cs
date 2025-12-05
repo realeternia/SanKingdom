@@ -510,7 +510,7 @@ public class CardShopManager : MonoBehaviour
 
         Tooltip.Instance.HideTooltip();
         PanelManager.Instance.HideShop();
-        BattleManager.Instance.BattleBegin(); 
+        BattleManager.Instance.BattleBegin(null, null); 
         hasEnterBattle = true;
 
         for(int i = 0; i < 8; i++)

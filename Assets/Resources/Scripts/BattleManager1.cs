@@ -63,15 +63,13 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void BattleBegin()
+    public void BattleBegin(int[] cards1, int[] cards2)
     {
         var roll = UnityEngine.Random.Range(0, 2);
         BGMPlayer.Instance.PlaySound(roll == 0 ? "BGMs/weifeng" : "BGMs/pozhu");
 
         var newMapId = 1;
         gameFinish = false;
-        if (GameManager.Instance.year >= 5)
-            newMapId = UnityEngine.Random.Range(1, 5);
         if (mapConfig == null || newMapId != mapConfig.Mapid)
         {
             // 打印加载耗时
@@ -96,7 +94,7 @@ public class BattleManager : MonoBehaviour
             player.OnBattleBegin();
 
         BattleResultPanel.gameObject.SetActive(false);
-        SpawnUnitsInRegions();
+        SpawnUnitsInRegions(cards1, cards2);
 
         foreach (var chess in chessList.ToArray()) //防止召唤
             SkillManager.CheckAddSkill(chess);
@@ -127,8 +125,7 @@ public class BattleManager : MonoBehaviour
             Destroy(cell.gameObject);
         }
 
-        PanelManager.Instance.ShowShop();
-        CardShopManager.Instance.ShopBegin();
+        PanelManager.Instance.ShowWorld();
     }
 
     public void ShowBattleResult()
@@ -154,25 +151,10 @@ public class BattleManager : MonoBehaviour
 
     private int[] GetMatch()
     {
-        var battleIndex = GameManager.Instance.year;
-        // 两两组合搭配方案
-        if (battleIndex % 7 == 0)
-            return new int[] { 0, 7, 1, 6, 2, 5, 3, 4 }; 
-        else if (battleIndex % 7 == 1)
-            return new int[] { 0, 1, 7, 4, 5, 3, 6, 2 }; 
-        else if (battleIndex % 7 == 2)
-            return new int[] { 0, 2, 1, 7, 3, 6, 4, 5 };
-        else if (battleIndex % 7 == 3)
-            return new int[] { 0, 3, 7, 5, 6, 4, 1, 2 };
-        else if (battleIndex % 7 == 4)
-            return new int[] { 0, 4, 2, 7, 3, 1, 5, 6 }; 
-        else if (battleIndex % 7 == 5)
-            return new int[] { 0, 5, 7, 6, 1, 4, 2, 3 }; 
-        else
-            return new int[] { 0, 6, 3, 7, 4, 2, 5, 1 }; 
+        return new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
     }
 
-    private void SpawnUnitsInRegions()
+    private void SpawnUnitsInRegions(int[] cards1, int[] cards2)
     {
         // 清空之前的单位
         foreach (Transform child in Units.transform)
@@ -195,101 +177,20 @@ public class BattleManager : MonoBehaviour
             {
                 unitGrids.Add(gridPos);
                 CreateDebugCube(300001, gridPos);
-              //  UnityEngine.Debug.Log("Lock " + gridPos + " for wall");
+                //  UnityEngine.Debug.Log("Lock " + gridPos + " for wall");
             }
         }
         occupiedGrids[300001] = unitGrids;
+        CreateCastleHUD(GameManager.Instance.GetPlayer(0), mapConfig.RegionHeroSide1[4]);
+        CreateCastleHUD(GameManager.Instance.GetPlayer(1), mapConfig.RegionHeroSide2[4]);
 
-        if (!isDebug)
-        {
-            int[] match = GetMatch();
-            // 在RegionSide1生成单位 (阵营1)
-            for (int i = 0; i < 8; i++)
-            {
-                GameManager.Instance.GetPlayer(match[i]).battleSide = i + 1;
-            }
-            var p = GameManager.Instance.GetPlayer(match[0]);
-            for (int i = 0; i < mapConfig.RegionSide1.Length; i++)
-                SpawnUnitsForRegion(p, i < 3 ? 500001 : 500002, i, mapConfig.RegionSide1[i].transform.position, 1, p.imgPath);
-            // 在RegionSide2生成单位 (阵营2)
-            p = GameManager.Instance.GetPlayer(match[1]);
-            for (int i = 0; i < mapConfig.RegionSide2.Length; i++)
-                SpawnUnitsForRegion(p, i < 3 ? 500001 : 500002, i, mapConfig.RegionSide2[i].transform.position, 2, p.imgPath);
-            p = GameManager.Instance.GetPlayer(match[2]);
-            for (int i = 0; i < mapConfig.RegionSide3.Length; i++)
-                SpawnUnitsForRegion(p, i < 3 ? 500001 : 500002, i, mapConfig.RegionSide3[i].transform.position, 3, p.imgPath);
-            p = GameManager.Instance.GetPlayer(match[3]);
-            for (int i = 0; i < mapConfig.RegionSide4.Length; i++)
-                SpawnUnitsForRegion(p, i < 3 ? 500001 : 500002, i, mapConfig.RegionSide4[i].transform.position, 4, p.imgPath);
-            p = GameManager.Instance.GetPlayer(match[4]);
-            for (int i = 0; i < mapConfig.RegionSide5.Length; i++)
-                SpawnUnitsForRegion(p, i < 3 ? 500001 : 500002, i, mapConfig.RegionSide5[i].transform.position, 5, p.imgPath);
-            p = GameManager.Instance.GetPlayer(match[5]);
-            for (int i = 0; i < mapConfig.RegionSide6.Length; i++)
-                SpawnUnitsForRegion(p, i < 3 ? 500001 : 500002, i, mapConfig.RegionSide6[i].transform.position, 6, p.imgPath);
-            p = GameManager.Instance.GetPlayer(match[6]);
-            for (int i = 0; i < mapConfig.RegionSide7.Length; i++)
-                SpawnUnitsForRegion(p, i < 3 ? 500001 : 500002, i, mapConfig.RegionSide7[i].transform.position, 7, p.imgPath);
-            p = GameManager.Instance.GetPlayer(match[7]);
-            for (int i = 0; i < mapConfig.RegionSide8.Length; i++)
-                SpawnUnitsForRegion(p, i < 3 ? 500001 : 500002, i, mapConfig.RegionSide8[i].transform.position, 8, p.imgPath);
+        //   SpawnHerosForRegion(GameManager.Instance.GetPlayer(0), mapConfig.RegionHeroSide1[4], new System.Tuple<int, int>(101008, 1), 1);
+        for (int i = 0; i < cards1.Length; i++)
+            SpawnHerosForRegion(GameManager.Instance.GetPlayer(0), i, mapConfig.RegionHeroSide1[i], new System.Tuple<int, int>(cards1[i], 1), 1);
 
-            var cards = GameManager.Instance.GetPlayer(match[0]).GetBattleCardList();
-            for (int i = 0; i < cards.Count && i < mapConfig.RegionHeroSide1.Length; i++)
-                if (cards[i] != null)
-                    SpawnHerosForRegion(GameManager.Instance.GetPlayer(match[0]), i, mapConfig.RegionHeroSide1[i], cards[i], 1);
-            cards = GameManager.Instance.GetPlayer(match[1]).GetBattleCardList();
-            for (int i = 0; i < cards.Count && i < mapConfig.RegionHeroSide2.Length; i++)
-                if (cards[i] != null)
-                    SpawnHerosForRegion(GameManager.Instance.GetPlayer(match[1]), i, mapConfig.RegionHeroSide2[i], cards[i], 2);
-            cards = GameManager.Instance.GetPlayer(match[2]).GetBattleCardList();
-            for (int i = 0; i < cards.Count && i < mapConfig.RegionHeroSide3.Length; i++)
-                if (cards[i] != null)
-                    SpawnHerosForRegion(GameManager.Instance.GetPlayer(match[2]), i, mapConfig.RegionHeroSide3[i], cards[i], 3);
-            cards = GameManager.Instance.GetPlayer(match[3]).GetBattleCardList();
-            for (int i = 0; i < cards.Count && i < mapConfig.RegionHeroSide4.Length; i++)
-                if (cards[i] != null)
-                    SpawnHerosForRegion(GameManager.Instance.GetPlayer(match[3]), i, mapConfig.RegionHeroSide4[i], cards[i], 4);
-            cards = GameManager.Instance.GetPlayer(match[4]).GetBattleCardList();
-            for (int i = 0; i < cards.Count && i < mapConfig.RegionHeroSide5.Length; i++)
-                if (cards[i] != null)
-                    SpawnHerosForRegion(GameManager.Instance.GetPlayer(match[4]), i, mapConfig.RegionHeroSide5[i], cards[i], 5);
-            cards = GameManager.Instance.GetPlayer(match[5]).GetBattleCardList();
-            for (int i = 0; i < cards.Count && i < mapConfig.RegionHeroSide6.Length; i++)
-                if (cards[i] != null)
-                    SpawnHerosForRegion(GameManager.Instance.GetPlayer(match[5]), i, mapConfig.RegionHeroSide6[i], cards[i], 6);
-            cards = GameManager.Instance.GetPlayer(match[6]).GetBattleCardList();
-            for (int i = 0; i < cards.Count && i < mapConfig.RegionHeroSide7.Length; i++)
-                if (cards[i] != null)
-                    SpawnHerosForRegion(GameManager.Instance.GetPlayer(match[6]), i, mapConfig.RegionHeroSide7[i], cards[i], 7);
-            cards = GameManager.Instance.GetPlayer(match[7]).GetBattleCardList();
-            for (int i = 0; i < cards.Count && i < mapConfig.RegionHeroSide8.Length; i++)
-                if (cards[i] != null)
-                    SpawnHerosForRegion(GameManager.Instance.GetPlayer(match[7]), i, mapConfig.RegionHeroSide8[i], cards[i], 8);                    
+        for (int i = 0; i < cards2.Length; i++)
+            SpawnHerosForRegion(GameManager.Instance.GetPlayer(1), i, mapConfig.RegionHeroSide2[i], new System.Tuple<int, int>(cards2[i], 2), 2);
 
-            CreateCastleHUD(GameManager.Instance.GetPlayer(match[0]), mapConfig.RegionHeroSide1[4]);
-            CreateCastleHUD(GameManager.Instance.GetPlayer(match[1]), mapConfig.RegionHeroSide2[4]);
-            CreateCastleHUD(GameManager.Instance.GetPlayer(match[2]), mapConfig.RegionHeroSide3[4]);
-            CreateCastleHUD(GameManager.Instance.GetPlayer(match[3]), mapConfig.RegionHeroSide4[4]);
-            CreateCastleHUD(GameManager.Instance.GetPlayer(match[4]), mapConfig.RegionHeroSide5[4]);
-            CreateCastleHUD(GameManager.Instance.GetPlayer(match[5]), mapConfig.RegionHeroSide6[4]);
-            CreateCastleHUD(GameManager.Instance.GetPlayer(match[6]), mapConfig.RegionHeroSide7[4]);
-            CreateCastleHUD(GameManager.Instance.GetPlayer(match[7]), mapConfig.RegionHeroSide8[4]);
-        }
-        else
-        {
-            GameManager.Instance.GetPlayer(0).banCount = 1;
-            GameManager.Instance.GetPlayer(1).banCount = 2;
-            //   SpawnHerosForRegion(GameManager.Instance.GetPlayer(0), mapConfig.RegionHeroSide1[4], new System.Tuple<int, int>(101008, 1), 1);
-            var heroList = new List<int> { 103007 };
-            for (int i = 0; i < heroList.Count; i++)
-                SpawnHerosForRegion(GameManager.Instance.GetPlayer(0), i, mapConfig.RegionHeroSide1[i], new System.Tuple<int, int>(heroList[i], 1), 1);
-
-            heroList = new List<int> { 101020,101020 };
-            for (int i = 0; i < heroList.Count; i++)
-                SpawnHerosForRegion(GameManager.Instance.GetPlayer(1), i, mapConfig.RegionHeroSide2[i], new System.Tuple<int, int>(heroList[i], 1), 2);
-
-        }
 
     }
 
@@ -384,9 +285,6 @@ public class BattleManager : MonoBehaviour
     // 创建血条HUD
     private void CreateCastleHUD(PlayerInfo p, GameObject castleSpawn)
     {
-        // 查找或创建Canvas
-        var canvas = FindObjectOfType<Canvas>();
-
         // 加载Hud预制体
         GameObject hudPrefab = Resources.Load<GameObject>("Prefabs/HudCastle");
 
@@ -396,11 +294,6 @@ public class BattleManager : MonoBehaviour
 
         // 获取ChessHUD组件
         var hud = hudObj.GetComponent<CastleHUD>();
-        if (hud == null)
-        {
-            Debug.LogError("CastleHUD component not found on Hud.prefab");
-            return;
-        }
 
         // 初始化血条显示
         hud.Init(p, castleSpawn);
@@ -763,185 +656,50 @@ public class BattleManager : MonoBehaviour
 
     public void OnUnitDying(Chess dieUnit, int killerPlayerId)
     {
-        if(killerPlayerId >= 0 && dieUnit.isHero)
+        if (killerPlayerId >= 0 && dieUnit.isHero)
             killMark[killerPlayerId]++;
         // 从chessList中移除死亡单位
         chessList.Remove(dieUnit);
 
         gameFinish = false;
         hasWin = false;
-        if (mapConfig.TeamMode == 0)
-        {
-            // 检查所有阵营是否还有存活单位
-            // 创建一个数组来统计每个阵营是否有存活单位，数组索引对应阵营编号减1
-            bool[] sideHasUnits = new bool[8];
-            int aliveSideCount = 0;
+        // 检查所有阵营是否还有存活单位
+        // 创建一个数组来统计每个阵营是否有存活单位，数组索引对应阵营编号减1
+        bool[] sideHasUnits = new bool[8];
+        int aliveSideCount = 0;
 
-            foreach (var chessComponent in chessList)
+        foreach (var chessComponent in chessList)
+        {
+            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
             {
-                if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
+                int sideIndex = chessComponent.side - 1;
+                if (sideIndex >= 0 && sideIndex < sideHasUnits.Length)
                 {
-                    int sideIndex = chessComponent.side - 1;
-                    if (sideIndex >= 0 && sideIndex < sideHasUnits.Length)
+                    if (!sideHasUnits[sideIndex])
                     {
-                        if (!sideHasUnits[sideIndex])
-                        {
-                            sideHasUnits[sideIndex] = true;
-                            aliveSideCount++;
-                        }
+                        sideHasUnits[sideIndex] = true;
+                        aliveSideCount++;
                     }
                 }
-            }
-
-            UnityEngine.Debug.Log($"id:{dieUnit.id} dieUnit.side:{dieUnit.side} 存活阵营数:{aliveSideCount}");
-            // 如果只剩一个阵营有存活单位，显示重启按钮
-            if (aliveSideCount == 4)
-            {
-                int[] match = GetMatch();
-                for (int i = 0; i < match.Length; i++)
-                {
-                    if (sideHasUnits[i])
-                        killMark[match[i]] = 10;
-                    else
-                        killMark[match[i]] = Math.Min(5, killMark[match[i]]);
-
-                    GameManager.Instance.GetPlayer(match[i]).onBattleResult(sideHasUnits[i], killMark[match[i]]);
-                }
-                gameFinish = true;
-                hasWin = sideHasUnits[0];
             }
         }
-        else if (mapConfig.TeamMode == 1)
+
+        UnityEngine.Debug.Log($"id:{dieUnit.id} dieUnit.side:{dieUnit.side} 存活阵营数:{aliveSideCount}");
+        // 如果只剩一个阵营有存活单位，显示重启按钮
+        if (aliveSideCount <= 4)
         {
-            // 团队模式逻辑：检查两个阵营是否还有存活单位
-            bool team1HasUnits = false; // 阵营1、3、4
-            bool team2HasUnits = false; // 阵营2、5、6
-
-            foreach (var chessComponent in chessList)
+            int[] match = GetMatch();
+            for (int i = 0; i < match.Length; i++)
             {
-                if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
-                {
-                    if (chessComponent.side == 1 || chessComponent.side == 3 || chessComponent.side == 5 || chessComponent.side == 7)
-                    {
-                        team1HasUnits = true;
-                    }
-                    else if (chessComponent.side == 2 || chessComponent.side == 4 || chessComponent.side == 6 || chessComponent.side == 8)
-                    {
-                        team2HasUnits = true;
-                    }
-                }
+                if (sideHasUnits[i])
+                    killMark[match[i]] = 10;
+                else
+                    killMark[match[i]] = Math.Min(5, killMark[match[i]]);
+
+                GameManager.Instance.GetPlayer(match[i]).onBattleResult(sideHasUnits[i], killMark[match[i]]);
             }
-
-            UnityEngine.Debug.Log($"id:{dieUnit.id} dieUnit.side:{dieUnit.side} 团队1存活:{team1HasUnits} 团队2存活:{team2HasUnits}");
-            // 如果一个阵营被全灭，另一个阵营获胜
-            if (!team1HasUnits || !team2HasUnits)
-            {
-                // 通知玩家战斗结果
-                int[] match = GetMatch();
-                for (int i = 0; i < match.Length; i++)
-                {
-                    int playerSide = i + 1; // 假设match索引对应阵营1-6
-                    bool isTeam1 = playerSide == 1 || playerSide == 3 || playerSide == 5 || playerSide == 7;
-                    bool isWinner = (isTeam1 && team1HasUnits) || (!isTeam1 && team2HasUnits);
-
-                    if (isWinner)
-                        killMark[match[i]] = 10;
-                    else
-                        killMark[match[i]] = Math.Min(5, killMark[match[i]]);
-
-                    GameManager.Instance.GetPlayer(match[i]).onBattleResult(isWinner, killMark[match[i]]);
-                }
-                gameFinish = true;
-                hasWin = team1HasUnits;
-            }
-        }
-       else if (mapConfig.TeamMode == 2)
-        {
-            // 检查所有阵营是否还有存活单位
-            // 创建一个数组来统计每个阵营是否有存活单位，数组索引对应阵营编号减1
-            bool[] sideHasUnits = new bool[8];
-            int aliveSideCount = 0;
-
-            foreach (var chessComponent in chessList)
-            {
-                if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
-                {
-                    int sideIndex = chessComponent.side - 1;
-                    if (sideIndex >= 0 && sideIndex < sideHasUnits.Length)
-                    {
-                        if (!sideHasUnits[sideIndex])
-                        {
-                            sideHasUnits[sideIndex] = true;
-                            aliveSideCount++;
-                        }
-                    }
-                }
-            }
-
-            // 记录死亡顺序
-            int dieSideIndex = dieUnit.side - 1;
-            if (dieSideIndex >= 0 && dieSideIndex < 8)
-            {
-                // 检查该阵营是否刚刚被消灭
-                if (sideHasUnits[dieSideIndex] == false && deathOrder[dieSideIndex] == 0)
-                {
-                    deathCount++;
-
-                    deathOrder[dieSideIndex] = deathCount;
-                    UnityEngine.Debug.Log($"阵营 {dieUnit.side} 被消灭，死亡顺序: {deathCount}");
-                }
-            }
-
-            UnityEngine.Debug.Log($"id:{dieUnit.id} dieUnit.side:{dieUnit.side} 存活阵营数:{aliveSideCount}");
-
-            // 如果只剩一个阵营有存活单位，计算分数并结束游戏
-            if (aliveSideCount == 1)
-            {
-                int winnerSide = -1;
-                for (int i = 0; i < sideHasUnits.Length; i++)
-                {
-                    if (sideHasUnits[i])
-                    {
-                        winnerSide = i + 1; // 阵营编号从1开始
-                        break;
-                    }
-                }
-
-                // 计算分数：存活的阵营得1分，死亡顺序越晚分数越高
-                int[] scores = new int[8];
-                for (int i = 0; i < scores.Length; i++)
-                {
-                    if (i + 1 == winnerSide)
-                        scores[i] = 10; // 胜利者得10分
-                    else if (deathOrder[i] == 7)
-                        scores[i] = 7;
-                    else if (deathOrder[i] == 6)
-                        scores[i] = 5;
-                    else if (deathOrder[i] == 5)
-                        scores[i] = 5;
-                    else if (deathOrder[i] == 4)
-                        scores[i] = 3;
-                    else if (deathOrder[i] == 3)
-                        scores[i] = 2;
-                    else if (deathOrder[i] == 2)
-                        scores[i] = 1;
-                }
-
-                // 通知玩家战斗结果
-                int[] match = GetMatch();
-                for (int i = 0; i < match.Length; i++)
-                {
-                    int playerId = match[i];
-                    int playerSide = i + 1; // 假设match索引对应阵营1-6
-                    bool isWinner = (playerSide == winnerSide);
-
-                    killMark[playerId] = scores[i];
-                    GameManager.Instance.GetPlayer(playerId).onBattleResult(isWinner, killMark[playerId]);
-                }
-
-                gameFinish = true;
-                hasWin = sideHasUnits[0]; // 假设阵营1是玩家阵营
-            }
+            gameFinish = true;
+            hasWin = sideHasUnits[0];
         }
     }
 

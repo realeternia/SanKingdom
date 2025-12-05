@@ -13,7 +13,6 @@ public class Chess : MonoBehaviour
     public int playerId;
 
     public int maxHp = 100;  // 最大生命值
-    private Canvas canvas;
     private ChessHUD hud;
     public int side;
     public bool isHero;
@@ -157,9 +156,6 @@ public class Chess : MonoBehaviour
     // 创建血条HUD
     private void CreateHUD()
     {
-        // 查找或创建Canvas
-        canvas = FindObjectOfType<Canvas>();
-
         // 加载Hud预制体
         GameObject hudPrefab = Resources.Load<GameObject>(isHero || isFakeHero ? "Prefabs/Hud" : "Prefabs/HudSmall");
 
@@ -169,11 +165,6 @@ public class Chess : MonoBehaviour
 
         // 获取ChessHUD组件
         hud = hudObj.GetComponent<ChessHUD>();
-        if (hud == null)
-        {
-            Debug.LogError("ChessHUD component not found on Hud.prefab");
-            return;
-        }
 
         // 设置属性
         hud.chessUnit = this;

@@ -54,6 +54,12 @@ public class CityPanelManager : MonoBehaviour
             // 实例化预制件并挂载到父对象下
             currentCityView = Instantiate(cityViewPrefab, transform);
             currentCityView.transform.localScale = Vector3.one;
+            currentCityView.transform.Find("ButtonArmy").gameObject.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                PanelManager.Instance.HideCity();
+                PanelManager.Instance.HideWorld();
+                BattleManager.Instance.BattleBegin(new int[] { 101013 }, new int[] { 101013 });
+            });
         }
         else
         {
