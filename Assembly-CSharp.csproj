@@ -109,6 +109,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitFood.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BuffDamagedAddRate.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\MissileComp.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitArea.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackMultiArrow.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="Assets\Resources\Scripts\MapConfig.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHelpAidBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackRunCross.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityDetail.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SoldierConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackSpinAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\AttrInfo.cs" />
