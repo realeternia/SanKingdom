@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
+using System;
 
 public class WorldManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class WorldManager : MonoBehaviour
     public CityDetail cityDetail;
     public Button btnRank;
     public Button btnCity;
+    private List<WorldPieceControl> worldPieces = new List<WorldPieceControl>();
 
     // Start is called before the first frame update
     void Start()
@@ -111,6 +113,7 @@ public class WorldManager : MonoBehaviour
                 }
 
                 pieceControl.InitForce();
+                worldPieces.Add(pieceControl);
                 
                 Debug.Log($"成功加载UI地图: {worldConfig.Cname} ({worldConfig.Name})");
             }
@@ -123,39 +126,15 @@ public class WorldManager : MonoBehaviour
 
     public void OnPieceClick(int pieceId)
     {
-        // 空值检查：cityDetail和cityDetailObj
-        if (cityDetail == null || cityDetailObj == null)
-        {
-            Debug.LogError("WorldManager.OnPieceClick: cityDetail or cityDetailObj is null");
-            return;
-        }
-        
-        // 参数验证
-        if (pieceId <= 0)
-        {
-            Debug.LogError("WorldManager.OnPieceClick: Invalid pieceId: " + pieceId);
-            return;
-        }
-        
-        // 激活城市详情面板并设置城市信息
         cityDetailObj.SetActive(true);
         cityDetail.SetCityDetail(pieceId);
-
-        // 获取城市配置并检查
+        // 高亮显示点击的地块
         var cityCfg = WorldConfig.GetConfig(pieceId);
-        if (cityCfg != null && btnCity != null)
+        foreach (var piece in worldPieces)
         {
-            var btnText = btnCity.gameObject.GetComponentInChildren<TMP_Text>();
-            if (btnText != null)
-            {
-                btnText.text = "进入" + cityCfg.Cname;
-            }
-            btnCity.gameObject.SetActive(true);
+            piece.Shine(cityCfg.WorldNearIds != null && Array.Exists(cityCfg.WorldNearIds, x => x == piece.pieceId));
         }
-        else if (btnCity != null)
-        {
-            Debug.LogError("WorldManager.OnPieceClick: WorldConfig not found for pieceId: " + pieceId);
-            btnCity.gameObject.SetActive(false);
-        }
+        btnCity.gameObject.GetComponentInChildren<TMP_Text>().text = "进入" + cityCfg.Cname;
+        btnCity.gameObject.SetActive(true);
     }
 }

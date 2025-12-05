@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
+using TMPro;
 
 public class WorldPieceControl : MonoBehaviour
 {
     public int pieceId;
     public Image pieceImage;
     public WorldManager worldManager;
+    public TMP_Text pieceName;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,6 +41,19 @@ public class WorldPieceControl : MonoBehaviour
         worldManager.OnPieceClick(pieceId);
     }
 
+    private Color defaultColor;
+    public void Shine(bool isShine)
+    {
+        if (isShine)
+        {
+            pieceImage.color = Color.white;
+        }
+        else
+        {
+            pieceImage.color = defaultColor;
+        }   
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -50,6 +65,9 @@ public class WorldPieceControl : MonoBehaviour
         // 获取颜色字符串（格式为"R,G,B"）
         var pieceCfg = WorldConfig.GetConfig(pieceId);
         SetColor(pieceCfg.ForceId);
+
+        // 设置名称
+        pieceName.text = pieceCfg.Cname;
     }
 
     private void SetColor(int forceId)
@@ -84,6 +102,7 @@ public class WorldPieceControl : MonoBehaviour
             
             // 设置颜色，添加alpha值为1（不透明）
             pieceImage.color = new Color(r, g, b, 1f);
+            defaultColor = pieceImage.color;
         }
     }
 }
