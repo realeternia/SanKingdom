@@ -56,9 +56,10 @@ public class CityPanelManager : MonoBehaviour
             currentCityView.transform.localScale = Vector3.one;
             currentCityView.transform.Find("ButtonArmy").gameObject.GetComponent<Button>().onClick.AddListener(() =>
             {
-                PanelManager.Instance.HideCity();
-                PanelManager.Instance.HideWorld();
-                BattleManager.Instance.BattleBegin(new int[] { 101013 }, new int[] { 101013 });
+                PanelManager.Instance.ShowPopCitySelectPanel(cityId);
+                // PanelManager.Instance.HideCity();
+                // PanelManager.Instance.HideWorld();
+                // BattleManager.Instance.BattleBegin(new int[] { 101013 }, new int[] { 101013 });
             });
         }
         else

@@ -25,4 +25,16 @@ public class SaveCityData
     public int wall; //城防
     public int leader;
     public List<int> members;
+
+    public int GetHeroCount()
+    {
+        int heroCount = 0;
+        foreach (var member in members)
+        {
+            heroCount++;
+        }
+        if (leader != 0)
+            heroCount++;
+        return heroCount;
+    }
 }
