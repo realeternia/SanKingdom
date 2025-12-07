@@ -360,10 +360,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99e210ee5a5885242b30155b92cd7b4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  popCitySelectPanelManager: {fileID: 0}
   cityName: {fileID: 4134762802489872042}
   textOwner: {fileID: 1626829127974984857}
   textSoldier: {fileID: 3507868289881433626}
   textHeroCount: {fileID: 8429015334602141733}
+  backgroundImage: {fileID: 2665093072163782755}
 --- !u!1 &7602764936107868028
 GameObject:
   m_ObjectHideFlags: 0

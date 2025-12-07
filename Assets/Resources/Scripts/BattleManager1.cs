@@ -686,7 +686,7 @@ public class BattleManager : MonoBehaviour
 
         UnityEngine.Debug.Log($"id:{dieUnit.id} dieUnit.side:{dieUnit.side} 存活阵营数:{aliveSideCount}");
         // 如果只剩一个阵营有存活单位，显示重启按钮
-        if (aliveSideCount <= 4)
+        if (aliveSideCount <= 1)
         {
             int[] match = GetMatch();
             for (int i = 0; i < match.Length; i++)

@@ -26,15 +26,15 @@ public class SaveCityData
     public int leader;
     public List<int> members;
 
-    public int GetHeroCount()
+    public List<int> GetHeroList()
     {
-        int heroCount = 0;
+        List<int> heroList = new List<int>();
         foreach (var member in members)
         {
-            heroCount++;
+            heroList.Add(member);
         }
         if (leader != 0)
-            heroCount++;
-        return heroCount;
+            heroList.Add(leader);
+        return heroList;    
     }
 }

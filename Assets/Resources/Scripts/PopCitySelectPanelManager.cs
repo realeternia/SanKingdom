@@ -7,12 +7,14 @@ using TMPro;
 
 public class PopCitySelectPanelManager : MonoBehaviour
 {
+    private int mCityId;
     public ScrollRect scrollRect;
     public GameObject rankParent;
     public GameObject cellPrefab; // RankCell预制体引用
 
     public Button closeBtn;
     public Button selectBtn;
+    private PopCitySelectPanelCell lastSelectedCell;
 
 
     // Start is called before the first frame update
@@ -23,12 +25,27 @@ public class PopCitySelectPanelManager : MonoBehaviour
             PanelManager.Instance.HidePopCitySelectPanel();
           //  CardShopManager.Instance.OnShow();
         });
+        selectBtn.onClick.AddListener(() =>
+        {
+            if (lastSelectedCell != null)
+            {
+                PanelManager.Instance.HidePopCitySelectPanel();
+                PanelManager.Instance.HideCity();
+                PanelManager.Instance.HideWorld();
+
+                var myList = GameManager.Instance.GetCity(mCityId).GetHeroList();
+                var enemyList = GameManager.Instance.GetCity(lastSelectedCell.cityId).GetHeroList();
+
+                BattleManager.Instance.BattleBegin(myList.ToArray(), enemyList.ToArray());
+            }
+        });
 
     }
 
     // 加载英雄排名
     private void Init(int cityId)
     {
+        mCityId = cityId;
         // 清除现有的子物体
         foreach (Transform child in rankParent.transform)
         {
@@ -51,6 +68,7 @@ public class PopCitySelectPanelManager : MonoBehaviour
                 cell.transform.localScale = Vector3.one;
                 // 获取PopCitySelectPanelCell组件
                 PopCitySelectPanelCell cellInfo = cell.GetComponent<PopCitySelectPanelCell>();
+                cellInfo.popCitySelectPanelManager = this;
                 cellInfo.Init(connectCityId);
                 itemCount++;
             }
@@ -72,19 +90,18 @@ public class PopCitySelectPanelManager : MonoBehaviour
         }
     }
 
-    public void OnSelectHero(RankCellInfo cellInfo)
+    public void OnSelectItem(PopCitySelectPanelCell cellInfo)
     {
-        // 取消上次选中的英雄
-        // if (lastSelectedHero != null && lastSelectedHero != cellInfo)
-        // {
-        //     lastSelectedHero.heroPic.gameObject.SetActive(false);
-        // }
+        // 取消上次选中的城市
+        if (lastSelectedCell != null && lastSelectedCell != cellInfo)
+        {
+            lastSelectedCell.OnSelect(false);
+        }
         
-        // // 选中当前英雄
-        // cellInfo.heroPic.gameObject.SetActive(true);
-        
-        // // 更新缓存的上次选中英雄
-        // lastSelectedHero = cellInfo;
+        // 选中当前城市
+        cellInfo.OnSelect(true);
+        // 更新当前选中的单元格引用
+        lastSelectedCell = cellInfo;
     }
 
     public void OnShow(int cityId)
