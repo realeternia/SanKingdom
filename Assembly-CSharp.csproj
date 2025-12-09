@@ -60,8 +60,10 @@
     <Analyzer Include="D:\Unity\2022.3.62f3\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveData.cs" />
     <Compile Include="Assets\Resources\Scripts\BGMPlayer.cs" />
+    <Compile Include="Assets\Resources\Scripts\PopResultPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitAround.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillManager.cs" />
@@ -94,6 +96,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\BuffSpeedDown.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BuffLock.cs" />
     <Compile Include="Assets\Resources\Scripts\HeroSelectionTool.cs" />
+    <Compile Include="Assets\Resources\Scripts\PopResultPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\WorldPieceControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ConfigManager.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleResultCellControl.cs" />
@@ -136,6 +139,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitSoldierShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ItemConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\SideInfo.cs" />
+    <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillModifySummonTime.cs" />
     <Compile Include="Assets\Resources\Scripts\ItemDetail.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />

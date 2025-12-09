@@ -38,7 +38,7 @@ public class CityPanelManager : MonoBehaviour
         LoadCityView(cityCfg.ViewPrefab);
         cityDetail.SetCityDetail(cityId);
     }
-    
+
     private void LoadCityView(string viewPrefabPath)
     {
         // 先销毁当前的城市视图（如果存在）
@@ -57,9 +57,23 @@ public class CityPanelManager : MonoBehaviour
             currentCityView.transform.Find("ButtonArmy").gameObject.GetComponent<Button>().onClick.AddListener(() =>
             {
                 PanelManager.Instance.ShowPopCitySelectPanel(cityId);
-                // PanelManager.Instance.HideCity();
-                // PanelManager.Instance.HideWorld();
-                // BattleManager.Instance.BattleBegin(new int[] { 101013 }, new int[] { 101013 });
+            });
+            currentCityView.transform.Find("ButtonGate").gameObject.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                PanelManager.Instance.ShowPopResultPanel("fix2.mp4");
+            });
+            currentCityView.transform.Find("ButtonTian").gameObject.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                PanelManager.Instance.ShowPopResultPanel("harve.mp4");
+            });
+            currentCityView.transform.Find("ButtonYa").gameObject.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                PanelManager.Instance.ShowPopResultPanel("fix2.mp4");
+            });
+
+            currentCityView.transform.Find("ButtonJishi").gameObject.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                PanelManager.Instance.ShowPopResultPanel("shop2.mp4");
             });
         }
         else
