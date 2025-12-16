@@ -27,7 +27,7 @@ public class PanelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       // ShowBag();
+        ShowPick();
     }
 
     public void ShowWorld()
@@ -136,9 +136,13 @@ public class PanelManager : MonoBehaviour
 
     public void ShowPick()
     {
-      //  GameManager.Instance.PlaySound("Sounds/deck");
+        //  GameManager.Instance.PlaySound("Sounds/deck");
+        if (pickPanel == null)
+        {
+            var pickPanelPrefab = Resources.Load<GameObject>("Prefabs/Panels/PickPanel");
+            pickPanel = Instantiate(pickPanelPrefab, transform);
+        }
         pickPanel.SetActive(true);
-
         ChangePanelCount(pickPanel, true);
     }
 
@@ -148,6 +152,8 @@ public class PanelManager : MonoBehaviour
         pickPanel.SetActive(false);
 
         ChangePanelCount(pickPanel, false);
+        GameObject.Destroy(pickPanel);
+        pickPanel = null;
     }
 
     public void ShowPopCitySelectPanel(int cityId)

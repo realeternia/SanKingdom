@@ -46,7 +46,6 @@ public class PickPanelControl : MonoBehaviour
         refreshBtn.gameObject.SetActive(false);
 
         StartCoroutine(DelaySetMode());
-        PanelManager.Instance.ShowPick();
         if(GameManager.Instance.IsGameSaveExist())
         {
             loadGamePanel.SetActive(true);
