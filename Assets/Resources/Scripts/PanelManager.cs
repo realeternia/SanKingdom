@@ -17,6 +17,7 @@ public class PanelManager : MonoBehaviour
     public GameObject worldPanel;
     public GameObject cityPanel;
     public GameObject popCitySelectPanel;
+    public GameObject popHeroSelectPanel;
     public GameObject popResultPanel;
 
 
@@ -172,6 +173,24 @@ public class PanelManager : MonoBehaviour
         popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnHide();
 
         ChangePanelCount(popCitySelectPanel, false);
+    }
+
+    public void ShowPopHeroSelectPanel(int cityId)
+    {
+        GameManager.Instance.PlaySound("Sounds/deck");
+        popHeroSelectPanel.SetActive(true);
+        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(cityId);
+
+        ChangePanelCount(popHeroSelectPanel, true);
+    }
+
+    public void HidePopHeroSelectPanel()
+    {
+        GameManager.Instance.PlaySound("Sounds/deck");
+        popHeroSelectPanel.SetActive(false);
+        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnHide();
+
+        ChangePanelCount(popHeroSelectPanel, false);
     }
 
     public void ShowPopResultPanel(string path)

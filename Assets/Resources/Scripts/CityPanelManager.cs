@@ -73,7 +73,8 @@ public class CityPanelManager : MonoBehaviour
 
             currentCityView.transform.Find("ButtonJishi").gameObject.GetComponent<Button>().onClick.AddListener(() =>
             {
-                PanelManager.Instance.ShowPopResultPanel("shop2.mp4");
+                PanelManager.Instance.ShowPopHeroSelectPanel(cityId);
+                //PanelManager.Instance.ShowPopResultPanel("shop2.mp4");
             });
         }
         else
