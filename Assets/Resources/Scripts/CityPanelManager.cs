@@ -58,22 +58,25 @@ public class CityPanelManager : MonoBehaviour
             {
                 PanelManager.Instance.ShowPopCitySelectPanel(cityId);
             });
-            currentCityView.transform.Find("ButtonGate").gameObject.GetComponent<Button>().onClick.AddListener(() =>
+
+            foreach (var buildingCfg in CityBuildingConfig.ConfigList)
             {
-                PanelManager.Instance.ShowPopResultPanel("fix2.mp4");
-            });
-            currentCityView.transform.Find("ButtonTian").gameObject.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                PanelManager.Instance.ShowPopResultPanel("harve.mp4");
-            });
-            currentCityView.transform.Find("ButtonYa").gameObject.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                PanelManager.Instance.ShowPopResultPanel("fix2.mp4");
-            });
+                var node = currentCityView.transform.Find(buildingCfg.Name);
+                if (node == null)
+                    continue;
+                node.gameObject.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList().ToArray();
+                    string[] attrs = buildingCfg.Attrs;
+                    PanelManager.Instance.ShowPopHeroSelectPanel(heroList, attrs);
+                    // PanelManager.Instance.ShowPopResultPanel(buildingCfg.Mp4);
+                });
+            }
 
             currentCityView.transform.Find("ButtonJishi").gameObject.GetComponent<Button>().onClick.AddListener(() =>
             {
-                PanelManager.Instance.ShowPopHeroSelectPanel(cityId);
+                // 从城市配置中获取英雄列表
+
                 //PanelManager.Instance.ShowPopResultPanel("shop2.mp4");
             });
         }

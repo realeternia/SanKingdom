@@ -175,11 +175,11 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(popCitySelectPanel, false);
     }
 
-    public void ShowPopHeroSelectPanel(int cityId)
+    public void ShowPopHeroSelectPanel(int[] heroList, string[] attrs)
     {
         GameManager.Instance.PlaySound("Sounds/deck");
         popHeroSelectPanel.SetActive(true);
-        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(cityId);
+        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(heroList, attrs);
 
         ChangePanelCount(popHeroSelectPanel, true);
     }

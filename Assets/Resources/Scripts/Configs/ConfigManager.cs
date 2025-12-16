@@ -29,6 +29,7 @@ public static class ConfigManager
         JobConfig.Load();
         WorldConfig.Load();
         ForceConfig.Load();
+        CityBuildingConfig.Load();
 
         ConfigManager.PostModify();      
 

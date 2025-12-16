@@ -14,6 +14,9 @@ public class PopHeroSelectPanelManager : MonoBehaviour
 
     public Button closeBtn;
     public Button selectBtn;
+    public Image heroHead;
+    public TMP_Text textAttr1;
+    public TMP_Text textAttr2;
     private PopHeroSelectPanelCell lastSelectedCell;
 
 
@@ -35,20 +38,37 @@ public class PopHeroSelectPanelManager : MonoBehaviour
 
     }
 
-    // 加载英雄排名
-    private void Init(int cityId)
+    private string GetAttrCName(string attr)
     {
-        mCityId = cityId;
+        switch (attr)
+        {
+            case "Str":
+                return "武力";
+            case "Inte":
+                return "智力";
+            case "Fair":
+                return "政治";
+            default:
+                return attr;
+        }
+    }
+
+    // 加载英雄排名
+    private void Init(int[] heroList, string[] attrs)
+    {
         // 清除现有的子物体
         foreach (Transform child in rankParent.transform)
         {
             Destroy(child.gameObject);
         }
+
+        // 初始化属性文本
+        textAttr1.text = GetAttrCName(attrs[0]);
+        textAttr2.text = GetAttrCName(attrs[1]);
         
         int itemCount = 0;
-        var myList = GameManager.Instance.GetCity(mCityId).GetHeroList();
-
-        foreach(var heroId in myList)
+        PopHeroSelectPanelCell firstItem = null;
+        foreach(var heroId in heroList)
         {
             // 实例化RankCell
             GameObject cell = Instantiate(cellPrefab, rankParent.transform);
@@ -56,10 +76,19 @@ public class PopHeroSelectPanelManager : MonoBehaviour
             // 获取PopHeroSelectPanelCell组件
             PopHeroSelectPanelCell cellInfo = cell.GetComponent<PopHeroSelectPanelCell>();
             cellInfo.popHeroSelectPanelManager = this;
-            cellInfo.Init(heroId);
+            cellInfo.Init(heroId, attrs);
             itemCount++;
+            if (firstItem == null)
+            {
+                firstItem = cellInfo;
+            }
         }
 
+        // 选中第一个城市
+        if (firstItem != null)
+        {
+            OnSelectItem(firstItem);
+        }
 
         // Get the RectTransform components
          RectTransform rankParentRect = rankParent.GetComponent<RectTransform>();
@@ -87,13 +116,15 @@ public class PopHeroSelectPanelManager : MonoBehaviour
         
         // 选中当前城市
         cellInfo.OnSelect(true);
+        var icon = HeroConfig.GetConfig(cellInfo.heroId).Icon;
+        heroHead.sprite = Resources.Load<Sprite>("Skins/" + icon);
         // 更新当前选中的单元格引用
         lastSelectedCell = cellInfo;
     }
 
-    public void OnShow(int cityId)
+    public void OnShow(int[] heroList, string[] attrs)
     {
-        Init(cityId);
+        Init(heroList, attrs);
     }
 
     public void OnHide()
