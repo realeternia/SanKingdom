@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
+using System.Linq;
 
 public class CityDevPanelManager : MonoBehaviour
 {
@@ -57,7 +58,6 @@ public class CityDevPanelManager : MonoBehaviour
 
         Debug.Log("SetCityId: " + cityId + " " + buildingId);
 
-        var cityData = GameManager.Instance.GetCity(cityId);
         var buildingCfg = CityBuildingConfig.GetConfig(buildingId);
                         buildingText.text = buildingCfg.Cname;
         int devIndex = 0;
@@ -82,6 +82,31 @@ public class CityDevPanelManager : MonoBehaviour
         }
     }
 
+    private string GetAttrName(string type)
+    {
+        switch (type.ToLower())
+        {
+            case "archgold":
+                return "商业";
+            case "archfood":
+                return "农业";
+            case "archpeople":
+                return "人口";
+            case "gold":
+                return "金钱";
+            case "food":
+                return "粮食";
+            case "soldier":
+                return "士兵";
+            case "secure":
+                return "治安";
+            case "wall":
+                return "城防";
+            default:
+                return "";
+        }
+    }
+
     public void OnSelectItem(CityDevPanelCell cellInfo)
     {
         // 取消上次选中的城市
@@ -96,13 +121,28 @@ public class CityDevPanelManager : MonoBehaviour
         lastSelectedCell = cellInfo;
 
         var devCfg = CityDevConfig.GetConfig(cellInfo.devId);
+        var cityData = GameManager.Instance.GetCity(cityId);
 
-       // attr1Text.text = devCfg.Attr1Name;
-      //  attr2Text.text = devCfg.Attr2Name;
-      //  attrVal1Text.text = devCfg.Attr1Val.ToString();
-      //  attrVal2Text.text = devCfg.Attr2Val.ToString();
+        if(devCfg.DevAttrs.Length > 0)
+        {
+            attr1Text.text =  GetAttrName(devCfg.DevAttrs[0]);
+            attrVal1Text.text = cityData.GetAttr(devCfg.DevAttrs[0]).ToString();
+        }
+        if(devCfg.DevAttrs.Length > 1)
+        {
+            attr2Text.gameObject.SetActive(true);
+            attrVal2Text.gameObject.SetActive(true);
+            attr2Text.text =  GetAttrName(devCfg.DevAttrs[1]);
+            attrVal2Text.text = cityData.GetAttr(devCfg.DevAttrs[1]).ToString();
+        }
+        else
+        {
+            attr2Text.gameObject.SetActive(false);
+            attrVal2Text.gameObject.SetActive(false);
+        }
+
         attrDesText.text = devCfg.Des;
-        goldCostText.text = devCfg.GoldCost.ToString();
+        goldCostText.text = devCfg.GoldCost.ToString() + "/" + cityData.gold.ToString();
 
         heroSelect.SetDevId(cityId, cellInfo.devId);
     }    

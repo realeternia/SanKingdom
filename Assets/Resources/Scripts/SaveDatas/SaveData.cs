@@ -37,4 +37,29 @@ public class SaveCityData
             heroList.Add(leader);
         return heroList;    
     }
+
+    public int GetAttr(string type)
+    {
+        switch (type.ToLower())
+        {
+            case "archgold":
+                return archGold;
+            case "archfood":
+                return archFood;
+            case "archpeople":
+                return archPeople;
+            case "gold":
+                return gold;
+            case "food":
+                return food;
+            case "soldier":
+                return soldier;
+            case "secure":
+                return secure;
+            case "wall":
+                return wall;
+            default:
+                return 0;
+        }
+    }
 }

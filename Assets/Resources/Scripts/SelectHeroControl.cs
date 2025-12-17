@@ -9,19 +9,13 @@ public class SelectHeroControl : MonoBehaviour
     private int cityId;
     private int devId;
     public Image[] heroHeads;
+    public int[] heroIds;
     public Button confirmButton;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < heroHeads.Length; i++)
-        {
-            heroHeads[i].gameObject.SetActive(false);
-        }
-        heroHeads[0].gameObject.SetActive(true);
-        heroHeads[0].sprite = Resources.Load<Sprite>("Skins/moren");
-
         confirmButton.onClick.AddListener(() =>
         {
             int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList().ToArray();
@@ -29,6 +23,7 @@ public class SelectHeroControl : MonoBehaviour
             string[] attrs = devCfg.Attrs;
             PanelManager.Instance.ShowPopHeroSelectPanel(heroList, attrs, (selectedHeroIds) =>
             {
+                heroIds = selectedHeroIds.ToArray();
                 for (int i = 0; i < heroHeads.Length; i++)
                 {
                     if (i < selectedHeroIds.Count)
@@ -41,6 +36,11 @@ public class SelectHeroControl : MonoBehaviour
                     {
                         heroHeads[i].gameObject.SetActive(false);
                     }
+                }
+                if (heroIds.Length == 0)
+                {
+                    heroHeads[0].gameObject.SetActive(true);
+                    heroHeads[0].sprite = Resources.Load<Sprite>("Skins/moren");
                 }
             });
           //  PanelManager.Instance.ShowPopResultPanel(devCfg.Mp4);
@@ -57,5 +57,14 @@ public class SelectHeroControl : MonoBehaviour
     {
         this.cityId = cityId;
         this.devId = devId;
+
+        for (int i = 0; i < heroHeads.Length; i++)
+        {
+            heroHeads[i].gameObject.SetActive(false);
+        }
+        heroHeads[0].gameObject.SetActive(true);
+        heroHeads[0].sprite = Resources.Load<Sprite>("Skins/moren");
+
+        heroIds = new int[0];
     }
 }
