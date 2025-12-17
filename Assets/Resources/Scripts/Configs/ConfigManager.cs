@@ -30,7 +30,8 @@ public static class ConfigManager
         WorldConfig.Load();
         ForceConfig.Load();
         CityBuildingConfig.Load();
-
+        CityDevConfig.Load();
+        
         ConfigManager.PostModify();      
 
         UnityEngine.Debug.Log("ConfigManager Init fin");

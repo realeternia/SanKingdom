@@ -61,14 +61,15 @@ public class CityPanelManager : MonoBehaviour
 
             foreach (var buildingCfg in CityBuildingConfig.ConfigList)
             {
-                var node = currentCityView.transform.Find(buildingCfg.Name);
+                var node = currentCityView.transform.Find(buildingCfg.BtnName);
                 if (node == null)
                     continue;
                 node.gameObject.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList().ToArray();
-                    string[] attrs = buildingCfg.Attrs;
-                    PanelManager.Instance.ShowPopHeroSelectPanel(heroList, attrs);
+                    PanelManager.Instance.ShowCityBuilding(cityId, buildingCfg.Id);
+                  //  int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList().ToArray();
+                  //  string[] attrs = buildingCfg.Attrs;
+                  //  PanelManager.Instance.ShowPopHeroSelectPanel(heroList, attrs);
                     // PanelManager.Instance.ShowPopResultPanel(buildingCfg.Mp4);
                 });
             }

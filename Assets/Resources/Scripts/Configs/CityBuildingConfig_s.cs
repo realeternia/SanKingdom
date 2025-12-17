@@ -19,22 +19,17 @@ namespace CommonConfig
         /// </summary>
         public string Cname;
         /// <summary>
-        ///显示属性
+        ///绑定
         /// </summary>
-        public string[] Attrs;
-        /// <summary>
-        ///动画文件
-        /// </summary>
-        public string Mp4;
+        public string BtnName;
 
 
-        public CityBuildingConfig(int Id, string Name, string Cname, string[] Attrs, string Mp4)
+        public CityBuildingConfig(int Id, string Name, string Cname, string BtnName)
         {
             this.Id = Id;
             this.Name = Name;
             this.Cname = Cname;
-            this.Attrs = Attrs;
-            this.Mp4 = Mp4;
+            this.BtnName = BtnName;
 
         }
 
@@ -58,8 +53,8 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[20001] = new CityBuildingConfig(20001, "ButtonTian", "农田", new string[]{"Fair","Str"}, "harve.mp4");
-            config[20002] = new CityBuildingConfig(20002, "ButtonJishi", "集市", new string[]{"Fair","Inte"}, "shop2.mp4");
+            config[20001] = new CityBuildingConfig(20001, "farm", "农田", "ButtonTian");
+            config[20002] = new CityBuildingConfig(20002, "market", "集市", "ButtonJishi");
 
         }
 

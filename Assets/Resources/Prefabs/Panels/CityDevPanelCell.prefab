@@ -296,6 +296,7 @@ GameObject:
   - component: {fileID: 5095254953914871930}
   - component: {fileID: 896764351196394660}
   - component: {fileID: 8164166464576928407}
+  - component: {fileID: 6801290756943880543}
   m_Layer: 5
   m_Name: CityDevPanelCell
   m_TagString: Untagged
@@ -362,3 +363,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6801290756943880543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7947800670435133822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b67e5fcc915e7dc499adb110b1b8d0b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cityDevPanelManager: {fileID: 0}
+  devIcon: {fileID: 5210820775840862447}
+  devNameText: {fileID: 5579873974899087338}
+  backgroundImage: {fileID: 8164166464576928407}

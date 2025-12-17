@@ -16,6 +16,8 @@ public class PanelManager : MonoBehaviour
     public GameObject pickPanel;
     public GameObject worldPanel;
     public GameObject cityPanel;
+    public GameObject cityBuildingPanel;
+
     public GameObject popCitySelectPanel;
     public GameObject popHeroSelectPanel;
     public GameObject popResultPanel;
@@ -98,6 +100,27 @@ public class PanelManager : MonoBehaviour
 
         ChangePanelCount(cityPanel, false);
     }
+    
+    public void ShowCityBuilding(int cityId, int buildingId)
+    {
+        GameManager.Instance.PlaySound("Sounds/deck");
+        cityBuildingPanel.SetActive(true);
+        var cityBuildingPanelManager = cityBuildingPanel.GetComponent<CityDevPanelManager>();
+        cityBuildingPanelManager.SetCityId(cityId, buildingId);
+        cityBuildingPanelManager.OnShow();
+
+        ChangePanelCount(cityBuildingPanel, true);
+    }
+
+    public void HideCityBuilding()
+    {
+        GameManager.Instance.PlaySound("Sounds/deck");
+        cityBuildingPanel.SetActive(false);
+        cityBuildingPanel.GetComponent<CityDevPanelManager>().OnHide();
+
+        ChangePanelCount(cityBuildingPanel, false);
+    }
+  
 
     public void ShowRank()
     {

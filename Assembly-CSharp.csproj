@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityDevPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveData.cs" />
     <Compile Include="Assets\Resources\Scripts\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelControl.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Assets\Resources\Scripts\BattleResultCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BuffCoolDown.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitGold.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\RankPlayerPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\UIColorChanger.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitSoldierUp.cs" />
@@ -157,6 +159,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\CityBuildingConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\ItemHeroDetail.cs" />
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityDevPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackRunCrossPlus.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXLightFade.cs" />
     <Compile Include="Assets\Resources\Scripts\SelectCardNodeControl.cs" />
@@ -174,6 +177,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillDefHpLow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillModifyBeBuffTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillBuffExpand.cs" />
+    <Compile Include="Assets\Resources\Scripts\SelectHeroControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAidSuddenArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackedShadow.cs" />
     <Compile Include="Assets\Resources\Scripts\Effect\GlowBeamController.cs" />
@@ -182,6 +186,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\SkillConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\PlayerConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityDevPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buff.cs" />
     <Compile Include="Assets\Resources\Scripts\MapConfig.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHelpAidBuff.cs" />
