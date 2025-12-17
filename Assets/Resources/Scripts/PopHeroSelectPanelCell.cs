@@ -9,13 +9,15 @@ using CommonConfig;
 public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 {
     public int heroId;
+    public bool isSelect;
 
     public PopHeroSelectPanelManager popHeroSelectPanelManager;
     public TMP_Text heroName;
     public TMP_Text textAttr1;
     public TMP_Text textAttr2;
     public Image backgroundImage;
-    
+    public Image checkImage;
+
     private Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.8f); // 正常状态背景色
     private Color selectedColor = new Color(0.5f, 0.5f, 0.1f, 0.8f); // 高光绿色选中状态
 
@@ -25,6 +27,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         heroName.raycastTarget = false;
         textAttr1.raycastTarget = false;
         textAttr2.raycastTarget = false;
+        checkImage.raycastTarget = false;
         
         // 初始化背景色为正常状态
         OnSelect(false);
@@ -59,6 +62,8 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
     public void OnSelect(bool isSelect)
     {
+        this.isSelect = isSelect;
+        checkImage.gameObject.SetActive(isSelect);
         if (backgroundImage != null)
         {
             backgroundImage.color = isSelect ? selectedColor : normalColor;
@@ -69,7 +74,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         // 通知面板管理器当前单元格被点击
-        popHeroSelectPanelManager.OnSelectItem(this);
+        popHeroSelectPanelManager.OnSelectItem(this, !isSelect);
     }
 
     // Update is called once per frame

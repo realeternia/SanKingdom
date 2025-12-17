@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
+using System;
 
 public class PopHeroSelectPanelManager : MonoBehaviour
 {
@@ -14,28 +15,35 @@ public class PopHeroSelectPanelManager : MonoBehaviour
 
     public Button closeBtn;
     public Button selectBtn;
-    public Image heroHead;
+    public Image[] heroHeads;
+
     public TMP_Text textAttr1;
     public TMP_Text textAttr2;
-    private PopHeroSelectPanelCell lastSelectedCell;
+    private List<PopHeroSelectPanelCell> lastSelectedCells = new List<PopHeroSelectPanelCell>();
+    private Action<List<int>> onSelectMethod;
 
 
     // Start is called before the first frame update
     void Start()
     {
         closeBtn.onClick.AddListener(() =>
-        {      
+        {
             PanelManager.Instance.HidePopHeroSelectPanel();
-          //  CardShopManager.Instance.OnShow();
+            //  CardShopManager.Instance.OnShow();
         });
         selectBtn.onClick.AddListener(() =>
         {
-            if (lastSelectedCell != null)
+            if (lastSelectedCells != null && lastSelectedCells.Count > 0)
             {
+                List<int> selectedHeroIds = new List<int>();
+                foreach (var cell in lastSelectedCells)
+                {
+                    selectedHeroIds.Add(cell.heroId);
+                }
+                onSelectMethod?.Invoke(selectedHeroIds);
                 PanelManager.Instance.HidePopHeroSelectPanel();
             }
         });
-
     }
 
     private string GetAttrCName(string attr)
@@ -61,13 +69,17 @@ public class PopHeroSelectPanelManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+        lastSelectedCells.Clear();
+        for (int i = 0; i < heroHeads.Length; i++)
+        {
+            heroHeads[i].gameObject.SetActive(false);
+        }
 
         // 初始化属性文本
         textAttr1.text = GetAttrCName(attrs[0]);
         textAttr2.text = GetAttrCName(attrs[1]);
         
         int itemCount = 0;
-        PopHeroSelectPanelCell firstItem = null;
         foreach(var heroId in heroList)
         {
             // 实例化RankCell
@@ -78,16 +90,6 @@ public class PopHeroSelectPanelManager : MonoBehaviour
             cellInfo.popHeroSelectPanelManager = this;
             cellInfo.Init(heroId, attrs);
             itemCount++;
-            if (firstItem == null)
-            {
-                firstItem = cellInfo;
-            }
-        }
-
-        // 选中第一个城市
-        if (firstItem != null)
-        {
-            OnSelectItem(firstItem);
         }
 
         // Get the RectTransform components
@@ -106,24 +108,45 @@ public class PopHeroSelectPanelManager : MonoBehaviour
         }
     }
 
-    public void OnSelectItem(PopHeroSelectPanelCell cellInfo)
+    public void OnSelectItem(PopHeroSelectPanelCell selectTarget, bool isSelect)
     {
-        // 取消上次选中的城市
-        if (lastSelectedCell != null && lastSelectedCell != cellInfo)
+        if (!isSelect)
         {
-            lastSelectedCell.OnSelect(false);
+            foreach (var cellInfo in lastSelectedCells)
+            {
+                if (cellInfo == selectTarget)
+                {
+                    cellInfo.OnSelect(false);
+                    lastSelectedCells.Remove(cellInfo);
+                    break;
+                }
+            }
         }
-        
+        else if(lastSelectedCells.Count < heroHeads.Length)
+        {
+            selectTarget.OnSelect(true);
+            lastSelectedCells.Add(selectTarget);
+        }
+
         // 选中当前城市
-        cellInfo.OnSelect(true);
-        var icon = HeroConfig.GetConfig(cellInfo.heroId).Icon;
-        heroHead.sprite = Resources.Load<Sprite>("Skins/" + icon);
-        // 更新当前选中的单元格引用
-        lastSelectedCell = cellInfo;
+        int id = 0;
+        foreach (var cellInfo in lastSelectedCells)
+        {
+            cellInfo.OnSelect(true);
+            var icon = HeroConfig.GetConfig(cellInfo.heroId).Icon;
+            heroHeads[id].gameObject.SetActive(true);
+            heroHeads[id].sprite = Resources.Load<Sprite>("Skins/" + icon);
+            id++;
+        }
+        for(int i = id; i < heroHeads.Length; i++)
+        {
+            heroHeads[i].gameObject.SetActive(false);
+        }
     }
 
-    public void OnShow(int[] heroList, string[] attrs)
+    public void OnShow(int[] heroList, string[] attrs, Action<List<int>> onSelectMethod)
     {
+        this.onSelectMethod = onSelectMethod;
         Init(heroList, attrs);
     }
 

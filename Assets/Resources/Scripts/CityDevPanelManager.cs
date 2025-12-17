@@ -103,6 +103,8 @@ public class CityDevPanelManager : MonoBehaviour
       //  attrVal2Text.text = devCfg.Attr2Val.ToString();
         attrDesText.text = devCfg.Des;
         goldCostText.text = devCfg.GoldCost.ToString();
+
+        heroSelect.SetDevId(cityId, cellInfo.devId);
     }    
     
     public void OnShow()

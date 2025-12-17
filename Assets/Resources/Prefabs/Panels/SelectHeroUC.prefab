@@ -92,9 +92,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4707bba00157b734fb342bb4b41facfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heroHead1: {fileID: 7832150913518438179}
-  heroHead2: {fileID: 1144683166788437900}
-  heroHead3: {fileID: 8830120433004330253}
+  heroHeads:
+  - {fileID: 7832150913518438179}
+  - {fileID: 1144683166788437900}
+  - {fileID: 8830120433004330253}
   confirmButton: {fileID: 5310269549773559669}
 --- !u!1 &1945281506626092232
 GameObject:

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -198,11 +199,11 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(popCitySelectPanel, false);
     }
 
-    public void ShowPopHeroSelectPanel(int[] heroList, string[] attrs)
+    public void ShowPopHeroSelectPanel(int[] heroList, string[] attrs, Action<List<int>> onSelectMethod)
     {
         GameManager.Instance.PlaySound("Sounds/deck");
         popHeroSelectPanel.SetActive(true);
-        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(heroList, attrs);
+        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(heroList, attrs, onSelectMethod);
 
         ChangePanelCount(popHeroSelectPanel, true);
     }
