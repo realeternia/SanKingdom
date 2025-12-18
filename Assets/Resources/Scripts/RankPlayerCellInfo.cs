@@ -42,7 +42,7 @@ public class RankPlayerCellInfo : MonoBehaviour
         // 设置英雄信息
         playerImg.sprite = Resources.Load<Sprite>(playerInfo.imgPath);
 
-        playerName.text = playerInfo.playerConfig.Name;
+        playerName.text = playerInfo.pname;
         playerId = playerInfo.forceId;
 
         var soldierCfg = SoldierConfig.GetConfig(500001);

@@ -2,7 +2,6 @@ using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using CommonConfig;
 using TMPro;
 using UnityEngine;
@@ -21,15 +20,16 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public bool isOnTurn;
     public TMP_Text playerNameText;
     public Image playerImage;
+    public string imgPath;
     public TMP_Text goldText;
     public TMP_Text resultText;
     public Image playerBgImg;
 
+    public string pname;
     public int pid;  //自增id
     public int forceId;  //配置表id
 
     public int gold;
-    public string playerName{ get { return playerConfig.Name; } }
 
     public int mark;
 
@@ -38,11 +38,6 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public int maxFood;
     private float lastFoodDeductionTime = 0f;
 
-
-    // 在 PlayerInfo 类中添加 AICardConfig 实例
-    public PlayerConfig playerConfig;
-
-    public string imgPath{ get { return playerConfig.Imgpath; } }
     public Color lineColor;
 
     public int sodatk = 0; //士兵atk强化
@@ -68,25 +63,18 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         maxFood = 100;
         food = maxFood;
 
-        SetPlayerData();
-        UpdateView();
-    }
+        var forceCfg = ForceConfig.GetConfig(forceId);
+        var heroCfg = HeroConfig.GetConfig(forceCfg.HeroId);
 
-
-    // init 和 load时候都会调用
-    public void SetPlayerData()
-    {
-        playerConfig = PlayerConfig.GetConfig(forceId);
-        lineColor = ColorUtility.TryParseHtmlString(playerConfig.Colorstr, out lineColor) ? lineColor : Color.white;
-    }
-
-    public void UpdateView()
-    {
-        playerNameText.text = playerName;        
+        lineColor = ColorUtility.TryParseHtmlString(forceCfg.Color, out lineColor) ? lineColor : Color.white;
+        pname = heroCfg.Name;
+        playerNameText.text = heroCfg.Name;
+        imgPath = "Skins/" + heroCfg.Icon;
         playerImage.sprite = Resources.Load<Sprite>(imgPath);
         goldText.text = gold.ToString();
         resultText.text = mark.ToString();
         playerBgImg.color = lineColor;
+
     }
 
     public void OnPointerUp(PointerEventData eventData)

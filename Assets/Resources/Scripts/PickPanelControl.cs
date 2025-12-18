@@ -160,20 +160,7 @@ public class PickPanelControl : MonoBehaviour
                 // 设置英雄名称
                 cellControl.heroName.text = heroCfg.Name;
 
-                string colorStr = forceCfg.Color;
-                // 分割颜色字符串为RGB组件
-                string[] rgbValues = colorStr.Split(',');
-                // 检查是否有3个组件
-                if (rgbValues.Length == 3)
-                {
-                    // 转换为数值并除以255（Unity颜色值范围为0-1）
-                    float r = float.Parse(rgbValues[0]) / 255f;
-                    float g = float.Parse(rgbValues[1]) / 255f;
-                    float b = float.Parse(rgbValues[2]) / 255f;
-                    
-                    // 设置颜色，添加alpha值为1（不透明）
-                    cellControl.bgImg.GetComponent<Image>().color = new Color(r, g, b, 1f);
-                }
+                cellControl.bgImg.GetComponent<Image>().color = ColorUtility.TryParseHtmlString(forceCfg.Color, out var wColor) ? wColor : Color.white;
             }
         }
     }

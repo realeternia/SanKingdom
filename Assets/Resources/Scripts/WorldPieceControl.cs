@@ -64,7 +64,8 @@ public class WorldPieceControl : MonoBehaviour
     {
         // 获取颜色字符串（格式为"R,G,B"）
         var pieceCfg = WorldConfig.GetConfig(pieceId);
-        SetColor(pieceCfg.ForceId);
+        var city = GameManager.Instance.GetCity(pieceId);
+        SetColor(city.forceId);
 
         // 设置名称
         pieceName.text = pieceCfg.Cname;
@@ -86,23 +87,9 @@ public class WorldPieceControl : MonoBehaviour
             Debug.LogError($"找不到forceId为{forceId}的配置");
             return;
         }
-        
-        string colorStr = forceConfig.Color;
-        
-        // 分割颜色字符串为RGB组件
-        string[] rgbValues = colorStr.Split(',');
-        
-        // 检查是否有3个组件
-        if (rgbValues.Length == 3)
-        {
-            // 转换为数值并除以255（Unity颜色值范围为0-1）
-            float r = float.Parse(rgbValues[0]) / 255f;
-            float g = float.Parse(rgbValues[1]) / 255f;
-            float b = float.Parse(rgbValues[2]) / 255f;
-            
-            // 设置颜色，添加alpha值为1（不透明）
-            pieceImage.color = new Color(r, g, b, 1f);
-            defaultColor = pieceImage.color;
-        }
+
+        Debug.Log($"设置颜色为{forceConfig.Color}");
+        defaultColor = ColorUtility.TryParseHtmlString(forceConfig.Color, out var wColor) ? wColor : Color.white;
+        pieceImage.color = defaultColor;
     }
 }

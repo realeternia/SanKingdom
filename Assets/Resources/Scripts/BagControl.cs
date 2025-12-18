@@ -113,10 +113,10 @@ public class BagControl : MonoBehaviour, IPanelEvent
         var soldierCfg = SoldierConfig.GetConfig(500001);
         var textAtk = (soldierCfg.Atk + bindPlayer.sodatk).ToString();
         var textHp = (soldierCfg.Hp + bindPlayer.sodhp).ToString();
-        infoText.text = bindPlayer.playerConfig.Name + "\n<color=yellow>战斗力 </color>" + bindPlayer.lastFightMark + " <color=red>兵攻-</color>" + textAtk + " <color=green>兵血-</color>" + textHp + " <color=#FF7F00>粮食-</color>" + bindPlayer.maxFood;
+        infoText.text = bindPlayer.pname + "\n<color=yellow>战斗力 </color>" + bindPlayer.lastFightMark + " <color=red>兵攻-</color>" + textAtk + " <color=green>兵血-</color>" + textHp + " <color=#FF7F00>粮食-</color>" + bindPlayer.maxFood;
 
         var humanCount = GameManager.Instance.players.Count(x => !x.isAI);
-        aiSwitchBtn.gameObject.SetActive(bindPlayer.pid != 0 && bindPlayer.playerConfig.CanPlay && (!bindPlayer.isAI || humanCount < 2));
+      //  aiSwitchBtn.gameObject.SetActive(bindPlayer.pid != 0 && bindPlayer.playerConfig.CanPlay && (!bindPlayer.isAI || humanCount < 2));
         aiSwitchBtn.GetComponentInChildren<TMP_Text>().text = bindPlayer.isAI ? "AI模式" : "玩家模式";
     }
 
