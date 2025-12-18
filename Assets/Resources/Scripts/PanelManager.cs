@@ -14,14 +14,14 @@ public class PanelManager : MonoBehaviour
     public GameObject cardShopPanel;
     public GameObject rankPanel;
     public GameObject rankPlayerPanel;
-    public GameObject pickPanel;
+    private GameObject pickPanel;
     public GameObject worldPanel;
     public GameObject cityPanel;
     public GameObject cityBuildingPanel;
 
-    public GameObject popCitySelectPanel;
-    public GameObject popHeroSelectPanel;
-    public GameObject popResultPanel;
+    private GameObject popCitySelectPanel;
+    private GameObject popHeroSelectPanel;
+    private GameObject popResultPanel;
 
 
     public GameObject bagPanel;
@@ -177,12 +177,16 @@ public class PanelManager : MonoBehaviour
         pickPanel.SetActive(false);
 
         ChangePanelCount(pickPanel, false);
-        GameObject.Destroy(pickPanel);
+        Destroy(pickPanel);
         pickPanel = null;
     }
 
     public void ShowPopCitySelectPanel(int cityId)
     {
+        if (popCitySelectPanel == null)
+        {
+            popCitySelectPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/PopCitySelectPanel"), transform);
+        }
         GameManager.Instance.PlaySound("Sounds/deck");
         popCitySelectPanel.SetActive(true);
         popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnShow(cityId);
@@ -197,10 +201,16 @@ public class PanelManager : MonoBehaviour
         popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnHide();
 
         ChangePanelCount(popCitySelectPanel, false);
+        Destroy(popCitySelectPanel);
+        popCitySelectPanel = null;
     }
 
     public void ShowPopHeroSelectPanel(int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod)
     {
+        if (popHeroSelectPanel == null)
+        {
+            popHeroSelectPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/PopHeroSelectPanel"), transform);
+        }
         GameManager.Instance.PlaySound("Sounds/deck");
         popHeroSelectPanel.SetActive(true);
         popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(heroList, checkedList, attrs, onSelectMethod);
@@ -215,10 +225,16 @@ public class PanelManager : MonoBehaviour
         popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnHide();
 
         ChangePanelCount(popHeroSelectPanel, false);
+        Destroy(popHeroSelectPanel);
+        popHeroSelectPanel = null;
     }
 
     public void ShowPopResultPanel(string title, string path)
     {
+        if (popResultPanel == null)
+        {
+            popResultPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/PopResultPanel"), transform);
+        }
         GameManager.Instance.PlaySound("Sounds/deck");
         popResultPanel.SetActive(true);
         popResultPanel.GetComponent<PopResultPanelManager>().OnShow(title, path);
@@ -233,6 +249,8 @@ public class PanelManager : MonoBehaviour
         popResultPanel.GetComponent<PopResultPanelManager>().OnHide();
 
         ChangePanelCount(popResultPanel, false);
+        Destroy(popResultPanel);
+        popResultPanel = null;
     }
 
     public void SendSignal(string name, string parm1, int parm2)
