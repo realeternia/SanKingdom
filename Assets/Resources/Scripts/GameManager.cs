@@ -116,9 +116,8 @@ public class GameManager : MonoBehaviour
         foreach (var city in cityDatas)
         {
             forceId = city.forceId;
-            if (city.leader == heroId)
-                return city.cityId;
-            if (city.members != null && city.members.Contains(heroId))
+            var heroList = city.GetHeroList();
+            if (heroList != null && heroList.Contains(heroId))
                 return city.cityId;
         }
         return -1;
@@ -166,22 +165,26 @@ public class GameManager : MonoBehaviour
     public void NewGame()
     {
         cityDatas = new List<SaveCityData>();
-        foreach(var cityData in WorldConfig.ConfigList)
+        foreach(var cityCfg in WorldConfig.ConfigList)
         {
             var city = new SaveCityData();
-            city.cityId = cityData.Id;
-            city.forceId = cityData.ForceId;
-            city.gold = cityData.Gold;
-            city.food = cityData.Food;
-            city.soldier = cityData.Soldier;
-            city.secure = cityData.Secure;
-            city.wall = cityData.Wall;
-            city.archFood = cityData.ArchFood;
-            city.archGold = cityData.ArchGold;
-            city.archPeople = cityData.ArchPeople;
-            city.leader = cityData.Leader;
-            if(cityData.Members != null)
-                city.members = new List<int>(cityData.Members);
+            city.cityId = cityCfg.Id;
+            city.forceId = cityCfg.ForceId;
+            city.gold = cityCfg.Gold;
+            city.food = cityCfg.Food;
+            city.soldier = cityCfg.Soldier;
+            city.secure = cityCfg.Secure;
+            city.wall = cityCfg.Wall;
+            city.archFood = cityCfg.ArchFood;
+            city.archGold = cityCfg.ArchGold;
+            city.archPeople = cityCfg.ArchPeople;
+            city.heros = new List<SaveHeroData>();
+            if(cityCfg.Leader > 0)
+                city.heros.Add(new SaveHeroData { heroId = cityCfg.Leader });
+            if(cityCfg.Members != null)
+            {
+                city.heros.AddRange(cityCfg.Members.Select(m => new SaveHeroData { heroId = m }));
+            }
             cityDatas.Add(city);
         }
     }

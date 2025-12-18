@@ -215,8 +215,6 @@ public static class HeroSelectionTool
             attrInfo.Str = attrInfo.Str * lv;
             attrInfo.Lead = attrInfo.Lead * lv;
         }
-        if(player.attrAddons.ContainsKey(cardId))
-            attrInfo.AddAttr(player.attrAddons[cardId]);
 
         return attrInfo;
 

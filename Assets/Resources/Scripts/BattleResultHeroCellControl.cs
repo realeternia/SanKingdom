@@ -32,7 +32,7 @@ public class BattleResultHeroCellControl : MonoBehaviour
     public void SetData(BattleStatManager.BattleStat battleStat, int rank)
     {
         var player = GameManager.Instance.GetPlayer(battleStat.playerId);
-        var heroLevel = HeroSelectionTool.GetCardLevel(player.cards[battleStat.heroId], true);
+        var heroLevel = 1;
         var heroCfg = HeroConfig.GetConfig(battleStat.heroId);
         playerName.text = heroLevel.ToString() + heroCfg.Name;
 

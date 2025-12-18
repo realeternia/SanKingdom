@@ -46,7 +46,6 @@ public class BagControl : MonoBehaviour, IPanelEvent
         fieldAutoBtn.onClick.AddListener(() =>
         {
             var p1 = GameManager.Instance.GetPlayer(bindPlayer.pid);
-            p1.AutoSetBattleCard();
             UpdateFieldView();
 
             GameManager.Instance.PlaySound("Sounds/equip");
@@ -112,8 +111,8 @@ public class BagControl : MonoBehaviour, IPanelEvent
         UpdateFieldView();
 
         var soldierCfg = SoldierConfig.GetConfig(500001);
-        var textAtk = (soldierCfg.Atk + bindPlayer.sodatk + bindPlayer.GetItemPAttr("satk")).ToString();
-        var textHp = (soldierCfg.Hp + bindPlayer.sodhp + bindPlayer.GetItemPAttr("shp")).ToString();
+        var textAtk = (soldierCfg.Atk + bindPlayer.sodatk).ToString();
+        var textHp = (soldierCfg.Hp + bindPlayer.sodhp).ToString();
         infoText.text = bindPlayer.playerConfig.Name + "\n<color=yellow>战斗力 </color>" + bindPlayer.lastFightMark + " <color=red>兵攻-</color>" + textAtk + " <color=green>兵血-</color>" + textHp + " <color=#FF7F00>粮食-</color>" + bindPlayer.maxFood;
 
         var humanCount = GameManager.Instance.players.Count(x => !x.isAI);
@@ -129,58 +128,58 @@ public class BagControl : MonoBehaviour, IPanelEvent
 
     public void UpdateView()
     {
-        int index = 0;
+        // int index = 0;
 
-        var itemCards = bindPlayer.cards.Where(x => !ConfigManager.IsHeroCard(x.Key)).ToList();
-        var heroCards = bindPlayer.cards.Where(x => ConfigManager.IsHeroCard(x.Key)).ToList();
+        // var itemCards = bindPlayer.cards.Where(x => !ConfigManager.IsHeroCard(x.Key)).ToList();
+        // var heroCards = bindPlayer.cards.Where(x => ConfigManager.IsHeroCard(x.Key)).ToList();
 
-        // Destroy all child objects in hero region
-        foreach(Transform child in bagHeroRegion.transform)
-            GameObject.Destroy(child.gameObject);
-        // Destroy all child objects in item region
-        foreach(Transform child in bagItemRegion.transform)
-            GameObject.Destroy(child.gameObject);
-        cellCache.Clear();
+        // // Destroy all child objects in hero region
+        // foreach(Transform child in bagHeroRegion.transform)
+        //     GameObject.Destroy(child.gameObject);
+        // // Destroy all child objects in item region
+        // foreach(Transform child in bagItemRegion.transform)
+        //     GameObject.Destroy(child.gameObject);
+        // cellCache.Clear();
 
-        foreach (var item in heroCards)
-        {
-            // 修改原代码，将新创建的 cell 加入缓存
-            GameObject heroCell = Instantiate(Resources.Load<GameObject>("Prefabs/BagCellHero"), bagHeroRegion.transform);
-            cellCache.Add(heroCell);
-            int xOff = index % 6;
-            int yOff = index / 6;
+        // foreach (var item in heroCards)
+        // {
+        //     // 修改原代码，将新创建的 cell 加入缓存
+        //     GameObject heroCell = Instantiate(Resources.Load<GameObject>("Prefabs/BagCellHero"), bagHeroRegion.transform);
+        //     cellCache.Add(heroCell);
+        //     int xOff = index % 6;
+        //     int yOff = index / 6;
 
-            heroCell.transform.localPosition = new Vector3(100 + 164 * xOff, -131 - 226 * yOff, 0);
+        //     heroCell.transform.localPosition = new Vector3(100 + 164 * xOff, -131 - 226 * yOff, 0);
 
-            BagCell bagCell = heroCell.GetComponent<BagCell>();
-            bagCell.bagControl = this;
-            bagCell.cardId = item.Key;
-            bagCell.count = item.Value;
-            bagCell.level = HeroSelectionTool.GetCardLevel(item.Value, true);
-            bagCell.UpdateHeroInfo();
+        //     BagCell bagCell = heroCell.GetComponent<BagCell>();
+        //     bagCell.bagControl = this;
+        //     bagCell.cardId = item.Key;
+        //     bagCell.count = item.Value;
+        //     bagCell.level = HeroSelectionTool.GetCardLevel(item.Value, true);
+        //     bagCell.UpdateHeroInfo();
 
-            index++;
-        }
-        index = 0;
-        foreach (var itemCell in itemCards)
-        {
-            // 修改原代码，将新创建的 cell 加入缓存
-            GameObject cell = Instantiate(Resources.Load<GameObject>("Prefabs/BagCellItem"), bagItemRegion.transform);
-            cellCache.Add(cell);
-            int xOff = index % 9;
-            int yOff = index / 9;
-            cell.transform.localPosition = new Vector3(95 + 104 * xOff, -71 - 104 * yOff, 0);
+        //     index++;
+        // }
+        // index = 0;
+        // foreach (var itemCell in itemCards)
+        // {
+        //     // 修改原代码，将新创建的 cell 加入缓存
+        //     GameObject cell = Instantiate(Resources.Load<GameObject>("Prefabs/BagCellItem"), bagItemRegion.transform);
+        //     cellCache.Add(cell);
+        //     int xOff = index % 9;
+        //     int yOff = index / 9;
+        //     cell.transform.localPosition = new Vector3(95 + 104 * xOff, -71 - 104 * yOff, 0);
             
-            BagCell bagCell = cell.GetComponent<BagCell>();
-            bagCell.bagControl = this;            
-            bagCell.cardId = itemCell.Key;
-            bagCell.count = itemCell.Value;
-            bagCell.level = HeroSelectionTool.GetCardLevel(itemCell.Value, false);
-            bagCell.UpdateItemInfo(); 
-            index++;
-        }
-        itemDetail.Clear();
-        heroDetail.Clear();
+        //     BagCell bagCell = cell.GetComponent<BagCell>();
+        //     bagCell.bagControl = this;            
+        //     bagCell.cardId = itemCell.Key;
+        //     bagCell.count = itemCell.Value;
+        //     bagCell.level = HeroSelectionTool.GetCardLevel(itemCell.Value, false);
+        //     bagCell.UpdateItemInfo(); 
+        //     index++;
+        // }
+        // itemDetail.Clear();
+        // heroDetail.Clear();
     }
 
     public void UpdateEquips()
@@ -201,59 +200,59 @@ public class BagControl : MonoBehaviour, IPanelEvent
     
     public void UpdateFieldView()
     {
-        // 清除之前的连接线
-        ClearConnectionLines();
+        // // 清除之前的连接线
+        // ClearConnectionLines();
         
-        // 更新所有fieldUnit的信息
-        foreach (Transform child in fieldRegion.transform)
-        {
-            var fieldUnit = child.GetComponent<BagFieldUnitControl>();
-            if(fieldUnit != null)
-                fieldUnit.SetInfo(fieldUnit.posId, bindPlayer.battleCards.Length > fieldUnit.posId ? bindPlayer.battleCards[fieldUnit.posId] : 0);
-        }
+        // // 更新所有fieldUnit的信息
+        // foreach (Transform child in fieldRegion.transform)
+        // {
+        //     var fieldUnit = child.GetComponent<BagFieldUnitControl>();
+        //     if(fieldUnit != null)
+        //         fieldUnit.SetInfo(fieldUnit.posId, bindPlayer.battleCards.Length > fieldUnit.posId ? bindPlayer.battleCards[fieldUnit.posId] : 0);
+        // }
         
-        // 获取所有有英雄的fieldUnit
-        BagFieldUnitControl[] heroUnits = new BagFieldUnitControl[bindPlayer.battleCards.Length];
-        foreach (Transform child in fieldRegion.transform)
-        {
-            var fieldUnit = child.GetComponent<BagFieldUnitControl>();
-            if(fieldUnit != null)
-                heroUnits[fieldUnit.posId] = fieldUnit;
-        }
+        // // 获取所有有英雄的fieldUnit
+        // BagFieldUnitControl[] heroUnits = new BagFieldUnitControl[bindPlayer.battleCards.Length];
+        // foreach (Transform child in fieldRegion.transform)
+        // {
+        //     var fieldUnit = child.GetComponent<BagFieldUnitControl>();
+        //     if(fieldUnit != null)
+        //         heroUnits[fieldUnit.posId] = fieldUnit;
+        // }
 
-        // 遍历任意两个节点，检查是否是好友关系
-        for (int i = 0; i < heroUnits.Length; i++)
-        {
-            for (int j = i + 1; j < heroUnits.Length; j++)
-            {
-                if(heroUnits[i] == null || heroUnits[j] == null)
-                    continue;
+        // // 遍历任意两个节点，检查是否是好友关系
+        // for (int i = 0; i < heroUnits.Length; i++)
+        // {
+        //     for (int j = i + 1; j < heroUnits.Length; j++)
+        //     {
+        //         if(heroUnits[i] == null || heroUnits[j] == null)
+        //             continue;
 
-                int heroId1 = heroUnits[i].myHeroId;
-                int heroId2 = heroUnits[j].myHeroId;
+        //         int heroId1 = heroUnits[i].myHeroId;
+        //         int heroId2 = heroUnits[j].myHeroId;
 
-                if(heroId1 == 0 || heroId2 == 0)
-                    continue;
+        //         if(heroId1 == 0 || heroId2 == 0)
+        //             continue;
 
-                var helpSkillId = ConfigManager.GetShowHelpSkillId(heroId1, heroId2, i, j);
-                if(helpSkillId > 0)
-                {
-                    var skillCfg = SkillConfig.GetConfig(helpSkillId);
-                    var color = skillCfg.Attr == "inte" ? new Color(0.55f, 0.55f, 1f, 0.6f) : (skillCfg.Attr == "str" ? new Color(0.95f, 0.4f, 0.4f, 0.6f) : new Color(0.7f, 0.8f, 0.3f, 0.6f));
-                    // 创建连接线
-                    CreateConnectionLine(heroUnits[i].transform, heroUnits[j].transform, color, new Vector2(-25, -25), Resources.Load<Sprite>("SkillPic/" + skillCfg.Icon));
-                }
+        //         var helpSkillId = ConfigManager.GetShowHelpSkillId(heroId1, heroId2, i, j);
+        //         if(helpSkillId > 0)
+        //         {
+        //             var skillCfg = SkillConfig.GetConfig(helpSkillId);
+        //             var color = skillCfg.Attr == "inte" ? new Color(0.55f, 0.55f, 1f, 0.6f) : (skillCfg.Attr == "str" ? new Color(0.95f, 0.4f, 0.4f, 0.6f) : new Color(0.7f, 0.8f, 0.3f, 0.6f));
+        //             // 创建连接线
+        //             CreateConnectionLine(heroUnits[i].transform, heroUnits[j].transform, color, new Vector2(-25, -25), Resources.Load<Sprite>("SkillPic/" + skillCfg.Icon));
+        //         }
 
-                helpSkillId = ConfigManager.GetShowHelpSkillId(heroId2, heroId1, j, i);
-                if(helpSkillId > 0)
-                {
-                    var skillCfg = SkillConfig.GetConfig(helpSkillId);
-                    var color = skillCfg.Attr == "inte" ? new Color(0.55f, 0.55f, 1f, 0.6f) : (skillCfg.Attr == "str" ? new Color(0.95f, 0.4f, 0.4f, 0.6f) : new Color(0.7f, 0.8f, 0.3f, 0.6f));
-                    // 创建连接线
-                    CreateConnectionLine(heroUnits[i].transform, heroUnits[j].transform, color, new Vector2(25, 25), Resources.Load<Sprite>("SkillPic/" + skillCfg.Icon));
-                }
-            }
-        }
+        //         helpSkillId = ConfigManager.GetShowHelpSkillId(heroId2, heroId1, j, i);
+        //         if(helpSkillId > 0)
+        //         {
+        //             var skillCfg = SkillConfig.GetConfig(helpSkillId);
+        //             var color = skillCfg.Attr == "inte" ? new Color(0.55f, 0.55f, 1f, 0.6f) : (skillCfg.Attr == "str" ? new Color(0.95f, 0.4f, 0.4f, 0.6f) : new Color(0.7f, 0.8f, 0.3f, 0.6f));
+        //             // 创建连接线
+        //             CreateConnectionLine(heroUnits[i].transform, heroUnits[j].transform, color, new Vector2(25, 25), Resources.Load<Sprite>("SkillPic/" + skillCfg.Icon));
+        //         }
+        //     }
+        // }
     }
     
     // 创建连接线
@@ -330,33 +329,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
     // 将物品装备到英雄的方法，供拖拽功能使用
     public void EquipItemToHero(int itemCardId, int heroCardId)
     {
-        if(itemCardId == 0 || heroCardId == 0)
-            return;
-
-        var p1 = GameManager.Instance.GetPlayer(bindPlayer.pid);
-        var itemCfg = ItemConfig.GetConfig(itemCardId);
-        if(itemCfg.RemoveWhenUse)
-        {
-            p1.UseItemToHero(heroCardId, itemCardId);
-
-            itemDetail.gameObject.SetActive(false);
-            GameManager.Instance.PlaySound("Sounds/eat");
-
-            RemoveCell(itemCardId);
-        }
-        else
-        {
-            p1.Equip(heroCardId, itemCardId);
-
-            itemDetail.gameObject.SetActive(true);
-            itemDetail.UpdateInfo(itemCardId, HeroSelectionTool.GetCardLevel(p1.cards[itemCardId], false));
-            GameManager.Instance.PlaySound("Sounds/equip");
-
-            UpdateEquips();
-        }
-
-        heroDetail.gameObject.SetActive(true);
-        heroDetail.UpdateInfo(heroCardId, HeroSelectionTool.GetCardLevel(p1.cards[heroCardId], true));
+    
     }
 
     private void RemoveCell(int itemCardId)
@@ -371,39 +344,16 @@ public class BagControl : MonoBehaviour, IPanelEvent
 
     public void SetHeroForBattle(int heroId, int pos)
     {
-        var p1 = GameManager.Instance.GetPlayer(bindPlayer.pid);
-        if(p1.isAI)
-            return;
 
-        p1.SetBattlePos(heroId, pos);
-
-        GameManager.Instance.PlaySound("Sounds/equip");
-        UpdateFieldView();
     }
 
     public void SellCard(int cardId)
     {
-        var p1 = GameManager.Instance.GetPlayer(bindPlayer.pid);
-        if(p1.isAI)
-            return;
 
-        p1.SellCard(cardId);
-        RemoveCell(cardId);
-        
-        heroDetail.Clear();
-        itemDetail.Clear();
-        heroDetail.gameObject.SetActive(false);
-        itemDetail.gameObject.SetActive(false);
-
-
-        GameManager.Instance.PlaySound("Sounds/gold");        
-        UpdateFieldView();
     }
 
     public void OnCellClick(BagCell cell)
     {
-        if(!bindPlayer.cards.ContainsKey(cell.cardId))
-            return;
 
         if (ConfigManager.IsHeroCard(cell.cardId))
         {

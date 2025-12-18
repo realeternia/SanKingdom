@@ -141,8 +141,8 @@ public class Chess : MonoBehaviour
             var playerInfo = GameManager.Instance.GetPlayer(playerId);
             if (playerInfo != null && soldierCfg.SoldierAtkRate > 0)
             {
-                maxHp += (int)((playerInfo.sodhp + playerInfo.GetItemPAttr("shp")) * soldierCfg.SoldierHpRate);
-                attackDamage += (int)((playerInfo.sodatk + playerInfo.GetItemPAttr("satk")) * soldierCfg.SoldierAtkRate);
+                maxHp += (int)((playerInfo.sodhp) * soldierCfg.SoldierHpRate);
+                attackDamage += (int)((playerInfo.sodatk) * soldierCfg.SoldierAtkRate);
             }
         }
         hp = maxHp;
@@ -239,18 +239,18 @@ public class Chess : MonoBehaviour
         str = attr.Str;
         leadShip = attr.Lead;
 
-        if (player.itemEquips.ContainsKey(heroId))
-        {
-            var equipId = player.itemEquips[heroId];
-            var equipCardLevel = HeroSelectionTool.GetCardLevel(player.cards[equipId], false);
+        // if (player.itemEquips.ContainsKey(heroId))
+        // {
+        //     var equipId = player.itemEquips[heroId];
+        //     var equipCardLevel = HeroSelectionTool.GetCardLevel(player.cards[equipId], false);
 
-            var equipAttr = HeroSelectionTool.GetCardAttr(player, equipId, equipCardLevel);
+        //     var equipAttr = HeroSelectionTool.GetCardAttr(player, equipId, equipCardLevel);
 
-            inte += equipAttr.Inte;
-            str += equipAttr.Str;
-            leadShip += equipAttr.Lead;
-            maxHp += equipAttr.Hp;
-        }
+        //     inte += equipAttr.Inte;
+        //     str += equipAttr.Str;
+        //     leadShip += equipAttr.Lead;
+        //     maxHp += equipAttr.Hp;
+        // }
 
         hp = maxHp;
 

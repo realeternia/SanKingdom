@@ -61,14 +61,8 @@ public class ItemHeroDetail : MonoBehaviour
         {
             var heroConfig = HeroConfig.GetConfig(id);
 
-            maxHpBase = heroConfig.Hp;
-            inteBase = heroConfig.Inte;
-            strBase = heroConfig.Str;
-            leadShipBase = heroConfig.LeadShip;
-
             nameText.text = heroConfig.Name;
-            var sellRate = player.GetSellRate();
-            goldText.text = ((int)(HeroSelectionTool.GetPrice(heroConfig) * player.cards[cardId] * sellRate)).ToString();
+            goldText.text = ((int)(HeroSelectionTool.GetPrice(heroConfig) * 1)).ToString();
 
             for (int i = 0; i < 3; i++)
             {
@@ -84,16 +78,6 @@ public class ItemHeroDetail : MonoBehaviour
                     skillImg[i].gameObject.SetActive(false);
                 }
             }
-
-            if (player.itemEquips.ContainsKey(cardId))
-            {
-                var equipCardId = player.itemEquips[cardId];
-
-                var equipName = ItemConfig.GetConfig(equipCardId).Name;
-                equipText.text = equipName;
-                var cardLevel = HeroSelectionTool.GetCardLevel(player.cards[equipCardId], false);  
-                attrEquip = HeroSelectionTool.GetCardAttr(player, equipCardId, cardLevel);
-            } 
             
         }
 

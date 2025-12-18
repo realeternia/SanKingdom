@@ -38,8 +38,8 @@ public class CastleHUD : MonoBehaviour
         castleName.text = p.playerNameText.text;
 
         var soldierCfg = SoldierConfig.GetConfig(500001);
-        baseAtk = soldierCfg.Atk + p.sodatk + p.GetItemPAttr("satk");
-        baseHp = soldierCfg.Hp + p.sodhp + p.GetItemPAttr("shp");
+        baseAtk = soldierCfg.Atk + p.sodatk;
+        baseHp = soldierCfg.Hp + p.sodhp;
         textAtk.text = baseAtk.ToString();
         textHp.text = baseHp.ToString();
 

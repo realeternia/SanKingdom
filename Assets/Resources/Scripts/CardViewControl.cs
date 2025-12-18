@@ -150,27 +150,9 @@ public class CardViewControl : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             priceI = HeroSelectionTool.GetPrice(heroCfg);
 
             var player0 = GameManager.Instance.GetPlayer(0);
-            if (player0.HasCard(cardId))
-            {
-                effectGreen.SetActive(true);
-                effectYellow.SetActive(false);
-            }
-            else
-            {
-                effectGreen.SetActive(false);
-                effectYellow.SetActive(false);
-            }
-
-            var player1 = GameManager.Instance.GetFirstNoAiPlayer();
-            if (player1 != null && player1.HasCard(cardId))
-            {
-                imagePlayerHead.sprite = Resources.Load<Sprite>(player1.imgPath);
-                imagePlayerHead.gameObject.SetActive(true);
-            }
-            else
-            {
-                imagePlayerHead.gameObject.SetActive(false);
-            }
+            effectGreen.SetActive(false);
+            effectYellow.SetActive(false);
+imagePlayerHead.gameObject.SetActive(false);
         }
         else
         {
@@ -219,25 +201,8 @@ public class CardViewControl : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             priceI = itemCfg.Price + (int)Math.Floor(itemCfg.PriceRound * shopOpenIndex);
 
             var player0 = GameManager.Instance.GetPlayer(0);
-            if (player0.HasCard(cardId))
-            {
-                effectGreen.SetActive(true);
-            }
-            else
-            {
-                effectGreen.SetActive(false);
-            }
-
-            var player1 = GameManager.Instance.GetFirstNoAiPlayer();
-            if (player1 != null && player1.HasCard(cardId))
-            {
-                imagePlayerHead.sprite = Resources.Load<Sprite>(player1.imgPath);
-                imagePlayerHead.gameObject.SetActive(true);
-            }
-            else
-            {
-                imagePlayerHead.gameObject.SetActive(false);
-            }
+            effectGreen.SetActive(false);
+imagePlayerHead.gameObject.SetActive(false);
         }
 
         price.text = priceI.ToString();

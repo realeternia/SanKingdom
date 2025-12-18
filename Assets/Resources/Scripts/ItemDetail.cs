@@ -56,8 +56,7 @@ public class ItemDetail : MonoBehaviour
         {
             var itemConfig = ItemConfig.GetConfig(id);
             nameText.text = itemConfig.Name;
-            var sellRate = player.GetSellRate();
-            goldText.text = ((int)(itemConfig.Price * player.cards[cardId] * sellRate)).ToString();
+            goldText.text = ((int)(itemConfig.Price * 1)).ToString();
             descText.text = itemConfig.Des;
 
             if(string.IsNullOrEmpty(itemConfig.Attr1))
@@ -85,17 +84,7 @@ public class ItemDetail : MonoBehaviour
                 attr2Icon.sprite = Resources.Load<Sprite>("Textures/attr" + itemConfig.Attr2);
                 attr2Val.text = (itemConfig.Attr2Val * lv).ToString();
             }
-
-
-            foreach (var item in player.itemEquips)
-            {
-                if (item.Value == cardId)
-                {
-                    var equipName = HeroConfig.GetConfig(item.Key).Name;
-                    equipText.text = equipName;
-                    break;
-                }
-            }            
+           
         }
     }
 

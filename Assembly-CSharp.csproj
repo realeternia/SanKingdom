@@ -62,6 +62,9 @@
   <ItemGroup>
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveData.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveCityData.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveForceData.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
     <Compile Include="Assets\Resources\Scripts\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitAround.cs" />
@@ -74,7 +77,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitRegion.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillModifyBuffTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\JobConfig_s.cs" />
-    <Compile Include="Assets\Resources\Scripts\PlayerAI.cs" />
     <Compile Include="Assets\Resources\Scripts\WorldManager.cs" />
     <Compile Include="Assets\Resources\Scripts\GameManager.cs" />
     <Compile Include="Assets\Resources\Scripts\RankPanelManager.cs" />
@@ -87,7 +89,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillDefPlantSkin.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ShopConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackReboundArrow.cs" />
-    <Compile Include="Assets\Resources\Scripts\CardShopManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitAddRege.cs" />
     <Compile Include="Assets\Resources\Scripts\PlayerInfo.cs" />
@@ -127,7 +128,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitBuffArea.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleManager1.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroSelectPanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\MySelectControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BuffNoAction.cs" />
     <Compile Include="Assets\Resources\Scripts\BagCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackSpeedAttack.cs" />
@@ -140,6 +140,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitSoldierShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ItemConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\SideInfo.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveForceData.cs" />
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillModifySummonTime.cs" />
     <Compile Include="Assets\Resources\Scripts\ItemDetail.cs" />
@@ -161,7 +162,6 @@
     <Compile Include="Assets\Resources\Scripts\CityDevPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackRunCrossPlus.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXLightFade.cs" />
-    <Compile Include="Assets\Resources\Scripts\SelectCardNodeControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ForceConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skill.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
@@ -181,6 +181,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackedShadow.cs" />
     <Compile Include="Assets\Resources\Scripts\Effect\GlowBeamController.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHelpAidHeal.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveCityData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackedBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SkillConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Assets\Resources\Scripts\PlayerBook.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHelpInitTeach.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
     <Compile Include="Assets\Resources\Scripts\Tooltip.cs" />
   </ItemGroup>
   <ItemGroup>

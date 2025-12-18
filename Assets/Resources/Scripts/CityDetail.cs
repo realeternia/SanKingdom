@@ -37,19 +37,13 @@ public class CityDetail : MonoBehaviour
         textSoldier.text = city.soldier.ToString();
         textSecure.text = city.secure.ToString();
         textWall.text = city.wall.ToString();
-        if(city.leader > 0)
-            textLeader.text = HeroConfig.GetConfig(city.leader).Name;
+        var owner = city.GetOwner();
+        if(owner > 0)
+            textLeader.text = HeroConfig.GetConfig(owner).Name;
         else
             textLeader.text = "无";
         
-        var heroList = new List<int>();
-        if(city.leader > 0)
-            heroList.Add(city.leader);
-        for(int i = 0; i < city.members.Count; i++)
-        {
-            if(city.members[i] > 0)
-                heroList.Add(city.members[i]);    
-        }
+        var heroList = city.GetHeroList();
         //todo 清理一下heroHeadRegion.transform下所有对象
         foreach (Transform child in heroHeadRegion.transform)
             Destroy(child.gameObject);
