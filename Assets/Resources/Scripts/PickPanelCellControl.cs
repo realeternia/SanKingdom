@@ -9,7 +9,7 @@ public class PickPanelCellControl : MonoBehaviour
     public Image heroImg;
     public Image checkImg;
     public TMP_Text heroName;
-    public int heroId;
+    public int forceId;
 
     private bool isSelected = false;
     private PickPanelControl parentControl;

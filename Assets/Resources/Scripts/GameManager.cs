@@ -13,8 +13,7 @@ public class GameManager : MonoBehaviour
     // todo 这里还有一个city数据列表
     // todo playersavedata也可以单独放一个，然后set给player
     private StreamWriter logWriter;  // 日志写入器
-    public int year;
-    public List<SaveCityData> cityDatas;
+    public SaveData SaveData;
 
     private void Awake()
     {
@@ -107,13 +106,13 @@ public class GameManager : MonoBehaviour
 
     public SaveCityData GetCity(int cityId)
     {
-        return cityDatas.FirstOrDefault(c => c.cityId == cityId);
+        return SaveData.cities.FirstOrDefault(c => c.cityId == cityId);
     }
 
     public int GetHeroCity(int heroId, out int forceId)
     {
         forceId = -1;
-        foreach (var city in cityDatas)
+        foreach (var city in SaveData.cities)
         {
             forceId = city.forceId;
             var heroList = city.GetHeroList();
@@ -162,9 +161,10 @@ public class GameManager : MonoBehaviour
     }
 
     //新游戏开始数据初始化
-    public void NewGame()
+    public void NewGame(int forceId)
     {
-        cityDatas = new List<SaveCityData>();
+        SaveData = new SaveData();
+        SaveData.year = 0;
         foreach(var cityCfg in WorldConfig.ConfigList)
         {
             var city = new SaveCityData();
@@ -185,7 +185,14 @@ public class GameManager : MonoBehaviour
             {
                 city.heros.AddRange(cityCfg.Members.Select(m => new SaveHeroData { heroId = m }));
             }
-            cityDatas.Add(city);
+            SaveData.cities.Add(city);
+        }
+        foreach(var force in ForceConfig.ConfigList)
+        {
+            var forceData = new SaveForceData { forceId = force.Id };
+            if(force.Id == forceId)
+                forceData.isPlayer = true;
+            SaveData.forces.Add(forceData); 
         }
     }
 
@@ -207,10 +214,9 @@ public class GameManager : MonoBehaviour
         {
             string json = File.ReadAllText(savePath);
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
-            year = saveData.year;
-            cityDatas = saveData.cities;
+            SaveData = saveData;
 
-            Debug.Log("游戏数据加载成功 year=" + year);
+            Debug.Log("游戏数据加载成功 year=" + SaveData.year);
         }
         catch (System.Exception e)
         {
@@ -225,12 +231,9 @@ public class GameManager : MonoBehaviour
         string savePath = Application.persistentDataPath + "/game_save.json";
         try
         {
-            SaveData saveData = new SaveData();
-            saveData.cities = cityDatas;
-            saveData.year = year;
             
             // 使用JsonUtility序列化数据
-            string json = JsonUtility.ToJson(saveData);
+            string json = JsonUtility.ToJson(SaveData);
             File.WriteAllText(savePath, json);
             
             Debug.Log("游戏数据保存成功: " + savePath);

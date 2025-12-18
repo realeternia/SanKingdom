@@ -10,10 +10,8 @@ public class PickPanelControl : MonoBehaviour
     public GameObject pickPanelCellPrefab; // 引用PickPanelCell预制体
     public Transform cellParent; // 用于放置单元格的父容器
 
-    public Button refreshBtn;
-    public TMP_Text refreshText;
     public Button okBtn;
-    private int refreshCount = 4;
+    private int targetForceId = 0;
 
     private List<PickPanelCellControl> cellControls = new List<PickPanelCellControl>();
 
@@ -30,20 +28,18 @@ public class PickPanelControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        refreshBtn.onClick.AddListener(() =>
-        {
-            GameManager.Instance.PlaySound("Sounds/page");
-            RefreshBtnClick();
-        });
         okBtn.onClick.AddListener(() =>
         {
-            GameManager.Instance.NewGame();
+            if(targetForceId == 0)
+                return;
+
+            GameManager.Instance.NewGame(targetForceId);
             PanelManager.Instance.ShowWorld();
             PanelManager.Instance.HidePick();
         });
 
         okBtn.gameObject.SetActive(false);
-        refreshBtn.gameObject.SetActive(false);
+        RefreshHeroPool();
 
         StartCoroutine(DelaySetMode());
         if(GameManager.Instance.IsGameSaveExist())
@@ -60,20 +56,17 @@ public class PickPanelControl : MonoBehaviour
                 else
                 {
                     loadGamePanel.SetActive(false);
-                    RefreshBtnClick();
                 }
             });
             newGameBtn.onClick.AddListener(() =>
             {
                 loadGamePanel.SetActive(false);
-                RefreshBtnClick();
             });            
         }
         else
         {
             Debug.Log("No Game Save");
             loadGamePanel.SetActive(false);
-            RefreshBtnClick();
         }
 
     }
@@ -90,24 +83,6 @@ public class PickPanelControl : MonoBehaviour
         
     }
 
-    private void RefreshBtnClick()
-    {
-        RefreshHeroPool();
-        okBtn.gameObject.SetActive(true);
-        
-        refreshCount--;
-        refreshText.text = "刷新(" + refreshCount + ")";
-        if (refreshCount <= 0)
-        {
-            refreshBtn.gameObject.SetActive(false);
-        }
-        else
-        {
-            refreshBtn.gameObject.SetActive(true);
-        }
-
-    }
-
 
     // 取消除了指定单元格之外的所有选中状态
     public void ClearAllSelectionsExcept(PickPanelCellControl exceptCell)
@@ -117,6 +92,11 @@ public class PickPanelControl : MonoBehaviour
             if (cellControl != exceptCell)
             {
                 cellControl.SetSelected(false);
+            }
+            else
+            {
+                targetForceId = exceptCell.forceId;
+                okBtn.gameObject.SetActive(true);
             }
         }
     }
@@ -170,7 +150,7 @@ public class PickPanelControl : MonoBehaviour
 
             // 设置单元格数据
             PickPanelCellControl cellControl = cell.GetComponent<PickPanelCellControl>();
-            cellControl.heroId = heroId;
+            cellControl.forceId = forceCfg.Id;
             cellControl.SetParentControl(this); // 设置父控制类引用
             cellControls.Add(cellControl);
             if (cellControl != null)
