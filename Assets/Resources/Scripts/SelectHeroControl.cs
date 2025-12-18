@@ -21,7 +21,7 @@ public class SelectHeroControl : MonoBehaviour
             int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList().ToArray();
             var devCfg = CityDevConfig.GetConfig(devId);
             string[] attrs = devCfg.Attrs;
-            PanelManager.Instance.ShowPopHeroSelectPanel(heroList, attrs, (selectedHeroIds) =>
+            PanelManager.Instance.ShowPopHeroSelectPanel(heroList, heroIds, attrs, (selectedHeroIds) =>
             {
                 heroIds = selectedHeroIds.ToArray();
                 for (int i = 0; i < heroHeads.Length; i++)
@@ -43,7 +43,6 @@ public class SelectHeroControl : MonoBehaviour
                     heroHeads[0].sprite = Resources.Load<Sprite>("Skins/moren");
                 }
             });
-          //  PanelManager.Instance.ShowPopResultPanel(devCfg.Mp4);
         });
     }
 

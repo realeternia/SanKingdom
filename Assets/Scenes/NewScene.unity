@@ -1429,7 +1429,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 1221400899}
   rawImage: {fileID: 1221400902}
+  titleText: {fileID: 327774858}
   closeBtn: {fileID: 1300160666}
+  runBtn: {fileID: 1215458724}
 --- !u!1 &87942513
 GameObject:
   m_ObjectHideFlags: 0
@@ -5535,7 +5537,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u8FDB\u653B"
+  m_text: "\u786E\u8BA4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2cf81e00e11058e48bf63753305874df, type: 2}
   m_sharedMaterial: {fileID: -2551621216232197282, guid: 2cf81e00e11058e48bf63753305874df, type: 2}

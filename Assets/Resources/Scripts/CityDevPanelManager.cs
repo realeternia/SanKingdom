@@ -36,6 +36,16 @@ public class CityDevPanelManager : MonoBehaviour
         {
             PanelManager.Instance.HideCityBuilding();
         });
+        runButton.onClick.AddListener(() =>
+        {
+            if(lastSelectedCell != null && heroSelect.heroIds.Length > 0)
+            {
+                var devId = lastSelectedCell.devId;
+                var heroList = heroSelect.heroIds;
+
+                OnRun(devId, heroList);
+            }
+        });
 
     }
 
@@ -71,7 +81,7 @@ public class CityDevPanelManager : MonoBehaviour
                 devNodeMgr.Init(cfg.Id);
 
                 var rectTransform = devNode.GetComponent<RectTransform>();
-                rectTransform.anchoredPosition = new Vector2(40 + devIndex * 150, -22);
+                rectTransform.anchoredPosition = new Vector2(24 + devIndex * 150, -15);
                 devIndex++;
 
                 if (lastSelectedCell == null)
@@ -146,6 +156,13 @@ public class CityDevPanelManager : MonoBehaviour
 
         heroSelect.SetDevId(cityId, cellInfo.devId);
     }    
+
+    private void OnRun(int devId, int[] heroList)
+    {
+        PanelManager.Instance.HideCityBuilding();
+        var devConfig = CityDevConfig.GetConfig(devId);
+        PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, devConfig.Mp4);
+    }
     
     public void OnShow()
     {

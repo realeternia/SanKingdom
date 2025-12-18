@@ -62,7 +62,7 @@ public class PopHeroSelectPanelManager : MonoBehaviour
     }
 
     // 加载英雄排名
-    private void Init(int[] heroList, string[] attrs)
+    private void Init(int[] heroList, int[] checkedList, string[] attrs)
     {
         // 清除现有的子物体
         foreach (Transform child in rankParent.transform)
@@ -90,6 +90,12 @@ public class PopHeroSelectPanelManager : MonoBehaviour
             cellInfo.popHeroSelectPanelManager = this;
             cellInfo.Init(heroId, attrs);
             itemCount++;
+
+            if (checkedList != null && checkedList.Length > 0)
+            {
+                if (Array.IndexOf(checkedList, heroId) >= 0)
+                    OnSelectItem(cellInfo, true);
+            }
         }
 
         // Get the RectTransform components
@@ -124,7 +130,6 @@ public class PopHeroSelectPanelManager : MonoBehaviour
         }
         else if(lastSelectedCells.Count < heroHeads.Length)
         {
-            selectTarget.OnSelect(true);
             lastSelectedCells.Add(selectTarget);
         }
 
@@ -144,10 +149,10 @@ public class PopHeroSelectPanelManager : MonoBehaviour
         }
     }
 
-    public void OnShow(int[] heroList, string[] attrs, Action<List<int>> onSelectMethod)
+    public void OnShow(int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod)
     {
         this.onSelectMethod = onSelectMethod;
-        Init(heroList, attrs);
+        Init(heroList, checkedList, attrs);
     }
 
     public void OnHide()

@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.UI;
+using TMPro;
 
 public class PopResultPanelManager : MonoBehaviour
 {
     public VideoPlayer videoPlayer;
     public RawImage rawImage; // 用于显示视频画面的RawImage组件
 
+    public TMP_Text titleText;
     public Button closeBtn;
+    public Button runBtn;
 
     void Start()
     {
         closeBtn.onClick.AddListener(() =>
         {
             PanelManager.Instance.HidePopResultPanel();
-          //  CardShopManager.Instance.OnShow();
         });
+        runBtn.onClick.AddListener(() =>
+        {
+            PanelManager.Instance.HidePopResultPanel();
+        });
+
 
         Debug.Log("初始化视频播放器...");
         
@@ -156,9 +163,10 @@ public class PopResultPanelManager : MonoBehaviour
 
     }
 
-    public void OnShow(string path)
+    public void OnShow(string title, string path)
     {
         Debug.Log("显示结果面板，开始加载视频...");
+        titleText.text = title;
         
         try
         {

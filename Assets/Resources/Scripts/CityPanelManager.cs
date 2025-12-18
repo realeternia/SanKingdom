@@ -67,10 +67,6 @@ public class CityPanelManager : MonoBehaviour
                 node.gameObject.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     PanelManager.Instance.ShowCityBuilding(cityId, buildingCfg.Id);
-                  //  int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList().ToArray();
-                  //  string[] attrs = buildingCfg.Attrs;
-                  //  PanelManager.Instance.ShowPopHeroSelectPanel(heroList, attrs);
-                    // PanelManager.Instance.ShowPopResultPanel(buildingCfg.Mp4);
                 });
             }
 

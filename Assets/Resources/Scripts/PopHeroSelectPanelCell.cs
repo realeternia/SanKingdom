@@ -30,7 +30,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         checkImage.raycastTarget = false;
         
         // 初始化背景色为正常状态
-        OnSelect(false);
+      //  OnSelect(false);
     }
 
     public string GetAttr(HeroConfig heroConfig, string attr)
@@ -62,6 +62,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
     public void OnSelect(bool isSelect)
     {
+        Debug.Log($"OnSelect {heroId} {isSelect}");
         this.isSelect = isSelect;
         checkImage.gameObject.SetActive(isSelect);
         if (backgroundImage != null)
