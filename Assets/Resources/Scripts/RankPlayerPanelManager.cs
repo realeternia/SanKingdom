@@ -125,7 +125,7 @@ public class RankPlayerPanelManager : MonoBehaviour
          if (rankParentRect != null && cellRect != null)
          {
              // Set the height of rankParent based on the number of cells
-             rankParentRect.sizeDelta = new Vector2(rankParentRect.sizeDelta.x, cellRect.sizeDelta.y * GameManager.Instance.players.Length);
+             rankParentRect.sizeDelta = new Vector2(rankParentRect.sizeDelta.x, cellRect.sizeDelta.y * GameManager.Instance.players.Count);
          }
         // 确保scrollRect不为空，然后滚动到最前面
         if (scrollRect != null)

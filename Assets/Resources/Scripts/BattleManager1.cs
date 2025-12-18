@@ -91,7 +91,8 @@ public class BattleManager : MonoBehaviour
 
         // 通知所有玩家开始战斗
         foreach (var player in GameManager.Instance.players)
-            player.OnBattleBegin();
+        if(player != null)
+                player.OnBattleBegin();
 
         BattleResultPanel.gameObject.SetActive(false);
         SpawnUnitsInRegions(cards1, cards2);
@@ -151,7 +152,7 @@ public class BattleManager : MonoBehaviour
 
     private int[] GetMatch()
     {
-        return new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+        return new int[] { 0, 1 };
     }
 
     private void SpawnUnitsInRegions(int[] cards1, int[] cards2)

@@ -10,12 +10,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 
-// 自定义序列化属性类
-[AttributeUsage(AttributeTargets.Field)]
-public class CustomSerializeFieldAttribute : Attribute
-{
-}
-
 public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     private Image targetImage;
@@ -31,36 +25,29 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public TMP_Text resultText;
     public Image playerBgImg;
 
-    [CustomSerializeField]
-    public int pid; 
-    [CustomSerializeField]
+    public int pid;  //自增id
+    public int forceId;  //配置表id
+
     public int gold;
     public string playerName{ get { return playerConfig.Name; } }
 
-    [CustomSerializeField]
     public int mark;
 
-    [CustomSerializeField]
     public bool isAI = false;
     public int food;
-    [CustomSerializeField]
     public int maxFood;
     private float lastFoodDeductionTime = 0f;
 
-    [CustomSerializeField]
-    public int playerId;  //配置表id
+
     // 在 PlayerInfo 类中添加 AICardConfig 实例
     public PlayerConfig playerConfig;
 
     public string imgPath{ get { return playerConfig.Imgpath; } }
     public Color lineColor;
 
-    [CustomSerializeField]
     public int sodatk = 0; //士兵atk强化
-    [CustomSerializeField]
     public int sodhp = 0; //士兵def强化
 
-    [CustomSerializeField]
     public int lastFightMark;
 
     public CastleHUD castleHUD;
@@ -74,7 +61,7 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void Init(int id, int pid1)
     {
         pid = id;
-        playerId = pid1;
+        forceId = pid1;
         isAI = id > 0;
 
         gold = 0;
@@ -85,18 +72,11 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         UpdateView();
     }
 
-    public void FirstRound()
-    {
-        if (playerConfig.InitGold > 0)
-            AddGold(playerConfig.InitGold);
-        else if (playerConfig.InitGold < 0)
-            SubGold(-playerConfig.InitGold, false);
-    }
 
     // init 和 load时候都会调用
     public void SetPlayerData()
     {
-        playerConfig = PlayerConfig.GetConfig(playerId);
+        playerConfig = PlayerConfig.GetConfig(forceId);
         lineColor = ColorUtility.TryParseHtmlString(playerConfig.Colorstr, out lineColor) ? lineColor : Color.white;
     }
 

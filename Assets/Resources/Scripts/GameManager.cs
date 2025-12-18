@@ -9,11 +9,12 @@ using CommonConfig;
 public class GameManager : MonoBehaviour
 {   
     public static GameManager Instance;
-    public PlayerInfo[] players; //不能new，都是配置好的
     // todo 这里还有一个city数据列表
-    // todo playersavedata也可以单独放一个，然后set给player
     private StreamWriter logWriter;  // 日志写入器
     public SaveData SaveData;
+    public GameObject topNode;
+
+    public List<PlayerInfo> players = new List<PlayerInfo>();
 
     private void Awake()
     {
@@ -31,11 +32,6 @@ public class GameManager : MonoBehaviour
         
         // 注册日志事件
         Application.logMessageReceived += LogMessageReceived;
-
-        players[0].Init(0, PlayerBook.GetWang());
-        var pls = PlayerBook.GetRandomN(7);
-        for (int i = 0; i < 7; i++)
-            players[i + 1].Init(i + 1, pls[i]);
 
         UnityEngine.Debug.Log("GameManager Start");
     }
@@ -78,30 +74,9 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public void ClearTurn()
+    public PlayerInfo GetPlayer(int idx)
     {
-        foreach(var p in players)
-            p.isOnTurn = false;    
-    }
-
-    public void OnPlayerTurn(int pid)
-    {
-        foreach(var p in players)
-            p.isOnTurn = false;
-        players[pid].isOnTurn = true;
-    }
-
-    public PlayerInfo GetPlayer(int pid)
-    {
-        return players[pid];
-    }
-
-    public PlayerInfo GetFirstNoAiPlayer()
-    {
-        foreach(var p in players)
-            if(p.pid > 0 && !p.isAI)
-                return p;
-        return null;
+        return players.Find(p => p.pid == idx);
     }
 
     public SaveCityData GetCity(int cityId)
@@ -194,6 +169,7 @@ public class GameManager : MonoBehaviour
                 forceData.isPlayer = true;
             SaveData.forces.Add(forceData); 
         }
+        InitForceControls();
     }
 
     public bool IsGameSaveExist()
@@ -215,6 +191,7 @@ public class GameManager : MonoBehaviour
             string json = File.ReadAllText(savePath);
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
             SaveData = saveData;
+            InitForceControls();
 
             Debug.Log("游戏数据加载成功 year=" + SaveData.year);
         }
@@ -241,6 +218,21 @@ public class GameManager : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogError("保存游戏数据失败: " + e.Message);
+        }
+    }
+
+    public void InitForceControls()
+    {
+        var playerForceControl = Resources.Load<GameObject>("Prefabs/PlayerInfoCell");
+        int idx = 0;
+        var totalWidth = 212 * SaveData.forces.Count;
+        foreach(var force in SaveData.forces)
+        {
+            var forceControl = Instantiate(playerForceControl, topNode.transform);
+            forceControl.GetComponent<PlayerInfo>().Init(idx, force.forceId);
+            forceControl.GetComponent<RectTransform>().anchoredPosition = new Vector2(-totalWidth / 2 + 212 * idx, 412);
+            players.Add(forceControl.GetComponent<PlayerInfo>());
+            idx++;
         }
     }
 }
