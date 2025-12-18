@@ -61,29 +61,7 @@ public class CardViewControl : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
         buyButton.onClick.AddListener(() =>
         {
-            var nowPlayer = CardShopManager.Instance.GetCurrentPlayer();
-            if (!nowPlayer.isAI)
-            {
-                if (count == 1 || nowPlayer.gold < priceI * 2)
-                {
-                    if (CardShopManager.Instance.OnPlayerBuyCard(this, nowPlayer, cardId, isHeroCard, priceI, 1))
-                        CardShopManager.Instance.AfterAct();
-                }
-                else
-                {
-                    if(!addButton.gameObject.activeSelf)
-                    {
-                        addButton.gameObject.SetActive(true);
-                        reduceButton.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        var nowCount = int.Parse(price.text) / priceI;
-                        if (CardShopManager.Instance.OnPlayerBuyCard(this, nowPlayer, cardId, isHeroCard, priceI * nowCount, nowCount))
-                            CardShopManager.Instance.AfterAct();
-                    }
-                }
-            }
+
         });
 
         addButton.gameObject.SetActive(false);

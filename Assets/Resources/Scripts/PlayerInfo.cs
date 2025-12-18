@@ -133,15 +133,11 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if(CardShopManager.Instance != null)
-            CardShopManager.Instance.QuickView(-1);
+
     }    
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if(CardShopManager.Instance != null)
-            CardShopManager.Instance.QuickView(pid);
-
         PanelManager.Instance.SendSignal("SelectPlayer", "", pid);
     }
 
@@ -364,7 +360,6 @@ public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 if (itemCfg.Effect == "first")
                 {
                     nextSkip = true;
-                    CardShopManager.Instance.jadePlayer = pid;
                 }
                 else if (itemCfg.Effect == "sodatk")
                     sodatk += itemCfg.Attr1Val;

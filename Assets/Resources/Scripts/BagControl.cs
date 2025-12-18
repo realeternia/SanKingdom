@@ -41,7 +41,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
         {      
             DestroyAllCells();
             PanelManager.Instance.HideBag();
-            CardShopManager.Instance.OnShow();
+          //  CardShopManager.Instance.OnShow();
         });
         fieldAutoBtn.onClick.AddListener(() =>
         {
@@ -87,10 +87,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
 
     public void OnShow()
     {
-        var currentPlayer = CardShopManager.Instance.GetCurrentPlayer();
-        if (!currentPlayer.isAI)
-            Bind(currentPlayer);
-        else
+
             Bind(GameManager.Instance.GetPlayer(0));
     }
 
