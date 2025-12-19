@@ -71,7 +71,7 @@ public class BattleManager : MonoBehaviour
         {
             // 打印加载耗时
             var startTime = Time.realtimeSinceStartup;
-            var mapNode = Resources.Load<GameObject>("Prefabs/Map" + newMapId);
+            var mapNode = Resources.Load<GameObject>("Prefabs/BattleMaps/Map" + newMapId);
             if (mapConfig != null)
                 Destroy(mapConfig.gameObject);
 
