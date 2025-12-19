@@ -69,13 +69,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
                     PanelManager.Instance.ShowCityBuilding(cityId, buildingCfg.Id);
                 });
             }
-
-            currentCityView.transform.Find("ButtonJishi").gameObject.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                // 从城市配置中获取英雄列表
-
-                //PanelManager.Instance.ShowPopResultPanel("shop2.mp4");
-            });
         }
         else
         {

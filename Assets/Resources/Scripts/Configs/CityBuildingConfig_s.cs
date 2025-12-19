@@ -53,8 +53,9 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[20001] = new CityBuildingConfig(20001, "farm", "农田", "ButtonTian");
-            config[20002] = new CityBuildingConfig(20002, "market", "集市", "ButtonJishi");
+            config[20001] = new CityBuildingConfig(20001, "farm", "发展", "ButtonTian");
+            config[20002] = new CityBuildingConfig(20002, "gate", "防御", "ButtonGate");
+            config[20004] = new CityBuildingConfig(20004, "market", "集市", "ButtonJishi");
 
         }
 

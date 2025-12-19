@@ -18,6 +18,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
     public TMP_Text textFood;
     public TMP_Text textSoldier;
     public TMP_Text textSecure;
+    public TMP_Text textPower;
     public TMP_Text textWall;
     public TMP_Text textLeader;
     public GameObject heroHeadRegion;
@@ -36,6 +37,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         textFood.text = city.food.ToString();
         textSoldier.text = city.soldier.ToString();
         textSecure.text = city.secure.ToString();
+        textPower.text = city.power.ToString();
         textWall.text = city.wall.ToString();
         var owner = city.GetOwner();
         if(owner > 0)

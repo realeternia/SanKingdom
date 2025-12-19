@@ -5901,7 +5901,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!1001 &692386798
+--- !u!1001 &683616323
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -5939,7 +5939,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1163177964344447667, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 650
+      value: 700
       objectReference: {fileID: 0}
     - target: {fileID: 1163177964344447667, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5989,43 +5989,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2252743753436515940, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2252743753436515940, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -500
-      objectReference: {fileID: 0}
     - target: {fileID: 7480162647970527104, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
       propertyPath: m_Name
       value: CityInfo
-      objectReference: {fileID: 0}
-    - target: {fileID: 7480162647970527104, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
---- !u!224 &692386799 stripped
+--- !u!224 &683616324 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1163177964344447667, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
-  m_PrefabInstance: {fileID: 692386798}
+  m_PrefabInstance: {fileID: 683616323}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &692386800 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7480162647970527104, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
-  m_PrefabInstance: {fileID: 692386798}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &692386801 stripped
+--- !u!114 &683616325 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6072995707302064365, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
-  m_PrefabInstance: {fileID: 692386798}
+  m_PrefabInstance: {fileID: 683616323}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 692386800}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a440bd064d0ca414da08bc9c782e1b64, type: 3}
@@ -9409,7 +9392,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1163177964344447667, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 650
+      value: 700
       objectReference: {fileID: 0}
     - target: {fileID: 1163177964344447667, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9461,7 +9444,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2252743753436515940, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -500
+      value: -550
       objectReference: {fileID: 0}
     - target: {fileID: 7480162647970527104, guid: be98aa81f08571a4082829758e75f8c5, type: 3}
       propertyPath: m_Name
@@ -9848,7 +9831,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1233966845}
-  - {fileID: 692386799}
+  - {fileID: 683616324}
   - {fileID: 656844183}
   - {fileID: 1090962204}
   m_Father: {fileID: 1835018305}
@@ -9908,8 +9891,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aea733f04dda3744909aecc06301a03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cityDetailObj: {fileID: 692386800}
-  cityDetail: {fileID: 692386801}
+  cityDetail: {fileID: 683616325}
   btnRank: {fileID: 1090962205}
   btnCity: {fileID: 656844184}
   bgPanel: {fileID: 1233966844}

@@ -33,30 +33,18 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
       //  OnSelect(false);
     }
 
-    public string GetAttr(HeroConfig heroConfig, string attr)
+    public void Init(SaveHeroData heroData, string[] attrs)
     {
-        switch (attr)
-        {
-            case "Str":
-                return heroConfig.Str.ToString();
-            case "Inte":
-                return heroConfig.Inte.ToString();
-            case "Fair":
-                return heroConfig.Fair.ToString();
-            default:
-                return attr;
-        }
-    }
-
-    public void Init(int heroId, string[] attrs)
-    {
-        this.heroId = heroId;
+        this.heroId = heroData.heroId;
         var heroCfg = HeroConfig.GetConfig(heroId);
 
         heroName.text = heroCfg.Name;
         
-        textAttr1.text = GetAttr(heroCfg, attrs[0]);
-        textAttr2.text = GetAttr(heroCfg, attrs[1]);
+        textAttr1.text = heroData.GetAttr(attrs[0]).ToString();
+        if(attrs.Length > 1)
+            textAttr2.text = heroData.GetAttr(attrs[1]).ToString();
+        else
+            textAttr2.text = "";
 
     }
 

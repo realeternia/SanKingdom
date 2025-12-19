@@ -13,6 +13,7 @@ public class SaveCityData
     public int food; //现有粮食
     public int soldier; //士兵
     public int secure; //安全系数
+    public int power; //士气
     public int wall; //城防
     public List<SaveHeroData> heros;
 
@@ -24,6 +25,16 @@ public class SaveCityData
             heroList.Add(member.heroId);
         }
         return heroList;    
+    }
+
+    public SaveHeroData GetHero(int heroId)
+    {
+        foreach (var member in heros)
+        {
+            if (member.heroId == heroId)
+                return member;
+        }
+        return null;
     }
 
     public int GetOwner()
@@ -89,6 +100,8 @@ public class SaveCityData
                 return secure;
             case "wall":
                 return wall;
+            case "power":
+                return power;
             default:
                 return 0;
         }

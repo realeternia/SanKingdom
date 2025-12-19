@@ -88,8 +88,12 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[21001] = new CityDevConfig(21001, "farm", "发展农业", "发展农业，提升粮食产量", "farm", 300, 4, 10, new string[]{"ArchFood"}, new string[]{"Fair","Str"}, "harve.mp4");
-            config[21002] = new CityDevConfig(21002, "farm", "发展商业", "发展商业，提升金钱收入", "market", 200, 4, 10, new string[]{"ArchGold"}, new string[]{"Fair","Inte"}, "shop2.mp4");
+            config[21001] = new CityDevConfig(21001, "farm", "发展农业", "发展农业,提升粮食产量", "farm", 300, 4, 10, new string[]{"ArchFood"}, new string[]{"Fair","Str"}, "harve.mp4");
+            config[21002] = new CityDevConfig(21002, "farm", "发展商业", "发展商业,提升金钱收入", "market", 200, 4, 10, new string[]{"ArchGold"}, new string[]{"Fair","Inte"}, "shop2.mp4");
+            config[21003] = new CityDevConfig(21003, "gate", "加固城墙", "提升城防", "wall", 200, 4, 10, new string[]{"Wall"}, new string[]{"Str"}, "fix2.mp4");
+            config[21004] = new CityDevConfig(21004, "farm", "街道巡逻", "提升治安", "secure", 200, 4, 10, new string[]{"Secure"}, new string[]{"Str"}, "secure.mp4");
+            config[21005] = new CityDevConfig(21005, "market", "走访", "搜集人才和宝物", "find", 0, 100, 200, new string[]{"Gold"}, new string[]{"Charm","Inte"}, "search.mp4");
+            config[21006] = new CityDevConfig(21006, "gate", "训练", "提升军队士气", "train", 0, 4, 10, new string[]{"Power"}, new string[]{"LeadShip","Str"}, "train2.mp4");
 
         }
 

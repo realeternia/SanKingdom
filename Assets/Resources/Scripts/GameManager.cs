@@ -110,17 +110,16 @@ public class GameManager : MonoBehaviour
             city.food = cityCfg.Food;
             city.soldier = cityCfg.Soldier;
             city.secure = cityCfg.Secure;
+            city.power = 70;
             city.wall = cityCfg.Wall;
             city.archFood = cityCfg.ArchFood;
             city.archGold = cityCfg.ArchGold;
             city.archPeople = cityCfg.ArchPeople;
             city.heros = new List<SaveHeroData>();
             if(cityCfg.Leader > 0)
-                city.heros.Add(new SaveHeroData { heroId = cityCfg.Leader });
+                city.heros.Add(new SaveHeroData { heroId = cityCfg.Leader, cityOwner = true });
             if(cityCfg.Members != null)
-            {
                 city.heros.AddRange(cityCfg.Members.Select(m => new SaveHeroData { heroId = m }));
-            }
             SaveData.cities.Add(city);
         }
         foreach(var force in ForceConfig.ConfigList)

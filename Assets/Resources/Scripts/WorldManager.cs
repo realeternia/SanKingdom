@@ -8,7 +8,6 @@ using System;
 
 public class WorldManager : MonoBehaviour, IPanelEvent
 {
-    public GameObject cityDetailObj;
     public CityDetail cityDetail;
     public Button btnRank;
     public Button btnCity;
@@ -18,6 +17,7 @@ public class WorldManager : MonoBehaviour, IPanelEvent
     // Start is called before the first frame update
     void Start()
     {
+        cityDetail.gameObject.SetActive(false);
         // 加载地图块
         LoadMapPieces();
 
@@ -111,7 +111,7 @@ public class WorldManager : MonoBehaviour, IPanelEvent
 
     public void OnPieceClick(int pieceId)
     {
-        cityDetailObj.SetActive(true);
+        cityDetail.gameObject.SetActive(true);
         cityDetail.SetCityDetail(pieceId);
         // 高亮显示点击的地块
         var cityCfg = WorldConfig.GetConfig(pieceId);
