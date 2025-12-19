@@ -92,31 +92,6 @@ public class CityDevPanelManager : MonoBehaviour
         }
     }
 
-    private string GetAttrName(string type)
-    {
-        switch (type.ToLower())
-        {
-            case "archgold":
-                return "商业";
-            case "archfood":
-                return "农业";
-            case "archpeople":
-                return "人口";
-            case "gold":
-                return "金钱";
-            case "food":
-                return "粮食";
-            case "soldier":
-                return "士兵";
-            case "secure":
-                return "治安";
-            case "wall":
-                return "城防";
-            default:
-                return "";
-        }
-    }
-
     public void OnSelectItem(CityDevPanelCell cellInfo)
     {
         // 取消上次选中的城市
@@ -135,14 +110,14 @@ public class CityDevPanelManager : MonoBehaviour
 
         if(devCfg.DevAttrs.Length > 0)
         {
-            attr1Text.text =  GetAttrName(devCfg.DevAttrs[0]);
+            attr1Text.text = NameTransTool.GetAttrName(devCfg.DevAttrs[0]);
             attrVal1Text.text = cityData.GetAttr(devCfg.DevAttrs[0]).ToString();
         }
         if(devCfg.DevAttrs.Length > 1)
         {
             attr2Text.gameObject.SetActive(true);
             attrVal2Text.gameObject.SetActive(true);
-            attr2Text.text =  GetAttrName(devCfg.DevAttrs[1]);
+            attr2Text.text = NameTransTool.GetAttrName(devCfg.DevAttrs[1]);
             attrVal2Text.text = cityData.GetAttr(devCfg.DevAttrs[1]).ToString();
         }
         else
@@ -161,7 +136,14 @@ public class CityDevPanelManager : MonoBehaviour
     {
         PanelManager.Instance.HideCityBuilding();
         var devConfig = CityDevConfig.GetConfig(devId);
-        PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, devConfig.Mp4);
+        var cityData = GameManager.Instance.GetCity(cityId);
+        cityData.AddAttr(devConfig.DevAttrs[0], 5);
+        string attr1Name = NameTransTool.GetAttrName(devConfig.DevAttrs[0].ToLower());
+        string attr1Val = string.Format("{0}(<color=green>+{1}</color>)", cityData.GetAttr(devConfig.DevAttrs[0]).ToString(), 5);
+        string attr2Name = devConfig.DevAttrs.Length > 1 ? NameTransTool.GetAttrName(devConfig.DevAttrs[1].ToLower()) : "";
+        string attr2Val = devConfig.DevAttrs.Length > 1 ? string.Format("{0}(+{1})", cityData.GetAttr(devConfig.DevAttrs[1]).ToString(), 5) : "";
+        
+        PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, attr1Name, attr1Val, attr2Name, attr2Val, devConfig.Mp4);
     }
     
     public void OnShow()

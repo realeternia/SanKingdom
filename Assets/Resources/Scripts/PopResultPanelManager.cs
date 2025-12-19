@@ -10,9 +10,17 @@ public class PopResultPanelManager : MonoBehaviour
     public VideoPlayer videoPlayer;
     public RawImage rawImage; // 用于显示视频画面的RawImage组件
 
+    public GameObject videoPanel;
+    public GameObject infoPanel;
+
     public TMP_Text titleText;
     public Button closeBtn;
     public Button runBtn;
+
+    public TMP_Text attr1Text;
+    public TMP_Text attrVal1Text;
+    public TMP_Text attr2Text;
+    public TMP_Text attrVal2Text;
 
     void Start()
     {
@@ -163,10 +171,24 @@ public class PopResultPanelManager : MonoBehaviour
 
     }
 
-    public void OnShow(string title, string path)
+    public void OnShow(string title, string attr1, string attrVal1, string attr2, string attrVal2, string path)
     {
         Debug.Log("显示结果面板，开始加载视频...");
         titleText.text = title;
+        runBtn.gameObject.SetActive(false);
+        attr1Text.text = attr1;
+        attrVal1Text.text = attrVal1;
+
+        if(string.IsNullOrEmpty(attr2))
+        {
+            attr2Text.gameObject.SetActive(false);
+        }
+        else
+        {
+            attr2Text.gameObject.SetActive(true);
+            attr2Text.text = attr2;
+            attrVal2Text.text = attrVal2;
+        }
         
         try
         {
@@ -214,6 +236,25 @@ public class PopResultPanelManager : MonoBehaviour
             Debug.LogError("视频播放过程中发生异常: " + e.ToString());
             Debug.LogError("异常堆栈: " + e.StackTrace);
         }
+        
+        // 启动协程，4.5秒后隐藏videoPanel
+        StartCoroutine(HideVideoPanelAfterDelay(4.8f));
+    }
+    
+    // 协程：延迟后隐藏videoPanel
+    private System.Collections.IEnumerator HideVideoPanelAfterDelay(float delaySeconds)
+    {
+        Debug.Log("开始等待隐藏videoPanel，延迟时间: " + delaySeconds + "秒");
+        
+        // 等待指定的延迟时间
+        yield return new WaitForSeconds(delaySeconds);
+        
+        // 隐藏videoPanel
+        videoPanel.SetActive(false);
+        infoPanel.SetActive(true);
+        runBtn.gameObject.SetActive(true);
+
+        PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
     }
 
     public void OnHide()
@@ -243,3 +284,4 @@ public class PopResultPanelManager : MonoBehaviour
         }
     }    
 }
+

@@ -31,6 +31,14 @@ namespace CommonConfig
         /// </summary>
         public int GoldCost;
         /// <summary>
+        ///提升值
+        /// </summary>
+        public int AddMin;
+        /// <summary>
+        ///提升最大
+        /// </summary>
+        public int AddMax;
+        /// <summary>
         ///显示属性
         /// </summary>
         public string[] DevAttrs;
@@ -44,7 +52,7 @@ namespace CommonConfig
         public string Mp4;
 
 
-        public CityDevConfig(int Id, string BuildingName, string Cname, string Des, string Icon, int GoldCost, string[] DevAttrs, string[] Attrs, string Mp4)
+        public CityDevConfig(int Id, string BuildingName, string Cname, string Des, string Icon, int GoldCost, int AddMin, int AddMax, string[] DevAttrs, string[] Attrs, string Mp4)
         {
             this.Id = Id;
             this.BuildingName = BuildingName;
@@ -52,6 +60,8 @@ namespace CommonConfig
             this.Des = Des;
             this.Icon = Icon;
             this.GoldCost = GoldCost;
+            this.AddMin = AddMin;
+            this.AddMax = AddMax;
             this.DevAttrs = DevAttrs;
             this.Attrs = Attrs;
             this.Mp4 = Mp4;
@@ -78,8 +88,8 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[21001] = new CityDevConfig(21001, "farm", "发展农业", "发展农业，提升粮食产量", "farm", 300, new string[]{"ArchFood"}, new string[]{"Fair","Str"}, "harve.mp4");
-            config[21002] = new CityDevConfig(21002, "farm", "发展商业", "发展商业，提升金钱收入", "market", 200, new string[]{"ArchGold"}, new string[]{"Fair","Inte"}, "shop2.mp4");
+            config[21001] = new CityDevConfig(21001, "farm", "发展农业", "发展农业，提升粮食产量", "farm", 300, 4, 10, new string[]{"ArchFood"}, new string[]{"Fair","Str"}, "harve.mp4");
+            config[21002] = new CityDevConfig(21002, "farm", "发展商业", "发展商业，提升金钱收入", "market", 200, 4, 10, new string[]{"ArchGold"}, new string[]{"Fair","Inte"}, "shop2.mp4");
 
         }
 

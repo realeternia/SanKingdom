@@ -235,7 +235,7 @@ public class PanelManager : MonoBehaviour
         popHeroSelectPanel = null;
     }
 
-    public void ShowPopResultPanel(string title, string path)
+    public void ShowPopResultPanel(string title, string attr1, string attrVal1, string attr2, string attrVal2, string path)
     {
         if (popResultPanel == null)
         {
@@ -243,7 +243,7 @@ public class PanelManager : MonoBehaviour
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popResultPanel.SetActive(true);
-        popResultPanel.GetComponent<PopResultPanelManager>().OnShow(title, path);
+        popResultPanel.GetComponent<PopResultPanelManager>().OnShow(title, attr1, attrVal1, attr2, attrVal2, path);
 
         ChangePanelCount(popResultPanel, true);
     }
@@ -261,12 +261,15 @@ public class PanelManager : MonoBehaviour
 
     public void SendSignal(string name, string parm1, int parm2)
     {
-        UnityEngine.Debug.Log($"PanelManager SendSignal {name} {parm1} {parm2}");
+        Debug.Log($"PanelManager SendSignal {name} {parm1} {parm2}");
         foreach (var panel in openPanelList)
         {
-            UnityEngine.Debug.Log($"PanelManager SendSignal {panel.name} {name} {parm1} {parm2}");
+            Debug.Log($"PanelManager SendSignal {panel.name} {name} {parm1} {parm2}");
             if (panel.TryGetComponent<IPanelEvent>(out IPanelEvent p))
+            {
+                Debug.Log($"PanelManager SendSignal2 {panel.name} {name} {parm1} {parm2}");
                 p.SendSignal(name, parm1, parm2);
+            }
         }
     }
 

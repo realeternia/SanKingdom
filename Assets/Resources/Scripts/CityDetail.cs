@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
 
-public class CityDetail : MonoBehaviour
+public class CityDetail : MonoBehaviour, IPanelEvent
 {
     public int cityId;
 
@@ -68,6 +68,14 @@ public class CityDetail : MonoBehaviour
 
 
 
+    }
+
+    public void SendSignal(string name, string parm1, int parm2)
+    {
+        if(name == "CityAttrChange")
+        {
+            SetCityDetail(cityId); //刷新数据
+        }
     }
 
     // Start is called before the first frame update

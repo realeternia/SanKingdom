@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 [System.Serializable]
@@ -33,6 +34,39 @@ public class SaveCityData
                 return member.heroId;
         }
         return 0;
+    }
+
+    public void AddAttr(string type, int add)
+    {
+        switch (type.ToLower())
+        {
+            case "archgold":
+                archGold += add;
+                break;
+            case "archfood":
+                archFood += add;
+                break;
+            case "archpeople":
+                archPeople += add;
+                break;
+            case "gold":
+                gold += add;
+                break;
+            case "food":
+                food += add;
+                break;
+            case "soldier":
+                soldier += add;
+                break;
+            case "secure":
+                secure += add;
+                break;
+            case "wall":
+                wall += add;
+                break;
+            default:
+                break;
+        }
     }
 
     public int GetAttr(string type)

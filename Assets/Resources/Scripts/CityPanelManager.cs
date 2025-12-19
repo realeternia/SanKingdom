@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
 
-public class CityPanelManager : MonoBehaviour
+public class CityPanelManager : MonoBehaviour, IPanelEvent
 {
     public int cityId;
     public Button closeBtn;
@@ -91,4 +91,9 @@ public class CityPanelManager : MonoBehaviour
     public void OnHide()
     {
     }
+
+    public void SendSignal(string name, string parm1, int parm2)
+    {
+        cityDetail.SendSignal(name, parm1, parm2);
+    } 
 }

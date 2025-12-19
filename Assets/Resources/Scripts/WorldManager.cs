@@ -6,12 +6,13 @@ using CommonConfig;
 using TMPro;
 using System;
 
-public class WorldManager : MonoBehaviour
+public class WorldManager : MonoBehaviour, IPanelEvent
 {
     public GameObject cityDetailObj;
     public CityDetail cityDetail;
     public Button btnRank;
     public Button btnCity;
+    public GameObject bgPanel;
     private List<WorldPieceControl> worldPieces = new List<WorldPieceControl>();
 
     // Start is called before the first frame update
@@ -54,7 +55,7 @@ public class WorldManager : MonoBehaviour
         //     StartCoroutine(LoadMapPieces());
         //     yield break;
         // }
-        
+
         // 遍历所有地图配置
         foreach (var worldConfig in WorldConfig.ConfigList)
         {
@@ -65,25 +66,15 @@ public class WorldManager : MonoBehaviour
                 
                 // 加载图片资源
                 Texture2D texture = Resources.Load<Texture2D>(texturePath);
-                if (texture == null)
-                {
-                    Debug.LogWarning($"找不到地图图片: {texturePath}");
-                    continue;
-                }
 
                 // 创建精灵
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
                 
                 // 从Prefabs/WorldPiece加载预设体
                 GameObject worldPiecePrefab = Resources.Load<GameObject>("Prefabs/WorldPiece");
-                if (worldPiecePrefab == null)
-                {
-                    Debug.LogError("找不到预设体: Prefabs/WorldPiece");
-                    continue;
-                }
                 
                 // 实例化预设体
-                GameObject mapPiece = Instantiate(worldPiecePrefab, transform, false);
+                GameObject mapPiece = Instantiate(worldPiecePrefab, bgPanel.transform, false);
                 mapPiece.name = worldConfig.Name;
                 
                 // 获取或添加Image组件
@@ -104,9 +95,6 @@ public class WorldManager : MonoBehaviour
                     
                     // 设置大小
                     rectTransform.sizeDelta = new Vector2(texture.width/2, texture.height/2);
-                    
-                    // 可以根据需要设置缩放
-                    // rectTransform.localScale = new Vector3(mapConfig.Width / texture.width, mapConfig.Height / texture.height, 1);
                 }
 
                 pieceControl.InitForce();
@@ -134,4 +122,10 @@ public class WorldManager : MonoBehaviour
         btnCity.gameObject.GetComponentInChildren<TMP_Text>().text = "进入" + cityCfg.Cname;
         btnCity.gameObject.SetActive(true);
     }
+
+    public void SendSignal(string name, string parm1, int parm2)
+    {
+        Debug.Log($"WorldManager SendSignal {name} {parm1} {parm2}");
+        cityDetail.SendSignal(name, parm1, parm2);
+    }    
 }

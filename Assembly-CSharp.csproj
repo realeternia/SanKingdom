@@ -62,10 +62,6 @@
   <ItemGroup>
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveData.cs" />
-    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveCityData.cs" />
-    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveForceData.cs" />
-    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
-    <Compile Include="Assets\Resources\Scripts\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitAround.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillManager.cs" />
@@ -91,6 +87,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackReboundArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitAddRege.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\NameTransTool.cs" />
     <Compile Include="Assets\Resources\Scripts\PlayerInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BuffShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BuffSpeedDown.cs" />
@@ -126,7 +123,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SkillDefFeedback.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BuffShieldValue.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitBuffArea.cs" />
-    <Compile Include="Assets\Resources\Scripts\BattleManager1.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BuffNoAction.cs" />
     <Compile Include="Assets\Resources\Scripts\BagCell.cs" />
@@ -147,6 +143,7 @@
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitMasterShield.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\BuffTime.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitAttr.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackAntiShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackAddDamage.cs" />
@@ -175,6 +172,7 @@
     <Compile Include="Assets\Resources\Scripts\HeroInfoGroup.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillDefHpLow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillModifyBeBuffTime.cs" />
+    <Compile Include="Assets\Resources\Scripts\BattleManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillBuffExpand.cs" />
     <Compile Include="Assets\Resources\Scripts\SelectHeroControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAidSuddenArrow.cs" />
@@ -187,8 +185,8 @@
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\PlayerConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\PO\MapConfig.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buff.cs" />
-    <Compile Include="Assets\Resources\Scripts\MapConfig.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHelpAidBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackRunCross.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDetail.cs" />
