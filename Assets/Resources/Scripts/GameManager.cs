@@ -96,46 +96,7 @@ public class GameManager : MonoBehaviour
         }
         return -1;
     }
-
-    // 静态变量记录上次播放路径和 clip
-    string lastPath = "";
-    AudioClip lastClip = null;
-
-    private int lastSoundPriority = -1;
-    private float lastSoundTime = 0f;
-
-    public void PlaySound(string path, int prioty = 3)
-    {
-        float currentTime = Time.time;
-        // 如果当前优先级低于上一次且时间间隔小于1秒，则跳过播放
-        if (prioty < lastSoundPriority && currentTime - lastSoundTime < 1.5f)
-        {
-            return;
-        }
-
-        // 更新上次播放信息
-        lastSoundPriority = prioty;
-        lastSoundTime = currentTime;
-    
-        AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-        if (lastPath != path)
-        {
-            lastPath = path;
-            lastClip = Resources.Load<AudioClip>(path);
-            if (lastClip != null)
-            {
-                audioSource.clip = lastClip;
-            }
-        }
-
-        if (audioSource.clip != null)
-        {
-            audioSource.Stop();
-            audioSource.Play();
-        }
-    }
-
-    //新游戏开始数据初始化
+  //新游戏开始数据初始化
     public void NewGame(int forceId)
     {
         SaveData = new SaveData();

@@ -66,7 +66,7 @@ public class PanelManager : MonoBehaviour
     
     public void ShowBag()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         bagPanel.SetActive(true);
         bagPanel.GetComponent<BagControl>().OnShow();
 
@@ -75,7 +75,7 @@ public class PanelManager : MonoBehaviour
 
     public void HideBag()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         bagPanel.SetActive(false);
         bagPanel.GetComponent<BagControl>().OnHide();
 
@@ -84,7 +84,7 @@ public class PanelManager : MonoBehaviour
 
     public void ShowCity(int cityId)
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         cityPanel.SetActive(true);
         var cityPanelManager = cityPanel.GetComponent<CityPanelManager>();
         cityPanelManager.SetCityId(cityId);
@@ -95,7 +95,7 @@ public class PanelManager : MonoBehaviour
 
     public void HideCity()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         cityPanel.SetActive(false);
         cityPanel.GetComponent<CityPanelManager>().OnHide();
 
@@ -104,7 +104,7 @@ public class PanelManager : MonoBehaviour
     
     public void ShowCityBuilding(int cityId, int buildingId)
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         cityBuildingPanel.SetActive(true);
         var cityBuildingPanelManager = cityBuildingPanel.GetComponent<CityDevPanelManager>();
         cityBuildingPanelManager.SetCityId(cityId, buildingId);
@@ -115,7 +115,7 @@ public class PanelManager : MonoBehaviour
 
     public void HideCityBuilding()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         cityBuildingPanel.SetActive(false);
         cityBuildingPanel.GetComponent<CityDevPanelManager>().OnHide();
 
@@ -125,7 +125,7 @@ public class PanelManager : MonoBehaviour
 
     public void ShowRank()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         rankPanel.SetActive(true);
         rankPanel.GetComponent<RankPanelManager>().OnShow();
 
@@ -134,7 +134,7 @@ public class PanelManager : MonoBehaviour
 
     public void HideRank()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         rankPanel.SetActive(false);
         rankPanel.GetComponent<RankPanelManager>().OnHide();
 
@@ -143,7 +143,7 @@ public class PanelManager : MonoBehaviour
     
     public void ShowRankPlayer()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         rankPlayerPanel.SetActive(true);
         rankPlayerPanel.GetComponent<RankPlayerPanelManager>().OnShow();
 
@@ -152,7 +152,7 @@ public class PanelManager : MonoBehaviour
 
     public void HideRankPlayer()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         rankPlayerPanel.SetActive(false);
         rankPlayerPanel.GetComponent<RankPlayerPanelManager>().OnHide();
 
@@ -161,7 +161,7 @@ public class PanelManager : MonoBehaviour
 
     public void ShowPick()
     {
-        //  GameManager.Instance.PlaySound("Sounds/deck");
+        //  BGMPlayer.Instance.PlaySound("Sounds/deck");
         if (pickPanel == null)
         {
             var pickPanelPrefab = Resources.Load<GameObject>("Prefabs/Panels/PickPanel");
@@ -173,7 +173,7 @@ public class PanelManager : MonoBehaviour
 
     public void HidePick()
     {
-     //   GameManager.Instance.PlaySound("Sounds/deck");
+     //   BGMPlayer.Instance.PlaySound("Sounds/deck");
         pickPanel.SetActive(false);
 
         ChangePanelCount(pickPanel, false);
@@ -187,7 +187,7 @@ public class PanelManager : MonoBehaviour
         {
             popCitySelectPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/PopCitySelectPanel"), transform);
         }
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         popCitySelectPanel.SetActive(true);
         popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnShow(cityId);
 
@@ -196,7 +196,7 @@ public class PanelManager : MonoBehaviour
 
     public void HidePopCitySelectPanel()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         popCitySelectPanel.SetActive(false);
         popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnHide();
 
@@ -211,7 +211,7 @@ public class PanelManager : MonoBehaviour
         {
             popHeroSelectPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/PopHeroSelectPanel"), transform);
         }
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         popHeroSelectPanel.SetActive(true);
         popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(heroList, checkedList, attrs, onSelectMethod);
 
@@ -220,7 +220,7 @@ public class PanelManager : MonoBehaviour
 
     public void HidePopHeroSelectPanel()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         popHeroSelectPanel.SetActive(false);
         popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnHide();
 
@@ -235,7 +235,7 @@ public class PanelManager : MonoBehaviour
         {
             popResultPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/PopResultPanel"), transform);
         }
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         popResultPanel.SetActive(true);
         popResultPanel.GetComponent<PopResultPanelManager>().OnShow(title, path);
 
@@ -244,7 +244,7 @@ public class PanelManager : MonoBehaviour
 
     public void HidePopResultPanel()
     {
-        GameManager.Instance.PlaySound("Sounds/deck");
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
         popResultPanel.SetActive(false);
         popResultPanel.GetComponent<PopResultPanelManager>().OnHide();
 

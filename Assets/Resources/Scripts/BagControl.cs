@@ -48,7 +48,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
             var p1 = GameManager.Instance.GetPlayer(bindPlayer.pid);
             UpdateFieldView();
 
-            GameManager.Instance.PlaySound("Sounds/equip");
+            BGMPlayer.Instance.PlaySound("Sounds/equip");
         });
         aiSwitchBtn.onClick.AddListener(() =>
         {

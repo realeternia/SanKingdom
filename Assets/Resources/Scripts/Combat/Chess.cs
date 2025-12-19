@@ -624,7 +624,7 @@ public class Chess : MonoBehaviour
         Destroy(gameObject);
 
         if ((side == 1 || side == 2 && !isShadow ))
-            GameManager.Instance.PlaySound("Sounds/tnt", 7);
+            BGMPlayer.Instance.PlaySound("Sounds/tnt", 7);
 
         if (isHero)
         {

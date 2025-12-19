@@ -13,7 +13,7 @@ public static class EffectManager
         //     var heroConfig = HeroConfig.GetConfig(sourceChess.heroId);
 
         //     if ((sourceChess.side == 1 || sourceChess.side == 2) && effectName.StartsWith("Sword"))
-        //         GameManager.Instance.PlaySound("Sounds/sword");
+        //         BGMPlayer.Instance.PlaySound("Sounds/sword");
         // }
         // 播放粒子特效
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);

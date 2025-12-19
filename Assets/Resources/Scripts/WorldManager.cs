@@ -21,7 +21,7 @@ public class WorldManager : MonoBehaviour
         LoadMapPieces();
 
         var roll = UnityEngine.Random.Range(0, 3);
-        BGMPlayer.Instance.PlaySound(roll == 0 ? "BGMs/chun" : (roll == 1 ? "BGMs/xia" : "BGMs/qiu"));        
+        BGMPlayer.Instance.PlayBGM(roll == 0 ? "BGMs/chun" : (roll == 1 ? "BGMs/xia" : "BGMs/qiu"));        
 
         GameManager.Instance.SaveToFile();
 
