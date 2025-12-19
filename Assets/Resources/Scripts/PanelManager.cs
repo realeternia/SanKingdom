@@ -39,6 +39,9 @@ public class PanelManager : MonoBehaviour
         worldPanel.SetActive(true);
 
         ChangePanelCount(worldPanel, true);
+
+        var roll = UnityEngine.Random.Range(0, 3);
+        BGMPlayer.Instance.PlayBGM(roll == 0 ? "BGMs/chun" : (roll == 1 ? "BGMs/xia" : "BGMs/qiu"));                
     }
 
     public void HideWorld()
@@ -46,6 +49,9 @@ public class PanelManager : MonoBehaviour
         worldPanel.SetActive(false);
 
         ChangePanelCount(worldPanel, false);
+
+        var roll = UnityEngine.Random.Range(0, 2);
+        BGMPlayer.Instance.PlayBGM(roll == 0 ? "BGMs/weifeng" : "BGMs/pozhu");
     }
 
     public void ShowShop()

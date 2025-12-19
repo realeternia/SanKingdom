@@ -65,9 +65,6 @@ public class BattleManager : MonoBehaviour
 
     public void BattleBegin(int[] cards1, int[] cards2)
     {
-        var roll = UnityEngine.Random.Range(0, 2);
-        BGMPlayer.Instance.PlayBGM(roll == 0 ? "BGMs/weifeng" : "BGMs/pozhu");
-
         var newMapId = 1;
         gameFinish = false;
         if (mapConfig == null || newMapId != mapConfig.Mapid)

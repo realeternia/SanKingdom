@@ -20,9 +20,6 @@ public class WorldManager : MonoBehaviour
         // 加载地图块
         LoadMapPieces();
 
-        var roll = UnityEngine.Random.Range(0, 3);
-        BGMPlayer.Instance.PlayBGM(roll == 0 ? "BGMs/chun" : (roll == 1 ? "BGMs/xia" : "BGMs/qiu"));        
-
         GameManager.Instance.SaveToFile();
 
         btnCity.gameObject.SetActive(false);
