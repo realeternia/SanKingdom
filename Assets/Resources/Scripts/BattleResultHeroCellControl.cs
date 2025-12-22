@@ -41,7 +41,7 @@ public class BattleResultHeroCellControl : MonoBehaviour
         playerMark2.text = "技:" + battleStat.skillDamage.ToString();
         playerMark3.text = "英:" + battleStat.heroDamage.ToString();
 
-        playerIcon.sprite = player.playerImage.sprite;
+        playerIcon.sprite = Resources.Load<Sprite>(player.imgPath);
         heroIcon.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
     }
 }

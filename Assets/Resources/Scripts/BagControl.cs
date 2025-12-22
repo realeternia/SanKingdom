@@ -25,7 +25,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
     public BagRecycler bagRecycler;
     public TMP_Text infoText;
 
-    public PlayerInfoControl bindPlayer;
+    public Player bindPlayer;
 
     void Start()
     {
@@ -86,8 +86,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
 
     public void OnShow()
     {
-
-            Bind(GameManager.Instance.GetPlayer(0));
+        Bind(GameManager.Instance.GetPlayer(0));
     }
 
     public void OnHide()
@@ -95,7 +94,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
         
     }
 
-    public void Bind(PlayerInfoControl p)
+    public void Bind(Player p)
     {
         bindPlayer = p;
         UpdateView();
@@ -116,7 +115,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
         infoText.text = bindPlayer.pname + "\n<color=yellow>战斗力 </color>" + bindPlayer.lastFightMark + " <color=red>兵攻-</color>" + textAtk + " <color=green>兵血-</color>" + textHp + " <color=#FF7F00>粮食-</color>" + bindPlayer.maxFood;
 
         var humanCount = GameManager.Instance.players.Count(x => !x.isAI);
-      //  aiSwitchBtn.gameObject.SetActive(bindPlayer.pid != 0 && bindPlayer.playerConfig.CanPlay && (!bindPlayer.isAI || humanCount < 2));
+        // aiSwitchBtn.gameObject.SetActive(bindPlayer.player.pid != 0 && bindPlayer.playerConfig.CanPlay && (!bindPlayer.player.isAI || humanCount < 2));
         aiSwitchBtn.GetComponentInChildren<TMP_Text>().text = bindPlayer.isAI ? "AI模式" : "玩家模式";
     }
 
@@ -389,3 +388,4 @@ public class BagControl : MonoBehaviour, IPanelEvent
         cellCache.Clear();
     }    
 }
+

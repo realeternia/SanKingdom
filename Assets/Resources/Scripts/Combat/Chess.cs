@@ -224,7 +224,7 @@ public class Chess : MonoBehaviour
         }
     }
 
-    public void CheckInitAttr(PlayerInfoControl player, int lv)
+    public void CheckInitAttr(Player player, int lv)
     {
         level = lv;
 
@@ -714,7 +714,7 @@ public class Chess : MonoBehaviour
         lifeTime = time;
     }
 
-    public PlayerInfoControl GetPlayerInfo()
+    public Player GetPlayerInfo()
     {
         return GameManager.Instance.GetPlayer(playerId);
     }
@@ -928,3 +928,4 @@ public class Chess : MonoBehaviour
 
 
 }
+

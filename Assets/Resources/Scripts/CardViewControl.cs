@@ -223,7 +223,7 @@ imagePlayerHead.gameObject.SetActive(false);
         text.text = value.ToString();
     }
 
-    public void OnSold(PlayerInfoControl playerInfo, int sellCount)
+    public void OnSold(Player playerInfo, int sellCount)
     {
         if(sellCount > count || sellCount <= 0)
         {
@@ -257,7 +257,7 @@ imagePlayerHead.gameObject.SetActive(false);
         reduceButton.gameObject.SetActive(false);
 
         //创建一个Image，启动携程 飞到 PlayerInfo的位置 
-        StartCoroutine(MoveToPlayerInfoCount(playerInfo, sellCount));
+      //  StartCoroutine(MoveToPlayerInfoCount(playerInfo, sellCount));
     }
 
     private void SetGrayscaleEffect()

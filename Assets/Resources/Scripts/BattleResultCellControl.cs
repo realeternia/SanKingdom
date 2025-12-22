@@ -25,14 +25,14 @@ public class BattleResultCellControl : MonoBehaviour
         
     }
 
-    public void SetData(PlayerInfoControl player, int rank, int killMark)
+    public void SetData(Player player, int rank, int killMark)
     {
-        playerName.text = player.playerNameText.text;
+        playerName.text = player.pname;
 
         playerRank.text = rank.ToString(); // 假设按match顺序排列
         playerMark.text = $"<color=white>{player.mark}</color> (<color=green>+{killMark}</color>)";
 
 
-        playerIcon.sprite = player.playerImage.sprite;
+        playerIcon.sprite = Resources.Load<Sprite>(player.imgPath);
     }
 }

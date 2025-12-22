@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public SaveData SaveData;
     public GameObject topNode;
 
-    public List<PlayerInfoControl> players = new List<PlayerInfoControl>();
+    public List<Player> players = new List<Player>();
 
     private void Awake()
     {
@@ -73,8 +73,8 @@ public class GameManager : MonoBehaviour
     {
         
     }
-
-    public PlayerInfoControl GetPlayer(int idx)
+    
+    public Player GetPlayer(int idx)
     {
         return players.Find(p => p.pid == idx);
     }
@@ -189,9 +189,10 @@ public class GameManager : MonoBehaviour
         foreach(var force in SaveData.forces)
         {
             var forceControl = Instantiate(playerForceControl, topNode.transform);
-            forceControl.GetComponent<PlayerInfoControl>().Init(idx, force.forceId);
+            var playerInfoControl = forceControl.GetComponent<PlayerInfoControl>();
+            playerInfoControl.Init(idx, force.forceId);
             forceControl.GetComponent<RectTransform>().anchoredPosition = new Vector2(-totalWidth / 2 + 212 * idx, 412);
-            players.Add(forceControl.GetComponent<PlayerInfoControl>());
+            players.Add(playerInfoControl.player);
             idx++;
         }
     }

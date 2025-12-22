@@ -161,7 +161,7 @@ public static class HeroSelectionTool
             return (float)(exp - cardItemExp[level - 1]) / (cardItemExp[level] - cardItemExp[level - 1]);
     }
 
-    public static AttrInfo GetCardAttr(PlayerInfoControl player, int cardId, int lv)
+    public static AttrInfo GetCardAttr(Player player, int cardId, int lv)
     {
         var attrInfo = new AttrInfo();
         if (ConfigManager.IsHeroCard(cardId))
