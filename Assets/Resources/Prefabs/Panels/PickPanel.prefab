@@ -610,8 +610,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -530, y: -374}
-  m_SizeDelta: {x: 1050, y: 700}
+  m_AnchoredPosition: {x: -627, y: -270}
+  m_SizeDelta: {x: 1250, y: 580}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &2482012632724386729
 CanvasRenderer:
@@ -665,8 +665,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickPanelCellPrefab: {fileID: 387046929097598943, guid: 666137dc63b7289409a455a9898f6d48, type: 3}
   cellParent: {fileID: 940627568830753731}
-  refreshBtn: {fileID: 0}
-  refreshText: {fileID: 0}
   okBtn: {fileID: 1917179506905456279}
   loadGamePanel: {fileID: 9083821357096271003}
   loadGameBtn: {fileID: 1990410760096085844}

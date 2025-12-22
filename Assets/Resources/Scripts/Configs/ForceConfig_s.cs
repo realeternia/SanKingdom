@@ -53,11 +53,18 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new ForceConfig(1, "刘备", 100001, "#32DD32");
-            config[2] = new ForceConfig(2, "曹操", 100002, "#3232FF");
-            config[3] = new ForceConfig(3, "孙权", 100003, "#FF3232");
-            config[4] = new ForceConfig(4, "袁绍", 100006, "#C8C800");
+            config[1] = new ForceConfig(1, "刘备", 100001, "#387800");
+            config[2] = new ForceConfig(2, "曹操", 100002, "#2828E9");
+            config[3] = new ForceConfig(3, "孙权", 100003, "#D10028");
+            config[4] = new ForceConfig(4, "袁绍", 100006, "#DBD33A");
             config[5] = new ForceConfig(5, "董卓", 100004, "#646464");
+            config[6] = new ForceConfig(6, "马腾", 100011, "#B28500");
+            config[7] = new ForceConfig(7, "刘表", 100007, "#20DFE0");
+            config[8] = new ForceConfig(8, "刘璋", 100008, "#200070");
+            config[9] = new ForceConfig(9, "张鲁", 100009, "#A1D487");
+            config[10] = new ForceConfig(10, "袁术", 100010, "#F69CB2");
+            config[11] = new ForceConfig(11, "公孙瓒", 100012, "#F36B20");
+            config[12] = new ForceConfig(12, "公孙度", 100013, "#A385AD");
 
         }
 

@@ -117,7 +117,7 @@ public class PickPanelControl : MonoBehaviour
             forcePool.Add(item.Id);
         
         // 每行显示10个，共5行
-        int itemsPerRow = 13;
+        int itemsPerRow = 6;
         int rows = 7;
         int totalItems = Mathf.Min(forcePool.Count, itemsPerRow * rows);
         
