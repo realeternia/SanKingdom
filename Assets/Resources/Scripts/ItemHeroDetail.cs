@@ -45,11 +45,6 @@ public class ItemHeroDetail : MonoBehaviour
         cardId = id;
         level = lv;
 
-        var maxHpBase = 0;
-        var inteBase = 0;
-        var strBase = 0;
-        var leadShipBase = 0;
-
         AttrInfo attrFinal = new AttrInfo();
         AttrInfo attrEquip = new AttrInfo();
 

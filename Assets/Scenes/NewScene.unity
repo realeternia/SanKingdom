@@ -13124,8 +13124,8 @@ GameObject:
   - component: {fileID: 1788356932}
   - component: {fileID: 1788356931}
   - component: {fileID: 1788356929}
-  - component: {fileID: 1788356928}
   - component: {fileID: 1788356926}
+  - component: {fileID: 1788356933}
   m_Layer: 0
   m_Name: Main Camera (1)
   m_TagString: MainCamera
@@ -13157,24 +13157,6 @@ MonoBehaviour:
   logFontSize: 12
   scaleFactor: 1
   skin: {fileID: 0}
---- !u!114 &1788356928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1788356925}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e8a376b724e1324bb5ea392e166d69c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SaveData:
-    forces: []
-    cities: []
-    year: 0
-  topNode: {fileID: 1083717912}
-  players: []
 --- !u!114 &1788356929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13267,6 +13249,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 70, y: 0, z: 0}
+--- !u!114 &1788356933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788356925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25bb1fcb942ba484d9cf33a2d3a12eba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SaveData:
+    forces: []
+    cities: []
+    year: 0
+  topNode: {fileID: 1083717912}
+  players: []
 --- !u!1 &1798257021
 GameObject:
   m_ObjectHideFlags: 0
@@ -13765,7 +13765,7 @@ GameObject:
   - component: {fileID: 1835018305}
   - component: {fileID: 1835018308}
   - component: {fileID: 1835018307}
-  - component: {fileID: 1835018306}
+  - component: {fileID: 1835018309}
   m_Layer: 5
   m_Name: Panels
   m_TagString: Untagged
@@ -13799,26 +13799,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1835018306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1835018304}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72009a02d0c284c43ac63e6e50cc6898, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardShopPanel: {fileID: 30443633}
-  rankPanel: {fileID: 1891025974}
-  rankPlayerPanel: {fileID: 723496110}
-  worldPanel: {fileID: 1181113649}
-  cityPanel: {fileID: 1502158686}
-  cityBuildingPanel: {fileID: 2018652347}
-  bagPanel: {fileID: 2032091893}
-  openPanelList: []
 --- !u!114 &1835018307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13857,6 +13837,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1835018304}
   m_CullTransparentMesh: 1
+--- !u!114 &1835018309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1835018304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 572cba6edbba3c049b2d7e51b123b403, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardShopPanel: {fileID: 0}
+  rankPanel: {fileID: 1891025974}
+  rankPlayerPanel: {fileID: 0}
+  worldPanel: {fileID: 1181113649}
+  cityPanel: {fileID: 1502158686}
+  cityBuildingPanel: {fileID: 2018652347}
+  bagPanel: {fileID: 0}
+  openPanelList: []
 --- !u!1 &1840700489
 GameObject:
   m_ObjectHideFlags: 0

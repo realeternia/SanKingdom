@@ -6,7 +6,7 @@ using CommonConfig;
 using TMPro;
 using System;
 
-public class WorldManager : MonoBehaviour, IPanelEvent
+public class MainPanelManager : MonoBehaviour, IPanelEvent
 {
     public CityDetail cityDetail;
     public Button btnRank;

@@ -9,7 +9,7 @@ public class WorldPieceControl : MonoBehaviour
 {
     public int pieceId;
     public Image pieceImage;
-    public WorldManager worldManager;
+    public MainPanelManager worldManager;
     public TMP_Text pieceName;
     // Start is called before the first frame update
     void Start()
