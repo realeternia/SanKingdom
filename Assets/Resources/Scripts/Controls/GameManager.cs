@@ -183,15 +183,15 @@ public class GameManager : MonoBehaviour
 
     public void InitForceControls()
     {
-        var playerForceControl = Resources.Load<GameObject>("Prefabs/PlayerInfoCell");
+        var playerForceControl = Resources.Load<GameObject>("Prefabs/Panels/PlayerInfoCell");
         int idx = 0;
-        var totalWidth = 212 * SaveData.forces.Count;
+        var totalWidth = 188 * SaveData.forces.Count;
         foreach(var force in SaveData.forces)
         {
             var forceControl = Instantiate(playerForceControl, topNode.transform);
             var playerInfoControl = forceControl.GetComponent<PlayerInfoControl>();
             playerInfoControl.Init(idx, force.forceId);
-            forceControl.GetComponent<RectTransform>().anchoredPosition = new Vector2(-totalWidth / 2 + 212 * idx, 412);
+            forceControl.GetComponent<RectTransform>().anchoredPosition = new Vector2(-totalWidth / 2 + 188 * idx, 412);
             players.Add(playerInfoControl.player);
             idx++;
         }

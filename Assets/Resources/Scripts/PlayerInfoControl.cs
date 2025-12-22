@@ -22,7 +22,6 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public Image playerImage;
     public string imgPath;
     public TMP_Text goldText;
-    public TMP_Text resultText;
     public Image playerBgImg;
 
     public Player player;
@@ -45,7 +44,6 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
         playerImage.sprite = Resources.Load<Sprite>(player.imgPath);
         goldText.text = player.gold.ToString();
-        resultText.text = player.mark.ToString();
         playerBgImg.color = player.lineColor;
     }
 
@@ -57,38 +55,6 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public void OnPointerDown(PointerEventData eventData)
     {
         PanelManager.Instance.SendSignal("SelectPlayer", "", player.pid);
-    }
-
-    public void AddGold(int g)
-    {
-        player.AddGold(g);
-        goldText.text = player.gold.ToString();
-    }
-
-    public void AddFood(int f)
-    {
-        player.AddFood(f);
-    }
-
-    public void SubGold(int g, bool isHero)
-    {
-        player.SubGold(g, isHero);
-        goldText.text = player.gold.ToString();
-    }
-    
-    public int SubFood(int f)
-    {
-        return player.SubFood(f);
-    }
-
-    public void OnBattleBegin()
-    {
-        player.OnBattleBegin();
-    }
-
-    public void RoundFoodCost()
-    {
-        player.RoundFoodCost();
     }
     
     // Update is called once per frame
@@ -119,11 +85,4 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
             }
         }
     }
-
-    public void onBattleResult(bool isWin, int add)
-    {
-        player.onBattleResult(isWin, add);
-        resultText.text = player.mark.ToString();
-    }
-
 }
