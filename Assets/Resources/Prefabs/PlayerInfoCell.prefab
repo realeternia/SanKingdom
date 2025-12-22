@@ -295,7 +295,7 @@ GameObject:
   - component: {fileID: 5519706848404991729}
   - component: {fileID: 1353203884487861893}
   - component: {fileID: 7496262699732428579}
-  - component: {fileID: 7894159361463857722}
+  - component: {fileID: 322198736969181524}
   m_Layer: 5
   m_Name: PlayerInfoCell
   m_TagString: Untagged
@@ -365,7 +365,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7894159361463857722
+--- !u!114 &322198736969181524
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -374,30 +374,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 6408678169355465420}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05a9766549b3c4e4a9a325f2941a6cb3, type: 3}
+  m_Script: {fileID: 11500000, guid: 572cba6edbba3c049b2d7e51baa3b403, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blinkDuration: 2
-  startColor: {r: 0.14346965, g: 0.33962262, b: 0.12335349, a: 1}
-  endColor: {r: 0.6320754, g: 0.32498217, b: 0.32498217, a: 0.5}
+  blinkDuration: 1
+  startColor: {r: 1, g: 1, b: 1, a: 1}
+  endColor: {r: 0.1, g: 0.1, b: 0.1, a: 0.8}
+  isOnTurn: 0
+  playerNameText: {fileID: 7220488733435201163}
+  playerImage: {fileID: 7347440486663307163}
+  imgPath: 
+  goldText: {fileID: 4615870352259222946}
+  resultText: {fileID: 835777684304780144}
+  playerBgImg: {fileID: 4105999794555204127}
+  pname: 
   pid: 0
+  forceId: 0
   gold: 0
-  winCount: 0
-  loseCount: 0
   mark: 0
   isAI: 0
   food: 0
   maxFood: 0
-  isOnTurn: 0
-  playerNameText: {fileID: 7220488733435201163}
-  playerImage: {fileID: 7347440486663307163}
-  goldText: {fileID: 4615870352259222946}
-  resultText: {fileID: 835777684304780144}
-  playerBgImg: {fileID: 4105999794555204127}
-  roundOverImg: {fileID: 0}
-  playerId: 0
   lineColor: {r: 0, g: 0, b: 0, a: 0}
-  battleSide: 0
   sodatk: 0
   sodhp: 0
   lastFightMark: 0

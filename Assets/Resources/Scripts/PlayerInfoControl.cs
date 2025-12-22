@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 
-public class PlayerInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     private Image targetImage;
     public float blinkDuration = 1f;

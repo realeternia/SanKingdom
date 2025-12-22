@@ -25,7 +25,7 @@ public class BattleResultCellControl : MonoBehaviour
         
     }
 
-    public void SetData(PlayerInfo player, int rank, int killMark)
+    public void SetData(PlayerInfoControl player, int rank, int killMark)
     {
         playerName.text = player.playerNameText.text;
 

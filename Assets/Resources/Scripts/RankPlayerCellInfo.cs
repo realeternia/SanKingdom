@@ -37,7 +37,7 @@ public class RankPlayerCellInfo : MonoBehaviour
         textMark.raycastTarget = false;
     }
 
-    public void Init(PlayerInfo playerInfo)
+    public void Init(PlayerInfoControl playerInfo)
     {
         // 设置英雄信息
         playerImg.sprite = Resources.Load<Sprite>(playerInfo.imgPath);

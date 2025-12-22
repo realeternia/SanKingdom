@@ -13,7 +13,7 @@ public class CastleHUD : MonoBehaviour
     public Image healthImg;
     public Image foodImg;
     private int soldierLevel;
-    private PlayerInfo owner;
+    private PlayerInfoControl owner;
     private int lastFood;
     private bool isFlashing = false;
 
@@ -32,7 +32,7 @@ public class CastleHUD : MonoBehaviour
         UpdateFoodDisplay();
     }
 
-    public void Init(PlayerInfo p, GameObject castleSpawn)
+    public void Init(PlayerInfoControl p, GameObject castleSpawn)
     {
         owner = p;
         castleName.text = p.playerNameText.text;

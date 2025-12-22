@@ -25,7 +25,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
     public BagRecycler bagRecycler;
     public TMP_Text infoText;
 
-    public PlayerInfo bindPlayer;
+    public PlayerInfoControl bindPlayer;
 
     void Start()
     {
@@ -95,7 +95,7 @@ public class BagControl : MonoBehaviour, IPanelEvent
         
     }
 
-    public void Bind(PlayerInfo p)
+    public void Bind(PlayerInfoControl p)
     {
         bindPlayer = p;
         UpdateView();

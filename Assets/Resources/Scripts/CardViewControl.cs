@@ -223,7 +223,7 @@ imagePlayerHead.gameObject.SetActive(false);
         text.text = value.ToString();
     }
 
-    public void OnSold(PlayerInfo playerInfo, int sellCount)
+    public void OnSold(PlayerInfoControl playerInfo, int sellCount)
     {
         if(sellCount > count || sellCount <= 0)
         {
@@ -286,7 +286,7 @@ imagePlayerHead.gameObject.SetActive(false);
         }
     }
 
-    private System.Collections.IEnumerator MoveToPlayerInfoCount(PlayerInfo playerInfo, int count)
+    private System.Collections.IEnumerator MoveToPlayerInfoCount(PlayerInfoControl playerInfo, int count)
     {
         if(count == 1)
         {
@@ -302,7 +302,7 @@ imagePlayerHead.gameObject.SetActive(false);
         }
     }
 
-    private System.Collections.IEnumerator MoveToPlayerInfo(PlayerInfo playerInfo)
+    private System.Collections.IEnumerator MoveToPlayerInfo(PlayerInfoControl playerInfo)
     {
         // 创建一个新的Image对象并缓存
         var movingCardPrefab = Resources.Load<GameObject>("Prefabs/MovingCard");

@@ -192,7 +192,7 @@ public class BattleManager : MonoBehaviour
 
     }
 
-    public Chess SpawnUnitsForRegion(PlayerInfo p, int soldierId, int posId, UnityEngine.Vector3 spawnPos, int side, string imgPath)
+    public Chess SpawnUnitsForRegion(PlayerInfoControl p, int soldierId, int posId, UnityEngine.Vector3 spawnPos, int side, string imgPath)
     {
         var soldierConfig = SoldierConfig.GetConfig(soldierId);
         GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
@@ -233,7 +233,7 @@ public class BattleManager : MonoBehaviour
         return chessComponent;
     }
 
-    private Chess SpawnHerosForRegion(PlayerInfo p, int posId, GameObject spawnPoint, System.Tuple<int, int> heroData, int side)
+    private Chess SpawnHerosForRegion(PlayerInfoControl p, int posId, GameObject spawnPoint, System.Tuple<int, int> heroData, int side)
     {
         var heroConfig = HeroConfig.GetConfig(heroData.Item1);
         GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
@@ -281,7 +281,7 @@ public class BattleManager : MonoBehaviour
 
 
     // 创建血条HUD
-    private void CreateCastleHUD(PlayerInfo p, GameObject castleSpawn)
+    private void CreateCastleHUD(PlayerInfoControl p, GameObject castleSpawn)
     {
         // 加载Hud预制体
         GameObject hudPrefab = Resources.Load<GameObject>("Prefabs/HudCastle");
