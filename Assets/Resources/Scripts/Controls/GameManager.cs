@@ -116,11 +116,21 @@ public class GameManager : MonoBehaviour
             city.archGold = cityCfg.ArchGold;
             city.archPeople = cityCfg.ArchPeople;
             city.heros = new List<SaveHeroData>();
-            if(cityCfg.Leader > 0)
-                city.heros.Add(new SaveHeroData { heroId = cityCfg.Leader, cityOwner = true });
-            if(cityCfg.Members != null)
-                city.heros.AddRange(cityCfg.Members.Select(m => new SaveHeroData { heroId = m }));
+
             SaveData.cities.Add(city);
+        }
+        foreach(var heroCfg in HeroConfig.ConfigList)
+        {
+            if(string.IsNullOrEmpty(heroCfg.City))
+                continue;
+            var cityCfg = WorldConfig.ConfigList.FirstOrDefault(c => c.Cname == heroCfg.City);
+            if(cityCfg == null)
+                continue;
+            var city = SaveData.cities.FirstOrDefault(c => c.cityId == cityCfg.Id);
+            if(city == null)
+                continue;
+            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = city.heros.Count == 0 };
+            city.heros.Add(hero);
         }
         foreach(var force in ForceConfig.ConfigList)
         {
