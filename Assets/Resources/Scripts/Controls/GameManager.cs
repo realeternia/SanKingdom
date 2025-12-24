@@ -134,6 +134,8 @@ public class GameManager : MonoBehaviour
         }
         foreach(var force in ForceConfig.ConfigList)
         {
+            if(force.Id > 90)
+                continue;
             var forceData = new SaveForceData { forceId = force.Id };
             if(force.Id == forceId)
                 forceData.isPlayer = true;
@@ -191,17 +193,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int GetPlayerCityCount(int forceId)
+    {
+        int count = 0;
+        foreach(var city in SaveData.cities)
+        {
+            if(city.forceId == forceId)
+                count++;
+        }
+        return count;
+    }
+
     public void InitForceControls()
     {
         var playerForceControl = Resources.Load<GameObject>("Prefabs/Panels/PlayerInfoCell");
         int idx = 0;
-        var totalWidth = 160 * SaveData.forces.Count;
+        var totalWidth = 141 * SaveData.forces.Count;
+        var forceList = new List<int>();
         foreach(var force in SaveData.forces)
+            forceList.Add(force.forceId);
+        forceList.Sort((a, b) => GetPlayerCityCount(b) - GetPlayerCityCount(a));
+        foreach(var forceId in forceList)
         {
             var forceControl = Instantiate(playerForceControl, topNode.transform);
             var playerInfoControl = forceControl.GetComponent<PlayerInfoControl>();
-            playerInfoControl.Init(idx, force.forceId);
-            forceControl.GetComponent<RectTransform>().anchoredPosition = new Vector2(-totalWidth / 2 + 161 * idx, 412);
+            playerInfoControl.Init(idx, forceId);
+            forceControl.GetComponent<RectTransform>().anchoredPosition = new Vector2(-totalWidth / 2 + 141 * idx, 412);
             players.Add(playerInfoControl.player);
             idx++;
         }

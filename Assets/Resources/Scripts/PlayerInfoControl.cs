@@ -21,7 +21,7 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public TMP_Text playerNameText;
     public Image playerImage;
     public string imgPath;
-    public TMP_Text goldText;
+    public TMP_Text cityText;
     public Image playerBgImg;
 
     public Player player;
@@ -43,7 +43,7 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
         playerNameText.text = player.pname;
 
         playerImage.sprite = Resources.Load<Sprite>(player.imgPath);
-        goldText.text = player.gold.ToString();
+        cityText.text = GameManager.Instance.GetPlayerCityCount(forceId).ToString();
         playerBgImg.color = player.lineColor;
     }
 
