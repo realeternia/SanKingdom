@@ -580,7 +580,7 @@ GameObject:
   - component: {fileID: 35416181}
   - component: {fileID: 35416183}
   m_Layer: 5
-  m_Name: Text (TMP) (4)
+  m_Name: Text Charm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -834,7 +834,7 @@ GameObject:
   - component: {fileID: 51355888}
   - component: {fileID: 51355890}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Text Lead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6441,7 +6441,7 @@ GameObject:
   - component: {fileID: 752204452}
   - component: {fileID: 752204454}
   m_Layer: 5
-  m_Name: Text (TMP) (3)
+  m_Name: Text Fair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7710,7 +7710,7 @@ GameObject:
   - component: {fileID: 899022470}
   - component: {fileID: 899022472}
   m_Layer: 5
-  m_Name: Text (TMP) (2)
+  m_Name: Text Str
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7732,7 +7732,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 564.9, y: -28.8}
+  m_AnchoredPosition: {x: 464.9, y: -28.8}
   m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &899022470
@@ -12464,7 +12464,7 @@ GameObject:
   - component: {fileID: 1647383341}
   - component: {fileID: 1647383343}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: Text Inte
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12486,7 +12486,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 464.9, y: -28.8}
+  m_AnchoredPosition: {x: 564.9, y: -28.8}
   m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1647383341
@@ -14036,8 +14036,8 @@ MonoBehaviour:
   rankParent: {fileID: 490717916}
   rankCellPrefab: {fileID: 76827737818314668, guid: e85246b8ba991e84986c33ab7517ca85, type: 3}
   btnLeadShip: {fileID: 51355890}
-  btnStr: {fileID: 1647383343}
-  btnInte: {fileID: 899022472}
+  btnStr: {fileID: 899022472}
+  btnInte: {fileID: 1647383343}
   btnFair: {fileID: 752204454}
   btnCharm: {fileID: 35416183}
   closeBtn: {fileID: 584596128}

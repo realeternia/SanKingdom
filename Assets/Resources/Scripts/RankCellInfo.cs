@@ -20,7 +20,6 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public TMP_Text heroFair;
     public TMP_Text heroCharm;
     public TMP_Text ownerName;
-    public Button loveBtn;
 
     public int heroId;
     public int str;
@@ -41,11 +40,6 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         heroFair.raycastTarget = false;
         heroCharm.raycastTarget = false;
 
-        loveBtn.onClick.AddListener(() =>
-        {
-            UpdateLoveBtn();
-        });
-        UpdateLoveBtn();
     }
 
     public void Init(HeroConfig heroConfig)
@@ -164,11 +158,6 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
                 Tooltip.Instance.ShowTooltip(heroCfg.Skills, heroId);
             }
         }
-    }
-
-    private void UpdateLoveBtn()
-    {
-        loveBtn.GetComponent<Image>().sprite = Resources.Load<Sprite>("Textures/loveoff");
     }
 
     // Update is called once per frame

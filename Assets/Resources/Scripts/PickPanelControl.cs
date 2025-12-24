@@ -152,8 +152,9 @@ public class PickPanelControl : MonoBehaviour
         // 获取英雄池缓存
         var forcePool = new List<int>();
         foreach (var item in ForceConfig.ConfigList)
-            forcePool.Add(item.Id);
-        
+            if(item.Id < 99)    
+                forcePool.Add(item.Id);
+
         // 每行显示10个，共5行
         int itemsPerRow = 3;
         int rows = 5;

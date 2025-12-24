@@ -33,27 +33,22 @@ public class RankPanelManager : MonoBehaviour
 
         btnLeadShip.onClick.AddListener(() =>
         {
-            UnityEngine.Debug.Log("点击了btnLeadShip，开始按领导力排序");
             SortItems("LeadShip");
         });
         btnStr.onClick.AddListener(() =>
         {
-            UnityEngine.Debug.Log("点击了btnStr，开始按力量排序");
             SortItems("Str");
         });
         btnInte.onClick.AddListener(() =>
         {
-            UnityEngine.Debug.Log("点击了btnInte，开始按智力排序");
             SortItems("Inte");
         });
         btnFair.onClick.AddListener(() =>
         {
-            UnityEngine.Debug.Log("点击了btnFair，开始按公平排序");
             SortItems("Fair");
         });
         btnCharm.onClick.AddListener(() =>
         {
-            UnityEngine.Debug.Log("点击了btnCharm，开始按魅力排序");
             SortItems("Charm");
         });
         closeBtn.onClick.AddListener(() =>
