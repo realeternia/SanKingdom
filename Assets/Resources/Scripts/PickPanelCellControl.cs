@@ -51,7 +51,7 @@ public class PickPanelCellControl : MonoBehaviour
         // 如果当前选中，取消其他所有单元格的选中状态
         if (isSelected && parentControl != null)
         {
-            parentControl.ClearAllSelectionsExcept(this);
+            parentControl.OnSelectTarget(this);
         }
     }
 

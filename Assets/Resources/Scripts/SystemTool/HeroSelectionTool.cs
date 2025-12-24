@@ -9,20 +9,6 @@ public static class HeroSelectionTool
 {
     private static List<Tuple<int, int>> heroPoolCache = new List<Tuple<int, int>>();
 
-    // 获取指定阵营的所有英雄ID
-    public static List<int> GetAllHeroIdsBySide(int side)
-    {
-        List<int> heroIds = new List<int>();
-        // 假设HeroConfig有一个方法GetAllConfigs()返回所有英雄配置
-        foreach (var config in HeroConfig.ConfigList)
-        {
-            if (config.Side == side)
-            {
-                heroIds.Add((int)config.Id);
-            }
-        }
-        return heroIds;
-    }
 
     // 从源ID列表中随机选择指定数量的不重复ID
     public static List<int> GetRandomUniqueIds(List<int> sourceIds, int count)
@@ -220,22 +206,13 @@ public static class HeroSelectionTool
 
     }
 
-    public static Color GetSideColor(int side)
+    public static Color GetForceColor(int forceId)
     {
-        if (side == 1)
-            return new Color(40 / 255f, 70 / 255f, 0 / 255f, 255 / 255f);
-        else if (side == 2)
-            return new Color(0 / 255f, 35 / 255f, 100 / 255f, 255 / 255f);
-        else if (side == 3)
-            return new Color(100 / 255f, 0 / 255f, 0 / 255f, 255 / 255f);
-        else if (side == 4)
-            return new Color(30 / 255f, 100 / 255f, 110 / 255f, 255 / 255f);
-        else if (side == 5)
-            return new Color(90 / 255f, 50 / 255f, 110 / 255f, 255 / 255f);
-        else if (side == 6)
-            return new Color(120 / 255f, 90 / 255f, 30 / 255f, 255 / 255f);                                    
-        else
+        var forceCfg = ForceConfig.GetConfig(forceId);
+        if (forceCfg == null)
             return new Color(50 / 255f, 50 / 255f, 50 / 255f, 255 / 255f);
+        ColorUtility.TryParseHtmlString(forceCfg.Color, out var wColor);
+        return wColor;
     }
  
 }

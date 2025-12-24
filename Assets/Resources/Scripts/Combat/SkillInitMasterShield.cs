@@ -11,7 +11,7 @@ public class SkillInitMasterShield : Skill
     {
         var unitList = BattleManager.Instance.GetUnitsMySide(owner.transform.position, 0, owner.side);
 
-        var mySide = HeroConfig.GetConfig(owner.heroId).Side;
+        var mySide = HeroConfig.GetConfig(owner.heroId).ForceId;
         var shieldHp = (int)(owner.maxHp * skillCfg.Strength);
         owner.PlayerAnim(skillCfg.Action);
 
@@ -22,7 +22,7 @@ public class SkillInitMasterShield : Skill
             if(!unit.isHero)
                 continue;
             var heroCfg = HeroConfig.GetConfig(unit.heroId);
-            if (heroCfg.Side == mySide)
+            if (heroCfg.ForceId == mySide)
             {
                 UnityEngine.Debug.Log("SkillInitMasterShield BattleBegin 护盾值 " + shieldHp);
                 BuffManager.AddBuff(unit, owner, skillCfg.Id, skillCfg.BuffId, skillCfg.BuffTime);

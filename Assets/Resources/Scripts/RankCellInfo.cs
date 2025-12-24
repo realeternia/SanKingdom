@@ -77,7 +77,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         charm = heroConfig.Charm;
 
         var bg = GetComponent<Image>();
-        bg.color = HeroSelectionTool.GetSideColor(heroConfig.Side);
+        bg.color = HeroSelectionTool.GetForceColor(heroConfig.ForceId);
 
         heroStr.text = heroConfig.Str.ToString();
         if (heroConfig.Str >= 95)

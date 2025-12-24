@@ -10,6 +10,13 @@ public class PickPanelControl : MonoBehaviour
     public GameObject pickPanelCellPrefab; // 引用PickPanelCell预制体
     public Transform cellParent; // 用于放置单元格的父容器
 
+    public TMP_Text forceNameText;
+    public TMP_Text goldText;
+    public TMP_Text foodText;
+    public TMP_Text soldierText;
+    public TMP_Text heroNumText;
+    public TMP_Text cityNumText;
+
     public Button okBtn;
     private int targetForceId = 0;
 
@@ -85,7 +92,7 @@ public class PickPanelControl : MonoBehaviour
 
 
     // 取消除了指定单元格之外的所有选中状态
-    public void ClearAllSelectionsExcept(PickPanelCellControl exceptCell)
+    public void OnSelectTarget(PickPanelCellControl exceptCell)
     {
         foreach (var cellControl in cellControls)
         {
@@ -96,6 +103,37 @@ public class PickPanelControl : MonoBehaviour
             else
             {
                 targetForceId = exceptCell.forceId;
+                var forceCfg = ForceConfig.GetConfig(targetForceId);
+                int foodTotal = 0;
+                int goldTotal = 0;
+                int soldierTotal = 0;
+                int cityTotal = 0;
+                
+                foreach(var worldConfig in WorldConfig.ConfigList)
+                {
+                    if(worldConfig.ForceId != targetForceId)
+                        continue;
+
+                    foodTotal += worldConfig.Food;
+                    goldTotal += worldConfig.Gold;
+                    soldierTotal += worldConfig.Soldier;
+                    cityTotal ++;
+                }
+
+                int heroTotal = 0;
+                foreach(var heroCfg in HeroConfig.ConfigList)
+                {
+                    if(heroCfg.ForceId != targetForceId)
+                        continue;
+                    heroTotal ++;
+                }
+
+                forceNameText.text = forceCfg.Cname;
+                goldText.text = goldTotal.ToString();
+                foodText.text = foodTotal.ToString();
+                soldierText.text = soldierTotal.ToString();
+                heroNumText.text = heroTotal.ToString();
+                cityNumText.text = cityTotal.ToString();
                 okBtn.gameObject.SetActive(true);
             }
         }
@@ -117,13 +155,13 @@ public class PickPanelControl : MonoBehaviour
             forcePool.Add(item.Id);
         
         // 每行显示10个，共5行
-        int itemsPerRow = 6;
-        int rows = 7;
+        int itemsPerRow = 3;
+        int rows = 5;
         int totalItems = Mathf.Min(forcePool.Count, itemsPerRow * rows);
         
         // 单元格大小和间距
-        float cellWidth = 200f;
-        float cellHeight = 276f;
+        float cellWidth = 115f;
+        float cellHeight = 115f;
         float spacingX = 5f;
         float spacingY = 5f;
 
@@ -141,8 +179,8 @@ public class PickPanelControl : MonoBehaviour
             // 计算位置
             int row = i / itemsPerRow;
             int col = i % itemsPerRow;
-            float posX = 5 + col * (cellWidth + spacingX) + 105;
-            float posY = -5 -row * (cellHeight + spacingY) - 140;
+            float posX = 5 + col * (cellWidth + spacingX) + 88;
+            float posY = -5 -row * (cellHeight + spacingY) - 88;
 
             // 设置位置
             RectTransform rectTransform = cell.GetComponent<RectTransform>();
@@ -156,7 +194,7 @@ public class PickPanelControl : MonoBehaviour
             if (cellControl != null)
             {
                 // 设置英雄图片
-                cellControl.heroImg.sprite = Resources.Load<Sprite>("SkinsBig/" + heroCfg.Icon);
+                cellControl.heroImg.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
                 // 设置英雄名称
                 cellControl.heroName.text = heroCfg.Name;
 

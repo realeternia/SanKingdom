@@ -146,13 +146,13 @@ public class CardViewControl : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             SetColoredText(str, heroCfg.Str);
             SetColoredText(hp, heroCfg.Hp);
 
-            gameObject.GetComponent<Image>().color = HeroSelectionTool.GetSideColor(heroCfg.Side);
+            gameObject.GetComponent<Image>().color = HeroSelectionTool.GetForceColor(heroCfg.ForceId);
             priceI = HeroSelectionTool.GetPrice(heroCfg);
 
             var player0 = GameManager.Instance.GetPlayer(0);
             effectGreen.SetActive(false);
             effectYellow.SetActive(false);
-imagePlayerHead.gameObject.SetActive(false);
+            imagePlayerHead.gameObject.SetActive(false);
         }
         else
         {

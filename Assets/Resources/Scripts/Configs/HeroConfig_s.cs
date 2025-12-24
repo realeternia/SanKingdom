@@ -45,7 +45,7 @@ namespace CommonConfig
         /// <summary>
         ///阵营
         /// </summary>
-        public int Side;
+        public int ForceId;
         /// <summary>
         ///所在
         /// </summary>
@@ -108,7 +108,7 @@ namespace CommonConfig
         public string Icon;
 
 
-        public HeroConfig(int Id, string Name, int LeadShip, int Str, int Inte, int Fair, int Charm, int Total, int Hp, int Side, string City, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, int RateWeight, int RateAbs, int Pos, string Job, int[] Skills, string Skill1, string Skill2, string Group, string HitEffect, string Icon)
+        public HeroConfig(int Id, string Name, int LeadShip, int Str, int Inte, int Fair, int Charm, int Total, int Hp, int ForceId, string City, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, int RateWeight, int RateAbs, int Pos, string Job, int[] Skills, string Skill1, string Skill2, string Group, string HitEffect, string Icon)
         {
             this.Id = Id;
             this.Name = Name;
@@ -119,7 +119,7 @@ namespace CommonConfig
             this.Charm = Charm;
             this.Total = Total;
             this.Hp = Hp;
-            this.Side = Side;
+            this.ForceId = ForceId;
             this.City = City;
             this.MoveSpeed = MoveSpeed;
             this.Range = Range;
@@ -420,8 +420,8 @@ namespace CommonConfig
             config[108019] = new HeroConfig(108019, "吴懿", 83, 73, 68, 70, 77, 371, 250, 8, "成都", 10, 17, 0, 0, 665, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
             config[108020] = new HeroConfig(108020, "吴班", 74, 71, 56, 45, 66, 312, 250, 8, "成都", 10, 17, 0, 0, 236, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
             config[108021] = new HeroConfig(108021, "冷苞", 71, 82, 68, 37, 23, 281, 250, 8, "建宁", 10, 17, 0, 0, 137, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
-            config[108022] = new HeroConfig(108022, "刘璝", 71, 73, 66, 44, 62, 316, 250, 8, "成都", 10, 17, 0, 0, 253, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
-            config[108023] = new HeroConfig(108023, "刘循", 61, 44, 39, 48, 55, 247, 250, 8, "成都", 10, 17, 0, 0, 75, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
+            config[108022] = new HeroConfig(108022, "刘璝", 71, 73, 66, 44, 62, 316, 250, 8, "永安", 10, 17, 0, 0, 253, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
+            config[108023] = new HeroConfig(108023, "刘循", 61, 44, 39, 48, 55, 247, 250, 8, "永安", 10, 17, 0, 0, 75, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
             config[108024] = new HeroConfig(108024, "王累", 28, 30, 78, 81, 73, 290, 250, 8, "成都", 10, 17, 0, 0, 160, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
             config[108025] = new HeroConfig(108025, "秦宓", 15, 6, 71, 77, 75, 244, 250, 8, "成都", 10, 17, 0, 0, 71, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
             config[108026] = new HeroConfig(108026, "费诗", 15, 28, 64, 75, 66, 248, 250, 8, "成都", 10, 17, 0, 0, 77, 0, 1, "马", null, "", "", "def", "SwordHitWhiteCritical", "zhaoyun");
