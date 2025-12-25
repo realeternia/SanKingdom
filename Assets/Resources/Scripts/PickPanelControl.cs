@@ -11,6 +11,7 @@ public class PickPanelControl : MonoBehaviour
     public Transform cellParent; // 用于放置单元格的父容器
 
     public TMP_Text forceNameText;
+    public TMP_Text diffText;
     public TMP_Text goldText;
     public TMP_Text foodText;
     public TMP_Text soldierText;
@@ -134,6 +135,7 @@ public class PickPanelControl : MonoBehaviour
                 soldierText.text = soldierTotal.ToString();
                 heroNumText.text = heroTotal.ToString();
                 cityNumText.text = cityTotal.ToString();
+                diffText.text = new string('☆', forceCfg.Diff);
                 okBtn.gameObject.SetActive(true);
             }
         }
@@ -167,6 +169,7 @@ public class PickPanelControl : MonoBehaviour
         float spacingY = 5f;
 
         // 创建单元格
+        PickPanelCellControl target = null;
         for (int i = 0; i < totalItems; i++)
         {
             var forceCfg = ForceConfig.GetConfig(forcePool[i]);
@@ -200,6 +203,11 @@ public class PickPanelControl : MonoBehaviour
                 cellControl.heroName.text = heroCfg.Name;
 
                 cellControl.bgImg.GetComponent<Image>().color = ColorUtility.TryParseHtmlString(forceCfg.Color, out var wColor) ? wColor : Color.white;
+            }
+            if (target == null)
+            {
+                target = cellControl;
+                OnSelectTarget(cellControl);
             }
         }
     }

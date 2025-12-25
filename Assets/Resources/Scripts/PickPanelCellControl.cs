@@ -25,6 +25,8 @@ public class PickPanelCellControl : MonoBehaviour
     {
         // 初始隐藏选中图标
         checkImg.gameObject.SetActive(false);
+        checkImg.raycastTarget = false;
+        heroName.raycastTarget = false;
         
         // 添加点击事件监听
         if (heroImg != null)

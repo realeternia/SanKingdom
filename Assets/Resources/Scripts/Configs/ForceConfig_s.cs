@@ -15,6 +15,10 @@ namespace CommonConfig
         /// </summary>
         public string Cname;
         /// <summary>
+        ///难度
+        /// </summary>
+        public int Diff;
+        /// <summary>
         ///影响id
         /// </summary>
         public int HeroId;
@@ -24,10 +28,11 @@ namespace CommonConfig
         public string Color;
 
 
-        public ForceConfig(int Id, string Cname, int HeroId, string Color)
+        public ForceConfig(int Id, string Cname, int Diff, int HeroId, string Color)
         {
             this.Id = Id;
             this.Cname = Cname;
+            this.Diff = Diff;
             this.HeroId = HeroId;
             this.Color = Color;
 
@@ -53,19 +58,19 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new ForceConfig(1, "刘备", 100001, "#387800");
-            config[2] = new ForceConfig(2, "曹操", 100002, "#2828E9");
-            config[3] = new ForceConfig(3, "孙权", 100003, "#D10028");
-            config[4] = new ForceConfig(4, "袁绍", 100004, "#DBD33A");
-            config[5] = new ForceConfig(5, "董卓", 100005, "#646464");
-            config[6] = new ForceConfig(6, "马腾", 100006, "#B28500");
-            config[7] = new ForceConfig(7, "刘表", 100007, "#20DFE0");
-            config[8] = new ForceConfig(8, "刘璋", 100008, "#200070");
-            config[9] = new ForceConfig(9, "张鲁", 100009, "#A1D487");
-            config[10] = new ForceConfig(10, "袁术", 100010, "#F69CB2");
-            config[11] = new ForceConfig(11, "公孙瓒", 100011, "#F36B20");
-            config[12] = new ForceConfig(12, "公孙度", 100012, "#A385AD");
-            config[99] = new ForceConfig(99, "在野", 100020, "#CCCCCC");
+            config[1] = new ForceConfig(1, "刘备", 4, 100001, "#387800");
+            config[2] = new ForceConfig(2, "曹操", 1, 100002, "#2828E9");
+            config[3] = new ForceConfig(3, "孙权", 2, 100003, "#D10028");
+            config[4] = new ForceConfig(4, "袁绍", 3, 100004, "#DBD33A");
+            config[5] = new ForceConfig(5, "董卓", 3, 100005, "#646464");
+            config[6] = new ForceConfig(6, "马腾", 4, 100006, "#B28500");
+            config[7] = new ForceConfig(7, "刘表", 3, 100007, "#20DFE0");
+            config[8] = new ForceConfig(8, "刘璋", 3, 100008, "#200070");
+            config[9] = new ForceConfig(9, "张鲁", 5, 100009, "#A1D487");
+            config[10] = new ForceConfig(10, "袁术", 4, 100010, "#F69CB2");
+            config[11] = new ForceConfig(11, "公孙瓒", 4, 100011, "#F36B20");
+            config[12] = new ForceConfig(12, "公孙度", 5, 100012, "#A385AD");
+            config[99] = new ForceConfig(99, "在野", 0, 100020, "#CCCCCC");
 
         }
 
