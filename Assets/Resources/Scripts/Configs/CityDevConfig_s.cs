@@ -31,17 +31,29 @@ namespace CommonConfig
         /// </summary>
         public int GoldCost;
         /// <summary>
+        ///显示属性
+        /// </summary>
+        public string DevAttr1;
+        /// <summary>
         ///提升值
         /// </summary>
-        public int AddMin;
-        /// <summary>
-        ///提升最大
-        /// </summary>
-        public int AddMax;
+        public int[] DevAttr1Value;
         /// <summary>
         ///显示属性
         /// </summary>
-        public string[] DevAttrs;
+        public string DevAttr2;
+        /// <summary>
+        ///提升值
+        /// </summary>
+        public int[] DevAttr2Value;
+        /// <summary>
+        ///显示属性
+        /// </summary>
+        public string DevAttr3;
+        /// <summary>
+        ///提升值
+        /// </summary>
+        public int[] DevAttr3Value;
         /// <summary>
         ///显示属性
         /// </summary>
@@ -52,7 +64,7 @@ namespace CommonConfig
         public string Mp4;
 
 
-        public CityDevConfig(int Id, string BuildingName, string Cname, string Des, string Icon, int GoldCost, int AddMin, int AddMax, string[] DevAttrs, string[] Attrs, string Mp4)
+        public CityDevConfig(int Id, string BuildingName, string Cname, string Des, string Icon, int GoldCost, string DevAttr1, int[] DevAttr1Value, string DevAttr2, int[] DevAttr2Value, string DevAttr3, int[] DevAttr3Value, string[] Attrs, string Mp4)
         {
             this.Id = Id;
             this.BuildingName = BuildingName;
@@ -60,9 +72,12 @@ namespace CommonConfig
             this.Des = Des;
             this.Icon = Icon;
             this.GoldCost = GoldCost;
-            this.AddMin = AddMin;
-            this.AddMax = AddMax;
-            this.DevAttrs = DevAttrs;
+            this.DevAttr1 = DevAttr1;
+            this.DevAttr1Value = DevAttr1Value;
+            this.DevAttr2 = DevAttr2;
+            this.DevAttr2Value = DevAttr2Value;
+            this.DevAttr3 = DevAttr3;
+            this.DevAttr3Value = DevAttr3Value;
             this.Attrs = Attrs;
             this.Mp4 = Mp4;
 
@@ -88,13 +103,13 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[21001] = new CityDevConfig(21001, "farm", "发展农业", "发展农业,提升粮食产量", "farm", 300, 4, 10, new string[]{"ArchFood"}, new string[]{"Fair","Str"}, "harve.mp4");
-            config[21002] = new CityDevConfig(21002, "farm", "发展商业", "发展商业,提升金钱收入", "market", 200, 4, 10, new string[]{"ArchGold"}, new string[]{"Fair","Inte"}, "shop2.mp4");
-            config[21003] = new CityDevConfig(21003, "gate", "加固城墙", "提升城防", "wall", 200, 4, 10, new string[]{"Wall"}, new string[]{"Str"}, "fix2.mp4");
-            config[21004] = new CityDevConfig(21004, "farm", "街道巡逻", "提升治安", "secure", 200, 4, 10, new string[]{"Secure"}, new string[]{"Str"}, "secure.mp4");
-            config[21005] = new CityDevConfig(21005, "market", "走访", "搜集人才和宝物", "find", 0, 100, 200, new string[]{"Gold"}, new string[]{"Charm","Inte"}, "search.mp4");
-            config[21006] = new CityDevConfig(21006, "gate", "训练", "提升军队士气", "train", 0, 4, 10, new string[]{"Power"}, new string[]{"LeadShip","Str"}, "train2.mp4");
-            config[21007] = new CityDevConfig(21007, "gate", "征兵", "提升士兵数量", "zhengbing", 0, 100, 200, new string[]{"Soldier"}, new string[]{"LeadShip","Charm"}, "zhengbing.mp4");
+            config[21001] = new CityDevConfig(21001, "farm", "发展农业", "发展农业,提升粮食产量", "farm", 300, "ArchFood", new int[]{4,10}, "ArchPeople", new int[]{300,800}, "", null, new string[]{"Fair","Str"}, "harve.mp4");
+            config[21002] = new CityDevConfig(21002, "farm", "发展商业", "发展商业,提升金钱收入", "market", 300, "ArchGold", new int[]{4,10}, "ArchPeople", new int[]{300,800}, "", null, new string[]{"Fair","Inte"}, "shop2.mp4");
+            config[21003] = new CityDevConfig(21003, "gate", "加固城墙", "提升城防", "wall", 200, "Wall", new int[]{6,15}, "Secure", new int[]{1,3}, "", null, new string[]{"Str"}, "fix2.mp4");
+            config[21004] = new CityDevConfig(21004, "farm", "街道巡逻", "提升治安", "secure", 150, "Secure", new int[]{2,6}, "ArchPeople", new int[]{200,500}, "", null, new string[]{"Str"}, "secure.mp4");
+            config[21005] = new CityDevConfig(21005, "market", "走访", "搜集人才和宝物", "find", 0, "Gold", new int[]{50,250}, "", null, "", null, new string[]{"Charm","Inte"}, "search.mp4");
+            config[21006] = new CityDevConfig(21006, "gate", "训练", "提升军队士气", "train", 0, "Power", new int[]{3,9}, "", null, "", null, new string[]{"LeadShip","Str"}, "train2.mp4");
+            config[21007] = new CityDevConfig(21007, "gate", "征兵", "提升士兵数量", "zhengbing", 300, "Soldier", new int[]{200,600}, "Secure", new int[]{-2,-5}, "ArchPeople", new int[]{-500,-1500}, new string[]{"LeadShip","Charm"}, "zhengbing.mp4");
 
         }
 

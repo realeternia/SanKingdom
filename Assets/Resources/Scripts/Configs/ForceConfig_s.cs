@@ -68,7 +68,7 @@ namespace CommonConfig
             config[8] = new ForceConfig(8, "刘璋", 3, 100008, "#200070");
             config[9] = new ForceConfig(9, "张鲁", 5, 100009, "#A1D487");
             config[10] = new ForceConfig(10, "袁术", 4, 100010, "#F69CB2");
-            config[11] = new ForceConfig(11, "公孙瓒", 4, 100011, "#F36B20");
+            config[11] = new ForceConfig(11, "公孙瓒", 5, 100011, "#F36B20");
             config[12] = new ForceConfig(12, "公孙度", 5, 100012, "#A385AD");
             config[99] = new ForceConfig(99, "在野", 0, 100020, "#CCCCCC");
 

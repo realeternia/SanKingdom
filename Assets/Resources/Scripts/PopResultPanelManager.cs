@@ -21,6 +21,8 @@ public class PopResultPanelManager : MonoBehaviour
     public TMP_Text attrVal1Text;
     public TMP_Text attr2Text;
     public TMP_Text attrVal2Text;
+    public TMP_Text attr3Text;
+    public TMP_Text attrVal3Text;
 
     void Start()
     {
@@ -171,62 +173,87 @@ public class PopResultPanelManager : MonoBehaviour
 
     }
 
-    public void OnShow(string title, string attr1, string attrVal1, string attr2, string attrVal2, string path)
+    public void OnShow(string title, List<string> attrs, List<int> attrOlds, List<int> attrAddons, string path)
     {
-        Debug.Log("显示结果面板，开始加载视频...");
         titleText.text = title;
         runBtn.gameObject.SetActive(false);
-        attr1Text.text = attr1;
-        attrVal1Text.text = attrVal1;
-
-        if(string.IsNullOrEmpty(attr2))
+        attr1Text.text = NameTransTool.GetAttrName(attrs[0]);
+        if(attrAddons[0] > 0)
+            attrVal1Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[0], attrAddons[0]);
+        else
+            attrVal1Text.text = string.Format("{0}(<color=red>{1}</color>)", attrOlds[0], attrAddons[0]);
+        if (attrs.Count > 1)
         {
-            attr2Text.gameObject.SetActive(false);
+            attr2Text.gameObject.SetActive(true);
+            attr2Text.text = NameTransTool.GetAttrName(attrs[1]);
+            if(attrAddons[1] > 0)
+                attrVal2Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[1], attrAddons[1]);
+            else
+                attrVal2Text.text = string.Format("{0}(<color=red>{1}</color>)", attrOlds[1], attrAddons[1]);
         }
         else
         {
-            attr2Text.gameObject.SetActive(true);
-            attr2Text.text = attr2;
-            attrVal2Text.text = attrVal2;
+            attr2Text.gameObject.SetActive(false);
         }
-        
+        if (attrs.Count > 2)
+        {
+            attr3Text.gameObject.SetActive(true);
+            attr3Text.text = NameTransTool.GetAttrName(attrs[2]);
+            if(attrAddons[2] > 0)
+                attrVal3Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[2], attrAddons[2]);
+            else
+                attrVal3Text.text = string.Format("{0}(<color=red>{1}</color>)", attrOlds[2], attrAddons[2]);
+        }
+        else
+        {
+            attr3Text.gameObject.SetActive(false);
+        }
+
+        InitVideo(path);
+
+        // 启动协程，4.5秒后隐藏videoPanel
+        StartCoroutine(HideVideoPanelAfterDelay(4.8f));
+    }
+
+    private void InitVideo(string path)
+    {
         try
         {
             // 在Unity中，Resources.Load<VideoClip>无法直接加载.mp4文件
             // 需要使用VideoPlayer的url属性加载本地视频文件
-            
+
             string videoPath;
             string fullVideoPath;
-            
+
             // 根据不同平台构建正确的视频路径
-            #if UNITY_ANDROID
-                // 安卓平台：直接使用Application.streamingAssetsPath（已包含jar:file:///前缀）
-                videoPath = Application.streamingAssetsPath + "/Videos/" + path;
-                fullVideoPath = videoPath;
-            #elif UNITY_IPHONE
+#if UNITY_ANDROID
+            // 安卓平台：直接使用Application.streamingAssetsPath（已包含jar:file:///前缀）
+            videoPath = Application.streamingAssetsPath + "/Videos/" + path;
+            fullVideoPath = videoPath;
+#elif UNITY_IPHONE
                 // iOS平台：使用StreamingAssets路径，需要file://前缀
                 videoPath = "file://" + Application.streamingAssetsPath + "/Videos/" + path;
                 fullVideoPath = Application.streamingAssetsPath + "/Videos/" + path;
-            #elif UNITY_STANDALONE_WIN
+#elif UNITY_STANDALONE_WIN
                 // Windows平台：使用StreamingAssets路径
                 videoPath = Application.streamingAssetsPath + "/Videos/" + path;
                 fullVideoPath = videoPath;
-            #else
+#else
                 // 默认平台：使用StreamingAssets路径
                 videoPath = Application.streamingAssetsPath + "/Videos/" + path;
                 fullVideoPath = videoPath;
-            #endif
-            
+#endif
+
             Debug.Log("当前平台: " + Application.platform);
             Debug.Log("视频文件路径: " + videoPath);
             Debug.Log("完整文件路径: " + fullVideoPath);
-            
+
             videoPlayer.clip = null;
             // 设置视频源类型为URL
             videoPlayer.source = VideoSource.Url;
             // 设置视频URL
             videoPlayer.url = videoPath;
-            
+
             // 准备视频
             Debug.Log("准备播放视频...");
             videoPlayer.Prepare();
@@ -236,11 +263,8 @@ public class PopResultPanelManager : MonoBehaviour
             Debug.LogError("视频播放过程中发生异常: " + e.ToString());
             Debug.LogError("异常堆栈: " + e.StackTrace);
         }
-        
-        // 启动协程，4.5秒后隐藏videoPanel
-        StartCoroutine(HideVideoPanelAfterDelay(4.8f));
     }
-    
+
     // 协程：延迟后隐藏videoPanel
     private System.Collections.IEnumerator HideVideoPanelAfterDelay(float delaySeconds)
     {
