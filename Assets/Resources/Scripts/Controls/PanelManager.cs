@@ -13,7 +13,6 @@ public class PanelManager : MonoBehaviour
 
     public GameObject cardShopPanel;
     public GameObject rankPanel;
-    public GameObject rankPlayerPanel;
     private GameObject pickPanel;
     public GameObject worldPanel;
     public GameObject cityPanel;
@@ -22,9 +21,6 @@ public class PanelManager : MonoBehaviour
     private GameObject popCitySelectPanel;
     private GameObject popHeroSelectPanel;
     private GameObject popResultPanel;
-
-
-    public GameObject bagPanel;
 
     public List<GameObject> openPanelList;
 
@@ -68,24 +64,6 @@ public class PanelManager : MonoBehaviour
      //   cardShopTxt.SetActive(false);
 
         ChangePanelCount(cardShopPanel, false);
-    }
-    
-    public void ShowBag()
-    {
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        bagPanel.SetActive(true);
-        bagPanel.GetComponent<BagControl>().OnShow();
-
-        ChangePanelCount(bagPanel, true);
-    }
-
-    public void HideBag()
-    {
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        bagPanel.SetActive(false);
-        bagPanel.GetComponent<BagControl>().OnHide();
-
-        ChangePanelCount(bagPanel, false);
     }
 
     public void ShowCity(int cityId)
@@ -145,24 +123,6 @@ public class PanelManager : MonoBehaviour
         rankPanel.GetComponent<RankPanelManager>().OnHide();
 
         ChangePanelCount(rankPanel, false);        
-    }
-    
-    public void ShowRankPlayer()
-    {
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        rankPlayerPanel.SetActive(true);
-        rankPlayerPanel.GetComponent<RankPlayerPanelManager>().OnShow();
-
-        ChangePanelCount(rankPlayerPanel, true);        
-    }
-
-    public void HideRankPlayer()
-    {
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        rankPlayerPanel.SetActive(false);
-        rankPlayerPanel.GetComponent<RankPlayerPanelManager>().OnHide();
-
-        ChangePanelCount(rankPlayerPanel, false);        
     }
 
     public void ShowPick()
