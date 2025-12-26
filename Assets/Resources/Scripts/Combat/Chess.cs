@@ -76,7 +76,6 @@ public class Chess : MonoBehaviour
 
     private bool dieAfterLifeTime;
     private float lifeTime;
-    private Dictionary<int, AttrInfo> supportAttrs = new Dictionary<int, AttrInfo>(); //支援hero的属性加成
 
     private float regeTimer; //1s回复一次
     public int regeHp; //回复血量
@@ -135,16 +134,6 @@ public class Chess : MonoBehaviour
             material.SetFloat("_SecondTexSize", 0.1f);
         rend.material = material; // 这会为这个渲染器创建一个独立的材质实例
 
-        if (!isHero)
-        {
-            var soldierCfg = SoldierConfig.GetConfig(soldierId);
-            var playerInfo = GameManager.Instance.GetPlayer(playerId);
-            if (playerInfo != null && soldierCfg.SoldierAtkRate > 0)
-            {
-                maxHp += (int)((playerInfo.sodhp) * soldierCfg.SoldierHpRate);
-                attackDamage += (int)((playerInfo.sodatk) * soldierCfg.SoldierAtkRate);
-            }
-        }
         hp = maxHp;
         if (heroInfo != null) // 英雄
             heroInfo.SetHpRate(hp, maxHp);
@@ -612,34 +601,7 @@ public class Chess : MonoBehaviour
 
         if ((side == 1 || side == 2 && !isShadow ))
             BGMPlayer.Instance.PlaySound("Sounds/tnt", 7);
-
-        if (isHero)
-        {
-            foreach (var chess in BattleManager.Instance.GetUnitsMySide(transform.position, 0, side))
-            {
-                if (!chess.isHero)
-                    continue;
-                chess.OnFriendDie(heroId);
-            }
-        }
     }
-
-    public void OnFriendDie(int friendId)
-    {
-        if (supportAttrs.ContainsKey(friendId))
-        {
-            var friendAttr = supportAttrs[friendId];
-            inte -= friendAttr.Inte;
-            str -= friendAttr.Str;
-            leadShip -= friendAttr.Lead;
-            supportAttrs.Remove(friendId);
-
-
-            if (heroInfo != null)
-                heroInfo.SetAttr(inte, str, leadShip);
-        }
-    }
-
 
     private int calculateDamage(Chess attacker, Chess defender, out string type)
     {

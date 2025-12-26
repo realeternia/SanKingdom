@@ -12,8 +12,6 @@ public class CastleHUD : MonoBehaviour
     public TMP_Text textHp;
     public Image healthImg;
     public Image foodImg;
-    private int soldierLevel;
-    private Player ownerControl;
     private Player owner;
     private int lastFood;
     private bool isFlashing = false;
@@ -35,13 +33,12 @@ public class CastleHUD : MonoBehaviour
 
     public void Init(Player p, GameObject castleSpawn)
     {
-        ownerControl = p;
-        owner = p;
+         owner = p;
         castleName.text = p.pname;
 
         var soldierCfg = SoldierConfig.GetConfig(500001);
-        baseAtk = soldierCfg.Atk + p.sodatk;
-        baseHp = soldierCfg.Hp + p.sodhp;
+        baseAtk = soldierCfg.Atk;
+        baseHp = soldierCfg.Hp;
         textAtk.text = baseAtk.ToString();
         textHp.text = baseHp.ToString();
 
@@ -60,7 +57,6 @@ public class CastleHUD : MonoBehaviour
 
     public void AddSoldierLevel(int level, int atkAdd, int hpAdd)
     {
-        soldierLevel += level;
         var soldierCfg = SoldierConfig.GetConfig(500001);
         textAtk.text = (baseAtk + atkAdd).ToString();
         textHp.text = (baseHp + hpAdd).ToString();

@@ -13,17 +13,11 @@ public class Player
 
     public int mark;
 
-    public bool isAI = false;
     public int food;
     public int maxFood;
     private float lastFoodDeductionTime = 0f;
 
     public Color lineColor;
-
-    public int sodatk = 0; //士兵atk强化
-    public int sodhp = 0; //士兵def强化
-
-    public int lastFightMark;
 
     public CastleHUD castleHUD;
     public string imgPath;
