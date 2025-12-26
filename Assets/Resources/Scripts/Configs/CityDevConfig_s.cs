@@ -107,7 +107,7 @@ namespace CommonConfig
             config[21002] = new CityDevConfig(21002, "farm", "发展商业", "发展商业,提升金钱收入", "market", 300, "ArchGold", new int[]{4,10}, "ArchPeople", new int[]{300,800}, "", null, new string[]{"Fair","Inte"}, "shop2.mp4");
             config[21003] = new CityDevConfig(21003, "gate", "加固城墙", "提升城防", "wall", 200, "Wall", new int[]{6,15}, "Secure", new int[]{1,3}, "", null, new string[]{"Str"}, "fix2.mp4");
             config[21004] = new CityDevConfig(21004, "farm", "街道巡逻", "提升治安", "secure", 150, "Secure", new int[]{2,6}, "ArchPeople", new int[]{200,500}, "", null, new string[]{"Str"}, "secure.mp4");
-            config[21005] = new CityDevConfig(21005, "market", "走访", "搜集人才和宝物", "find", 0, "Gold", new int[]{50,250}, "", null, "", null, new string[]{"Charm","Inte"}, "search.mp4");
+            config[21005] = new CityDevConfig(21005, "market", "走访", "搜集人才和宝物", "find", 0, "Gold", new int[]{20,100}, "", null, "", null, new string[]{"Charm","Inte"}, "search.mp4");
             config[21006] = new CityDevConfig(21006, "gate", "训练", "提升军队士气", "train", 0, "Power", new int[]{3,9}, "", null, "", null, new string[]{"LeadShip","Str"}, "train2.mp4");
             config[21007] = new CityDevConfig(21007, "gate", "征兵", "提升士兵数量", "zhengbing", 300, "Soldier", new int[]{200,600}, "Secure", new int[]{-2,-5}, "ArchPeople", new int[]{-500,-1500}, new string[]{"LeadShip","Charm"}, "zhengbing.mp4");
 

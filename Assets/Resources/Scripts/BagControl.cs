@@ -43,13 +43,13 @@ public class BagControl : MonoBehaviour, IPanelEvent
             PanelManager.Instance.HideBag();
           //  CardShopManager.Instance.OnShow();
         });
-        fieldAutoBtn.onClick.AddListener(() =>
+        fieldAutoBtn.onClick.AddListener((UnityEngine.Events.UnityAction)(() =>
         {
-            var p1 = GameManager.Instance.GetPlayer(bindPlayer.pid);
+            var p1 = GameManager.Instance.GetPlayer((int)bindPlayer.forceId);
             UpdateFieldView();
 
             BGMPlayer.Instance.PlaySound("Sounds/equip");
-        });
+        }));
         aiSwitchBtn.onClick.AddListener(() =>
         {
             bindPlayer.isAI = !bindPlayer.isAI;

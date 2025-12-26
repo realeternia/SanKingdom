@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveData.cs" />
+    <Compile Include="Assets\Resources\Scripts\PO\BattleCardData.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitAround.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillManager.cs" />

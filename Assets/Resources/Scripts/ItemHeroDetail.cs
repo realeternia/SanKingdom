@@ -76,7 +76,7 @@ public class ItemHeroDetail : MonoBehaviour
             
         }
 
-        attrFinal = HeroSelectionTool.GetCardAttr(player, cardId, lv);
+        attrFinal = HeroSelectionTool.GetCardAttr(cardId, lv);
 
         leadText.text = attrFinal.Lead.ToString();
         if (attrEquip.Lead > 0)
@@ -88,16 +88,10 @@ public class ItemHeroDetail : MonoBehaviour
         strText.text = attrFinal.Str.ToString();
         if (attrEquip.Str > 0)
             strText.text += "\n<color=#FFB6C1>+" + attrEquip.Str.ToString() + "</color>";            
-        hpText.text = attrFinal.Hp.ToString();
-        if (attrEquip.Hp > 0)
-            hpText.text += "\n<color=#FFB6C1>+" + attrEquip.Hp.ToString() + "</color>";
+
 
     }
 
-    public void UpdateSelf()
-    {
-        UpdateInfo(cardId, level);
-    }
 
     public void Clear()
     {

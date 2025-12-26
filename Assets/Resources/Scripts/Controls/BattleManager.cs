@@ -15,6 +15,7 @@ public class BattleManager : MonoBehaviour
     public GameObject Units;
     public int gridCellSize = 3; // 每个格子的实际大小(米)
 
+    private List<int> playerList = new List<int>();
     private Dictionary<int, List<Vector2Int>> occupiedGrids = new Dictionary<int, List<Vector2Int>>(); // 所有被占据的格子，键为chess.id
 
     public bool showDebugCube = false;
@@ -22,8 +23,6 @@ public class BattleManager : MonoBehaviour
 
     private List<Chess> chessList = new List<Chess>(); // 所有棋子
     private int[] killMark = new int[8];
-    private int[] deathOrder = new int[8]; // 记录各阵营的死亡顺序，0表示未死亡
-    private int deathCount = 0; // 记录已死亡的阵营数量
 
     private bool gameFinish = false;
     private bool hasWin;
@@ -63,8 +62,12 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void BattleBegin(int[] cards1, int[] cards2)
+    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2)
     {
+        playerList.Clear();
+        playerList.Add(player1.forceId);
+        playerList.Add(player2.forceId);
+
         var newMapId = 1;
         gameFinish = false;
         if (mapConfig == null || newMapId != mapConfig.Mapid)
@@ -82,17 +85,14 @@ public class BattleManager : MonoBehaviour
         }
 
         killMark = new int[8];
-        deathOrder = new int[8];
-        deathCount = 0;
         BattleStatManager.Clear();
 
         // 通知所有玩家开始战斗
-        foreach (var player in GameManager.Instance.players)
-        if(player != null)
-                player.OnBattleBegin();
+        player1.OnBattleBegin();
+        player2.OnBattleBegin();
 
         BattleResultPanel.gameObject.SetActive(false);
-        SpawnUnitsInRegions(cards1, cards2);
+        SpawnUnitsInRegions(player1, cards1, player2, cards2);
 
         foreach (var chess in chessList.ToArray()) //防止召唤
             SkillManager.CheckAddSkill(chess);
@@ -147,12 +147,7 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private int[] GetMatch()
-    {
-        return new int[] { 0, 1 };
-    }
-
-    private void SpawnUnitsInRegions(int[] cards1, int[] cards2)
+    private void SpawnUnitsInRegions(Player player1, List<BattleCardData> cards1, Player player2, List<BattleCardData> cards2)
     {
         // 清空之前的单位
         foreach (Transform child in Units.transform)
@@ -179,15 +174,14 @@ public class BattleManager : MonoBehaviour
             }
         }
         occupiedGrids[300001] = unitGrids;
-        CreateCastleHUD(GameManager.Instance.GetPlayer(0), mapConfig.RegionHeroSide1[4]);
-        CreateCastleHUD(GameManager.Instance.GetPlayer(1), mapConfig.RegionHeroSide2[4]);
+        CreateCastleHUD(player1, mapConfig.RegionHeroSide1[4]);
+        CreateCastleHUD(player2, mapConfig.RegionHeroSide2[4]);
 
-        //   SpawnHerosForRegion(GameManager.Instance.GetPlayer(0), mapConfig.RegionHeroSide1[4], new System.Tuple<int, int>(101008, 1), 1);
-        for (int i = 0; i < cards1.Length; i++)
-            SpawnHerosForRegion(GameManager.Instance.GetPlayer(0), i, mapConfig.RegionHeroSide1[i], new System.Tuple<int, int>(cards1[i], 1), 1);
+        for (int i = 0; i < Math.Min(cards1.Count, mapConfig.RegionHeroSide1.Length); i++)
+            SpawnHerosForRegion(player1, i, mapConfig.RegionHeroSide1[i], cards1[i], 1);
 
-        for (int i = 0; i < cards2.Length; i++)
-            SpawnHerosForRegion(GameManager.Instance.GetPlayer(1), i, mapConfig.RegionHeroSide2[i], new System.Tuple<int, int>(cards2[i], 2), 2);
+        for (int i = 0; i < Math.Min(cards2.Count, mapConfig.RegionHeroSide2.Length); i++)
+            SpawnHerosForRegion(player2, i, mapConfig.RegionHeroSide2[i], cards2[i], 2);
 
 
     }
@@ -219,8 +213,8 @@ public class BattleManager : MonoBehaviour
 
             chessComponent.hitEffect = soldierConfig.HitEffect;
             chessComponent.soldierId = soldierId;
-            chessComponent.playerId = p.pid;
-            chessComponent.Init(p.pid, posId, p.lineColor);
+            chessComponent.playerId = p.forceId;
+            chessComponent.Init(p.forceId, posId, p.lineColor);
         }
         else
         {
@@ -233,9 +227,9 @@ public class BattleManager : MonoBehaviour
         return chessComponent;
     }
 
-    private Chess SpawnHerosForRegion(Player p, int posId, GameObject spawnPoint, System.Tuple<int, int> heroData, int side)
+    private Chess SpawnHerosForRegion(Player p, int posId, GameObject spawnPoint, BattleCardData heroData, int side)
     {
-        var heroConfig = HeroConfig.GetConfig(heroData.Item1);
+        var heroConfig = HeroConfig.GetConfig(heroData.CardId);
         GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
         if (spawnPoint != null)
         {
@@ -259,12 +253,11 @@ public class BattleManager : MonoBehaviour
 
                 if (side <= 2)
                 {
-                    var heroInfo = heroInfoGroup.AddHero(side, (int)heroConfig.Id, heroData.Item2);
+                    var heroInfo = heroInfoGroup.AddHero(side, heroConfig.Id, heroData.Level);
                     chessComponent.heroInfo = heroInfo;
                 }
-                chessComponent.playerId = p.pid;
-                chessComponent.CheckInitAttr(p, heroData.Item2);
-                chessComponent.Init(p.pid, posId, p.lineColor);
+                chessComponent.CheckInitAttr(heroData.Level, heroData.SoliderNum);
+                chessComponent.Init(p.forceId, posId, p.lineColor);
                 // 可以在这里设置其他必要的初始化参数
             }
             else
@@ -335,9 +328,8 @@ public class BattleManager : MonoBehaviour
             // 为每个玩家创建结果单元格
             if (BattleResultCellPrefab != null)
             {
-                int[] match = GetMatch();
                 // 根据玩家的 mark 进行排序
-                var sortedPlayers = match
+                var sortedPlayers = playerList
                     .Select(id => new { Id = id, Mark = GameManager.Instance.GetPlayer(id)?.mark ?? 0 })
                     .OrderByDescending(p => p.Mark)
                     .Select(p => p.Id)
@@ -686,16 +678,6 @@ public class BattleManager : MonoBehaviour
         // 如果只剩一个阵营有存活单位，显示重启按钮
         if (aliveSideCount <= 1)
         {
-            int[] match = GetMatch();
-            for (int i = 0; i < match.Length; i++)
-            {
-                if (sideHasUnits[i])
-                    killMark[match[i]] = 10;
-                else
-                    killMark[match[i]] = Math.Min(5, killMark[match[i]]);
-
-                GameManager.Instance.GetPlayer(match[i]).onBattleResult(sideHasUnits[i], killMark[match[i]]);
-            }
             gameFinish = true;
             hasWin = sideHasUnits[0];
         }

@@ -88,9 +88,9 @@ public class Chess : MonoBehaviour
         CreateHUD();
     }
 
-    public void Init(int pid, int posId, Color c)
+    public void Init(int forceId, int posId, Color c)
     {
-        playerId = pid;
+        playerId = forceId;
         pos = posId;
         // 创建材质实例
         material = new Material(rend.sharedMaterial);
@@ -224,33 +224,20 @@ public class Chess : MonoBehaviour
         }
     }
 
-    public void CheckInitAttr(Player player, int lv)
+    public void CheckInitAttr(int lv, int soldierNum)
     {
         level = lv;
 
         var heroConfig = HeroConfig.GetConfig(heroId);
-        var attr = HeroSelectionTool.GetCardAttr(player, heroId, lv);
+        var attr = HeroSelectionTool.GetCardAttr(heroId, lv);
 
-        maxHp = attr.Hp;
+        maxHp = soldierNum;
         moveSpeed = heroConfig.MoveSpeed;
         attackRange = heroConfig.Range;
         attackDamage = attr.Lead / 3;
         inte = attr.Inte;
         str = attr.Str;
         leadShip = attr.Lead;
-
-        // if (player.itemEquips.ContainsKey(heroId))
-        // {
-        //     var equipId = player.itemEquips[heroId];
-        //     var equipCardLevel = HeroSelectionTool.GetCardLevel(player.cards[equipId], false);
-
-        //     var equipAttr = HeroSelectionTool.GetCardAttr(player, equipId, equipCardLevel);
-
-        //     inte += equipAttr.Inte;
-        //     str += equipAttr.Str;
-        //     leadShip += equipAttr.Lead;
-        //     maxHp += equipAttr.Hp;
-        // }
 
         hp = maxHp;
 
@@ -520,8 +507,8 @@ public class Chess : MonoBehaviour
         }
 
         damage = (int)(damageBase * damageMulti);
-        var minDamage = 10 + level / 2;
-        var maxDamage = 50 + level;
+        var minDamage = 30 + level / 2;
+        var maxDamage = 150 + level;
         if (isHero && victim.isHero)
         {
             //等级压制
@@ -683,8 +670,8 @@ public class Chess : MonoBehaviour
             type = "str";
         }
 
-        // 伤害 = 最大差值 * 2
-        int damage = Mathf.RoundToInt(maxDiff * 2);
+        // 伤害 = 最大差值 * 6
+        int damage = Mathf.RoundToInt(maxDiff * 6);
         return damage;
     }
 

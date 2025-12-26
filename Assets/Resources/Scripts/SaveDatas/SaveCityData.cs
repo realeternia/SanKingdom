@@ -24,6 +24,25 @@ public class SaveCityData
         {
             heroList.Add(member.heroId);
         }
+        return heroList;
+    }
+
+    public List<BattleCardData> GetBattleHeroList()
+    {
+        var soldierPerTeam = (int)(soldier / heros.Count);
+        UnityEngine.Debug.Log(" soldierPerTeam " + " " + soldierPerTeam + " cityId " + cityId);
+        if(soldierPerTeam > 1000)
+            soldierPerTeam = 1000;
+        soldier -= soldierPerTeam * heros.Count;
+        List<BattleCardData> heroList = new List<BattleCardData>();
+        foreach (var member in heros)
+        {
+            var cardData = new BattleCardData();
+            cardData.CardId = member.heroId;
+            cardData.Level = member.GetLevel();
+            cardData.SoliderNum = soldierPerTeam;
+            heroList.Add(cardData);
+        }
         return heroList;    
     }
 
@@ -35,6 +54,11 @@ public class SaveCityData
                 return member;
         }
         return null;
+    }
+
+    public Player GetPlayer()
+    {
+        return GameManager.Instance.GetPlayer(forceId);
     }
 
     public int GetOwner()
@@ -74,6 +98,9 @@ public class SaveCityData
                 break;
             case "wall":
                 wall += add;
+                break;
+            case "power":
+                power += add;
                 break;
             default:
                 break;

@@ -33,10 +33,10 @@ public class PopCitySelectPanelManager : MonoBehaviour
                 PanelManager.Instance.HideCity();
                 PanelManager.Instance.HideWorld();
 
-                var myList = GameManager.Instance.GetCity(mCityId).GetHeroList();
-                var enemyList = GameManager.Instance.GetCity(lastSelectedCell.cityId).GetHeroList();
+                var cityAttack = GameManager.Instance.GetCity(mCityId);
+                var cityDefense = GameManager.Instance.GetCity(lastSelectedCell.cityId);
 
-                BattleManager.Instance.BattleBegin(myList.ToArray(), enemyList.ToArray());
+                BattleManager.Instance.BattleBegin(cityAttack.GetPlayer(), cityDefense.GetPlayer(), cityAttack.GetBattleHeroList(), cityDefense.GetBattleHeroList());
             }
         });
 

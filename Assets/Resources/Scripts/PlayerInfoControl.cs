@@ -54,7 +54,7 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        PanelManager.Instance.SendSignal("SelectPlayer", "", player.pid);
+        PanelManager.Instance.SendSignal("SelectPlayer", "", player.forceId);
     }
     
     // Update is called once per frame

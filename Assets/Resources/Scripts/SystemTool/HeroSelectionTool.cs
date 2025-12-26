@@ -87,9 +87,6 @@ public static class HeroSelectionTool
         if (heroCfg.Inte >= 90) bonus += (heroCfg.Inte - 89) * 0.01f;
         if (heroCfg.LeadShip >= 90) bonus += (heroCfg.LeadShip - 89) * 0.01f;
         var rangeMark = (float)heroCfg.Range / 17 * 40;
-        if(heroCfg.Range >= 20)
-            rangeMark += 20;
-        bonus += ((float)heroCfg.Hp + rangeMark - 340) / 340;
 
         if (heroCfg.Total >= 210)
         { //救一下偏科的人
@@ -147,14 +144,13 @@ public static class HeroSelectionTool
             return (float)(exp - cardItemExp[level - 1]) / (cardItemExp[level] - cardItemExp[level - 1]);
     }
 
-    public static AttrInfo GetCardAttr(Player player, int cardId, int lv)
+    public static AttrInfo GetCardAttr(int cardId, int lv)
     {
         var attrInfo = new AttrInfo();
         if (ConfigManager.IsHeroCard(cardId))
         {
             var heroConfig = HeroConfig.GetConfig(cardId);
 
-            attrInfo.Hp = heroConfig.Hp + heroConfig.Hp * (lv - 1) / 10;
             attrInfo.Inte = heroConfig.Inte + System.Math.Max(8 * (lv - 1), heroConfig.Inte * (lv - 1) / 10);
             attrInfo.Str = heroConfig.Str + System.Math.Max(8 * (lv - 1), heroConfig.Str * (lv - 1) / 10);
             attrInfo.Lead = heroConfig.LeadShip + System.Math.Max(8 * (lv - 1), heroConfig.LeadShip * (lv - 1) / 10);
@@ -174,10 +170,6 @@ public static class HeroSelectionTool
             {
                 attrInfo.Lead = itemConfig.Attr1Val;
             }
-            else if (itemConfig.Attr1 == "shield")
-            {
-                attrInfo.Hp = itemConfig.Attr1Val;
-            }
 
             if (itemConfig.Attr2 == "str")
             {
@@ -191,12 +183,7 @@ public static class HeroSelectionTool
             {
                 attrInfo.Lead = itemConfig.Attr2Val;
             }
-            else if (itemConfig.Attr2 == "shield")
-            {
-                attrInfo.Hp = itemConfig.Attr2Val;
-            }
 
-            attrInfo.Hp = attrInfo.Hp * lv;
             attrInfo.Inte = attrInfo.Inte * lv;
             attrInfo.Str = attrInfo.Str * lv;
             attrInfo.Lead = attrInfo.Lead * lv;

@@ -74,9 +74,9 @@ public class GameManager : MonoBehaviour
         
     }
     
-    public Player GetPlayer(int idx)
+    public Player GetPlayer(int forceId)
     {
-        return players.Find(p => p.pid == idx);
+        return players.Find(p => p.forceId == forceId);
     }
 
     public SaveCityData GetCity(int cityId)

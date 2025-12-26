@@ -7,7 +7,6 @@ using UnityEngine;
 public class Player
 {
     public string pname;
-    public int pid;  //自增id
     public int forceId;  //配置表id
 
     public int gold;
@@ -31,9 +30,7 @@ public class Player
 
     public void Init(int id, int forceId, string imagePath)
     {
-        pid = id;
         this.forceId = forceId;
-        isAI = id > 0;
 
         gold = 0;
         maxFood = 100;
@@ -104,8 +101,4 @@ public class Player
         }
     }
 
-    public void onBattleResult(bool isWin, int add)
-    {
-        mark += add;
-    }
 }

@@ -31,4 +31,9 @@ public class SaveHeroData
         }
     }
 
+    public int GetLevel()
+    {
+        return HeroSelectionTool.GetCardLevel(exp, true);
+    }
+
 }

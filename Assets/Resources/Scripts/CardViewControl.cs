@@ -144,7 +144,6 @@ public class CardViewControl : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             SetColoredText(lead, heroCfg.LeadShip);
             SetColoredText(inte, heroCfg.Inte);
             SetColoredText(str, heroCfg.Str);
-            SetColoredText(hp, heroCfg.Hp);
 
             gameObject.GetComponent<Image>().color = HeroSelectionTool.GetForceColor(heroCfg.ForceId);
             priceI = HeroSelectionTool.GetPrice(heroCfg);
