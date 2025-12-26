@@ -34,6 +34,11 @@ public class SaveCityData
         if(soldierPerTeam > 1000)
             soldierPerTeam = 1000;
         soldier -= soldierPerTeam * heros.Count;
+        if(soldierPerTeam < 1)
+        {
+            soldierPerTeam = 1;
+            soldier = 0;
+        }
         List<BattleCardData> heroList = new List<BattleCardData>();
         foreach (var member in heros)
         {

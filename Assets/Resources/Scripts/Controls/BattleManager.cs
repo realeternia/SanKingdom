@@ -22,7 +22,6 @@ public class BattleManager : MonoBehaviour
     private Dictionary<Vector2Int, GameObject> debugGridCubes = new Dictionary<Vector2Int, GameObject>(); // 格子与调试cube的映射
 
     private List<Chess> chessList = new List<Chess>(); // 所有棋子
-    private int[] killMark = new int[8];
 
     private bool gameFinish = false;
     private bool hasWin;
@@ -84,7 +83,6 @@ public class BattleManager : MonoBehaviour
             Debug.Log("加载地图耗时：" + (endTime - startTime) + "秒");
         }
 
-        killMark = new int[8];
         BattleStatManager.Clear();
 
         // 通知所有玩家开始战斗
@@ -354,7 +352,7 @@ public class BattleManager : MonoBehaviour
                         var player = GameManager.Instance.GetPlayer(playerId);
                         if (player != null)
                         {
-                            cellControl.SetData(player, i + 1, killMark[playerId]);
+                            cellControl.SetData(player, i + 1, 1);
                         }
                     }
 
@@ -644,10 +642,8 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void OnUnitDying(Chess dieUnit, int killerPlayerId)
+    public void OnUnitDying(Chess dieUnit)
     {
-        if (killerPlayerId >= 0 && dieUnit.isHero)
-            killMark[killerPlayerId]++;
         // 从chessList中移除死亡单位
         chessList.Remove(dieUnit);
 
@@ -655,7 +651,7 @@ public class BattleManager : MonoBehaviour
         hasWin = false;
         // 检查所有阵营是否还有存活单位
         // 创建一个数组来统计每个阵营是否有存活单位，数组索引对应阵营编号减1
-        bool[] sideHasUnits = new bool[8];
+        bool[] sideHasUnits = new bool[2];
         int aliveSideCount = 0;
 
         foreach (var chessComponent in chessList)

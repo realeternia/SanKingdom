@@ -606,7 +606,7 @@ public class Chess : MonoBehaviour
     public void Ondying()
     {
         buffs.Clear();
-        BattleManager.Instance.OnUnitDying(this, lastDamagedPlayerId);
+        BattleManager.Instance.OnUnitDying(this);
 
         Destroy(gameObject);
 
