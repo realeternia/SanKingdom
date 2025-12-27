@@ -384,22 +384,28 @@ public class BattleManager : MonoBehaviour
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess, string effectName)
     {
         // 首先加载导弹预制体
-        Missile missilePrefab = Resources.Load<Missile>("Prefabs/MissileCom");
+        var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
         
         // 实例化导弹
-        var missile = Instantiate<Missile>(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
+        var missileViewObj = Instantiate(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
+        var missile = new Missile();
+        missile.viewObj = missileViewObj;
         missile.Init(sourceChess, 1, effectName);
+        missile.SetPosition(sourceChess.position);
         missile.MoveToTarget(targetChess, sourceChess.missileSpeed, sourceChess.missileHight);
     }
 
     public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage, string effectName)
     {
         // 首先加载导弹预制体
-        Missile missilePrefab = Resources.Load<Missile>("Prefabs/MissileCom");
+        var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
         
         // 实例化导弹
-        var missile = Instantiate<Missile>(missilePrefab, startPos, Quaternion.identity, Units.transform);
+        var missileViewObj = Instantiate(missilePrefab, startPos, Quaternion.identity, Units.transform);
+        var missile = new Missile();
+        missile.viewObj = missileViewObj;
         missile.Init(sourceChess, 1, effectName);
+        missile.SetPosition(startPos);
         missile.SetSkillInfo(skillId, damage);
         missile.MoveToTarget(targetChess, Mathf.Max(sourceChess.missileSpeed, 14), sourceChess.missileHight);
     }    
@@ -407,11 +413,14 @@ public class BattleManager : MonoBehaviour
     public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, float speed, float size, int skillId, int damage, string effectName)
     {
         // 首先加载导弹预制体
-        Missile missilePrefab = Resources.Load<Missile>("Prefabs/MissileCom");
+        var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
         
         // 实例化导弹
-        var missile = Instantiate<Missile>(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
+        var missileViewObj = Instantiate(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
+        var missile = new Missile();
+        missile.viewObj = missileViewObj;
         missile.Init(sourceChess, size, effectName);
+        missile.SetPosition(sourceChess.position);
         missile.SetSkillInfo(skillId, damage);
         missile.MoveToDirection(targetPos, time, speed);
     }

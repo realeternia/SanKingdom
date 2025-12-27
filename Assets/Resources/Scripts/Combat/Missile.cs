@@ -6,9 +6,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class Missile : MonoBehaviour
+public class Missile// : MonoBehaviour
 {
     public Chess owner;
+    public MissileViewObj viewObj;
+
     public string effectName;
     private string hitEffectName;
 
@@ -16,6 +18,8 @@ public class Missile : MonoBehaviour
 
     public int skillId;
     public int skillDamage;
+
+    public Vector3 position;
 
     public void Init(Chess sourceChess, float size, string effectName)
     {
@@ -33,16 +37,20 @@ public class Missile : MonoBehaviour
 
     public void MoveToDirection(Vector3 targetPos, float time, float missileSpeed)
     {
-        var missilePrefab = Resources.Load<GameObject>("Prefabs/Missile/" + effectName);
-        if (missilePrefab == null)
-            missilePrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
-        GameObject missileEffect = Instantiate(missilePrefab, transform.position, missilePrefab.transform.rotation, transform);
-        transform.rotation = Quaternion.LookRotation(targetPos - transform.position);
-        transform.position += new Vector3(0f, 2f, 0f); 
-        transform.localScale = size * missilePrefab.transform.localScale;
+        if (viewObj != null)
+        {
+            var missilePrefab = Resources.Load<GameObject>("Prefabs/Missile/" + effectName);
+            if (missilePrefab == null)
+                missilePrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
+            GameObject missileEffect = UnityEngine.Object.Instantiate(missilePrefab, position, missilePrefab.transform.rotation, viewObj.transform);
+            viewObj.transform.rotation = Quaternion.LookRotation(targetPos - position);
+            viewObj.transform.position += new Vector3(0f, 2f, 0f);
+            viewObj.transform.localScale = size * missilePrefab.transform.localScale;   
+            position += new Vector3(0f, 2f, 0f);
 
-        if(missileEffect.TryGetComponent(out MissileComp missileComp))
-            hitEffectName = missileComp.hitEffectName;
+            if (missileEffect.TryGetComponent(out MissileViewObj missileViewObj))
+                hitEffectName = missileViewObj.hitEffectName;
+        }
 
         var detectArea = 10f;
         var targetCount = 1;
@@ -53,32 +61,36 @@ public class Missile : MonoBehaviour
             targetCount = skillCfg.TargetCount;
         }
 
-        StartCoroutine(MoveMissileToDirection(gameObject, (targetPos - missileEffect.transform.position).normalized, time, missileSpeed, detectArea, targetCount));
+        BattleManager.Instance.StartNLCoroutine(MoveMissileToDirection((targetPos - position).normalized, time, missileSpeed, detectArea, targetCount));
     }
 
     public void MoveToTarget(Chess target, float missileSpeed, float missileHight)
     {
-        var missilePrefab = Resources.Load<GameObject>("Prefabs/Missile/" + effectName);
-        if (missilePrefab == null)
-            missilePrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
+        if (viewObj != null)
+        {
+            var missilePrefab = Resources.Load<GameObject>("Prefabs/Missile/" + effectName);
+            if (missilePrefab == null)
+                missilePrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
 
-        GameObject missileEffect = Instantiate(missilePrefab, transform.position, Quaternion.identity, transform);
-        transform.position += new Vector3(0f, 5f, 0f);
-        missileEffect.transform.localScale = missilePrefab.transform.localScale;
+            GameObject missileEffect = UnityEngine.Object.Instantiate(missilePrefab, position, Quaternion.identity, viewObj.transform);
+            viewObj.transform.position += new Vector3(0f, 5f, 0f);
+            position += new Vector3(0f, 5f, 0f);
+            missileEffect.transform.localScale = missilePrefab.transform.localScale;
 
-        if(missileEffect.TryGetComponent(out MissileComp missileComp))
-            hitEffectName = missileComp.hitEffectName;        
+            if (missileEffect.TryGetComponent(out MissileViewObj missileViewObj))
+                hitEffectName = missileViewObj.hitEffectName;
+        }
 
-        StartCoroutine(MoveMissileToTarget(gameObject, target, missileSpeed, missileHight));
+        BattleManager.Instance.StartNLCoroutine(MoveMissileToTarget(target, missileSpeed, missileHight));
     }
 
 
     // 定义协程方法，控制导弹移动
-    IEnumerator MoveMissileToTarget(GameObject missile, Chess target, float missileSpeed, float missileHight)
+    IEnumerator MoveMissileToTarget( Chess target, float missileSpeed, float missileHight)
     {
         var targetPos = target.position + new Vector3(0f, 5f, 0f);
 
-        float journeyLength = BattleManager.Instance.GetRange(missile.transform.position, targetPos);
+        float journeyLength = BattleManager.Instance.GetRange(position, targetPos);
         float totalLen = journeyLength;
         float realLen = 0;
         float startTime = Time.time;
@@ -87,7 +99,7 @@ public class Missile : MonoBehaviour
         float maxY = missileHight;
 
         var lastTime = Time.time;
-        while (missile != null && !BattleManager.Instance.CheckInRange(missile.transform.position, targetPos, 0.5f))
+        while (!BattleManager.Instance.CheckInRange(position, targetPos, 0.5f))
         {
             // if (owner == null || owner.hp <= 0)
             // {
@@ -97,12 +109,12 @@ public class Missile : MonoBehaviour
             if(target != null && target.hp > 0)
                 targetPos = target.position + new Vector3(0f, 5f, 0f); //修正目标点
             float distCovered = (Time.time - lastTime) * speed;
-            journeyLength = BattleManager.Instance.GetRange(missile.transform.position, targetPos);
+            journeyLength = BattleManager.Instance.GetRange(position, targetPos);
             float fractionOfJourney = distCovered / journeyLength;
             
             if (maxY > 0)
             {
-                Vector3 horizontalPos = Vector3.Lerp(missile.transform.position, targetPos, fractionOfJourney);
+                Vector3 horizontalPos = Vector3.Lerp(position, targetPos, fractionOfJourney);
 
                 // UnityEngine.Debug.Log("fractionOfJourney: " + fractionOfJourney);
                 realLen += distCovered * 1.1f;
@@ -112,36 +124,49 @@ public class Missile : MonoBehaviour
                 // 计算抛物线高度
                 float parabolaHeight = maxY * Mathf.Sin((realLen / totalLen) * Mathf.PI);
                 horizontalPos.y += parabolaHeight;
-                
-                missile.transform.position = horizontalPos;
-                missile.transform.rotation = Quaternion.LookRotation(targetPos - missile.transform.position);
+
+                SetPosition(horizontalPos);
+                SetDirection(Quaternion.LookRotation(targetPos - position));
             }
             else
             {
                 // 直线路径
-                missile.transform.position = Vector3.Lerp(missile.transform.position, targetPos, fractionOfJourney);
+                SetPosition(Vector3.Lerp(position, targetPos, fractionOfJourney));
             }
             lastTime = Time.time;
-            yield return new WaitForSeconds(0.025f);
+            yield return new NLWaitForSeconds(0.025f);
         }
 
-        if (missile != null)
+        OnCrash(target);
+        if (viewObj != null)
         {
-            OnCrash(target);
-            Destroy(missile);
+            UnityEngine.Object.Destroy(viewObj.gameObject);
         }
     }
 
- // 让hitEffect飞向targetPos的协程
-    IEnumerator MoveMissileToDirection(GameObject missile, Vector3 direction, float time, float speed, float detectArea, int targetCount)
+    public void SetPosition(Vector3 pos)
     {
-        Vector3 currentPos = missile.transform.position;
+        position = pos;
+        if(viewObj != null)
+            viewObj.transform.position = pos;
+    }
+
+    public void SetDirection(Quaternion dir)
+    {
+        if(viewObj != null)
+            viewObj.transform.rotation = dir;
+    }
+
+ // 让hitEffect飞向targetPos的协程
+    IEnumerator MoveMissileToDirection(Vector3 direction, float time, float speed, float detectArea, int targetCount)
+    {
+        Vector3 currentPos = position;
         direction.y = 0;
         float timePast = 0;
         float lastCheckTime = 0.2f;
         var checkedList = new List<Chess>();
 
-        while (missile != null)
+        while (true)
         {
             // if (owner == null || owner.hp <= 0)
             //     yield break;
@@ -150,7 +175,7 @@ public class Missile : MonoBehaviour
             float moveDistance = speed * 0.025f;
 
             // 按方向和距离移动 
-            currentPos = missile.transform.position = currentPos + direction * moveDistance;
+            currentPos = position = currentPos + direction * moveDistance;
 
             if (timePast - lastCheckTime >= 0.2f)
             {
@@ -174,14 +199,14 @@ public class Missile : MonoBehaviour
             timePast += 0.025f;
             if (timePast >= time || checkedList.Count >= targetCount)
             {
-                if (missile != null)
+                if (viewObj != null)
                 {
-                    Destroy(missile);
+                    UnityEngine.Object.Destroy(viewObj.gameObject);
                 }
                 yield break;
             }
 
-            yield return new WaitForSeconds(0.025f);
+            yield return new NLWaitForSeconds(0.025f);
         }
 
 

@@ -530,7 +530,10 @@ public class Chess// : MonoBehaviour
         buffs.Clear();
         BattleManager.Instance.OnUnitDying(this);
 
-        viewObj.DestroyHUD();
+        if (viewObj != null)
+        {
+            viewObj.DestroyHUD();
+        }
         Debug.Log("OnDying " + id);
         if (viewObj != null)
         {

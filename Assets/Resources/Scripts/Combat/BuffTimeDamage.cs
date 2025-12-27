@@ -39,7 +39,7 @@ public class BuffTimeDamage : Buff
         while (true)
         {
             // 等待1秒
-            yield return new WaitForSeconds(1f);
+            yield return new NLWaitForSeconds(1f);
             
             // 检查目标是否还存活
             if (chess.hp > 0)

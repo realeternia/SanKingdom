@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveData.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\MissileViewObj.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\NLCoroutineManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\BattleCardData.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelControl.cs" />
@@ -108,7 +109,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\BuffDamagedAddRate.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
     <Compile Include="Assets\Resources\Scripts\CityPanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\MissileComp.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitArea.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillAttackMultiArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />

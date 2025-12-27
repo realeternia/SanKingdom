@@ -46,7 +46,7 @@ public class SkillHitRegion : Skill
                 foreach(var unit in unitsInRange)
                     unit.OnSkillDamaged(owner, skillId, damage);
             }
-            yield return new WaitForSeconds(skillCfg.SummonHitInterval);
+            yield return new NLWaitForSeconds(skillCfg.SummonHitInterval);
         }
     }
 

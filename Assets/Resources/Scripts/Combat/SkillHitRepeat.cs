@@ -23,7 +23,7 @@ public class SkillHitRepeat : Skill
     {
         for (int i = 0; i < skillCfg.DoCount; i++)
         {
-            yield return new WaitForSeconds(skillCfg.TimeDelay);
+            yield return new NLWaitForSeconds(skillCfg.TimeDelay);
             if (defender != null && defender.hp > 0)
             {
                 var d = (int)(damage * skillCfg.SkillDamageRate);
