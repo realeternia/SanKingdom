@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Chess// : MonoBehaviour
+public class Chess
 {
     public ChessViewObj viewObj;
     public int id;
@@ -90,7 +90,7 @@ public class Chess// : MonoBehaviour
 
         if (isHero)
         {
-            UnityEngine.Debug.Log("Init Hero" + heroId);
+            Debug.Log("Init Hero" + heroId);
 
             var heroCfg = HeroConfig.GetConfig(heroId);
             // 初始化技能
@@ -100,7 +100,8 @@ public class Chess// : MonoBehaviour
                     skills.Add(SkillManager.CreateSkill(skillId, this));
             }
         }
-        viewObj.Init(this, c);
+        if(viewObj != null)
+            viewObj.Init(this, c);
     }
 
     public void LogicUpdate(float deltaTime)

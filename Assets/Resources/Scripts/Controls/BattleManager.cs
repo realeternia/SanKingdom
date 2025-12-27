@@ -42,6 +42,7 @@ public class BattleManager : MonoBehaviour
     public GameObject BattleTextNode;
     private int idCounter = 100;
     public float time;
+    public bool quickMode = true;
 
     void Start()
     {
@@ -176,8 +177,12 @@ public class BattleManager : MonoBehaviour
             }
         }
         occupiedGrids[300001] = unitGrids;
-        CreateCastleHUD(player1, mapConfig.RegionHeroSide1[4]);
-        CreateCastleHUD(player2, mapConfig.RegionHeroSide2[4]);
+
+        if (!quickMode)
+        {
+            CreateCastleHUD(player1, mapConfig.RegionHeroSide1[4]);
+            CreateCastleHUD(player2, mapConfig.RegionHeroSide2[4]);
+        }
 
         for (int i = 0; i < Math.Min(cards1.Count, mapConfig.RegionHeroSide1.Length); i++)
             SpawnHerosForRegion(player1, i, mapConfig.RegionHeroSide1[i], cards1[i], 1);
@@ -194,42 +199,40 @@ public class BattleManager : MonoBehaviour
     public Chess SpawnUnitsForRegion(Player p, int soldierId, int posId, UnityEngine.Vector3 spawnPos, int side, string imgPath)
     {
         var soldierConfig = SoldierConfig.GetConfig(soldierId);
-        GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
+        ChessViewObj viewObj = null;
+        if (!quickMode)
+        {
+            GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
 
-        // 实例化单位
-        GameObject unitModel = Instantiate(unitPrefab, spawnPos, Quaternion.identity, Units.transform);
+            // 实例化单位
+            GameObject unitModel = Instantiate(unitPrefab, spawnPos, Quaternion.identity, Units.transform);
+            unitModel.name = $"UnitBing_{side}_{idCounter}";
+            unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
-        unitModel.name = $"UnitBing_{side}_{idCounter}";
-        unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-
-        // 获取并初始化Chess组件
-        ChessViewObj viewObj = unitModel.GetComponent<ChessViewObj>();
+            // 获取并初始化Chess组件
+            viewObj = unitModel.GetComponent<ChessViewObj>();
+        }
         Chess chess = new Chess();
         if (viewObj != null)
-        {
             chess.viewObj = viewObj;
-            chess.id = idCounter;
-            chess.isHero = false;
-            chess.side = side;
-            chess.chessName = imgPath;
-            chess.maxHp = soldierConfig.Hp;
-            chess.moveSpeed = soldierConfig.MoveSpeed;
-            chess.attackRange = soldierConfig.Range;
-            chess.attackDamage = soldierConfig.Atk;
-            chess.isFakeHero = soldierConfig.Model == "UnitHero";
 
-            chess.hitEffect = soldierConfig.HitEffect;
-            chess.soldierId = soldierId;
-            chess.playerId = p.forceId;
-            chess.Init(p.forceId, posId, p.lineColor);
-        }
-        else
-        {
-            Debug.LogError("Chess component not found on UnitBing prefab");
-        }
+        chess.id = idCounter;
+        chess.isHero = false;
+        chess.side = side;
+        chess.chessName = imgPath;
+        chess.maxHp = soldierConfig.Hp;
+        chess.moveSpeed = soldierConfig.MoveSpeed;
+        chess.attackRange = soldierConfig.Range;
+        chess.attackDamage = soldierConfig.Atk;
+        chess.isFakeHero = soldierConfig.Model == "UnitHero";
+
+        chess.hitEffect = soldierConfig.HitEffect;
+        chess.soldierId = soldierId;
+        chess.playerId = p.forceId;
+        chess.Init(p.forceId, posId, p.lineColor);
+
         chessList.Add(chess);
         chess.SetPosition(spawnPos);
-
         idCounter++;
 
         return chess;
@@ -238,49 +241,45 @@ public class BattleManager : MonoBehaviour
     private Chess SpawnHerosForRegion(Player p, int posId, GameObject spawnPoint, BattleCardData heroData, int side)
     {
         var heroConfig = HeroConfig.GetConfig(heroData.CardId);
-        GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
-        if (spawnPoint != null)
+        ChessViewObj viewObj = null;
+        if (!quickMode)
         {
+            Debug.Log($"SpawnHerosForRegion Hero_{side}_{idCounter}");
+            GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
+
             // 实例化单位
             GameObject unitModel = Instantiate(heroPrefab, spawnPoint.transform.position, Quaternion.identity, Units.transform);
             unitModel.name = $"Hero_{side}_{idCounter}";
             unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
-            // 获取并初始化Chess组件
-            var viewObj = unitModel.GetComponent<ChessViewObj>();
-            Chess chess = new Chess();
-            if (viewObj != null)
-            {
-                chess.viewObj = viewObj;
-                chess.id = idCounter;
-                chess.isHero = true;
-                chess.heroId = (int)heroConfig.Id;
-                chess.side = side;
-                chess.chessName = heroConfig.Icon;
-                chess.hitEffect = heroConfig.HitEffect;
-                chess.missileSpeed = heroConfig.MissileSpeed;
-                chess.missileHight = heroConfig.MissileHight;
-
-                if (side <= 2)
-                {
-                    var heroInfo = heroInfoGroup.AddHero(side, heroConfig.Id, heroData.Level);
-                    chess.heroInfo = heroInfo;
-                }
-                chess.CheckInitAttr(heroData.Level, heroData.SoliderNum);
-                chess.Init(p.forceId, posId, p.lineColor);
-                // 可以在这里设置其他必要的初始化参数
-            }
-            else
-            {
-                Debug.LogError("Chess component not found on UnitBing prefab");
-            }
-            chessList.Add(chess);
-            chess.SetPosition(spawnPoint.transform.position);
-            idCounter++;
-
-            return chess;
+            viewObj = unitModel.GetComponent<ChessViewObj>();
         }
-        return null;
+
+        Chess chess = new Chess();
+        if (viewObj != null)
+            chess.viewObj = viewObj;
+        chess.id = idCounter;
+        chess.isHero = true;
+        chess.heroId = (int)heroConfig.Id;
+        chess.side = side;
+        chess.chessName = heroConfig.Icon;
+        chess.hitEffect = heroConfig.HitEffect;
+        chess.missileSpeed = heroConfig.MissileSpeed;
+        chess.missileHight = heroConfig.MissileHight;
+
+        if (side <= 2)
+        {
+            var heroInfo = heroInfoGroup.AddHero(side, heroConfig.Id, heroData.Level);
+            chess.heroInfo = heroInfo;
+        }
+        chess.CheckInitAttr(heroData.Level, heroData.SoliderNum);
+        chess.Init(p.forceId, posId, p.lineColor);
+
+        chessList.Add(chess);
+        chess.SetPosition(spawnPoint.transform.position);
+        idCounter++;
+
+        return chess;
     }
 
 
@@ -303,13 +302,14 @@ public class BattleManager : MonoBehaviour
     }
 
     public static float tickTime = 0.025f;
+    public static float tickTimeReal = 0f; //加速功能
     private IEnumerator GameUpdate()
     {
         yield return new WaitForSeconds(0.5f);
 
         while (!gameFinish)
         {
-            yield return new WaitForSeconds(tickTime);
+            yield return new WaitForSeconds(tickTimeReal);
             time += tickTime;
             coroutineManager.Update(tickTime);
 
@@ -389,13 +389,14 @@ public class BattleManager : MonoBehaviour
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess, string effectName)
     {
-        // 首先加载导弹预制体
-        var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
-        
-        // 实例化导弹
-        var missileViewObj = Instantiate(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
+        MissileViewObj viewObj = null;
+        if(!quickMode)
+        {
+            var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
+            viewObj = Instantiate(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
+        }
         var missile = new Missile();
-        missile.viewObj = missileViewObj;
+        missile.viewObj = viewObj;
         missile.Init(sourceChess, 1, effectName);
         missile.SetPosition(sourceChess.position);
         missile.MoveToTarget(targetChess, sourceChess.missileSpeed, sourceChess.missileHight);
@@ -403,13 +404,14 @@ public class BattleManager : MonoBehaviour
 
     public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage, string effectName)
     {
-        // 首先加载导弹预制体
-        var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
-        
-        // 实例化导弹
-        var missileViewObj = Instantiate(missilePrefab, startPos, Quaternion.identity, Units.transform);
+        MissileViewObj viewObj = null;
+        if(!quickMode)
+        {
+            var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
+            viewObj = Instantiate(missilePrefab, startPos, Quaternion.identity, Units.transform);
+        }
         var missile = new Missile();
-        missile.viewObj = missileViewObj;
+        missile.viewObj = viewObj;
         missile.Init(sourceChess, 1, effectName);
         missile.SetPosition(startPos);
         missile.SetSkillInfo(skillId, damage);
@@ -418,13 +420,14 @@ public class BattleManager : MonoBehaviour
 
     public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, float speed, float size, int skillId, int damage, string effectName)
     {
-        // 首先加载导弹预制体
-        var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
-        
-        // 实例化导弹
-        var missileViewObj = Instantiate(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
+        MissileViewObj viewObj = null;
+        if(!quickMode)
+        {
+            var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
+            viewObj = Instantiate(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
+        }
         var missile = new Missile();
-        missile.viewObj = missileViewObj;
+        missile.viewObj = viewObj;
         missile.Init(sourceChess, size, effectName);
         missile.SetPosition(sourceChess.position);
         missile.SetSkillInfo(skillId, damage);

@@ -64,9 +64,10 @@ public class ChessViewObj : MonoBehaviour
 
         if (!hasSKill)
             material.SetFloat("_SecondTexSize", 0.1f);
-        rend.material = material; // 这会为这个渲染器创建一个独立的材质实例  
-        // 创建HUD
-        CreateHUD();           
+        rend.material = material; // 这会为这个渲染器创建一个独立的材质实例
+
+        if(!BattleManager.Instance.quickMode)
+            CreateHUD();
     }
 
     // 创建血条HUD
