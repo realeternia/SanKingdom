@@ -8,7 +8,7 @@ public static class EffectManager
 
     public static void PlayHitEffect(Chess sourceChess, Chess targetChess, string effectName)
     {
-        if(targetChess.viewObj == null)
+        if(targetChess.viewObj == null || BattleManager.Instance.quickMode)
             return;
         
         // 播放粒子特效
@@ -24,7 +24,7 @@ public static class EffectManager
 
     public static GameObject PlaySkillEffect(Chess sourceChess, string effect, float time = 1.3f)
     {
-        if(sourceChess.viewObj == null)
+        if(sourceChess.viewObj == null || BattleManager.Instance.quickMode)
             return null;
 
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
@@ -42,7 +42,7 @@ public static class EffectManager
 
     public static GameObject PlayPosSkillEffect(Chess sourceChess, Vector3 sourcePos, float size, string effect, float time = 1.3f)
     {
-        if(sourceChess.viewObj == null)
+        if(sourceChess.viewObj == null || BattleManager.Instance.quickMode)
             return null;
         
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
@@ -61,7 +61,7 @@ public static class EffectManager
 
     public static GameObject PlayBuffEffect(Chess sourceChess, string effect)
     {
-        if(sourceChess.viewObj == null)
+        if(sourceChess.viewObj == null || BattleManager.Instance.quickMode)
             return null;
         
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);

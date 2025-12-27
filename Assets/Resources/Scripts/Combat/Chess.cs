@@ -279,7 +279,7 @@ public class Chess
     //    score += 100f / (distance + 1f);  // 避免除以0
 
         // 添加最大属性差作为积分项（权重可根据游戏平衡调整）
-        score += calculateDamage(this, target, out var type) / 2;
+        score += CalculateDamage(this, target, out var type) / 2;
         score += (level - target.level) * 7f;
 
         // 生命值权重（生命值越低分数越高）
@@ -333,7 +333,6 @@ public class Chess
                 else
                 {
                     Attack(targetChess, hitEffect); // 普通攻击
-
                 }
             }
             lastAttackTime = BattleManager.Instance.time;
@@ -343,14 +342,13 @@ public class Chess
         if (noMoveCount > 0 || moveSpeed == 0)
             return;
 
-        if (moveDest == null || BattleManager.Instance.GetRange(targetChess.position, moveDest.Value) > 40)
+        var dis = BattleManager.Instance.GetRange(position, targetChess.position);
+        if (moveDest == null || dis > 40)
             moveDest = targetChess.position;
         
         //如果当前位置很接近moveDirection，就直接移动到moveDirection
-        if (BattleManager.Instance.GetRange(position, moveDest.Value) <= moveSpeed * 0.1f)
-        {
+        if (dis <= moveSpeed * 0.1f)
             moveDest = targetChess.position;
-        }
 
         if (moveDest != null)
         {
@@ -374,7 +372,7 @@ public class Chess
                 // 如果已经在使用偏移路径或者失败次数达到阈值，则继续使用偏移
                 // 计算原始方向
                 Vector3 direction = (targetChess.position - position).normalized;
-                float angleOffset = 0f;
+                float angleOffset;
 
                 // 根据失败次数确定偏移角度
                 if (moveFailCount <= 3)
@@ -413,7 +411,7 @@ public class Chess
             return;
 
         // 造成伤害
-        var damage = calculateDamage(this, victim, out var damType);
+        var damage = CalculateDamage(this, victim, out var damType);
         var effect = hitEffectName;
         var damageBase = damage;
         var damageMulti = 1f;
@@ -441,6 +439,7 @@ public class Chess
                 minDamage = Math.Clamp(minDamage + levelDiff, 8, minDamage * 2);
                 maxDamage = Math.Clamp(maxDamage + levelDiff * 4, 40, maxDamage * 2);
             }
+
             var attackJobCfg = ConfigManager.GetJobConfig(HeroConfig.GetConfig(heroId).Job);
             var victimJob = ConfigManager.GetJobConfig(HeroConfig.GetConfig(victim.heroId).Job).NameS;
             if (attackJobCfg.OvercomeStrong != null && attackJobCfg.OvercomeStrong.Contains(victimJob))
@@ -546,7 +545,7 @@ public class Chess
             BGMPlayer.Instance.PlaySound("Sounds/tnt", 7);
     }
 
-    private int calculateDamage(Chess attacker, Chess defender, out string type)
+    private int CalculateDamage(Chess attacker, Chess defender, out string type)
     {
         if (!attacker.isHero || !defender.isHero)
         {
@@ -715,20 +714,24 @@ public class Chess
         return BattleManager.Instance.MoveTo(this, targetPosition, isForce);
     }
 
-
-
     public void PlayerAnim(string name)
     {
+        if(BattleManager.Instance.quickMode)
+            return;
         viewObj?.PlayerAnim(name);
     }
 
     public void StartJump(float time)
     {
+        if(BattleManager.Instance.quickMode)
+            return;
         viewObj?.StartJump(time);
     }
 
     public void StopJump()
     {
+        if(BattleManager.Instance.quickMode)
+            return;
         viewObj?.StopJump();
     }
 

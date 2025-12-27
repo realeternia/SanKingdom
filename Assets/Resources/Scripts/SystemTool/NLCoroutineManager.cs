@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 // 协程等待指令基类
 public abstract class YieldInstruction
@@ -26,6 +27,24 @@ public class NLWaitForSeconds : YieldInstruction
     {
         _timePast += timePast;
         return _timePast < _targetTime;
+    }
+}
+public class NLWaitForPreciseTime : YieldInstruction
+{
+    private readonly Stopwatch _stopwatch;
+    private readonly long _targetTicks;
+    
+    public NLWaitForPreciseTime(float seconds)
+    {
+        _stopwatch = Stopwatch.StartNew();
+        // Stopwatch.Frequency 是每秒钟的tick数，通常是1000万（10MHz）
+        _targetTicks = (long)(seconds * Stopwatch.Frequency);
+    }
+
+    public override bool CheckWait(float timePast)
+    {
+        // 使用Stopwatch的高精度计时
+        return _stopwatch.ElapsedTicks < _targetTicks;
     }
 }
 
@@ -79,7 +98,7 @@ public class NLCoroutineManager
     // 启动协程
     public void StartCoroutine(IEnumerator coroutine)
     {
-        UnityEngine.Debug.Log("StartCoroutine " + coroutine);
+    //    UnityEngine.Debug.Log("StartCoroutine " + coroutine);
         // 先执行第一步
         if (coroutine.MoveNext())
         {

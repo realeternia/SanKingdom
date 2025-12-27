@@ -302,28 +302,40 @@ public class BattleManager : MonoBehaviour
     }
 
     public static float tickTime = 0.025f;
-    public static float tickTimeReal = 0f; //加速功能
+    public static float tickTimeReal = 0.025f; //加速功能
     private IEnumerator GameUpdate()
     {
         yield return new WaitForSeconds(0.5f);
 
+        Debug.Log($"GameUpdatett start logicTime={time} realTime={Time.time}");
+        var speed = 1;
+        if(quickMode)
+            speed = 200;
         while (!gameFinish)
         {
-            yield return new WaitForSeconds(tickTimeReal);
-            time += tickTime;
-            coroutineManager.Update(tickTime);
+            yield return new NLWaitForPreciseTime(tickTimeReal);
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            for (int i = 0; i < speed; i++)
+            {
+                time += tickTime;
+                coroutineManager.Update(tickTime);
 
-            foreach (var chess in chessList.ToArray())
-            {
-                if (chess != null && chess.hp > 0)
-                    chess.LogicUpdate(tickTime);
+                foreach (var chess in chessList.ToArray())
+                {
+                    if (chess != null && chess.hp > 0)
+                        chess.LogicUpdate(tickTime);
+                }
+                
+                // 每个回合结束，玩家消耗食物
+                foreach (var player in GameManager.Instance.players)
+                {
+                    player.RoundFoodCost();
+                }
             }
-            // 每个回合结束，玩家消耗食物
-            foreach (var player in GameManager.Instance.players)
-            {
-                player.RoundFoodCost();
-            }
+            sw.Stop();
+            UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
         }
+        Debug.Log($"GameUpdatett end logicTime={time} realTime={Time.time}");
 
         {
             if (hasWin)
@@ -457,46 +469,47 @@ public class BattleManager : MonoBehaviour
     public bool TryLockGridPositions(Chess unit, Vector3 targetPosition, out List<Vector2Int> requiredGrids)
     {
         // 使用GetOccupiedGrids方法获取需要锁定的格子列表
-        requiredGrids = GetOccupiedGrids(targetPosition);
-        // UnityEngine.Debug.Log($"id:{unit.id} requiredGrids: Target Position = {targetPosition}, Collider Size = {collider.bounds.size}");
-        // string gridPositions = string.Join(", ", requiredGrids);
-        // UnityEngine.Debug.Log($"Grids: {gridPositions}");
+        // requiredGrids = GetOccupiedGrids(targetPosition);
+        // // UnityEngine.Debug.Log($"id:{unit.id} requiredGrids: Target Position = {targetPosition}, Collider Size = {collider.bounds.size}");
+        // // string gridPositions = string.Join(", ", requiredGrids);
+        // // UnityEngine.Debug.Log($"Grids: {gridPositions}");
 
-        // 检查所有格子是否可用
-        foreach (var gridPos in requiredGrids)
-        {
-            foreach (var entry in occupiedGrids)
-            {
-                if (entry.Key != unit.id)
-                {
-                    foreach (var occupiedGrid in entry.Value)
-                    {
-                        if (occupiedGrid.x == gridPos.x && occupiedGrid.y == gridPos.y)
-                        {
-                         //   UnityEngine.Debug.Log("Grid " + gridPos + " is already occupied by unit: " + entry.Key);
-                            return false; // 格子不可用
-                        }
-                    }
-                }
-            }
-        }
+        // // 检查所有格子是否可用
+        // foreach (var gridPos in requiredGrids)
+        // {
+        //     foreach (var entry in occupiedGrids)
+        //     {
+        //         if (entry.Key != unit.id)
+        //         {
+        //             foreach (var occupiedGrid in entry.Value)
+        //             {
+        //                 if (occupiedGrid.x == gridPos.x && occupiedGrid.y == gridPos.y)
+        //                 {
+        //                  //   UnityEngine.Debug.Log("Grid " + gridPos + " is already occupied by unit: " + entry.Key);
+        //                     return false; // 格子不可用
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        requiredGrids = null;
         return true;
     }
 
     public void DoLockGridPositions(Chess unit, List<Vector2Int> requiredGrids)
     {
-        ReleaseGridPositions(unit.id);
-        // 锁定新格子
-        List<Vector2Int> unitGrids = new List<Vector2Int>();
-        foreach (var gridPos in requiredGrids)
-        {
-            unitGrids.Add(gridPos);
-            CreateDebugCube(unit.id, gridPos);
-         //   UnityEngine.Debug.Log("Lock " + gridPos + " for unit: " + unit.id);
-        }
+        // ReleaseGridPositions(unit.id);
+        // // 锁定新格子
+        // List<Vector2Int> unitGrids = new List<Vector2Int>();
+        // foreach (var gridPos in requiredGrids)
+        // {
+        //     unitGrids.Add(gridPos);
+        //     CreateDebugCube(unit.id, gridPos);
+        //  //   UnityEngine.Debug.Log("Lock " + gridPos + " for unit: " + unit.id);
+        // }
 
-        // 存储单位占据的格子
-        occupiedGrids[unit.id] = unitGrids;
+        // // 存储单位占据的格子
+        // occupiedGrids[unit.id] = unitGrids;
     }
 
     public void ForceLockGridPositions(Chess unit, Vector3 targetPosition)
@@ -563,27 +576,27 @@ public class BattleManager : MonoBehaviour
     {
         List<Vector2Int> occupiedGrids = new List<Vector2Int>();
 
-        // 获取碰撞体边界
-        Vector3 boundsSize = new Vector3(10, 0.5f, 10);
-        Vector3 halfBounds = boundsSize / 3f;
+        // // 获取碰撞体边界
+        // Vector3 boundsSize = new Vector3(10, 0.5f, 10);
+        // Vector3 halfBounds = boundsSize / 3f;
 
-        // 计算边界的最小和最大世界坐标
-        Vector3 minWorldPos = position - halfBounds;
-        Vector3 maxWorldPos = position + halfBounds;
+        // // 计算边界的最小和最大世界坐标
+        // Vector3 minWorldPos = position - halfBounds;
+        // Vector3 maxWorldPos = position + halfBounds;
 
-        // 将世界坐标转换为格子坐标
-        Vector2Int minGridPos = WorldToGridPosition(minWorldPos, true);
-        Vector2Int maxGridPos = WorldToGridPosition(maxWorldPos, false);
+        // // 将世界坐标转换为格子坐标
+        // Vector2Int minGridPos = WorldToGridPosition(minWorldPos, true);
+        // Vector2Int maxGridPos = WorldToGridPosition(maxWorldPos, false);
 
-        // 遍历从最小到最大格子坐标的所有格子
-        for (int x = minGridPos.x; x <= maxGridPos.x; x+= gridCellSize)
-        {
-            for (int z = minGridPos.y; z <= maxGridPos.y; z+= gridCellSize)
-            {
-                Vector2Int currentGrid = new Vector2Int(x, z);
-                occupiedGrids.Add(currentGrid);
-            }
-        }
+        // // 遍历从最小到最大格子坐标的所有格子
+        // for (int x = minGridPos.x; x <= maxGridPos.x; x+= gridCellSize)
+        // {
+        //     for (int z = minGridPos.y; z <= maxGridPos.y; z+= gridCellSize)
+        //     {
+        //         Vector2Int currentGrid = new Vector2Int(x, z);
+        //         occupiedGrids.Add(currentGrid);
+        //     }
+        // }
         
         return occupiedGrids;
     }
@@ -705,16 +718,16 @@ public class BattleManager : MonoBehaviour
 
     public bool CheckInRange(Vector3 pos1, Vector3 pos2, float range)
     {
-        Vector2Int pos1a = BattleManager.Instance.WorldToGridPosition(pos1, true);
-        Vector2Int pos2a = BattleManager.Instance.WorldToGridPosition(pos2, true);
+        Vector2Int pos1a = WorldToGridPosition(pos1, true);
+        Vector2Int pos2a = WorldToGridPosition(pos2, true);
 
         return Vector2Int.Distance(pos1a, pos2a) <= range;
     }
 
     public float GetRange(Vector3 pos1, Vector3 pos2)
     {
-        Vector2Int pos1a = BattleManager.Instance.WorldToGridPosition(pos1, true);
-        Vector2Int pos2a = BattleManager.Instance.WorldToGridPosition(pos2, true);
+        Vector2Int pos1a = WorldToGridPosition(pos1, true);
+        Vector2Int pos2a = WorldToGridPosition(pos2, true);
 
         return Vector2Int.Distance(pos1a, pos2a);
     }
@@ -722,7 +735,7 @@ public class BattleManager : MonoBehaviour
 
     public List<Chess> GetUnitsInRange(Vector3 wPos, float range, int mySide, bool findEnemy)
     {
-        Vector2Int center = BattleManager.Instance.WorldToGridPosition(wPos, true);
+        Vector2Int center = WorldToGridPosition(wPos, true);
         List<Chess> unitsInRange = new List<Chess>();
         foreach (var chessComponent in chessList)
         {
@@ -763,7 +776,7 @@ public class BattleManager : MonoBehaviour
 
     public List<Chess> GetUnitsMySide(Vector3 wPos, float range, int mySide)
     {
-        Vector2Int center = BattleManager.Instance.WorldToGridPosition(wPos, true);
+        Vector2Int center = WorldToGridPosition(wPos, true);
         List<Chess> unitsInRange = new List<Chess>();
         foreach (var chessComponent in chessList)
         {
@@ -830,6 +843,9 @@ public class BattleManager : MonoBehaviour
 
     public void AddBattleText(string text, UnityEngine.Vector3 worldPos, UnityEngine.Vector2 speed, Color color, int duration)
     {
+        if(quickMode)
+            return;
+
         var prefab = Resources.Load<GameObject>("Prefabs/BattleTxt");
         var battleText = Instantiate(prefab, BattleTextNode.transform);
 
