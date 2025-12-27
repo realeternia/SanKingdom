@@ -93,12 +93,13 @@ public class Missile// : MonoBehaviour
         float journeyLength = BattleManager.Instance.GetRange(position, targetPos);
         float totalLen = journeyLength;
         float realLen = 0;
-        float startTime = Time.time;
+        float startTime = BattleManager.Instance.time;
+        
         float speed = missileSpeed * 2.5f; // 导弹移动速度
 
         float maxY = missileHight;
 
-        var lastTime = Time.time;
+        var lastTime = BattleManager.Instance.time;
         while (!BattleManager.Instance.CheckInRange(position, targetPos, 0.5f))
         {
             // if (owner == null || owner.hp <= 0)
@@ -108,7 +109,7 @@ public class Missile// : MonoBehaviour
             // }
             if(target != null && target.hp > 0)
                 targetPos = target.position + new Vector3(0f, 5f, 0f); //修正目标点
-            float distCovered = (Time.time - lastTime) * speed;
+            float distCovered = (BattleManager.Instance.time - lastTime) * speed;
             journeyLength = BattleManager.Instance.GetRange(position, targetPos);
             float fractionOfJourney = distCovered / journeyLength;
             
@@ -133,7 +134,7 @@ public class Missile// : MonoBehaviour
                 // 直线路径
                 SetPosition(Vector3.Lerp(position, targetPos, fractionOfJourney));
             }
-            lastTime = Time.time;
+            lastTime = BattleManager.Instance.time;
             yield return new NLWaitForSeconds(0.025f);
         }
 

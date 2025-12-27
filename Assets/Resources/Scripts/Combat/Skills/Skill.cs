@@ -42,7 +42,7 @@ public class Skill
             var cdTime = skillCfg.CD;
             SkillManager.OnCheckCD(owner, skillCfg, ref cdTime);
 
-            lastUpdateTime = Time.time - skillCfg.CD + cdTime;
+            lastUpdateTime = BattleManager.Instance.time - skillCfg.CD + cdTime;
         }
     }
 
@@ -55,7 +55,7 @@ public class Skill
         if(skillCfg.CD <= 0)
             return false;
 
-        return Time.time < lastUpdateTime + skillCfg.CD;
+        return BattleManager.Instance.time < lastUpdateTime + skillCfg.CD;
     }
 
     public bool CheckBurst(Chess target)

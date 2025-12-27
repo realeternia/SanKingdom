@@ -24,13 +24,13 @@ public class Buff
         owner = unit;
         buffCfg = BuffConfig.GetConfig(id);
         skillCfg = SkillConfig.GetConfig(skillId);
-        endTime = Time.time + lastTime;
+        endTime = BattleManager.Instance.time + lastTime;
 
     }
 
     public void SetTime(float time)
     {
-        endTime = Time.time + time;
+        endTime = BattleManager.Instance.time + time;
     }
 
     public virtual void OnAdd(Chess chess, Chess caster)
@@ -71,14 +71,12 @@ public class Buff
     //刷新
     public virtual void Refresh(Chess caster, float lastTime)
     {
-        endTime = Math.Max(endTime, Time.time + lastTime);
-
+        endTime = Math.Max(endTime, BattleManager.Instance.time + lastTime);
     }
-
 
     public void WaitForRemove()
     {
-        endTime = Time.time - 1;
+        endTime = BattleManager.Instance.time - 1;
 
     }
 

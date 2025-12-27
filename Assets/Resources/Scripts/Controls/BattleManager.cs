@@ -41,10 +41,12 @@ public class BattleManager : MonoBehaviour
     public GameObject HudNode;
     public GameObject BattleTextNode;
     private int idCounter = 100;
+    public float time;
 
     void Start()
     {
         Instance = this;
+        time = 10000;
 
         buttonRestart.onClick.AddListener(BattleEnd);
         buttonInfo.onClick.AddListener(ShowBattleResult);
@@ -303,14 +305,17 @@ public class BattleManager : MonoBehaviour
     private IEnumerator GameUpdate()
     {
         yield return new WaitForSeconds(0.5f);
+        var tick = 0.025f;
         while (!gameFinish)
         {
-            yield return new WaitForSeconds(0.05f);
-            coroutineManager.Update(0.05f);
+            yield return new WaitForSeconds(tick);
+            time += tick;
+            coroutineManager.Update(tick);
+
             foreach (var chess in chessList.ToArray())
             {
                 if (chess != null && chess.hp > 0)
-                    chess.LogicUpdate(0.05f);
+                    chess.LogicUpdate(tick);
             }
             // 每个回合结束，玩家消耗食物
             foreach (var player in GameManager.Instance.players)
@@ -859,12 +864,13 @@ public class BattleManager : MonoBehaviour
         float scaleX = (float)screenWidth / designWidth;
         float scaleY = (float)screenHeight / designHeight;
 
-        float startTime = Time.time;
+        var nowTime = Time.time;
+        float startTime = nowTime;
         float endTime = startTime + duration;
         RectTransform rectTransform = battleText.GetComponent<RectTransform>();
-        var lastTime = Time.time;
+        var lastTime = nowTime;
 
-        while (Time.time < endTime)
+        while (lastTime < endTime)
         {
             // 考虑分辨率和缩放因素计算移动距离
             var timeDiff = Time.time - lastTime;

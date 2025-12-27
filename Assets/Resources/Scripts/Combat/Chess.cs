@@ -108,7 +108,7 @@ public class Chess// : MonoBehaviour
         if (hp <= 0)
             return;
 
-        buffs.Where(x => Time.time > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
+        buffs.Where(x => BattleManager.Instance.time > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
 
         if(regeHp > 0)
         {
@@ -201,7 +201,7 @@ public class Chess// : MonoBehaviour
     public void LockTarget(Chess target1)
     {
         targetChess = target1;
-        lastTargetUpdateTime = Time.time;
+        lastTargetUpdateTime = BattleManager.Instance.time;
     }
 
     private int lackIndex;
@@ -295,10 +295,10 @@ public class Chess// : MonoBehaviour
             return;
 
         // 每3秒重新寻找目标
-        if (Time.time - lastTargetUpdateTime >= 3f)
+        if (BattleManager.Instance.time - lastTargetUpdateTime >= 3f)
         {
             FindTarget();
-            lastTargetUpdateTime = Time.time;
+            lastTargetUpdateTime = BattleManager.Instance.time;
         }
 
         // 检查目标是否存在
@@ -335,7 +335,7 @@ public class Chess// : MonoBehaviour
 
                 }
             }
-            lastAttackTime = Time.time;
+            lastAttackTime = BattleManager.Instance.time;
             return;
         }
 
@@ -429,8 +429,8 @@ public class Chess// : MonoBehaviour
         }
 
         damage = (int)(damageBase * damageMulti);
-        var minDamage = 30 + level / 2;
-        var maxDamage = 150 + level;
+        var minDamage = 10 + level / 2;
+        var maxDamage = 50 + level;
         if (isHero && victim.isHero)
         {
             //等级压制
@@ -612,7 +612,7 @@ public class Chess// : MonoBehaviour
 
     public bool IsInFight()
     {
-        return Time.time < lastAttackTime + 0.3f;
+        return BattleManager.Instance.time < lastAttackTime + 0.3f;
     }
 
     public void AddBuff(Buff buff, Chess caster, float time)
@@ -620,7 +620,7 @@ public class Chess// : MonoBehaviour
         // 计算buffTimes中所有20秒以内且buffId等于当前buff.id的buff的时间和
         float buffTimeSum = 0;
         float buffCount = 0;
-        var nowTime = Time.time;
+        var nowTime = BattleManager.Instance.time;
         buffTimes.RemoveAll(buff => nowTime - buff.time > 30);
         foreach (var existingBuffTime in buffTimes)
         {
@@ -645,7 +645,7 @@ public class Chess// : MonoBehaviour
 
         buffs.Add(buff);
         buff.OnAdd(this, caster);
-        buffTimes.Add(new BuffTime{id = buff.id, time = Time.time});
+        buffTimes.Add(new BuffTime{id = buff.id, time = BattleManager.Instance.time});
     }
 
     public void AddColorEffect(Color start, Color end)

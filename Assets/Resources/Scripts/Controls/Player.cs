@@ -72,13 +72,13 @@ public class Player
     {
         food = maxFood;
         // 重置上次扣除粮食的时间为当前时间
-        lastFoodDeductionTime = Time.time;
+        lastFoodDeductionTime = BattleManager.Instance.time;
     }
 
     public void RoundFoodCost()
     {
         // 粮食扣除逻辑
-        if (Time.time - lastFoodDeductionTime >= 5f) // 每5秒扣除一次粮食
+        if (BattleManager.Instance.time - lastFoodDeductionTime >= 5f) // 每5秒扣除一次粮食
         {
             // 计算时间差，每5s，扣10点粮食
             if(food < 10)
@@ -91,7 +91,7 @@ public class Player
             if (food < 0) food = 0;
 
             // 更新上次扣除粮食的时间
-            lastFoodDeductionTime = Time.time;
+            lastFoodDeductionTime = BattleManager.Instance.time;
         }
     }
 
