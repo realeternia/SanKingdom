@@ -16,10 +16,6 @@ public class BattleManager : MonoBehaviour
     public int gridCellSize = 3; // 每个格子的实际大小(米)
 
     private List<int> playerList = new List<int>();
-    private Dictionary<int, List<Vector2Int>> occupiedGrids = new Dictionary<int, List<Vector2Int>>(); // 所有被占据的格子，键为chess.id
-
-    public bool showDebugCube = false;
-    private Dictionary<Vector2Int, GameObject> debugGridCubes = new Dictionary<Vector2Int, GameObject>(); // 格子与调试cube的映射
 
     private List<Chess> chessList = new List<Chess>(); // 所有棋子
 
@@ -157,26 +153,7 @@ public class BattleManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        occupiedGrids.Clear();
         heroInfoGroup.Reset();
-
-        List<Vector2Int> unitGrids = new List<Vector2Int>();
-        // 生成墙
-        for (int i = 0; i < mapConfig.WallNode.transform.childCount; i++)
-        {
-            var wallNodeCell = mapConfig.WallNode.transform.GetChild(i);
-            // 使用GetOccupiedGrids方法获取需要锁定的格子列表
-            List<Vector2Int> requiredGrids = GetOccupiedGrids(wallNodeCell.transform.position);
-            // 锁定新格子
-
-            foreach (var gridPos in requiredGrids)
-            {
-                unitGrids.Add(gridPos);
-                CreateDebugCube(300001, gridPos);
-                //  UnityEngine.Debug.Log("Lock " + gridPos + " for wall");
-            }
-        }
-        occupiedGrids[300001] = unitGrids;
 
         if (!quickMode)
         {
@@ -309,11 +286,13 @@ public class BattleManager : MonoBehaviour
 
         Debug.Log($"GameUpdatett start logicTime={time} realTime={Time.time}");
         var speed = 1;
-        if(quickMode)
-            speed = 200;
+        if (quickMode)
+        {
+            speed = 400;
+        }
         while (!gameFinish)
         {
-            yield return new NLWaitForPreciseTime(tickTimeReal);
+            yield return new WaitForSeconds(tickTimeReal);
             var sw = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < speed; i++)
             {
@@ -465,195 +444,37 @@ public class BattleManager : MonoBehaviour
         return new Vector2Int(x, z);
     }
 
-    // 尝试锁定目标位置的格子
-    public bool TryLockGridPositions(Chess unit, Vector3 targetPosition, out List<Vector2Int> requiredGrids)
-    {
-        // 使用GetOccupiedGrids方法获取需要锁定的格子列表
-        // requiredGrids = GetOccupiedGrids(targetPosition);
-        // // UnityEngine.Debug.Log($"id:{unit.id} requiredGrids: Target Position = {targetPosition}, Collider Size = {collider.bounds.size}");
-        // // string gridPositions = string.Join(", ", requiredGrids);
-        // // UnityEngine.Debug.Log($"Grids: {gridPositions}");
-
-        // // 检查所有格子是否可用
-        // foreach (var gridPos in requiredGrids)
-        // {
-        //     foreach (var entry in occupiedGrids)
-        //     {
-        //         if (entry.Key != unit.id)
-        //         {
-        //             foreach (var occupiedGrid in entry.Value)
-        //             {
-        //                 if (occupiedGrid.x == gridPos.x && occupiedGrid.y == gridPos.y)
-        //                 {
-        //                  //   UnityEngine.Debug.Log("Grid " + gridPos + " is already occupied by unit: " + entry.Key);
-        //                     return false; // 格子不可用
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        requiredGrids = null;
-        return true;
-    }
-
-    public void DoLockGridPositions(Chess unit, List<Vector2Int> requiredGrids)
-    {
-        // ReleaseGridPositions(unit.id);
-        // // 锁定新格子
-        // List<Vector2Int> unitGrids = new List<Vector2Int>();
-        // foreach (var gridPos in requiredGrids)
-        // {
-        //     unitGrids.Add(gridPos);
-        //     CreateDebugCube(unit.id, gridPos);
-        //  //   UnityEngine.Debug.Log("Lock " + gridPos + " for unit: " + unit.id);
-        // }
-
-        // // 存储单位占据的格子
-        // occupiedGrids[unit.id] = unitGrids;
-    }
-
-    public void ForceLockGridPositions(Chess unit, Vector3 targetPosition)
-    {
-        // 使用GetOccupiedGrids方法获取需要锁定的格子列表
-        List<Vector2Int> requiredGrids = GetOccupiedGrids(targetPosition);
-        List<Vector2Int> toRemoves = new List<Vector2Int>();
-
-        // 检查所有格子是否可用
-        foreach (var gridPos in requiredGrids)
-        {
-            foreach (var entry in occupiedGrids)
-            {
-                if (entry.Key != unit.id)
-                {
-                    foreach (var occupiedGrid in entry.Value)
-                    {
-                        if (occupiedGrid.x == gridPos.x && occupiedGrid.y == gridPos.y)
-                            toRemoves.Add(occupiedGrid);
-                    }
-                }
-            }
-        }
-
-        ReleaseGridPositions(unit.id);
-        requiredGrids.RemoveAll(x => toRemoves.Contains(x));
-        // 锁定新格子
-        List<Vector2Int> unitGrids = new List<Vector2Int>();
-        foreach (var gridPos in requiredGrids)
-        {
-            unitGrids.Add(gridPos);
-            CreateDebugCube(unit.id, gridPos);
-         //   UnityEngine.Debug.Log("Lock " + gridPos + " for unit: " + unit.id);
-        }
-
-        // 存储单位占据的格子
-        occupiedGrids[unit.id] = unitGrids;
-    }    
-
     public bool MoveTo(Chess unit, Vector3 targetPosition, bool isForce = false)
     {
         if (isForce)
         {
-            ForceLockGridPositions(unit, targetPosition);
             unit.SetPosition(targetPosition);
 
             return true;
         }
         else
         { 
-            if(TryLockGridPositions(unit, targetPosition, out List<Vector2Int> requiredGrids))
+            var ckSize = 10/2;
+            var findInRange = false;
+            foreach(var ckUnit in chessList)
             {
-                DoLockGridPositions(unit, requiredGrids);
-                unit.SetPosition(targetPosition);
-                return true;
+                if(ckUnit == unit)
+                    continue;
+                
+                if(Math.Abs(ckUnit.position.x - targetPosition.x) < ckSize && Math.Abs(ckUnit.position.z - targetPosition.z) < ckSize)
+                {
+                    findInRange = true;
+                    break;
+                }
             }
-            return false;
+
+            if(findInRange)
+                return false;
+
+            unit.SetPosition(targetPosition);
+            return true;
         }
 
-    }
-
-    // 获取指定位置和碰撞体占据的所有格子
-    public List<Vector2Int> GetOccupiedGrids(Vector3 position)
-    {
-        List<Vector2Int> occupiedGrids = new List<Vector2Int>();
-
-        // // 获取碰撞体边界
-        // Vector3 boundsSize = new Vector3(10, 0.5f, 10);
-        // Vector3 halfBounds = boundsSize / 3f;
-
-        // // 计算边界的最小和最大世界坐标
-        // Vector3 minWorldPos = position - halfBounds;
-        // Vector3 maxWorldPos = position + halfBounds;
-
-        // // 将世界坐标转换为格子坐标
-        // Vector2Int minGridPos = WorldToGridPosition(minWorldPos, true);
-        // Vector2Int maxGridPos = WorldToGridPosition(maxWorldPos, false);
-
-        // // 遍历从最小到最大格子坐标的所有格子
-        // for (int x = minGridPos.x; x <= maxGridPos.x; x+= gridCellSize)
-        // {
-        //     for (int z = minGridPos.y; z <= maxGridPos.y; z+= gridCellSize)
-        //     {
-        //         Vector2Int currentGrid = new Vector2Int(x, z);
-        //         occupiedGrids.Add(currentGrid);
-        //     }
-        // }
-        
-        return occupiedGrids;
-    }
-
-    // 释放指定位置的格子
-    // 释放指定单位占据的格子
-    public void ReleaseGridPositions(int id)
-    {
-        // 检查单位是否有占据的格子
-        if (occupiedGrids.ContainsKey(id))
-        {
-            // 删除该单位占据的所有格子的调试cube
-            foreach (var gridPos in occupiedGrids[id])
-            {
-                DestroyDebugCube(gridPos);
-            }
-            occupiedGrids[id].Clear();
-          //  UnityEngine.Debug.Log("Released all grids for unit: " + unit.id);
-        }
-    }
-
-    // 创建调试用的cube
-    private void CreateDebugCube(int oid, Vector2Int gridPos)
-    {
-        if(!showDebugCube)
-            return;
-
-        if (debugGridCubes.ContainsKey(gridPos))
-            return; // 已存在则不再创建
-
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube.transform.position = new Vector3(gridPos.x, 0.5f, gridPos.y);
-        cube.transform.localScale = new Vector3(gridCellSize * 0.9f, 1f, gridCellSize * 0.9f);
-        // 将oid散列到RGB值中
-        int hash = oid * oid * 31 + oid * 3779; // 对哈希值进行位运算打散，避免值为1时不被打散的问题
-        float r = Mathf.Abs((float)(hash & 0xFF) / 255f);
-        float g = Mathf.Abs((float)((hash >> 8) & 0xFF) / 255f);
-        float b = Mathf.Abs((float)((hash >> 16) & 0xFF) / 255f);
-        cube.GetComponent<Renderer>().material.color = new Color(r, g, b);
-        cube.name = "GridCube_" + hash;
-        cube.transform.parent = Units.transform;
-        cube.transform.localPosition += new Vector3(0, 10f, 0);
-
-        debugGridCubes[gridPos] = cube;
-    }
-
-    // 销毁调试用的cube
-    private void DestroyDebugCube(Vector2Int gridPos)
-    {
-        if(!showDebugCube)
-            return;
-
-        if (debugGridCubes.TryGetValue(gridPos, out GameObject cube))
-        {
-            Destroy(cube);
-            debugGridCubes.Remove(gridPos);
-        }
     }
 
     public bool IsEnemy(int a, int b)
@@ -942,13 +763,6 @@ public class BattleManager : MonoBehaviour
     // 管理器销毁时释放所有格子
     private void OnDestroy()
     {
-        occupiedGrids.Clear();
 
-        // 销毁所有调试cube
-        foreach (var cube in debugGridCubes.Values)
-        {
-            Destroy(cube);
-        }
-        debugGridCubes.Clear();
     }
 }

@@ -15,6 +15,8 @@ public class ChessViewObj : MonoBehaviour
     public Material materialFlag;    
     private Coroutine colorEffectCoroutine; // 协程引用，用于追踪颜色效果协程
 
+    public int lockTargetId;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -205,10 +207,6 @@ public class ChessViewObj : MonoBehaviour
 
     private void OnDestroy()
     {
-        // 单位销毁时释放格子锁定
-        if (BattleManager.Instance != null)
-        {
-            BattleManager.Instance.ReleaseGridPositions(chessUnit.id);
-        }
+
     }    
 }

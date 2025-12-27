@@ -268,6 +268,8 @@ public class Chess
 
         // 选择分数最高的作为目标
         targetChess = scoredTargets[0].chess;
+        if(viewObj != null)
+            viewObj.lockTargetId = targetChess.id;
     }
 
     // 计算目标分数
@@ -343,12 +345,16 @@ public class Chess
             return;
 
         var dis = BattleManager.Instance.GetRange(position, targetChess.position);
-        if (moveDest == null || dis > 40)
-            moveDest = targetChess.position;
-        
-        //如果当前位置很接近moveDirection，就直接移动到moveDirection
-        if (dis <= moveSpeed * 0.1f)
-            moveDest = targetChess.position;
+
+        if (moveFailCount == 0)
+        {
+            if (moveDest == null || dis > 40)
+                moveDest = targetChess.position;
+
+            //如果当前位置很接近moveDirection，就直接移动到moveDirection
+            if (dis <= moveSpeed * 0.1f)
+                moveDest = targetChess.position;
+        }
 
         if (moveDest != null)
         {
@@ -356,11 +362,8 @@ public class Chess
             Vector3 nextPosition = Vector3.MoveTowards(position, moveDest.Value, moveSpeed * deltaTime);
 
             // 尝试锁定目标格子
-            if (BattleManager.Instance.TryLockGridPositions(this, nextPosition, out List<Vector2Int> requiredGrids))
+            if (BattleManager.Instance.MoveTo(this, nextPosition, false))
             {
-                BattleManager.Instance.DoLockGridPositions(this, requiredGrids);
-                // 锁定成功，移动到新位置
-                SetPosition(nextPosition);
                 moveFailCount = 0; // 重置失败计数器
             }
             else
@@ -378,9 +381,9 @@ public class Chess
                 if (moveFailCount <= 3)
                     angleOffset = 45f;
                 else if (moveFailCount <= 5)
-                    angleOffset = 90f;
+                    angleOffset = 70f;
                 else
-                    angleOffset = 135f;
+                    angleOffset = 90f;
 
                 // 随机选择向上或向下偏移
                 angleOffset *= UnityEngine.Random.value > 0.5f ? 1 : -1;
@@ -390,16 +393,7 @@ public class Chess
                 Vector3 newDirection = rotation * direction;
 
                 // 计算新的下一步位置
-                nextPosition = position + newDirection * moveSpeed * deltaTime;
-
-                // 尝试移动到新位置
-                if (BattleManager.Instance.TryLockGridPositions(this, nextPosition, out requiredGrids))
-                {
-                    BattleManager.Instance.DoLockGridPositions(this, requiredGrids);
-                    SetPosition(nextPosition);
-                    moveDest = position + newDirection * moveSpeed * deltaTime * 10;
-                    moveFailCount = 0; // 重置失败计数器
-                }
+                moveDest = position + newDirection * moveSpeed;
             }
         }
     }
