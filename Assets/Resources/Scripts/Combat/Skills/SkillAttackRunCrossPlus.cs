@@ -83,8 +83,8 @@ public class SkillAttackRunCrossPlus : Skill
             owner.SetPosition(currentPos);
             
             // 等待下一帧
-            elapsedTime += 0.025f;
-            yield return new NLWaitForSeconds(0.025f);
+            elapsedTime += BattleManager.tickTime;
+            yield return new NLWaitForSeconds(BattleManager.tickTime);
         }
         
         // 确保到达目标位置

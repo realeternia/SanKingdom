@@ -354,7 +354,7 @@ public class Chess// : MonoBehaviour
         if (moveDest != null)
         {
             // 计算下一步位置
-            Vector3 nextPosition = Vector3.MoveTowards(position, moveDest.Value, moveSpeed * 0.05f);
+            Vector3 nextPosition = Vector3.MoveTowards(position, moveDest.Value, moveSpeed * deltaTime);
 
             // 尝试锁定目标格子
             if (BattleManager.Instance.TryLockGridPositions(this, nextPosition, out List<Vector2Int> requiredGrids))
@@ -391,14 +391,14 @@ public class Chess// : MonoBehaviour
                 Vector3 newDirection = rotation * direction;
 
                 // 计算新的下一步位置
-                nextPosition = position + newDirection * moveSpeed * 0.05f;
+                nextPosition = position + newDirection * moveSpeed * deltaTime;
 
                 // 尝试移动到新位置
                 if (BattleManager.Instance.TryLockGridPositions(this, nextPosition, out requiredGrids))
                 {
                     BattleManager.Instance.DoLockGridPositions(this, requiredGrids);
                     SetPosition(nextPosition);
-                    moveDest = position + newDirection * moveSpeed * 0.05f * 10;
+                    moveDest = position + newDirection * moveSpeed * deltaTime * 10;
                     moveFailCount = 0; // 重置失败计数器
                 }
             }

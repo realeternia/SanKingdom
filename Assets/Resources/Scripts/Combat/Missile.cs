@@ -61,7 +61,7 @@ public class Missile// : MonoBehaviour
             targetCount = skillCfg.TargetCount;
         }
 
-        BattleManager.Instance.StartNLCoroutine(MoveMissileToDirection((targetPos - position).normalized, time, missileSpeed, detectArea, targetCount));
+        BattleManager.Instance.StartNLCoroutine(MoveMissileToDirection((targetPos - position).normalized, time, missileSpeed, detectArea, targetCount, BattleManager.tickTime));
     }
 
     public void MoveToTarget(Chess target, float missileSpeed, float missileHight)
@@ -81,12 +81,12 @@ public class Missile// : MonoBehaviour
                 hitEffectName = missileViewObj.hitEffectName;
         }
 
-        BattleManager.Instance.StartNLCoroutine(MoveMissileToTarget(target, missileSpeed, missileHight));
+        BattleManager.Instance.StartNLCoroutine(MoveMissileToTarget(target, missileSpeed, missileHight, BattleManager.tickTime));
     }
 
 
     // 定义协程方法，控制导弹移动
-    IEnumerator MoveMissileToTarget( Chess target, float missileSpeed, float missileHight)
+    IEnumerator MoveMissileToTarget( Chess target, float missileSpeed, float missileHight, float tickTime)
     {
         var targetPos = target.position + new Vector3(0f, 5f, 0f);
 
@@ -135,7 +135,7 @@ public class Missile// : MonoBehaviour
                 SetPosition(Vector3.Lerp(position, targetPos, fractionOfJourney));
             }
             lastTime = BattleManager.Instance.time;
-            yield return new NLWaitForSeconds(0.025f);
+            yield return new NLWaitForSeconds(tickTime);
         }
 
         OnCrash(target);
@@ -159,7 +159,7 @@ public class Missile// : MonoBehaviour
     }
 
  // 让hitEffect飞向targetPos的协程
-    IEnumerator MoveMissileToDirection(Vector3 direction, float time, float speed, float detectArea, int targetCount)
+    IEnumerator MoveMissileToDirection(Vector3 direction, float time, float speed, float detectArea, int targetCount, float tickTime)
     {
         Vector3 currentPos = position;
         direction.y = 0;
@@ -197,7 +197,7 @@ public class Missile// : MonoBehaviour
                 lastCheckTime = timePast;
             }
 
-            timePast += 0.025f;
+            timePast += tickTime;
             if (timePast >= time || checkedList.Count >= targetCount)
             {
                 if (viewObj != null)
@@ -207,7 +207,7 @@ public class Missile// : MonoBehaviour
                 yield break;
             }
 
-            yield return new NLWaitForSeconds(0.025f);
+            yield return new NLWaitForSeconds(tickTime);
         }
 
 

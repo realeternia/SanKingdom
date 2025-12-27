@@ -302,20 +302,21 @@ public class BattleManager : MonoBehaviour
         p.castleHUD = hud;
     }
 
+    public static float tickTime = 0.025f;
     private IEnumerator GameUpdate()
     {
         yield return new WaitForSeconds(0.5f);
-        var tick = 0.025f;
+
         while (!gameFinish)
         {
-            yield return new WaitForSeconds(tick);
-            time += tick;
-            coroutineManager.Update(tick);
+            yield return new WaitForSeconds(tickTime);
+            time += tickTime;
+            coroutineManager.Update(tickTime);
 
             foreach (var chess in chessList.ToArray())
             {
                 if (chess != null && chess.hp > 0)
-                    chess.LogicUpdate(tick);
+                    chess.LogicUpdate(tickTime);
             }
             // 每个回合结束，玩家消耗食物
             foreach (var player in GameManager.Instance.players)
