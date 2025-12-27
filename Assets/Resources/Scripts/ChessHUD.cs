@@ -28,7 +28,7 @@ public class ChessHUD : MonoBehaviour
         }
 
         // 更新血条位置，使其跟随单位
-        Vector3 worldPosition = new Vector3(chessUnit.transform.position.x + 5, chessUnit.transform.position.y + 3f, chessUnit.transform.position.z + 5);
+        Vector3 worldPosition = new Vector3(chessUnit.position.x + 5, chessUnit.position.y + 3f, chessUnit.position.z + 5);
         // 将屏幕坐标转换为UI相机的Canvas局部坐标
         RectTransform rectTransform = GetComponent<RectTransform>();
         RectTransform parentCanvas = rectTransform.parent as RectTransform;

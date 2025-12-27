@@ -16,13 +16,13 @@ public class SkillAidShockWave : Skill
         if (owner.targetChess == null)
             return false;
 
-        if (!BattleManager.Instance.CheckInRange(owner.transform.position, owner.targetChess.transform.position, skillCfg.Range))
+        if (!BattleManager.Instance.CheckInRange(owner.position, owner.targetChess.position, skillCfg.Range))
             return false;
 
         if (!CheckBurst(null))
             return false;
 
-        var targetPos = owner.targetChess.transform.position; // 使用目标位置而不是自身位置
+        var targetPos = owner.targetChess.position; // 使用目标位置而不是自身位置
 
         owner.PlayerAnim(skillCfg.Action);
         var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);

@@ -13,7 +13,7 @@ public class SkillBuffExpandPos : Skill
 
     public override void OnAddBuff(Chess target, ref int buffId, int checkSkillId, ref float time)
     {
-        UnityEngine.Debug.Log($"SkillBuffExpandPos OnAddBuff {target.name} {buffId} {checkSkillId} {time}");
+        UnityEngine.Debug.Log($"SkillBuffExpandPos OnAddBuff {buffId} {checkSkillId} {time}");
         if(checkSkillId == skillId)
             return; //自己挂的buff，不再连续触发
 
@@ -26,7 +26,7 @@ public class SkillBuffExpandPos : Skill
         
         if (CheckBurst(target))
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.transform.position, skillCfg.Range, owner.side, false);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.side, false);
             if (unitsInRange.Count > 0)
             {
                 BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
@@ -47,7 +47,7 @@ public class SkillBuffExpandPos : Skill
        
         if (CheckBurst(target))
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.transform.position, skillCfg.Range, owner.side, false);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.side, false);
             unitsInRange.RemoveAll(x => x.HpRate > 0.9f);
             if (unitsInRange.Count > 0)
             {

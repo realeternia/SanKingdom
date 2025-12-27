@@ -10,7 +10,7 @@ public class BuffTimeDamage : Buff
     {
     }
 
-    private Coroutine damageCoroutine;
+    private IEnumerator damageCoroutine;
 
     public override void OnAdd(Chess chess, Chess caster)
     {
@@ -18,7 +18,7 @@ public class BuffTimeDamage : Buff
         damage = caster.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate;
         
         // 启动伤害协程
-        damageCoroutine = chess.StartCoroutine(DamageOverTime(chess, caster));
+        damageCoroutine = BattleManager.Instance.StartNLCoroutine(DamageOverTime(chess, caster));
     }
 
     public override void OnRemove(Chess chess)
@@ -28,7 +28,7 @@ public class BuffTimeDamage : Buff
         // 停止伤害协程
         if (damageCoroutine != null)
         {
-            chess.StopCoroutine(damageCoroutine);
+            BattleManager.Instance.StopNLCoroutine(damageCoroutine);
             damageCoroutine = null;
         }
     }
@@ -46,7 +46,7 @@ public class BuffTimeDamage : Buff
             {
                 // 造成Skill类型的伤害
                 chess.OnSkillDamaged(caster, skillCfg.Id, (int)damage);
-                BattleManager.Instance.AddBattleText("-" + ((int)damage).ToString(), chess.transform.position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
+                BattleManager.Instance.AddBattleText("-" + ((int)damage).ToString(), chess.position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
             }
             else
             {

@@ -7,19 +7,21 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Chess : MonoBehaviour
+public class Chess// : MonoBehaviour
 {
+    public ChessViewObj viewObj;
     public int id;
     public int playerId;
 
     public int maxHp = 100;  // 最大生命值
-    private ChessHUD hud;
+
     public int side;
     public bool isHero;
     public int heroId;
     public string chessName = "0";
     public int pos;
 
+    public Vector3 position{ get; private set; }
 
     // 目标单位
     public Chess targetChess;
@@ -68,41 +70,23 @@ public class Chess : MonoBehaviour
     public int noMoveCount = 0;
     public int noActionCount = 0;
 
-    public Renderer rend;
-    public Material material;
-    public Renderer rendFlag;
-    public Material materialFlag;    
-    private Coroutine colorEffectCoroutine; // 协程引用，用于追踪颜色效果协程
-
     private bool dieAfterLifeTime;
     private float lifeTime;
 
     private float regeTimer; //1s回复一次
     public int regeHp; //回复血量
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        // 创建HUD
-        CreateHUD();
-    }
-
     public void Init(int forceId, int posId, Color c)
     {
         playerId = forceId;
         pos = posId;
-        // 创建材质实例
-        material = new Material(rend.sharedMaterial);
-        if (!string.IsNullOrEmpty(chessName))
-        {
-            if (chessName.StartsWith("PlayerPic"))
-                material.mainTexture = Resources.Load<Texture>(chessName);
-            else
-                material.mainTexture = Resources.Load<Texture>("Skins/" + chessName);
-        }
-        material.SetColor("_OutlineColor", c);
 
-        var hasSKill = false;
+        hp = maxHp;
+        if (heroInfo != null) // 英雄
+            heroInfo.SetHpRate(hp, maxHp);
+        
+        attackPoint = UnityEngine.Random.Range(0f, 1f); // 随机获得初始气力
+        attackRate = 1;
 
         if (isHero)
         {
@@ -113,57 +97,11 @@ public class Chess : MonoBehaviour
             if (heroCfg.Skills != null)
             {
                 foreach (var skillId in heroCfg.Skills)
-                {
                     skills.Add(SkillManager.CreateSkill(skillId, this));
-                    var skillCfg = SkillConfig.GetConfig(skillId);
-                    if (!string.IsNullOrEmpty(skillCfg.Icon) && !hasSKill)
-                    {
-                        material.SetTexture("_SecondTex", Resources.Load<Texture>("SkillPic/" + skillCfg.Icon));
-                        hasSKill = true;
-                    }
-                }
             }
-
-            materialFlag = new Material(rendFlag.sharedMaterial);
-            var playerInfo = GameManager.Instance.GetPlayer(playerId);
-            materialFlag.mainTexture = Resources.Load<Texture>(playerInfo.imgPath);
-            rendFlag.material = materialFlag;
         }
-
-        if (!hasSKill)
-            material.SetFloat("_SecondTexSize", 0.1f);
-        rend.material = material; // 这会为这个渲染器创建一个独立的材质实例
-
-        hp = maxHp;
-        if (heroInfo != null) // 英雄
-            heroInfo.SetHpRate(hp, maxHp);
-        
-        attackPoint = UnityEngine.Random.Range(0f, 1f); // 随机获得初始气力
-        attackRate = 1;
+        viewObj.Init(this, c);
     }
-
-    // 创建血条HUD
-    private void CreateHUD()
-    {
-        // 加载Hud预制体
-        GameObject hudPrefab = Resources.Load<GameObject>(isHero || isFakeHero ? "Prefabs/Hud" : "Prefabs/HudSmall");
-
-        // 实例化HUD对象
-        GameObject hudObj = Instantiate(hudPrefab, BattleManager.Instance.HudNode.transform);
-        hudObj.name = "ChessHUD";
-
-        // 获取ChessHUD组件
-        hud = hudObj.GetComponent<ChessHUD>();
-
-        // 设置属性
-        hud.chessUnit = this;
-        //  hud.canvas = canvas;
-
-        // 初始化血条显示
-        hud.UpdateHealthDisplay();
-
-    }
-
 
     public void LogicUpdate(float deltaTime)
     {
@@ -198,19 +136,6 @@ public class Chess : MonoBehaviour
     void Update()
     {
 
-    }
-
-    private void OnDestroy()
-    {
-        // 单位销毁时释放格子锁定
-        if (BattleManager.Instance != null)
-        {
-            Collider collider = GetComponent<Collider>();
-            if (collider != null)
-            {
-                BattleManager.Instance.ReleaseGridPositions(this);
-            }
-        }
     }
 
     public void CheckInitAttr(int lv, int soldierNum)
@@ -258,11 +183,19 @@ public class Chess : MonoBehaviour
 
         //根据level变化模型scale
         soldierLevel += lv;
-        transform.localScale = new Vector3(5 + soldierLevel * 0.75f, 3, 5 + soldierLevel * 0.75f);
+        if(viewObj != null)
+            viewObj.transform.localScale = new Vector3(5 + soldierLevel * 0.75f, 3, 5 + soldierLevel * 0.75f);
 
         attackDamage += (int)(lv * atkAdd * soldierCfg.SoldierAtkRate);
         maxHp += (int)(lv * hpAdd * soldierCfg.SoldierHpRate);
         hp = maxHp;
+    }
+
+    public void SetPosition(Vector3 position)
+    {
+        this.position = position;
+        if(viewObj != null)
+            viewObj.transform.position = position;
     }
 
     public void LockTarget(Chess target1)
@@ -286,7 +219,7 @@ public class Chess : MonoBehaviour
             return;
 
         // 获取所有Chess组件
-        var allChess = BattleManager.Instance.GetUnitsInRange(transform.position, 0, side, true);
+        var allChess = BattleManager.Instance.GetUnitsInRange(position, 0, side, true);
         List<(Chess chess, float distance)> validTargets = new List<(Chess, float)>();
 
         // 收集所有有效目标及其距离
@@ -294,7 +227,7 @@ public class Chess : MonoBehaviour
         {
             if (chess != this)
             {
-                float distance = BattleManager.Instance.GetRange(transform.position, chess.transform.position);
+                float distance = BattleManager.Instance.GetRange(position, chess.position);
                 validTargets.Add((chess, distance));
             }
         }
@@ -383,7 +316,7 @@ public class Chess : MonoBehaviour
             return;
 
         // 检查目标是否在攻击范围内
-        if (BattleManager.Instance.CheckInRange(transform.position, targetChess.transform.position, attackRange))
+        if (BattleManager.Instance.CheckInRange(position, targetChess.position, attackRange))
         {
             attackPoint += deltaTime * attackRate;
             // 检查攻击冷却
@@ -409,26 +342,26 @@ public class Chess : MonoBehaviour
         if (noMoveCount > 0 || moveSpeed == 0)
             return;
 
-        if (moveDest == null || BattleManager.Instance.GetRange(targetChess.transform.position, moveDest.Value) > 40)
-            moveDest = targetChess.transform.position;
+        if (moveDest == null || BattleManager.Instance.GetRange(targetChess.position, moveDest.Value) > 40)
+            moveDest = targetChess.position;
         
         //如果当前位置很接近moveDirection，就直接移动到moveDirection
-        if (BattleManager.Instance.GetRange(transform.position, moveDest.Value) <= moveSpeed * 0.1f)
+        if (BattleManager.Instance.GetRange(position, moveDest.Value) <= moveSpeed * 0.1f)
         {
-            moveDest = targetChess.transform.position;
+            moveDest = targetChess.position;
         }
 
         if (moveDest != null)
         {
             // 计算下一步位置
-            Vector3 nextPosition = Vector3.MoveTowards(transform.position, moveDest.Value, moveSpeed * 0.05f);
+            Vector3 nextPosition = Vector3.MoveTowards(position, moveDest.Value, moveSpeed * 0.05f);
 
             // 尝试锁定目标格子
             if (BattleManager.Instance.TryLockGridPositions(this, nextPosition, out List<Vector2Int> requiredGrids))
             {
                 BattleManager.Instance.DoLockGridPositions(this, requiredGrids);
                 // 锁定成功，移动到新位置
-                transform.position = nextPosition;
+                SetPosition(nextPosition);
                 moveFailCount = 0; // 重置失败计数器
             }
             else
@@ -439,7 +372,7 @@ public class Chess : MonoBehaviour
                 // 根据连续失败次数尝试不同角度找路
                 // 如果已经在使用偏移路径或者失败次数达到阈值，则继续使用偏移
                 // 计算原始方向
-                Vector3 direction = (targetChess.transform.position - transform.position).normalized;
+                Vector3 direction = (targetChess.position - position).normalized;
                 float angleOffset = 0f;
 
                 // 根据失败次数确定偏移角度
@@ -458,14 +391,14 @@ public class Chess : MonoBehaviour
                 Vector3 newDirection = rotation * direction;
 
                 // 计算新的下一步位置
-                nextPosition = transform.position + newDirection * moveSpeed * 0.05f;
+                nextPosition = position + newDirection * moveSpeed * 0.05f;
 
                 // 尝试移动到新位置
                 if (BattleManager.Instance.TryLockGridPositions(this, nextPosition, out requiredGrids))
                 {
                     BattleManager.Instance.DoLockGridPositions(this, requiredGrids);
-                    transform.position = nextPosition;
-                    moveDest = transform.position + newDirection * moveSpeed * 0.05f * 10;
+                    SetPosition(nextPosition);
+                    moveDest = position + newDirection * moveSpeed * 0.05f * 10;
                     moveFailCount = 0; // 重置失败计数器
                 }
             }
@@ -491,7 +424,7 @@ public class Chess : MonoBehaviour
         if (critRate > 0 && UnityEngine.Random.value < critRate)
         {
             damageMulti += critDamageMulti;
-            BattleManager.Instance.AddBattleText("暴!", transform.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+            BattleManager.Instance.AddBattleText("暴!", position, new UnityEngine.Vector2(0, 40), Color.red, 3);
             isCrit = true;
         }
 
@@ -525,7 +458,7 @@ public class Chess : MonoBehaviour
             if (victim.dodgeRate > 0 && UnityEngine.Random.value < victim.dodgeRate)
             {
                 damage = 0;
-                BattleManager.Instance.AddBattleText("闪!", victim.transform.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+                BattleManager.Instance.AddBattleText("闪!", victim.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
             }
             else
             {
@@ -597,7 +530,13 @@ public class Chess : MonoBehaviour
         buffs.Clear();
         BattleManager.Instance.OnUnitDying(this);
 
-        Destroy(gameObject);
+        viewObj.DestroyHUD();
+        Debug.Log("OnDying " + id);
+        if (viewObj != null)
+        {
+            UnityEngine.Object.Destroy(viewObj.gameObject);
+            viewObj = null;
+        }
 
         if ((side == 1 || side == 2 && !isShadow ))
             BGMPlayer.Instance.PlaySound("Sounds/tnt", 7);
@@ -708,41 +647,12 @@ public class Chess : MonoBehaviour
 
     public void AddColorEffect(Color start, Color end)
     {
-        // 如果协程已经在运行，则直接返回
-        if (colorEffectCoroutine != null)
-            return;
-        
-        colorEffectCoroutine = StartCoroutine(ColorLerpCoroutine(start, end));
+        viewObj?.AddColorEffect(start, end);
     }
 
     public void RemoveColorEffect()
     {
-        // 停止颜色效果协程
-        if (colorEffectCoroutine != null)
-        {
-            StopCoroutine(colorEffectCoroutine);
-            colorEffectCoroutine = null;
-        }
-        
-        // 恢复默认颜色
-        material.SetColor("_Color", Color.white);
-    }
-
-    IEnumerator ColorLerpCoroutine(Color start, Color end)
-    {
-        float time = 0f;
-        while (true)
-        {
-            // 使用正弦函数实现颜色平滑过渡
-            float t = Mathf.Sin(time*20) * 0.5f + 0.5f;
-            var color = Color.Lerp(start, end, t);
-            UnityEngine.Debug.Log("ColorLerpCoroutine " + color + " start=" + start + " end=" + end);
-
-            material.SetColor("_Color", color);
-            time += Time.deltaTime;
-            yield return new WaitForSeconds(0.1f);
-
-        }
+        viewObj?.RemoveColorEffect();
     }
 
     public int GetAttr(string attr)
@@ -801,68 +711,21 @@ public class Chess : MonoBehaviour
         return BattleManager.Instance.MoveTo(this, targetPosition, isForce);
     }
 
-    private Coroutine jumpCoroutine = null;
+
 
     public void PlayerAnim(string name)
     {
-        if(string.IsNullOrEmpty(name))
-            return;
-        var animator = GetComponent<Animator>();
-        if(animator == null)
-            return;
-        animator.Play(name);
+        viewObj?.PlayerAnim(name);
     }
 
     public void StartJump(float time)
     {
-        var height = 15;
-        UnityEngine.Debug.Log("StartJump " + height + " " + id + " " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-
-        // 如果已经在跳跃，先打断当前跳跃
-        if (jumpCoroutine != null)
-        {
-            StopCoroutine(jumpCoroutine);
-            jumpCoroutine = null;
-            transform.position = new Vector3(transform.position.x, 7, transform.position.z); // 恢复到原始位置
-        }
-        
-        jumpCoroutine = StartCoroutine(JumpCoroutine(height, time));
+        viewObj?.StartJump(time);
     }
 
     public void StopJump()
     {
-        if (jumpCoroutine != null)
-        {
-            StopCoroutine(jumpCoroutine);
-            jumpCoroutine = null;
-            transform.position = new Vector3(transform.position.x, 7, transform.position.z); // 恢复到原始位置
-        }
-    }
-
-    IEnumerator JumpCoroutine(int jumpHeight, float jumpDuration)
-    {
-        float elapsedTime = 0f;
-        
-        Vector3 originalPosition = transform.position;
-        while (elapsedTime < jumpDuration)
-        {
-            float progress = elapsedTime / jumpDuration;
-            
-            // 使用抛物线运动：y = 4h * (x - x²) 其中h是最大高度
-            float height = 4f * jumpHeight * (progress - progress * progress) + 7;
-            
-            // 更新位置
-            Vector3 newPosition = originalPosition;
-            newPosition.y += height;
-            transform.position = Vector3.Lerp(originalPosition, newPosition, progress);
-            
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        
-        // 确保最终回到原始位置
-        transform.position = new Vector3(transform.position.x, 7, transform.position.z);
-        jumpCoroutine = null;
+        viewObj?.StopJump();
     }
 
     public void AddSkill(int skillId, int parentSkillId)

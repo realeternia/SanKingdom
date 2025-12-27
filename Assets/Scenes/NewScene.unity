@@ -8202,11 +8202,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardShopPanel: {fileID: 0}
   rankPanel: {fileID: 1891025974}
-  rankPlayerPanel: {fileID: 0}
   worldPanel: {fileID: 1181113649}
   cityPanel: {fileID: 1502158686}
   cityBuildingPanel: {fileID: 2018652347}
-  bagPanel: {fileID: 0}
   openPanelList: []
 --- !u!1 &1891025974
 GameObject:
@@ -8553,7 +8551,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2018652348
 RectTransform:
   m_ObjectHideFlags: 0

@@ -14,8 +14,8 @@ public class SkillAttackRunCross : Skill
     public override void OnAttack(Chess defender, string damType, int damage)
     {
         // 计算镜像位置
-        Vector3 ownerPos = owner.transform.position;
-        Vector3 defenderPos = defender.transform.position;
+        Vector3 ownerPos = owner.position;
+        Vector3 defenderPos = defender.position;
 
         // 计算镜像位置（以defender为中心）
         float mirrorX = 2 * defenderPos.x - ownerPos.x;
@@ -29,7 +29,7 @@ public class SkillAttackRunCross : Skill
             owner.noMoveCount++;
             EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
 
-            owner.StartCoroutine(JumpToPosition(mirrorPos));
+            BattleManager.Instance.StartNLCoroutine(JumpToPosition(mirrorPos));
             defender.OnSkillDamaged(owner, skillId, (int)(damage * skillCfg.SkillDamageRate));
 
             BuffManager.AddBuff(defender, owner, id, skillCfg.BuffId, skillCfg.BuffTime); //加负面buff                    
@@ -39,7 +39,7 @@ public class SkillAttackRunCross : Skill
     // 跳跃移动协程
     private IEnumerator JumpToPosition(Vector3 targetPos)
     {
-        Vector3 startPos = owner.transform.position;
+        Vector3 startPos = owner.position;
         float jumpHeight = 10f; // 跳跃高度
         float moveDuration = 0.5f; // 移动持续时间
         float elapsedTime = 0f;
@@ -54,7 +54,7 @@ public class SkillAttackRunCross : Skill
             Vector3 currentPos = Vector3.Lerp(startPos, targetPos, t);
             currentPos.y += yOffset;
 
-            owner.transform.position = currentPos;
+            owner.SetPosition(currentPos);
 
             // 等待下一帧
             elapsedTime += 0.025f;

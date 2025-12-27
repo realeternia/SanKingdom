@@ -11,12 +11,12 @@ public class SkillHitTeleport : Skill
 
     public override void OnAttacked(Chess attacker, string damType, int damage)
     {
-        if(!BattleManager.Instance.CheckInRange(owner.transform.position, attacker.transform.position, skillCfg.Range) && CheckBurst(attacker))
+        if(!BattleManager.Instance.CheckInRange(owner.position, attacker.position, skillCfg.Range) && CheckBurst(attacker))
         {
             owner.PlayerAnim(skillCfg.Action);
 
-            Vector3 direction = (attacker.transform.position - owner.transform.position).normalized;
-            Vector3 randomPosition = attacker.transform.position - direction * 12;
+            Vector3 direction = (attacker.position - owner.position).normalized;
+            Vector3 randomPosition = attacker.position - direction * 12;
 
             owner.MoveTo(randomPosition, true);
             owner.LockTarget(attacker);

@@ -17,7 +17,7 @@ public class SkillHitRegion : Skill
         {
             owner.PlayerAnim(skillCfg.Action);
 
-            targetPos = defender.transform.position;
+            targetPos = defender.position;
 
             var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, -1, targetPos, owner.side, "");
             var summonTime = GetSummonTime();
@@ -26,7 +26,7 @@ public class SkillHitRegion : Skill
             //创建一个hitEffect
             EffectManager.PlayPosSkillEffect(magicStub, targetPos, skillCfg.EffectSize, skillCfg.HitEffect, summonTime);
 
-            owner.StartCoroutine(DelayDamage(summonTime));
+            BattleManager.Instance.StartNLCoroutine(DelayDamage(summonTime));
         }
     }
 

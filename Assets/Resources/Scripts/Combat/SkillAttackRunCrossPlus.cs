@@ -13,8 +13,8 @@ public class SkillAttackRunCrossPlus : Skill
     public override void OnAttack(Chess defender, string damType, int damage)
     {
         // 计算镜像位置
-        Vector3 ownerPos = owner.transform.position;
-        Vector3 defenderPos = defender.transform.position;
+        Vector3 ownerPos = owner.position;
+        Vector3 defenderPos = defender.position;
 
         // 计算镜像位置（以defender为中心）
         float mirrorX = 3 * defenderPos.x - 2 * ownerPos.x;
@@ -28,14 +28,14 @@ public class SkillAttackRunCrossPlus : Skill
             owner.noMoveCount++;
             EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
 
-            owner.StartCoroutine(JumpToPosition(mirrorPos));
+            BattleManager.Instance.StartNLCoroutine(JumpToPosition(mirrorPos));
         }
     }
 
     // 跳跃移动协程
     private IEnumerator JumpToPosition(Vector3 targetPos)
     {
-        Vector3 startPos = owner.transform.position;
+        Vector3 startPos = owner.position;
         float moveDuration = .8f; // 移动持续时间
         float elapsedTime = 0f;
         
@@ -64,7 +64,7 @@ public class SkillAttackRunCrossPlus : Skill
                     continue;
                     
                 // 计算敌人相对于移动直线的位置
-                Vector3 enemyToLineVector = chess.transform.position - startPos;
+                Vector3 enemyToLineVector = chess.position - startPos;
                 // 计算叉积来判断敌人在移动直线的哪一侧
                 float crossProduct = Vector3.Cross(moveDirection, enemyToLineVector.normalized).y;
                 
@@ -74,13 +74,13 @@ public class SkillAttackRunCrossPlus : Skill
                 Vector3 pushDirection = (crossProduct > 0) ? leftDirection : rightDirection;
                 
                 // 计算推送后的位置
-                chess.MoveTo(chess.transform.position + pushDirection * 15f, true);
+                chess.MoveTo(chess.position + pushDirection * 15f, true);
                 pushedList.Add(chess.id);
 
                 BuffManager.AddBuff(chess, owner, id, skillCfg.BuffId, skillCfg.BuffTime); //加负面buff
             }
 
-            owner.transform.position = currentPos;
+            owner.SetPosition(currentPos);
             
             // 等待下一帧
             elapsedTime += 0.025f;

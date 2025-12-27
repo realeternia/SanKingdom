@@ -22,8 +22,8 @@ public class SkillHitAround : Skill
         {
             owner.PlayerAnim(skillCfg.Action);
 
-            var startPos = owner.transform.position;
-            var targetPos = defender.transform.position;
+            var startPos = owner.position;
+            var targetPos = defender.position;
 
             //创建一个hitEffect
             var hitEffect = EffectManager.PlaySkillEffect(defender, skillCfg.HitEffect);
@@ -40,7 +40,7 @@ public class SkillHitAround : Skill
                 
                 foreach (var unit in unitsInRange)
                 {
-                    Vector3 unitDirection = (unit.transform.position - startPos).normalized;
+                    Vector3 unitDirection = (unit.position - startPos).normalized;
                     float angle = Vector3.Angle(direction, unitDirection);
                     
                     // 检查是否在左右各60°开角内（总共120°扇形）

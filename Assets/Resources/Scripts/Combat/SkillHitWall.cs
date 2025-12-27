@@ -18,14 +18,14 @@ public class SkillHitWall : Skill
         {
             owner.PlayerAnim(skillCfg.Action);
             // 在目标位置，以及owner和defender方向90度两侧，各创建一个effect
-            var targetPos = defender.transform.position;
+            var targetPos = defender.position;
 
             var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, -1, targetPos, owner.side, "");
             var summonTime = GetSummonTime();
             magicStub.SetLifeTime(summonTime);
             
             // 计算owner到defender的方向
-            Vector3 direction = (defender.transform.position - owner.transform.position).normalized;
+            Vector3 direction = (defender.position - owner.position).normalized;
             
             // 计算90度和-90度旋转的方向
             Vector3 rightDirection = Quaternion.Euler(0, 90, 0) * direction;
@@ -49,7 +49,7 @@ public class SkillHitWall : Skill
             {
                 EffectManager.PlayPosSkillEffect(magicStub, pos, skillCfg.EffectSize, skillCfg.HitEffect, summonTime);
             }
-            owner.StartCoroutine(DelayDamage(summonTime));
+            BattleManager.Instance.StartNLCoroutine(DelayDamage(summonTime));
         }
     }
 

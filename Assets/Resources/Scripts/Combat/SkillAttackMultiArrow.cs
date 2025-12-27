@@ -11,7 +11,7 @@ public class SkillAttackMultiArrow : Skill
 
     public override void AimTarget(Chess defender)
     {
-        var unitsInRange = BattleManager.Instance.GetUnitsInRange(defender.transform.position, skillCfg.Range, owner.side, true);
+        var unitsInRange = BattleManager.Instance.GetUnitsInRange(defender.position, skillCfg.Range, owner.side, true);
         unitsInRange.Remove(defender);
 
         if (unitsInRange.Count > 0 && CheckBurst(defender))

@@ -16,7 +16,7 @@ public class SkillHitArea : Skill
         {
             owner.PlayerAnim(skillCfg.Action);
 
-            var targetPos = defender.transform.position;
+            var targetPos = defender.position;
             //创建一个hitEffect
             EffectManager.PlaySkillEffect(defender, skillCfg.HitEffect);
 

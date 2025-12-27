@@ -23,6 +23,8 @@ public class BattleManager : MonoBehaviour
 
     private List<Chess> chessList = new List<Chess>(); // 所有棋子
 
+    private NLCoroutineManager coroutineManager = new NLCoroutineManager();
+
     private bool gameFinish = false;
     private bool hasWin;
     private MapConfig mapConfig;
@@ -161,7 +163,7 @@ public class BattleManager : MonoBehaviour
         {
             var wallNodeCell = mapConfig.WallNode.transform.GetChild(i);
             // 使用GetOccupiedGrids方法获取需要锁定的格子列表
-            List<Vector2Int> requiredGrids = GetOccupiedGrids(wallNodeCell.transform.position, wallNodeCell.GetComponent<Collider>());
+            List<Vector2Int> requiredGrids = GetOccupiedGrids(wallNodeCell.transform.position);
             // 锁定新格子
 
             foreach (var gridPos in requiredGrids)
@@ -181,6 +183,9 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < Math.Min(cards2.Count, mapConfig.RegionHeroSide2.Length); i++)
             SpawnHerosForRegion(player2, i, mapConfig.RegionHeroSide2[i], cards2[i], 2);
 
+           //   SpawnHerosForRegion(player1, 0, mapConfig.RegionHeroSide1[0], cards1[0], 1);
+           //    SpawnHerosForRegion(player2, 0, mapConfig.RegionHeroSide2[0], cards2[0], 2);
+
 
     }
 
@@ -190,39 +195,42 @@ public class BattleManager : MonoBehaviour
         GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
 
         // 实例化单位
-        GameObject unitInstance = Instantiate(unitPrefab, spawnPos, Quaternion.identity, Units.transform);
+        GameObject unitModel = Instantiate(unitPrefab, spawnPos, Quaternion.identity, Units.transform);
 
-        unitInstance.name = $"UnitBing_{side}_{idCounter}";
-        unitInstance.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        unitModel.name = $"UnitBing_{side}_{idCounter}";
+        unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
         // 获取并初始化Chess组件
-        Chess chessComponent = unitInstance.GetComponent<Chess>();
-        if (chessComponent != null)
+        ChessViewObj viewObj = unitModel.GetComponent<ChessViewObj>();
+        Chess chess = new Chess();
+        if (viewObj != null)
         {
-            chessComponent.id = idCounter;
-            chessComponent.isHero = false;
-            chessComponent.side = side;
-            chessComponent.chessName = imgPath;
-            chessComponent.maxHp = soldierConfig.Hp;
-            chessComponent.moveSpeed = soldierConfig.MoveSpeed;
-            chessComponent.attackRange = soldierConfig.Range;
-            chessComponent.attackDamage = soldierConfig.Atk;
-            chessComponent.isFakeHero = soldierConfig.Model == "UnitHero";
+            chess.viewObj = viewObj;
+            chess.id = idCounter;
+            chess.isHero = false;
+            chess.side = side;
+            chess.chessName = imgPath;
+            chess.maxHp = soldierConfig.Hp;
+            chess.moveSpeed = soldierConfig.MoveSpeed;
+            chess.attackRange = soldierConfig.Range;
+            chess.attackDamage = soldierConfig.Atk;
+            chess.isFakeHero = soldierConfig.Model == "UnitHero";
 
-            chessComponent.hitEffect = soldierConfig.HitEffect;
-            chessComponent.soldierId = soldierId;
-            chessComponent.playerId = p.forceId;
-            chessComponent.Init(p.forceId, posId, p.lineColor);
+            chess.hitEffect = soldierConfig.HitEffect;
+            chess.soldierId = soldierId;
+            chess.playerId = p.forceId;
+            chess.Init(p.forceId, posId, p.lineColor);
         }
         else
         {
             Debug.LogError("Chess component not found on UnitBing prefab");
         }
-        chessList.Add(chessComponent);
+        chessList.Add(chess);
+        chess.SetPosition(spawnPos);
 
         idCounter++;
 
-        return chessComponent;
+        return chess;
     }
 
     private Chess SpawnHerosForRegion(Player p, int posId, GameObject spawnPoint, BattleCardData heroData, int side)
@@ -232,40 +240,43 @@ public class BattleManager : MonoBehaviour
         if (spawnPoint != null)
         {
             // 实例化单位
-            GameObject unitInstance = Instantiate(heroPrefab, spawnPoint.transform.position, Quaternion.identity, Units.transform);
-            unitInstance.name = $"Hero_{side}_{idCounter}";
-            unitInstance.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            GameObject unitModel = Instantiate(heroPrefab, spawnPoint.transform.position, Quaternion.identity, Units.transform);
+            unitModel.name = $"Hero_{side}_{idCounter}";
+            unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
             // 获取并初始化Chess组件
-            Chess chessComponent = unitInstance.GetComponent<Chess>();
-            if (chessComponent != null)
+            var viewObj = unitModel.GetComponent<ChessViewObj>();
+            Chess chess = new Chess();
+            if (viewObj != null)
             {
-                chessComponent.id = idCounter;
-                chessComponent.isHero = true;
-                chessComponent.heroId = (int)heroConfig.Id;
-                chessComponent.side = side;
-                chessComponent.chessName = heroConfig.Icon;
-                chessComponent.hitEffect = heroConfig.HitEffect;
-                chessComponent.missileSpeed = heroConfig.MissileSpeed;
-                chessComponent.missileHight = heroConfig.MissileHight;
+                chess.viewObj = viewObj;
+                chess.id = idCounter;
+                chess.isHero = true;
+                chess.heroId = (int)heroConfig.Id;
+                chess.side = side;
+                chess.chessName = heroConfig.Icon;
+                chess.hitEffect = heroConfig.HitEffect;
+                chess.missileSpeed = heroConfig.MissileSpeed;
+                chess.missileHight = heroConfig.MissileHight;
 
                 if (side <= 2)
                 {
                     var heroInfo = heroInfoGroup.AddHero(side, heroConfig.Id, heroData.Level);
-                    chessComponent.heroInfo = heroInfo;
+                    chess.heroInfo = heroInfo;
                 }
-                chessComponent.CheckInitAttr(heroData.Level, heroData.SoliderNum);
-                chessComponent.Init(p.forceId, posId, p.lineColor);
+                chess.CheckInitAttr(heroData.Level, heroData.SoliderNum);
+                chess.Init(p.forceId, posId, p.lineColor);
                 // 可以在这里设置其他必要的初始化参数
             }
             else
             {
                 Debug.LogError("Chess component not found on UnitBing prefab");
             }
-            chessList.Add(chessComponent);
+            chessList.Add(chess);
+            chess.SetPosition(spawnPoint.transform.position);
             idCounter++;
 
-            return chessComponent;
+            return chess;
         }
         return null;
     }
@@ -295,6 +306,7 @@ public class BattleManager : MonoBehaviour
         while (!gameFinish)
         {
             yield return new WaitForSeconds(0.05f);
+            coroutineManager.Update(0.05f);
             foreach (var chess in chessList.ToArray())
             {
                 if (chess != null && chess.hp > 0)
@@ -375,7 +387,7 @@ public class BattleManager : MonoBehaviour
         Missile missilePrefab = Resources.Load<Missile>("Prefabs/MissileCom");
         
         // 实例化导弹
-        var missile = Instantiate<Missile>(missilePrefab, sourceChess.transform.position, Quaternion.identity, Units.transform);
+        var missile = Instantiate<Missile>(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
         missile.Init(sourceChess, 1, effectName);
         missile.MoveToTarget(targetChess, sourceChess.missileSpeed, sourceChess.missileHight);
     }
@@ -398,7 +410,7 @@ public class BattleManager : MonoBehaviour
         Missile missilePrefab = Resources.Load<Missile>("Prefabs/MissileCom");
         
         // 实例化导弹
-        var missile = Instantiate<Missile>(missilePrefab, sourceChess.transform.position, Quaternion.identity, Units.transform);
+        var missile = Instantiate<Missile>(missilePrefab, sourceChess.position, Quaternion.identity, Units.transform);
         missile.Init(sourceChess, size, effectName);
         missile.SetSkillInfo(skillId, damage);
         missile.MoveToDirection(targetPos, time, speed);
@@ -426,11 +438,8 @@ public class BattleManager : MonoBehaviour
     // 尝试锁定目标位置的格子
     public bool TryLockGridPositions(Chess unit, Vector3 targetPosition, out List<Vector2Int> requiredGrids)
     {
-        // 获取单位包围盒
-        var collider = unit.GetComponent<Collider>();
-
         // 使用GetOccupiedGrids方法获取需要锁定的格子列表
-        requiredGrids = GetOccupiedGrids(targetPosition, collider);
+        requiredGrids = GetOccupiedGrids(targetPosition);
         // UnityEngine.Debug.Log($"id:{unit.id} requiredGrids: Target Position = {targetPosition}, Collider Size = {collider.bounds.size}");
         // string gridPositions = string.Join(", ", requiredGrids);
         // UnityEngine.Debug.Log($"Grids: {gridPositions}");
@@ -458,7 +467,7 @@ public class BattleManager : MonoBehaviour
 
     public void DoLockGridPositions(Chess unit, List<Vector2Int> requiredGrids)
     {
-        ReleaseGridPositions(unit);
+        ReleaseGridPositions(unit.id);
         // 锁定新格子
         List<Vector2Int> unitGrids = new List<Vector2Int>();
         foreach (var gridPos in requiredGrids)
@@ -474,11 +483,8 @@ public class BattleManager : MonoBehaviour
 
     public void ForceLockGridPositions(Chess unit, Vector3 targetPosition)
     {
-        // 获取单位包围盒
-        var collider = unit.GetComponent<Collider>();
-
         // 使用GetOccupiedGrids方法获取需要锁定的格子列表
-        List<Vector2Int> requiredGrids = GetOccupiedGrids(targetPosition, collider);
+        List<Vector2Int> requiredGrids = GetOccupiedGrids(targetPosition);
         List<Vector2Int> toRemoves = new List<Vector2Int>();
 
         // 检查所有格子是否可用
@@ -497,7 +503,7 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        ReleaseGridPositions(unit);
+        ReleaseGridPositions(unit.id);
         requiredGrids.RemoveAll(x => toRemoves.Contains(x));
         // 锁定新格子
         List<Vector2Int> unitGrids = new List<Vector2Int>();
@@ -517,7 +523,7 @@ public class BattleManager : MonoBehaviour
         if (isForce)
         {
             ForceLockGridPositions(unit, targetPosition);
-            unit.transform.position = targetPosition;
+            unit.SetPosition(targetPosition);
 
             return true;
         }
@@ -526,7 +532,7 @@ public class BattleManager : MonoBehaviour
             if(TryLockGridPositions(unit, targetPosition, out List<Vector2Int> requiredGrids))
             {
                 DoLockGridPositions(unit, requiredGrids);
-                unit.transform.position = targetPosition;
+                unit.SetPosition(targetPosition);
                 return true;
             }
             return false;
@@ -535,12 +541,12 @@ public class BattleManager : MonoBehaviour
     }
 
     // 获取指定位置和碰撞体占据的所有格子
-    public List<Vector2Int> GetOccupiedGrids(Vector3 position, Collider collider)
+    public List<Vector2Int> GetOccupiedGrids(Vector3 position)
     {
         List<Vector2Int> occupiedGrids = new List<Vector2Int>();
 
         // 获取碰撞体边界
-        Vector3 boundsSize = collider.bounds.size;
+        Vector3 boundsSize = new Vector3(10, 0.5f, 10);
         Vector3 halfBounds = boundsSize / 3f;
 
         // 计算边界的最小和最大世界坐标
@@ -566,17 +572,17 @@ public class BattleManager : MonoBehaviour
 
     // 释放指定位置的格子
     // 释放指定单位占据的格子
-    public void ReleaseGridPositions(Chess unit)
+    public void ReleaseGridPositions(int id)
     {
         // 检查单位是否有占据的格子
-        if (occupiedGrids.ContainsKey(unit.id))
+        if (occupiedGrids.ContainsKey(id))
         {
             // 删除该单位占据的所有格子的调试cube
-            foreach (var gridPos in occupiedGrids[unit.id])
+            foreach (var gridPos in occupiedGrids[id])
             {
                 DestroyDebugCube(gridPos);
             }
-            occupiedGrids[unit.id].Clear();
+            occupiedGrids[id].Clear();
           //  UnityEngine.Debug.Log("Released all grids for unit: " + unit.id);
         }
     }
@@ -704,7 +710,7 @@ public class BattleManager : MonoBehaviour
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
             {
-                Vector2Int chessPos = WorldToGridPosition(chessComponent.transform.position, true);
+                Vector2Int chessPos = WorldToGridPosition(chessComponent.position, true);
                 if (Vector2Int.Distance(center, chessPos) <= range || range == 0)
                 {
                     if(findEnemy)
@@ -745,7 +751,7 @@ public class BattleManager : MonoBehaviour
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
             {
-                Vector2Int chessPos = WorldToGridPosition(chessComponent.transform.position, true);
+                Vector2Int chessPos = WorldToGridPosition(chessComponent.position, true);
                 if (range == 0 || Vector2Int.Distance(center, chessPos) <= range)
                 {
                     if(chessComponent.side == mySide)
@@ -885,6 +891,16 @@ public class BattleManager : MonoBehaviour
         );
 
         return localPosition;
+    }
+
+    public IEnumerator StartNLCoroutine(IEnumerator routine)
+    {
+        coroutineManager.StartCoroutine(routine);
+        return routine;
+    }
+    public void StopNLCoroutine(IEnumerator routine)
+    {
+        coroutineManager.StopCoroutine(routine);
     }
 
 

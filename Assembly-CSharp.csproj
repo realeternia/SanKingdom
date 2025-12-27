@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveData.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\NLCoroutineManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\BattleCardData.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillHitAround.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Assets\Resources\Scripts\UIScripts\UIColorChanger.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitSoldierUp.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineUIControllerTopDownEffects.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\ChessViewObj.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillModifyShootSpeed.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SkillInitAddCrit.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\RampGeneratorTDE.cs" />

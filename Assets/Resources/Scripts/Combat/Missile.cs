@@ -76,7 +76,7 @@ public class Missile : MonoBehaviour
     // 定义协程方法，控制导弹移动
     IEnumerator MoveMissileToTarget(GameObject missile, Chess target, float missileSpeed, float missileHight)
     {
-        var targetPos = target.transform.position + new Vector3(0f, 5f, 0f);
+        var targetPos = target.position + new Vector3(0f, 5f, 0f);
 
         float journeyLength = BattleManager.Instance.GetRange(missile.transform.position, targetPos);
         float totalLen = journeyLength;
@@ -95,7 +95,7 @@ public class Missile : MonoBehaviour
             //     yield break;
             // }
             if(target != null && target.hp > 0)
-                targetPos = target.transform.position + new Vector3(0f, 5f, 0f); //修正目标点
+                targetPos = target.position + new Vector3(0f, 5f, 0f); //修正目标点
             float distCovered = (Time.time - lastTime) * speed;
             journeyLength = BattleManager.Instance.GetRange(missile.transform.position, targetPos);
             float fractionOfJourney = distCovered / journeyLength;

@@ -13,7 +13,7 @@ public class SkillBuffExpand : Skill
 
     public override void OnAddBuff(Chess target, ref int buffId, int checkSkillId, ref float time)
     {
-        UnityEngine.Debug.Log($"SkillBuffExpand OnAddBuff {target.name} {buffId} {checkSkillId} {time}");
+        UnityEngine.Debug.Log($"SkillBuffExpand OnAddBuff {buffId} {checkSkillId} {time}");
         if(checkSkillId == skillId)
             return; //自己挂的buff，不再连续触发
 
@@ -26,7 +26,7 @@ public class SkillBuffExpand : Skill
         
         if (CheckBurst(target))
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.transform.position, skillCfg.Range, owner.side, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.side, true);
             if (unitsInRange.Count > 0)
             {
                 owner.PlayerAnim(skillCfg.Action);

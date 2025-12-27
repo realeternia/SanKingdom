@@ -16,7 +16,7 @@ public class SkillHitBuffArea : Skill
             var targetUnit = skillCfg.TargetType == "targetUnit" ? defender : owner;
             EffectManager.PlaySkillEffect(targetUnit, skillCfg.HitEffect);
 
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetUnit.transform.position, skillCfg.Range, owner.side, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetUnit.position, skillCfg.Range, owner.side, true);
             if (unitsInRange.Count > 0)
             {
                 owner.PlayerAnim(skillCfg.Action);

@@ -11,7 +11,7 @@ public class SkillAttackReboundArrow : Skill
 
     public override void OnAttack(Chess defender, string damType, int damage)
     {
-        var unitsInRange = BattleManager.Instance.GetUnitsInRange(defender.transform.position, skillCfg.Range, owner.side, true);
+        var unitsInRange = BattleManager.Instance.GetUnitsInRange(defender.position, skillCfg.Range, owner.side, true);
         unitsInRange.Remove(defender);
 
         if (unitsInRange.Count > 0 && CheckBurst(defender))
@@ -21,7 +21,7 @@ public class SkillAttackReboundArrow : Skill
 
             var reboundDamage = (int)(damage * skillCfg.SkillDamageRate);
             foreach (var unit in unitsInRange)
-                BattleManager.Instance.CreateSpellMissile(owner, unit, defender.transform.position, id, reboundDamage, owner.hitEffect);
+                BattleManager.Instance.CreateSpellMissile(owner, unit, defender.position, id, reboundDamage, owner.hitEffect);
         }
     }
 }

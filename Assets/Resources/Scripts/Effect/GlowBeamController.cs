@@ -73,13 +73,13 @@ public class GlowBeamController : MonoBehaviour
     void UpdateBeamPosition()
     {
         // 计算方向和距离
-        Vector3 direction = target.transform.position - source.transform.position;
+        Vector3 direction = target.position - source.position;
         float distance = direction.magnitude;
 
         if (distance > 0)
         {
             // 设置光束位置和旋转 - 定位到source的中心
-            parentTransform.position = (source.transform.position + target.transform.position) / 2;
+            parentTransform.position = (source.position + target.position) / 2;
             parentTransform.rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 90, 0);
             
             // 设置光束长度（假设光束的本地Z轴为长度方向）

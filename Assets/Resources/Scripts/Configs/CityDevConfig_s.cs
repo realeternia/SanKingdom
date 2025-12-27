@@ -110,6 +110,7 @@ namespace CommonConfig
             config[21005] = new CityDevConfig(21005, "market", "走访", "搜集人才和宝物", "find", 0, "Gold", new int[]{20,100}, "", null, "", null, new string[]{"Charm","Inte"}, "search.mp4");
             config[21006] = new CityDevConfig(21006, "gate", "训练", "提升军队士气", "train", 0, "Power", new int[]{3,9}, "", null, "", null, new string[]{"LeadShip","Str"}, "train2.mp4");
             config[21007] = new CityDevConfig(21007, "gate", "征兵", "提升士兵数量", "zhengbing", 300, "Soldier", new int[]{200,600}, "Secure", new int[]{-2,-5}, "ArchPeople", new int[]{-500,-1500}, new string[]{"LeadShip","Charm"}, "zhengbing.mp4");
+            config[21008] = new CityDevConfig(21008, "gate", "出战", "出兵攻打敌人", "zhengbing", 300, "Soldier", new int[]{200,600}, "Secure", new int[]{-2,-5}, "ArchPeople", new int[]{-500,-1500}, new string[]{"LeadShip","Charm"}, "zhengbing.mp4");
 
         }
 
