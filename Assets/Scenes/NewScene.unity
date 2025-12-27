@@ -2986,7 +2986,6 @@ RectTransform:
   m_Children:
   - {fileID: 1267846767}
   - {fileID: 1835018305}
-  - {fileID: 1083717913}
   - {fileID: 267834054}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4973,8 +4972,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -797.7935, y: 390.77493}
-  m_SizeDelta: {x: 230, y: 610}
+  m_AnchoredPosition: {x: -803, y: 390.7749}
+  m_SizeDelta: {x: 185, y: 610}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1019877982
 MonoBehaviour:
@@ -5248,12 +5247,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1083717912}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 566742079}
+  m_Father: {fileID: 1835018305}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -5976,10 +5975,10 @@ RectTransform:
   - {fileID: 1098886115}
   m_Father: {fileID: 566742079}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 25}
+  m_SizeDelta: {x: -1628, y: -980}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1285056528
 GameObject:
@@ -6905,8 +6904,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 569.7935, y: 390.77487}
-  m_SizeDelta: {x: 230, y: 610}
+  m_AnchoredPosition: {x: 620, y: 390.7749}
+  m_SizeDelta: {x: 185, y: 610}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1576754178
 MonoBehaviour:
@@ -7662,7 +7661,6 @@ MonoBehaviour:
   isDebug: 1
   Units: {fileID: 891716375}
   gridCellSize: 3
-  showDebugCube: 0
   heroInfoGroup: {fileID: 1019877982}
   buttonRestart: {fileID: 1769209792}
   textRestart: {fileID: 448757232}
@@ -7672,6 +7670,8 @@ MonoBehaviour:
   BattleResultHeroCellPrefab: {fileID: 9216014009272878505, guid: c5288656ae748f245a0db500e65412c0, type: 3}
   HudNode: {fileID: 14063260}
   BattleTextNode: {fileID: 721668305}
+  time: 0
+  quickMode: 0
 --- !u!20 &1788356931
 Camera:
   m_ObjectHideFlags: 0
@@ -8143,6 +8143,7 @@ RectTransform:
   - {fileID: 1502158687}
   - {fileID: 2018652348}
   - {fileID: 1891025975}
+  - {fileID: 1083717913}
   m_Father: {fileID: 566742079}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

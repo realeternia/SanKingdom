@@ -180,8 +180,6 @@ public class BattleManager : MonoBehaviour
         if (!quickMode)
         {
             GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
-
-            // 实例化单位
             GameObject unitModel = Instantiate(unitPrefab, spawnPos, Quaternion.identity, Units.transform);
             unitModel.name = $"UnitBing_{side}_{idCounter}";
             unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
@@ -284,7 +282,7 @@ public class BattleManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
-        Debug.Log($"GameUpdatett start logicTime={time} realTime={Time.time}");
+      //  Debug.Log($"GameUpdatett start logicTime={time} realTime={Time.time}");
         var speed = 1;
         if (quickMode)
         {
@@ -293,7 +291,7 @@ public class BattleManager : MonoBehaviour
         while (!gameFinish)
         {
             yield return new WaitForSeconds(tickTimeReal);
-            var sw = System.Diagnostics.Stopwatch.StartNew();
+          //  var sw = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < speed; i++)
             {
                 time += tickTime;
@@ -304,15 +302,17 @@ public class BattleManager : MonoBehaviour
                     if (chess != null && chess.hp > 0)
                         chess.LogicUpdate(tickTime);
                 }
-                
+
                 // 每个回合结束，玩家消耗食物
-                foreach (var player in GameManager.Instance.players)
+                foreach (var forceId in playerList)
                 {
-                    player.RoundFoodCost();
+                    var player = GameManager.Instance.GetPlayer(forceId);
+                    if (player != null)
+                        player.RoundFoodCost();
                 }
             }
-            sw.Stop();
-            UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
+        //    sw.Stop();
+        //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
         }
         Debug.Log($"GameUpdatett end logicTime={time} realTime={Time.time}");
 

@@ -194,6 +194,7 @@ public class Chess
 
     public void SetPosition(Vector3 position)
     {
+        position.y = 7 + id * 0.01f;
         this.position = position;
         if(viewObj != null)
             viewObj.transform.position = position;

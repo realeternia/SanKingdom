@@ -43,8 +43,9 @@ public class HeroInfoGroup : MonoBehaviour
     {
         int count = side == 1 ? countSide1 : countSide2;
         GameObject heroInfoRect = side == 1 ? heroInfoRectSide1 : heroInfoRectSide2;
+        
         HeroInfo heroInfo = Instantiate(heroPrefab, heroInfoRect.transform).GetComponent<HeroInfo>();
-        heroInfo.transform.localPosition = new Vector3(115, -63 - 122 * count, 0);
+        heroInfo.transform.localPosition = new Vector3(0, -47 - 91 * count, 0);
         var heroCfg = HeroConfig.GetConfig(heroId);
 
         heroInfo.heroImage.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
@@ -60,6 +61,8 @@ public class HeroInfoGroup : MonoBehaviour
         {
             countSide2++;
         }
+
+        heroInfoRect.GetComponent<RectTransform>().sizeDelta = new Vector2(heroInfoRect.GetComponent<RectTransform>().sizeDelta.x, 91 * count + 3);
 
         return heroInfo;
     }
