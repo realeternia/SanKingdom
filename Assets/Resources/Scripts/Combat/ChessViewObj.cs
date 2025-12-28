@@ -79,7 +79,7 @@ public class ChessViewObj : MonoBehaviour
         GameObject hudPrefab = Resources.Load<GameObject>(chessUnit.isHero || chessUnit.isFakeHero ? "Prefabs/Hud" : "Prefabs/HudSmall");
 
         // 实例化HUD对象
-        GameObject hudObj = Instantiate(hudPrefab, BattleManager.Instance.HudNode.transform);
+        GameObject hudObj = Instantiate(hudPrefab, BattleManager.Instance.battleUIManager.HudNode.transform);
         hudObj.name = "ChessHUD";
 
         // 获取ChessHUD组件

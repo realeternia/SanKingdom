@@ -31,7 +31,7 @@ public class CastleHUD : MonoBehaviour
         UpdateFoodDisplay();
     }
 
-    public void Init(Player p, GameObject castleSpawn)
+    public void Init(Player p, Vector3 castleSpawn)
     {
          owner = p;
         castleName.text = p.pname;
@@ -46,9 +46,9 @@ public class CastleHUD : MonoBehaviour
         UpdatePosition(castleSpawn);
     }
 
-    private void UpdatePosition(GameObject castleSpawn)
+    private void UpdatePosition(Vector3 castleSpawn)
     {
-        Vector3 worldPosition = new Vector3(castleSpawn.transform.position.x + 5, castleSpawn.transform.position.y + 3f, castleSpawn.transform.position.z + 5);
+        Vector3 worldPosition = new Vector3(castleSpawn.x + 5, castleSpawn.y + 3f, castleSpawn.z + 5);
         RectTransform rectTransform = GetComponent<RectTransform>();
         RectTransform parentCanvas = rectTransform.parent as RectTransform;
         var screenPosition = BattleManager.Instance.TransformWorldToScreen(worldPosition, parentCanvas);

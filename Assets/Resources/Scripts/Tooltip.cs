@@ -122,7 +122,7 @@ public class Tooltip : MonoBehaviour
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvasRect, 
                 tooltipScreenPos, 
-                BattleManager.Instance.uiCamera, 
+                BattleManager.Instance.battleUIManager.uiCamera, 
                 out localPoint);
             
             rect.anchoredPosition = localPoint;

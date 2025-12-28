@@ -4984,12 +4984,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1019877980}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8221707d91808c647a31b9e6faff7e63, type: 3}
+  m_Script: {fileID: 11500000, guid: b390e0528e385ab4d83a03a77e574e02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   heroInfoRectSide1: {fileID: 1019877980}
   heroInfoRectSide2: {fileID: 1576754176}
-  heroPrefab: {fileID: 2443729787185132108, guid: 603952baaae97cd4d9689ffc733fc8a5, type: 3}
+  heroPrefab: {fileID: 2443729787185132108, guid: b390e0528e385ab4d83a03a77e571e14, type: 3}
 --- !u!114 &1019877983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5949,6 +5949,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1267846767}
+  - component: {fileID: 1267846768}
   m_Layer: 5
   m_Name: BattleUI
   m_TagString: Untagged
@@ -5980,6 +5981,30 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 25}
   m_SizeDelta: {x: -1628, y: -980}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1267846768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1267846766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 572cba6edbba3c049b2d7e51b123b405, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiCamera: {fileID: 1590568463}
+  isDebug: 1
+  NodeUnits: {fileID: 891716375}
+  heroInfoGroup: {fileID: 1019877982}
+  buttonRestart: {fileID: 1769209792}
+  textRestart: {fileID: 448757232}
+  buttonInfo: {fileID: 2848263}
+  BattleResultPanel: {fileID: 1098886114}
+  BattleResultCellPrefab: {fileID: 9216014009272878505, guid: 64c48ec9dc2b8fe4f9be24a42347e91f, type: 3}
+  BattleResultHeroCellPrefab: {fileID: 9216014009272878505, guid: c5288656ae748f245a0db500e65412c0, type: 3}
+  HudNode: {fileID: 14063260}
+  BattleTextNode: {fileID: 721668305}
 --- !u!1 &1285056528
 GameObject:
   m_ObjectHideFlags: 0
@@ -7611,9 +7636,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1788356932}
   - component: {fileID: 1788356931}
-  - component: {fileID: 1788356929}
   - component: {fileID: 1788356926}
   - component: {fileID: 1788356933}
+  - component: {fileID: 1788356934}
   m_Layer: 0
   m_Name: Main Camera (1)
   m_TagString: MainCamera
@@ -7645,33 +7670,6 @@ MonoBehaviour:
   logFontSize: 12
   scaleFactor: 1
   skin: {fileID: 0}
---- !u!114 &1788356929
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1788356925}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 572cba6edbba3c049b2d7e51b123b405, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiCamera: {fileID: 1590568463}
-  isDebug: 1
-  Units: {fileID: 891716375}
-  gridCellSize: 3
-  heroInfoGroup: {fileID: 1019877982}
-  buttonRestart: {fileID: 1769209792}
-  textRestart: {fileID: 448757232}
-  buttonInfo: {fileID: 2848263}
-  BattleResultPanel: {fileID: 1098886114}
-  BattleResultCellPrefab: {fileID: 9216014009272878505, guid: 64c48ec9dc2b8fe4f9be24a42347e91f, type: 3}
-  BattleResultHeroCellPrefab: {fileID: 9216014009272878505, guid: c5288656ae748f245a0db500e65412c0, type: 3}
-  HudNode: {fileID: 14063260}
-  BattleTextNode: {fileID: 721668305}
-  time: 0
-  quickMode: 0
 --- !u!20 &1788356931
 Camera:
   m_ObjectHideFlags: 0
@@ -7755,6 +7753,23 @@ MonoBehaviour:
     cities: []
     year: 0
   topNode: {fileID: 1083717912}
+--- !u!114 &1788356934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788356925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6415eaebfab0798489d0767c63abc649, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridCellSize: 3
+  time: 10000
+  quickMode: 1
+  showUI: 0
+  battleUIManager: {fileID: 0}
 --- !u!1 &1798257021
 GameObject:
   m_ObjectHideFlags: 0
