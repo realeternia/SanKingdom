@@ -427,14 +427,16 @@ public class BattleManager : MonoBehaviour
 
     public void RandomSelect(List<Chess> unitsInRange, int limit)
     {
-        if(unitsInRange.Count > limit)
+        if (unitsInRange.Count <= limit)
+            return;
+
+        UnityEngine.Debug.Log($"RandomSelect limit:{limit} unitsInRange.Count:{unitsInRange.Count}");
+        
+        System.Random random = new System.Random();
+        while (unitsInRange.Count > limit)
         {
-            System.Random random = new System.Random();
-            while (unitsInRange.Count > limit)
-            {
-                int indexToRemove = random.Next(0, unitsInRange.Count);
-                unitsInRange.RemoveAt(indexToRemove);
-            }
+            int indexToRemove = random.Next(0, unitsInRange.Count);
+            unitsInRange.RemoveAt(indexToRemove);
         }
     }
 

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7764681137561758083}
   - component: {fileID: 1654120894988046011}
   - component: {fileID: 5761635139686748078}
+  - component: {fileID: -5520744076382265381}
   m_Layer: 0
   m_Name: UnitSpell
   m_TagString: Untagged
@@ -101,9 +102,26 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &-5520744076382265381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2738742376364995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb68c698fdd7f5843938c025d4541e22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rend: {fileID: 1654120894988046011}
+  material: {fileID: 0}
+  rendFlag: {fileID: 0}
+  materialFlag: {fileID: 0}
+  lockTargetId: 0

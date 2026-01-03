@@ -1,18 +1,17 @@
 %YAML 1.1
-%TAG !u! tag:yousandi.cn,2023:
+%TAG !u! tag:unity3d.com,2011:
 --- !u!1 &1542662008590268
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 7
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 4333116583960524}
   - component: {fileID: 198803466441296324}
   - component: {fileID: 199350079875055832}
   m_Layer: 0
-  m_HasEditorInfo: 1
   m_Name: SmokeTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4706,10 +4705,6 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_virtualGeometry: 0
-  m_virtualGeometryShadow: 0
-  m_ShadingRate: 0
-  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4772,13 +4767,12 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 7
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 4762701694749376}
   - component: {fileID: 198342307341368172}
   - component: {fileID: 199388281105208492}
   m_Layer: 0
-  m_HasEditorInfo: 1
   m_Name: WhiteGlobe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9472,10 +9466,6 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_virtualGeometry: 0
-  m_virtualGeometryShadow: 0
-  m_ShadingRate: 0
-  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -9538,15 +9528,13 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 7
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 4384795825879374}
   - component: {fileID: 198285934277540912}
   - component: {fileID: 199309305915587178}
   - component: {fileID: 82270442419296012}
-  - component: {fileID: -54189461762187147}
   m_Layer: 0
-  m_HasEditorInfo: 1
   m_Name: GasShootFire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14261,10 +14249,6 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_virtualGeometry: 0
-  m_virtualGeometryShadow: 0
-  m_ShadingRate: 0
-  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -14417,32 +14401,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &-54189461762187147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1762376750822800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7332a53d91ebb4b40a937aaf4a4de67f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hitEffectName: GasExplosionFire
 --- !u!1 &1915560383106050
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 7
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 4721821284855818}
   - component: {fileID: 198335594134605066}
   - component: {fileID: 199746476305056066}
   m_Layer: 0
-  m_HasEditorInfo: 1
   m_Name: SparkTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19244,10 +19214,6 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_virtualGeometry: 0
-  m_virtualGeometryShadow: 0
-  m_ShadingRate: 0
-  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

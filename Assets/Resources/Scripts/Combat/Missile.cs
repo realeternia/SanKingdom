@@ -48,7 +48,7 @@ public class Missile// : MonoBehaviour
             viewObj.transform.localScale = size * missilePrefab.transform.localScale;   
             position += new Vector3(0f, 2f, 0f);
 
-            if (missileEffect.TryGetComponent(out MissileViewObj missileViewObj))
+            if (missileEffect.TryGetComponent(out MissileEffName missileViewObj))
                 hitEffectName = missileViewObj.hitEffectName;
         }
 
@@ -77,7 +77,7 @@ public class Missile// : MonoBehaviour
             position += new Vector3(0f, 5f, 0f);
             missileEffect.transform.localScale = missilePrefab.transform.localScale;
 
-            if (missileEffect.TryGetComponent(out MissileViewObj missileViewObj))
+            if (missileEffect.TryGetComponent(out MissileEffName missileViewObj))
                 hitEffectName = missileViewObj.hitEffectName;
         }
 
@@ -93,9 +93,8 @@ public class Missile// : MonoBehaviour
         float journeyLength = BattleManager.Instance.GetRange(position, targetPos);
         float totalLen = journeyLength;
         float realLen = 0;
-        float startTime = BattleManager.Instance.time;
         
-        float speed = missileSpeed * 2.5f; // 导弹移动速度
+        float speed = missileSpeed * tickTime; // 导弹移动速度
 
         float maxY = missileHight;
 
@@ -109,7 +108,7 @@ public class Missile// : MonoBehaviour
             // }
             if(target != null && target.hp > 0)
                 targetPos = target.position + new Vector3(0f, 5f, 0f); //修正目标点
-            float distCovered = (BattleManager.Instance.time - lastTime) * speed;
+            float distCovered = (BattleManager.Instance.time - lastTime) / tickTime * speed;
             journeyLength = BattleManager.Instance.GetRange(position, targetPos);
             float fractionOfJourney = distCovered / journeyLength;
             
@@ -173,7 +172,7 @@ public class Missile// : MonoBehaviour
             //     yield break;
 
             // 计算本次移动的距离（基于速度和时间）
-            float moveDistance = speed * 0.025f;
+            float moveDistance = speed * tickTime;
 
             // 按方向和距离移动 
             currentPos = position = currentPos + direction * moveDistance;
@@ -185,7 +184,7 @@ public class Missile// : MonoBehaviour
                 if (unitsInRange.Count > 0)
                 {
                     if (unitsInRange.Count + checkedList.Count > targetCount)
-                        BattleManager.Instance.RandomSelect(unitsInRange, targetCount - unitsInRange.Count - checkedList.Count);
+                        BattleManager.Instance.RandomSelect(unitsInRange, targetCount - checkedList.Count);
 
                     foreach (var unit in unitsInRange)
                     {

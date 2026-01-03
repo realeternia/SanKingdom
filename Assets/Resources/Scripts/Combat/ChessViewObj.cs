@@ -132,7 +132,7 @@ public class ChessViewObj : MonoBehaviour
             // 使用正弦函数实现颜色平滑过渡
             float t = Mathf.Sin(time*20) * 0.5f + 0.5f;
             var color = Color.Lerp(start, end, t);
-            UnityEngine.Debug.Log("ColorLerpCoroutine " + color + " start=" + start + " end=" + end);
+         //   UnityEngine.Debug.Log("ColorLerpCoroutine " + color + " start=" + start + " end=" + end);
 
             material.SetColor("_Color", color);
             time += Time.deltaTime;
