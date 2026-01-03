@@ -27,7 +27,8 @@ public class SkillHitAround : Skill
 
             //创建一个hitEffect
             var hitEffect = EffectManager.PlaySkillEffect(defender, skillCfg.HitEffect);
-            hitEffect.transform.forward = (targetPos - startPos).normalized;
+            if(hitEffect != null)
+                hitEffect.transform.forward = (targetPos - startPos).normalized;
 
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(startPos, skillCfg.Range, owner.side, true);
             unitsInRange.Remove(defender);

@@ -241,47 +241,23 @@ public class BattleManager : MonoBehaviour
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess, string effectName)
     {
-        MissileViewObj viewObj = null;
-        if(!quickMode && showUI)
-        {
-            var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
-            viewObj = UnityEngine.Object.Instantiate(missilePrefab, sourceChess.position, Quaternion.identity, battleUIManager.NodeUnits.transform);
-        }
         var missile = new Missile();
-        missile.viewObj = viewObj;
-        missile.Init(sourceChess, 1, effectName);
-        missile.SetPosition(sourceChess.position);
+        missile.Init(sourceChess, sourceChess.position, 1, effectName);
         missile.MoveToTarget(targetChess, sourceChess.missileSpeed, sourceChess.missileHight);
     }
 
     public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage, string effectName)
     {
-        MissileViewObj viewObj = null;
-        if(!quickMode && showUI)
-        {
-            var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
-            viewObj = UnityEngine.Object.Instantiate(missilePrefab, startPos, Quaternion.identity, battleUIManager.NodeUnits.transform);
-        }
         var missile = new Missile();
-        missile.viewObj = viewObj;
-        missile.Init(sourceChess, 1, effectName);
-        missile.SetPosition(startPos);
+        missile.Init(sourceChess, startPos, 1, effectName);
         missile.SetSkillInfo(skillId, damage);
         missile.MoveToTarget(targetChess, Mathf.Max(sourceChess.missileSpeed, 14), sourceChess.missileHight);
     }    
 
     public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, float speed, float size, int skillId, int damage, string effectName)
     {
-        MissileViewObj viewObj = null;
-        if(!quickMode && showUI)
-        {
-            var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
-            viewObj = UnityEngine.Object.Instantiate(missilePrefab, sourceChess.position, Quaternion.identity, battleUIManager.NodeUnits.transform);
-        }
         var missile = new Missile();
-        missile.viewObj = viewObj;
-        missile.Init(sourceChess, size, effectName);
-        missile.SetPosition(sourceChess.position);
+        missile.Init(sourceChess, sourceChess.position, size, effectName);
         missile.SetSkillInfo(skillId, damage);
         missile.MoveToDirection(targetPos, time, speed);
     }

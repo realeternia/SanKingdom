@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
-using UnityEngine.UI;
-
 
 public class Missile// : MonoBehaviour
 {
@@ -21,12 +19,31 @@ public class Missile// : MonoBehaviour
 
     public Vector3 position;
 
-    public void Init(Chess sourceChess, float size, string effectName)
+    public void Init(Chess sourceChess, Vector3 startPos, float size, string effectName)
     {
         this.effectName = effectName;
         hitEffectName = effectName;
         owner = sourceChess;
         this.size = size;
+        position = startPos + new Vector3(0f, 2f, 0f);
+
+        if(!BattleManager.Instance.quickMode && BattleManager.Instance.showUI)
+        {
+            var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
+            viewObj = UnityEngine.Object.Instantiate(missilePrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
+
+            var effPrefab = Resources.Load<GameObject>("Prefabs/Missile/" + effectName);
+            if (effPrefab == null)
+                effPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
+            GameObject missileEffect = UnityEngine.Object.Instantiate(effPrefab, position, effPrefab.transform.rotation, viewObj.transform);
+            //viewObj.transform.rotation = Quaternion.LookRotation(targetPos - position);
+            viewObj.transform.position = position;
+            missileEffect.transform.localScale = size * effPrefab.transform.localScale;   
+            viewObj.ownerName = owner.viewObj.name;
+
+            if (missileEffect.TryGetComponent(out MissileEffName missileViewObj))
+                hitEffectName = missileViewObj.hitEffectName;            
+        }        
     }
 
     public void SetSkillInfo(int skillId, int damage)
@@ -35,66 +52,23 @@ public class Missile// : MonoBehaviour
         skillDamage = damage;
     }
 
-    public void MoveToDirection(Vector3 targetPos, float time, float missileSpeed)
-    {
-        if (viewObj != null)
-        {
-            var missilePrefab = Resources.Load<GameObject>("Prefabs/Missile/" + effectName);
-            if (missilePrefab == null)
-                missilePrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
-            GameObject missileEffect = UnityEngine.Object.Instantiate(missilePrefab, position, missilePrefab.transform.rotation, viewObj.transform);
-            viewObj.transform.rotation = Quaternion.LookRotation(targetPos - position);
-            viewObj.transform.position += new Vector3(0f, 2f, 0f);
-            viewObj.transform.localScale = size * missilePrefab.transform.localScale;   
-            position += new Vector3(0f, 2f, 0f);
-
-            if (missileEffect.TryGetComponent(out MissileEffName missileViewObj))
-                hitEffectName = missileViewObj.hitEffectName;
-        }
-
-        var detectArea = 10f;
-        var targetCount = 1;
-        if (skillId > 0)
-        {
-            var skillCfg = SkillConfig.GetConfig(skillId);
-            detectArea = skillCfg.SummonArea * 1.5f;
-            targetCount = skillCfg.TargetCount;
-        }
-
-        BattleManager.Instance.StartNLCoroutine(MoveMissileToDirection((targetPos - position).normalized, time, missileSpeed, detectArea, targetCount, BattleManager.tickTime));
-    }
-
     public void MoveToTarget(Chess target, float missileSpeed, float missileHight)
     {
-        if (viewObj != null)
-        {
-            var missilePrefab = Resources.Load<GameObject>("Prefabs/Missile/" + effectName);
-            if (missilePrefab == null)
-                missilePrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
-
-            GameObject missileEffect = UnityEngine.Object.Instantiate(missilePrefab, position, Quaternion.identity, viewObj.transform);
-            viewObj.transform.position += new Vector3(0f, 5f, 0f);
-            position += new Vector3(0f, 5f, 0f);
-            missileEffect.transform.localScale = missilePrefab.transform.localScale;
-
-            if (missileEffect.TryGetComponent(out MissileEffName missileViewObj))
-                hitEffectName = missileViewObj.hitEffectName;
-        }
-
+        if(viewObj != null && target != null && target.viewObj != null)
+            viewObj.targetName = target.viewObj.name;
         BattleManager.Instance.StartNLCoroutine(MoveMissileToTarget(target, missileSpeed, missileHight, BattleManager.tickTime));
     }
-
 
     // 定义协程方法，控制导弹移动
     IEnumerator MoveMissileToTarget( Chess target, float missileSpeed, float missileHight, float tickTime)
     {
-        var targetPos = target.position + new Vector3(0f, 5f, 0f);
+        var targetPos = target.position;
 
         float journeyLength = BattleManager.Instance.GetRange(position, targetPos);
         float totalLen = journeyLength;
         float realLen = 0;
         
-        float speed = missileSpeed * tickTime; // 导弹移动速度
+        float speed = missileSpeed; // 导弹移动速度
 
         float maxY = missileHight;
 
@@ -107,8 +81,8 @@ public class Missile// : MonoBehaviour
             //     yield break;
             // }
             if(target != null && target.hp > 0)
-                targetPos = target.position + new Vector3(0f, 5f, 0f); //修正目标点
-            float distCovered = (BattleManager.Instance.time - lastTime) / tickTime * speed;
+                targetPos = target.position + new Vector3(0f, 3f, 0f); //修正目标点
+            float distCovered = (BattleManager.Instance.time - lastTime) * speed;
             journeyLength = BattleManager.Instance.GetRange(position, targetPos);
             float fractionOfJourney = distCovered / journeyLength;
             
@@ -144,42 +118,44 @@ public class Missile// : MonoBehaviour
         }
     }
 
-    public void SetPosition(Vector3 pos)
+    public void MoveToDirection(Vector3 targetPos, float time, float missileSpeed)
     {
-        position = pos;
-        if(viewObj != null)
-            viewObj.transform.position = pos;
-    }
+        var detectArea = 10f;
+        var targetCount = 1;
+        if (skillId > 0)
+        {
+            var skillCfg = SkillConfig.GetConfig(skillId);
+            detectArea = skillCfg.SummonArea * 1.5f;
+            targetCount = skillCfg.TargetCount;
+        }
 
-    public void SetDirection(Quaternion dir)
-    {
-        if(viewObj != null)
-            viewObj.transform.rotation = dir;
-    }
+        BattleManager.Instance.StartNLCoroutine(MoveMissileToDirection((targetPos - position).normalized, time, missileSpeed, detectArea, targetCount, BattleManager.tickTime));
+    }    
 
  // 让hitEffect飞向targetPos的协程
     IEnumerator MoveMissileToDirection(Vector3 direction, float time, float speed, float detectArea, int targetCount, float tickTime)
     {
-        Vector3 currentPos = position;
         direction.y = 0;
         float timePast = 0;
         float lastCheckTime = 0.2f;
         var checkedList = new List<Chess>();
 
+        var lastTime = BattleManager.Instance.time;
         while (true)
         {
             // if (owner == null || owner.hp <= 0)
             //     yield break;
 
             // 计算本次移动的距离（基于速度和时间）
-            float moveDistance = speed * tickTime;
-
+            var timeElapsed = BattleManager.Instance.time - lastTime;
+            float moveDistance = speed * timeElapsed;
             // 按方向和距离移动 
-            currentPos = position = currentPos + direction * moveDistance;
+            SetPosition(position + direction * moveDistance);
+            SetDirection(Quaternion.LookRotation(direction));
 
             if (timePast - lastCheckTime >= 0.2f)
             {
-                var unitsInRange = BattleManager.Instance.GetUnitsInRange(currentPos, detectArea, owner.side, true);
+                var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, owner.side, true);
                 unitsInRange.RemoveAll(x => checkedList.Contains(x) || x.hp <= 0); //每个单位结算一次
                 if (unitsInRange.Count > 0)
                 {
@@ -196,7 +172,7 @@ public class Missile// : MonoBehaviour
                 lastCheckTime = timePast;
             }
 
-            timePast += tickTime;
+            timePast += timeElapsed;
             if (timePast >= time || checkedList.Count >= targetCount)
             {
                 if (viewObj != null)
@@ -206,11 +182,24 @@ public class Missile// : MonoBehaviour
                 yield break;
             }
 
+            lastTime = BattleManager.Instance.time; 
             yield return new NLWaitForSeconds(tickTime);
         }
 
-
     }
+
+    public void SetPosition(Vector3 pos)
+    {
+        position = pos;
+        if(viewObj != null)
+            viewObj.transform.position = pos;
+    }
+
+    public void SetDirection(Quaternion dir)
+    {
+        if(viewObj != null)
+            viewObj.transform.rotation = dir;
+    }    
 
     private void OnCrash(Chess target)
     {

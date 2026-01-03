@@ -22,7 +22,7 @@ public class SkillAttackRunCrossPlus : Skill
         Vector3 mirrorPos = new Vector3(mirrorX, ownerPos.y, mirrorZ);
 
         // 检查是否可以移动到镜像位置
-        if (BattleManager.Instance.MoveTo(owner, mirrorPos, false) && CheckBurst(defender))
+        if (CheckBurst(defender))
         {
             // 启动协程移动
             owner.noMoveCount++;
