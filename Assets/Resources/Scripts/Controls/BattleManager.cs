@@ -77,7 +77,7 @@ public class BattleManager : MonoBehaviour
 
     private void SpawnUnitsInRegions(Player player1, List<BattleCardData> cards1, Player player2, List<BattleCardData> cards2)
     {
-        if (!quickMode && showUI)
+        if (showUI)
         {
             // 清空之前的单位
             foreach (Transform child in battleUIManager.NodeUnits.transform)
@@ -115,7 +115,7 @@ public class BattleManager : MonoBehaviour
     {
         var soldierConfig = SoldierConfig.GetConfig(soldierId);
         ChessViewObj viewObj = null;
-        if (!quickMode && showUI)
+        if (showUI)
         {
             GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
             GameObject unitModel = UnityEngine.Object.Instantiate(unitPrefab, spawnPos, Quaternion.identity, battleUIManager.NodeUnits.transform);
@@ -155,7 +155,7 @@ public class BattleManager : MonoBehaviour
     {
         var heroConfig = HeroConfig.GetConfig(heroData.CardId);
         ChessViewObj viewObj = null;
-        if (!quickMode && showUI)
+        if (showUI)
         {
             Debug.Log($"SpawnHerosForRegion Hero_{side}_{idCounter}");
             GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
@@ -203,10 +203,10 @@ public class BattleManager : MonoBehaviour
 
         Debug.Log($"GameUpdatett start logicTime={time} realTime={Time.time}");
         var speed = 1;
-        if (quickMode)
-        {
+        if (quickMode && showUI)
+            speed = 10;
+        else if(quickMode)
             speed = 400;
-        }
         while (!gameFinish)
         {
             yield return new WaitForSeconds(tickTimeReal);
