@@ -109,7 +109,7 @@ public class CityDevPanelManager : MonoBehaviour
         var devCfg = CityDevConfig.GetConfig(cellInfo.devId);
         var cityData = GameManager.Instance.GetCity(cityId);
 
-        attr1Text.text = NameTransTool.GetAttrName(devCfg.DevAttr1);
+        attr1Text.text = CityAttrConfig.GetConfigByCname(devCfg.DevAttr1).name;
         attrVal1Text.text = cityData.GetAttr(devCfg.DevAttr1).ToString();
         // if(devCfg.DevAttrs.Length > 1)
         // {

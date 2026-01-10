@@ -48,10 +48,7 @@ namespace CommonConfig
         private static Dictionary<int, ShopConfig> config = new Dictionary<int, ShopConfig>();
         public static Dictionary<int, ShopConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, ShopConfig> dict)
@@ -164,6 +161,8 @@ namespace CommonConfig
             config[99] = new ShopConfig(99, 545, 60f, 381, 6, 50);
             config[100] = new ShopConfig(100, 550, 60f, 385, 6, 50);
 
+
+
         }
 
         public static ShopConfig GetConfig(int id)
@@ -175,6 +174,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表ShopConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

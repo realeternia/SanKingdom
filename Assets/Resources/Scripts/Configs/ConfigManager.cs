@@ -31,6 +31,7 @@ public static class ConfigManager
         ForceConfig.Load();
         CityBuildingConfig.Load();
         CityDevConfig.Load();
+        CityAttrConfig.Load();
         
         ConfigManager.PostModify();      
 

@@ -88,10 +88,7 @@ namespace CommonConfig
         private static Dictionary<int, SoldierConfig> config = new Dictionary<int, SoldierConfig>();
         public static Dictionary<int, SoldierConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, SoldierConfig> dict)
@@ -108,6 +105,8 @@ namespace CommonConfig
             config[501001] = new SoldierConfig(501001, "法术场", 1, 0, 9999, 0, 0, 0, true, 0, 0, null, "UnitSpell", "");
             config[501002] = new SoldierConfig(501002, "关羽影子", 1, 2, 2, 10, 17, 0, false, 0, 0, null, "UnitHero", "SwordHitYellowCritical");
 
+
+
         }
 
         public static SoldierConfig GetConfig(int id)
@@ -119,6 +118,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表SoldierConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

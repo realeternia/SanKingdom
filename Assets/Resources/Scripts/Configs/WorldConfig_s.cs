@@ -108,10 +108,7 @@ namespace CommonConfig
         private static Dictionary<int, WorldConfig> config = new Dictionary<int, WorldConfig>();
         public static Dictionary<int, WorldConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, WorldConfig> dict)
@@ -166,6 +163,8 @@ namespace CommonConfig
             config[10041] = new WorldConfig(10041, "ji", "蓟", 980, 105, 397, 280, 11, 250, 240, 20000, 2300, 2200, 4250, 80, 255, new int[]{10017,10019,10018,10040}, "beiping");
             config[10042] = new WorldConfig(10042, "xiangping", "襄平", 1558, 13, 317, 357, 12, 175, 190, 13300, 1500, 1700, 3000, 70, 225, new int[]{10040}, "chengdu");
 
+
+
         }
 
         public static WorldConfig GetConfig(int id)
@@ -177,6 +176,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表WorldConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

@@ -133,10 +133,7 @@ namespace CommonConfig
         private static Dictionary<int, PlayerConfig> config = new Dictionary<int, PlayerConfig>();
         public static Dictionary<int, PlayerConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, PlayerConfig> dict)
@@ -162,6 +159,8 @@ namespace CommonConfig
             config[103] = new PlayerConfig(103, "无量", "PlayerPic/wuliang", "#FF3333", false, -20, new int[]{100003,409005}, 23, 30, 0.2f, 3f, 8, 7, 0.5f, 2.5f, 3, 2f, 0.5f, 0.5f, 0.85f, 0.2f, 0.9f, new string[]{"atk","1","def","1","inte","1","shoot","1"});
             config[104] = new PlayerConfig(104, "大虎", "PlayerPic/dahu", "#006633", false, -20, new int[]{100001,409003}, 19, 30, 0.3f, 3f, 7, 6, 0.5f, 3f, 1, 2f, 0.5f, 0.5f, 0.85f, 0.2f, 0.9f, new string[]{"atk","1","def","1","inte","2"});
 
+
+
         }
 
         public static PlayerConfig GetConfig(int id)
@@ -173,6 +172,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表PlayerConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

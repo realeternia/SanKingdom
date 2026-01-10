@@ -43,10 +43,7 @@ namespace CommonConfig
         private static Dictionary<int, ForceConfig> config = new Dictionary<int, ForceConfig>();
         public static Dictionary<int, ForceConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, ForceConfig> dict)
@@ -72,6 +69,8 @@ namespace CommonConfig
             config[12] = new ForceConfig(12, "公孙度", 5, 100012, "#A385AD");
             config[99] = new ForceConfig(99, "在野", 0, 100020, "#CCCCCC");
 
+
+
         }
 
         public static ForceConfig GetConfig(int id)
@@ -83,6 +82,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表ForceConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

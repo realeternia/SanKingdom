@@ -28,10 +28,7 @@ namespace CommonConfig
         private static Dictionary<int, FormulaLearnAttrConfig> config = new Dictionary<int, FormulaLearnAttrConfig>();
         public static Dictionary<int, FormulaLearnAttrConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, FormulaLearnAttrConfig> dict)
@@ -245,6 +242,8 @@ namespace CommonConfig
             config[99] = new FormulaLearnAttrConfig(99, 24);
             config[100] = new FormulaLearnAttrConfig(100, 25);
 
+
+
         }
 
         public static FormulaLearnAttrConfig GetConfig(int id)
@@ -256,6 +255,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表FormulaLearnAttrConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

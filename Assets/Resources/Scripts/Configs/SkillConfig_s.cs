@@ -223,10 +223,7 @@ namespace CommonConfig
         private static Dictionary<int, SkillConfig> config = new Dictionary<int, SkillConfig>();
         public static Dictionary<int, SkillConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, SkillConfig> dict)
@@ -319,6 +316,8 @@ namespace CommonConfig
             config[209007] = new SkillConfig(209007, "米道", "米", "战斗开始时获得粮食", "", 1, 0, 0, 0, 0, "inte", null, 0, false, "", 0, 0, 10, 0.1f, 0, 0, 0, 0, 0, "", "", 0, false, 0, "", 0, 0, 0, 0, 0, "InitFood", "", "MagicChargeYellow", 0, 2, "food");
             config[209008] = new SkillConfig(209008, "奋进", "奋", "提升同列队友武力", "", 1, 0, 0, 0, 0, "str", null, 0, false, "", 0, 0, 0, 0.7f, 0, 0, 0, 0, 2, "", "", 0, false, 0, "", 0, 0, 0, 0, 0, "HelpInitTeach", "", "MagicChargePink", 0, 2, "fen");
 
+
+
         }
 
         public static SkillConfig GetConfig(int id)
@@ -330,6 +329,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表SkillConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

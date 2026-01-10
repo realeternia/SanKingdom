@@ -148,10 +148,7 @@ namespace CommonConfig
         private static Dictionary<int, HeroConfig> config = new Dictionary<int, HeroConfig>();
         public static Dictionary<int, HeroConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, HeroConfig> dict)
@@ -511,6 +508,8 @@ namespace CommonConfig
             config[199042] = new HeroConfig(199042, "全琮", 198, 249, 75, 69, 68, 59, 64, 335, 99, "", 10, 17, 0, 0, 354, 0, 1, "戟", null, "实", "", "def", "SwordHitYellowCritical", "quanzong");
             config[199043] = new HeroConfig(199043, "骆统", 193, 236, 69, 53, 69, 70, 70, 331, 99, "", 10, 17, 0, 0, 330, 0, 1, "刀", null, "", "", "def", "SwordHitWhiteCritical", "luotong");
 
+
+
         }
 
         public static HeroConfig GetConfig(int id)
@@ -522,6 +521,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表HeroConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

@@ -38,10 +38,7 @@ namespace CommonConfig
         private static Dictionary<int, CityBuildingConfig> config = new Dictionary<int, CityBuildingConfig>();
         public static Dictionary<int, CityBuildingConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, CityBuildingConfig> dict)
@@ -57,6 +54,8 @@ namespace CommonConfig
             config[20002] = new CityBuildingConfig(20002, "gate", "防御", "ButtonGate");
             config[20004] = new CityBuildingConfig(20004, "market", "集市", "ButtonJishi");
 
+
+
         }
 
         public static CityBuildingConfig GetConfig(int id)
@@ -68,6 +67,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表CityBuildingConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

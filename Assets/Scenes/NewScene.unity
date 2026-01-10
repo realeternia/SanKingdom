@@ -7767,8 +7767,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridCellSize: 3
   time: 10000
-  quickMode: 0
-  showUI: 1
+  quickMode: 1
+  showUI: 0
   battleUIManager: {fileID: 0}
 --- !u!1 &1798257021
 GameObject:

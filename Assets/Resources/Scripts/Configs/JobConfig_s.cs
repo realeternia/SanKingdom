@@ -53,10 +53,7 @@ namespace CommonConfig
         private static Dictionary<int, JobConfig> config = new Dictionary<int, JobConfig>();
         public static Dictionary<int, JobConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, JobConfig> dict)
@@ -86,6 +83,8 @@ namespace CommonConfig
             config[602] = new JobConfig(602, "daoqiang", "枪", 200014, 601, "马车", "");
             config[603] = new JobConfig(603, "daoji", "戟", 200015, 601, "枪", "");
 
+
+
         }
 
         public static JobConfig GetConfig(int id)
@@ -97,6 +96,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表JobConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

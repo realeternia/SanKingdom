@@ -118,10 +118,7 @@ namespace CommonConfig
         private static Dictionary<int, ItemConfig> config = new Dictionary<int, ItemConfig>();
         public static Dictionary<int, ItemConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, ItemConfig> dict)
@@ -161,6 +158,8 @@ namespace CommonConfig
             config[409004] = new ItemConfig(409004, "玉如意", "出售卡牌多获得25%金币", 1, "sellhigh", "", 0, "", 0, null, "", 0, 999, false, false, false, 30, 0, false, "ruyi");
             config[409005] = new ItemConfig(409005, "酒", "", 1, "attr", "str", 10, "inte", 6, null, "", 0, 999, false, false, false, 30, 0, false, "jiu");
 
+
+
         }
 
         public static ItemConfig GetConfig(int id)
@@ -172,6 +171,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表ItemConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

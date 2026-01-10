@@ -88,10 +88,7 @@ namespace CommonConfig
         private static Dictionary<int, CityDevConfig> config = new Dictionary<int, CityDevConfig>();
         public static Dictionary<int, CityDevConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, CityDevConfig> dict)
@@ -112,6 +109,8 @@ namespace CommonConfig
             config[21007] = new CityDevConfig(21007, "gate", "征兵", "提升士兵数量", "zhengbing", 300, "Soldier", new int[]{200,600}, "Secure", new int[]{-2,-5}, "ArchPeople", new int[]{-500,-1500}, new string[]{"LeadShip","Charm"}, "zhengbing.mp4");
             config[21008] = new CityDevConfig(21008, "gate", "出战", "出兵攻打敌人", "zhengbing", 300, "Soldier", new int[]{200,600}, "Secure", new int[]{-2,-5}, "ArchPeople", new int[]{-500,-1500}, new string[]{"LeadShip","Charm"}, "zhengbing.mp4");
 
+
+
         }
 
         public static CityDevConfig GetConfig(int id)
@@ -123,6 +122,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表CityDevConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

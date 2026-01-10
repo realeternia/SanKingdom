@@ -58,10 +58,7 @@ namespace CommonConfig
         private static Dictionary<int, BuffConfig> config = new Dictionary<int, BuffConfig>();
         public static Dictionary<int, BuffConfig>.ValueCollection ConfigList
         {
-            get
-            {
-                return config.Values;
-            }
+            get { return config.Values; }
         }
 
         public static void Refresh(Dictionary<int, BuffConfig> dict)
@@ -85,6 +82,8 @@ namespace CommonConfig
             config[301005] = new BuffConfig(301005, "陷阵", "BuffNoMove", "", "", false, "AuraSoftPurple", "");
             config[301006] = new BuffConfig(301006, "溃败", "BuffTimeDamage", "", "", false, "BloodExplosion", "");
 
+
+
         }
 
         public static BuffConfig GetConfig(int id)
@@ -96,6 +95,8 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表BuffConfig不存在id={0}", id));
         }
+
+
 
         public static bool HasConfig(int id)
         {

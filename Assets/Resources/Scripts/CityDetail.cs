@@ -23,6 +23,23 @@ public class CityDetail : MonoBehaviour, IPanelEvent
     public TMP_Text textLeader;
     public GameObject heroHeadRegion;
 
+    private void SetTextAndColor(TMP_Text textComponent, SaveCityData city, string attrName)
+    {
+        var val = city.GetAttr(attrName);
+        textComponent.text = val.ToString();
+        var cfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
+
+        textComponent.color = Color.gray;
+        if (cfg.ValLow != 0 && val < cfg.ValLow)
+        {
+            textComponent.color = Color.yellow;
+        }
+        if (cfg.ValLow2 != 0 && val < cfg.ValLow2)
+        {
+            textComponent.color = Color.green;
+        }
+    }
+
     public void SetCityDetail(int cityId)
     {
         this.cityId = cityId;
@@ -30,20 +47,21 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         var worldCfg = WorldConfig.GetConfig(cityId);
         textCityName.text = worldCfg.Cname;
         textOwnerName.text = ForceConfig.GetConfig(city.forceId).Cname;
-        textArchGold.text = city.archGold.ToString();
-        textArchFood.text = city.archFood.ToString();
-        textArchPeople.text = city.archPeople.ToString();
-        textGold.text = city.gold.ToString();
-        textFood.text = city.food.ToString();
-        textSoldier.text = city.soldier.ToString();
-        textSecure.text = city.secure.ToString();
-        textPower.text = city.power.ToString();
-        textWall.text = city.wall.ToString();
+        SetTextAndColor(textArchGold, city, "archGold");
+        SetTextAndColor(textArchFood, city, "archFood");
+        SetTextAndColor(textArchPeople, city, "archPeople");
+        SetTextAndColor(textGold, city, "gold");
+        SetTextAndColor(textFood, city, "food");
+        SetTextAndColor(textSoldier, city, "soldier");
+        SetTextAndColor(textSecure, city, "secure");
+        SetTextAndColor(textPower, city, "power");
+        SetTextAndColor(textWall, city, "wall");
         var owner = city.GetOwner();
         if(owner > 0)
             textLeader.text = HeroConfig.GetConfig(owner).Name;
         else
             textLeader.text = "无";
+        textLeader.color = Color.gray;
         
         var heroList = city.GetHeroList();
         //todo 清理一下heroHeadRegion.transform下所有对象

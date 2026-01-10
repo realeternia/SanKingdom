@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.UI;
 using TMPro;
+using CommonConfig;
 
 public class PopResultPanelManager : MonoBehaviour
 {
@@ -177,7 +178,7 @@ public class PopResultPanelManager : MonoBehaviour
     {
         titleText.text = title;
         runBtn.gameObject.SetActive(false);
-        attr1Text.text = NameTransTool.GetAttrName(attrs[0]);
+        attr1Text.text = CityAttrConfig.GetConfigByCname(attrs[0]).name;
         if(attrAddons[0] > 0)
             attrVal1Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[0], attrAddons[0]);
         else
@@ -185,7 +186,7 @@ public class PopResultPanelManager : MonoBehaviour
         if (attrs.Count > 1)
         {
             attr2Text.gameObject.SetActive(true);
-            attr2Text.text = NameTransTool.GetAttrName(attrs[1]);
+            attr2Text.text = CityAttrConfig.GetConfigByCname(attrs[1]).name;
             if(attrAddons[1] > 0)
                 attrVal2Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[1], attrAddons[1]);
             else
@@ -198,7 +199,7 @@ public class PopResultPanelManager : MonoBehaviour
         if (attrs.Count > 2)
         {
             attr3Text.gameObject.SetActive(true);
-            attr3Text.text = NameTransTool.GetAttrName(attrs[2]);
+            attr3Text.text = CityAttrConfig.GetConfigByCname(attrs[2]).name;
             if(attrAddons[2] > 0)
                 attrVal3Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[2], attrAddons[2]);
             else
