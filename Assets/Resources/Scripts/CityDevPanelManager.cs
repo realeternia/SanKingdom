@@ -35,7 +35,7 @@ public class CityDevPanelManager : MonoBehaviour
     {
         closeButton.onClick.AddListener(() =>
         {
-            PanelManager.Instance.HideCityBuilding();
+            PanelManager.Instance.HideCityDev();
         });
         runButton.onClick.AddListener(() =>
         {
@@ -109,20 +109,20 @@ public class CityDevPanelManager : MonoBehaviour
         var devCfg = CityDevConfig.GetConfig(cellInfo.devId);
         var cityData = GameManager.Instance.GetCity(cityId);
 
-        attr1Text.text = CityAttrConfig.GetConfigByCname(devCfg.DevAttr1).name;
+        attr1Text.text = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower()).Cname;
         attrVal1Text.text = cityData.GetAttr(devCfg.DevAttr1).ToString();
-        // if(devCfg.DevAttrs.Length > 1)
-        // {
-        //     attr2Text.gameObject.SetActive(true);
-        //     attrVal2Text.gameObject.SetActive(true);
-        //     attr2Text.text = NameTransTool.GetAttrName(devCfg.DevAttrs[1]);
-        //     attrVal2Text.text = cityData.GetAttr(devCfg.DevAttrs[1]).ToString();
-        // }
-        // else
-        // {
-        //     attr2Text.gameObject.SetActive(false);
-        //     attrVal2Text.gameObject.SetActive(false);
-        // }
+        if(!string.IsNullOrEmpty(devCfg.DevAttr2))
+        {
+            attr2Text.gameObject.SetActive(true);
+            attrVal2Text.gameObject.SetActive(true);
+            attr2Text.text = CityAttrConfig.GetConfigByname(devCfg.DevAttr2.ToLower()).Cname;
+            attrVal2Text.text = cityData.GetAttr(devCfg.DevAttr2).ToString();
+        }
+        else
+        {
+            attr2Text.gameObject.SetActive(false);
+            attrVal2Text.gameObject.SetActive(false);
+        }
 
         attrDesText.text = devCfg.Des;
         goldCostText.text = devCfg.GoldCost.ToString() + "/" + cityData.gold.ToString();
@@ -200,7 +200,7 @@ public class CityDevPanelManager : MonoBehaviour
 
     private void OnRun(int devId, int[] heroList)
     {
-        PanelManager.Instance.HideCityBuilding();
+        PanelManager.Instance.HideCityDev();
         var devConfig = CityDevConfig.GetConfig(devId);
         CheckDev(cityId, devId, heroList, out var attrs, out var attrOlds, out var results);
         PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, attrs, attrOlds, results, devConfig.Mp4);

@@ -66,7 +66,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
                     continue;
                 node.gameObject.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    PanelManager.Instance.ShowCityBuilding(cityId, buildingCfg.Id);
+                    PanelManager.Instance.ShowCityDev(cityId, buildingCfg.Id);
                 });
             }
         }

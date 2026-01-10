@@ -16,7 +16,7 @@ public class PanelManager : MonoBehaviour
     private GameObject pickPanel;
     public GameObject worldPanel;
     public GameObject cityPanel;
-    public GameObject cityBuildingPanel;
+    private GameObject cityDevPanel;
 
     private GameObject popCitySelectPanel;
     private GameObject popHeroSelectPanel;
@@ -86,24 +86,31 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(cityPanel, false);
     }
     
-    public void ShowCityBuilding(int cityId, int buildingId)
+    public void ShowCityDev(int cityId, int devId)
     {
         BGMPlayer.Instance.PlaySound("Sounds/deck");
-        cityBuildingPanel.SetActive(true);
-        var cityBuildingPanelManager = cityBuildingPanel.GetComponent<CityDevPanelManager>();
-        cityBuildingPanelManager.SetCityId(cityId, buildingId);
-        cityBuildingPanelManager.OnShow();
+        if (cityDevPanel == null)
+        {
+            var cityDevPanelPrefab = Resources.Load<GameObject>("Prefabs/Panels/CityDevPanel");
+            cityDevPanel = Instantiate(cityDevPanelPrefab, transform);
+        }
+        cityDevPanel.SetActive(true);
+        var cityDevPanelManager = cityDevPanel.GetComponent<CityDevPanelManager>();
+        cityDevPanelManager.SetCityId(cityId, devId);
+        cityDevPanelManager.OnShow();
 
-        ChangePanelCount(cityBuildingPanel, true);
+        ChangePanelCount(cityDevPanel, true);
     }
 
-    public void HideCityBuilding()
+    public void HideCityDev()
     {
         BGMPlayer.Instance.PlaySound("Sounds/deck");
-        cityBuildingPanel.SetActive(false);
-        cityBuildingPanel.GetComponent<CityDevPanelManager>().OnHide();
+        cityDevPanel.SetActive(false);
+        cityDevPanel.GetComponent<CityDevPanelManager>().OnHide();
 
-        ChangePanelCount(cityBuildingPanel, false);
+        ChangePanelCount(cityDevPanel, false);
+        Destroy(cityDevPanel);
+        cityDevPanel = null;
     }
   
 
