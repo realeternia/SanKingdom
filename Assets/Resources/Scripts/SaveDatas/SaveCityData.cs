@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using CommonConfig;
 
 [System.Serializable]
 public class SaveCityData
@@ -15,52 +17,50 @@ public class SaveCityData
     public int secure; //安全系数
     public int power; //士气
     public int wall; //城防
-    public List<SaveHeroData> heros;
+
+    [NonSerialized]
+    private int ownerHeroId;
+    [NonSerialized]
+    private List<int> heroIds;
 
     public List<int> GetHeroList()
     {
-        List<int> heroList = new List<int>();
-        foreach (var member in heros)
+        if(heroIds != null)
+            return heroIds;
+        heroIds = new List<int>();
+        foreach (var member in GameManager.Instance.SaveData.heros)
         {
-            heroList.Add(member.heroId);
+            if(member.cityId == cityId)
+                heroIds.Add(member.heroId);
         }
-        return heroList;
+        return heroIds;
     }
 
     public List<BattleCardData> GetBattleHeroList(int[] filterHeroList = null)
     {
-        var soldierPerTeam = (int)(soldier / heros.Count);
+        var heroList = GetHeroList();
+        var soldierPerTeam = (int)(soldier / heroIds.Count);
         UnityEngine.Debug.Log(" soldierPerTeam " + " " + soldierPerTeam + " cityId " + cityId);
         if(soldierPerTeam > 1000)
             soldierPerTeam = 1000;
-        soldier -= soldierPerTeam * heros.Count;
+        soldier -= soldierPerTeam * heroIds.Count;
         if(soldierPerTeam < 1)
         {
             soldierPerTeam = 1;
             soldier = 0;
         }
-        List<BattleCardData> heroList = new List<BattleCardData>();
-        foreach (var member in heros)
+        List<BattleCardData> battleList = new List<BattleCardData>();
+        foreach (var member in heroIds)
         {
-            if(filterHeroList != null && !Array.Exists(filterHeroList, x => x == member.heroId))
+            if(filterHeroList != null && !Array.Exists(filterHeroList, x => x == member))
                 continue;
             var cardData = new BattleCardData();
-            cardData.CardId = member.heroId;
-            cardData.Level = member.GetLevel();
+            cardData.CardId = member;
+            cardData.Level = GameManager.Instance.GetHero(member).GetLevel();
             cardData.SoliderNum = soldierPerTeam;
-            heroList.Add(cardData);
+            battleList.Add(cardData);
         }
-        return heroList;    
-    }
-
-    public SaveHeroData GetHero(int heroId)
-    {
-        foreach (var member in heros)
-        {
-            if (member.heroId == heroId)
-                return member;
-        }
-        return null;
+        return battleList;    
     }
 
     public Player GetPlayer()
@@ -70,10 +70,15 @@ public class SaveCityData
 
     public int GetOwner()
     {
-        foreach (var member in heros)
+        if(ownerHeroId > 0)
+            return ownerHeroId;
+        foreach (var member in GameManager.Instance.SaveData.heros)
         {
-            if (member.cityOwner)
+            if (member.cityId == cityId && member.cityOwner)
+            {
+                ownerHeroId = member.heroId;
                 return member.heroId;
+            }
         }
         return 0;
     }
@@ -141,21 +146,67 @@ public class SaveCityData
         }
     }
 
-    public void MoveHeroTo(int[] heroIds, SaveCityData destCity)
+    public void MoveHeroTo(int[] heroIds, int destCityId)
     {
-        List<SaveHeroData> heroesToMove = new List<SaveHeroData>();
         foreach (var heroId in heroIds)
         {
-            SaveHeroData hero = GetHero(heroId);
+            SaveHeroData hero = GameManager.Instance.GetHero(heroId);
             if (hero != null)
             {
-                heroesToMove.Add(hero);
+                hero.cityId = destCityId;
             }
         }
-        foreach (var hero in heroesToMove)
+    }
+
+    public void RecalculateHeros()
+    {
+        heroIds = null;
+        ownerHeroId = 0;
+        SelectOwner();
+    }
+
+    public void SelectOwner()
+    {
+        var heroList = GetHeroList();
+        if (heroList.Count == 0)
+            return;
+
+        int maxScore = -1;
+        SaveHeroData bestHero = null;
+
+        foreach (var heroId in heroList)
         {
-            heros.Remove(hero);
-            destCity.heros.Add(hero);
+            SaveHeroData hero = GameManager.Instance.GetHero(heroId);
+            if (hero == null)
+                continue;
+
+            int str = hero.GetAttr("str");
+            int inte = hero.GetAttr("inte");
+            int fair = hero.GetAttr("fair");
+            int leadship = hero.GetAttr("leadship");
+            int charm = hero.GetAttr("charm");
+
+            float totalScore = str * .75f + inte + fair + (leadship * 1.5f) + (charm * 1.2f);
+            if (HeroConfig.GetConfig(heroId).Job == "shuai")
+            {
+                totalScore += 9999;
+                UnityEngine.Debug.Log($"帅的分 {heroId} {totalScore}");
+            }
+
+            if (totalScore > maxScore)
+            {
+                maxScore = (int)totalScore;
+                bestHero = hero;
+            }
+        }
+
+        if (bestHero != null)
+        {
+            foreach (var heroId in heroList)
+            {
+                SaveHeroData hero = GameManager.Instance.GetHero(heroId);
+                hero.cityOwner = (heroId == bestHero.heroId);
+            }
         }
     }
 }

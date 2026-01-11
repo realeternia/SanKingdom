@@ -82,7 +82,7 @@ public class PopHeroSelectPanelManager : MonoBehaviour
             PopHeroSelectPanelCell cellInfo = cell.GetComponent<PopHeroSelectPanelCell>();
             cellInfo.popHeroSelectPanelManager = this;
 
-            var heroData = cityData.GetHero(heroId);
+            var heroData = GameManager.Instance.GetHero(heroId);
             cellInfo.Init(heroData, attrs);
             itemCount++;
 

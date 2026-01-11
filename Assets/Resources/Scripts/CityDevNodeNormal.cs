@@ -86,7 +86,7 @@ public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
             cityData.gold -= devConfig.GoldCost * heroList.Length;
         for (int i = 0; i < heroList.Length; i++)
         {
-            var heroData = cityData.GetHero(heroList[i]);
+            var heroData = GameManager.Instance.GetHero(heroList[i]);
             var checkAttr = devConfig.Attrs[0];
             var attrVal = heroData.GetAttr(checkAttr);
             if (devConfig.Attrs.Length > 1)

@@ -84,18 +84,11 @@ public class GameManager : MonoBehaviour
         return SaveData.cities.FirstOrDefault(c => c.cityId == cityId);
     }
 
-    public int GetHeroCity(int heroId, out int forceId)
+    public SaveHeroData GetHero(int heroId)
     {
-        forceId = -1;
-        foreach (var city in SaveData.cities)
-        {
-            forceId = city.forceId;
-            var heroList = city.GetHeroList();
-            if (heroList != null && heroList.Contains(heroId))
-                return city.cityId;
-        }
-        return -1;
+        return SaveData.heros.FirstOrDefault(h => h.heroId == heroId);
     }
+
   //新游戏开始数据初始化
     public void NewGame(int forceId)
     {
@@ -115,7 +108,6 @@ public class GameManager : MonoBehaviour
             city.archFood = cityCfg.ArchFood;
             city.archGold = cityCfg.ArchGold;
             city.archPeople = cityCfg.ArchPeople;
-            city.heros = new List<SaveHeroData>();
 
             SaveData.cities.Add(city);
         }
@@ -126,11 +118,13 @@ public class GameManager : MonoBehaviour
             var cityCfg = WorldConfig.ConfigList.FirstOrDefault(c => c.Cname == heroCfg.City);
             if(cityCfg == null)
                 continue;
-            var city = SaveData.cities.FirstOrDefault(c => c.cityId == cityCfg.Id);
-            if(city == null)
-                continue;
-            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = city.heros.Count == 0 };
-            city.heros.Add(hero);
+
+            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id };
+            SaveData.heros.Add(hero);
+        }
+        foreach(var city in SaveData.cities)
+        {
+            city.SelectOwner();
         }
         foreach(var force in ForceConfig.ConfigList)
         {

@@ -97,7 +97,10 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         else
         {
             PanelManager.Instance.HideCityDev();
-            citySrc.MoveHeroTo(heroList, cityDest);
+            citySrc.MoveHeroTo(heroList, selectedCityId);
+            citySrc.RecalculateHeros();
+            cityDest.RecalculateHeros();
+
             PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
         }
 

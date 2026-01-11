@@ -104,12 +104,13 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
             heroCharm.text = "<color=yellow>" + heroConfig.Charm.ToString() + "</color>";      
         heroPic.gameObject.SetActive(false);
 
-        var cityId = GameManager.Instance.GetHeroCity(heroId, out int forceId);
-        Debug.Log($"GetHeroCity {heroId} {cityId} {forceId}");
-        if (cityId >= 0)
+        var heroData = GameManager.Instance.GetHero(heroId);
+        var cityData = GameManager.Instance.GetCity(heroData.cityId);
+        Debug.Log($"GetHeroCity {heroId} {heroData.cityId} {cityData.forceId}");
+        if (heroData.cityId >= 0)
         {
-            var cityCfg = WorldConfig.GetConfig(cityId);
-            ownerName.text = "<color=yellow>" + cityCfg.Cname + "</color>-<color=green>" + ForceConfig.GetConfig(forceId).Cname + "</color>";
+            var cityCfg = WorldConfig.GetConfig(heroData.cityId);
+            ownerName.text = "<color=yellow>" + cityCfg.Cname + "</color>-<color=green>" + ForceConfig.GetConfig(cityData.forceId).Cname + "</color>";
         }
         else
         {
