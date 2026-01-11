@@ -154,7 +154,7 @@ public class PanelManager : MonoBehaviour
         pickPanel = null;
     }
 
-    public void ShowPopCitySelectPanel(int cityId, System.Action<int> callback)
+    public void ShowPopCitySelectPanel(int cityId, bool findEnemy, System.Action<int> callback)
     {
         if (popCitySelectPanel == null)
         {
@@ -162,7 +162,7 @@ public class PanelManager : MonoBehaviour
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popCitySelectPanel.SetActive(true);
-        popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnShow(cityId, callback);
+        popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnShow(cityId, findEnemy, callback);
 
         ChangePanelCount(popCitySelectPanel, true);
     }

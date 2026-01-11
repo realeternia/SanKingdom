@@ -55,7 +55,7 @@ public class CityDevPanelManager : MonoBehaviour
         Debug.Log("SetCityId: " + cityId + " " + buildingId);
 
         var buildingCfg = CityBuildingConfig.GetConfig(buildingId);
-                        buildingText.text = buildingCfg.Cname;
+        buildingText.text = buildingCfg.Cname;
         int devIndex = 0;
         foreach(var cfg in CityDevConfig.ConfigList)
         {

@@ -38,7 +38,7 @@ public class PopCitySelectPanelManager : MonoBehaviour
     }
 
     // 加载英雄排名
-    private void Init(int cityId, System.Action<int> callback)
+    private void Init(int cityId, bool findEnemy, System.Action<int> callback)
     {
         mCityId = cityId;
         onSelectCallback = callback;
@@ -57,7 +57,7 @@ public class PopCitySelectPanelManager : MonoBehaviour
             var connectCityData = GameManager.Instance.GetCity(connectCityId);
             var connectCityCfg = WorldConfig.GetConfig(connectCityId);
 
-            if(cityData.forceId != connectCityData.forceId)
+            if(findEnemy && cityData.forceId != connectCityData.forceId || !findEnemy && cityData.forceId == connectCityData.forceId)
             {
                 // 实例化RankCell
                 GameObject cell = Instantiate(cellPrefab, rankParent.transform);
@@ -100,9 +100,9 @@ public class PopCitySelectPanelManager : MonoBehaviour
         lastSelectedCell = cellInfo;
     }
 
-    public void OnShow(int cityId, System.Action<int> callback)
+    public void OnShow(int cityId, bool findEnemy, System.Action<int> callback)
     {
-        Init(cityId, callback);
+        Init(cityId, findEnemy, callback);
     }
 
     public void OnHide()

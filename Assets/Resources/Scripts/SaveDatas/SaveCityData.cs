@@ -140,4 +140,22 @@ public class SaveCityData
                 return 0;
         }
     }
+
+    public void MoveHeroTo(int[] heroIds, SaveCityData destCity)
+    {
+        List<SaveHeroData> heroesToMove = new List<SaveHeroData>();
+        foreach (var heroId in heroIds)
+        {
+            SaveHeroData hero = GetHero(heroId);
+            if (hero != null)
+            {
+                heroesToMove.Add(hero);
+            }
+        }
+        foreach (var hero in heroesToMove)
+        {
+            heros.Remove(hero);
+            destCity.heros.Add(hero);
+        }
+    }
 }

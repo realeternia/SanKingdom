@@ -40,7 +40,8 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         });
         destButton.onClick.AddListener(() =>
         {
-            PanelManager.Instance.ShowPopCitySelectPanel(cityId, (selectedCityId) =>
+            var devConfig = CityDevConfig.GetConfig(devId);
+            PanelManager.Instance.ShowPopCitySelectPanel(cityId, devConfig.FindEnemy, (selectedCityId) =>
             {
                 this.selectedCityId = selectedCityId;
                 if(selectedCityId == 0)
@@ -80,14 +81,26 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         {
             return;
         }
-        PanelManager.Instance.HideCityDev();
-        PanelManager.Instance.HideCity();
-        PanelManager.Instance.HideWorld();
 
-        var cityAttack = GameManager.Instance.GetCity(cityId);
-        var cityDefense = GameManager.Instance.GetCity(selectedCityId);
 
-        BattleManager.Instance.BattleBegin(cityAttack.GetPlayer(), cityDefense.GetPlayer(), cityAttack.GetBattleHeroList(heroList), cityDefense.GetBattleHeroList());
+        var citySrc = GameManager.Instance.GetCity(cityId);
+        var cityDest = GameManager.Instance.GetCity(selectedCityId);
+
+        var devConfig = CityDevConfig.GetConfig(devId);
+        if (devConfig.FindEnemy)
+        {
+            PanelManager.Instance.HideCityDev();
+            PanelManager.Instance.HideCity();
+            PanelManager.Instance.HideWorld();
+            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(heroList), cityDest.GetBattleHeroList());
+        }
+        else
+        {
+            PanelManager.Instance.HideCityDev();
+            citySrc.MoveHeroTo(heroList, cityDest);
+            PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
+        }
+
     }
 
     public void OnShow()
