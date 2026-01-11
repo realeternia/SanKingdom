@@ -99,7 +99,7 @@ public class CityDevPanelManager : MonoBehaviour
 
         var devCfg = CityDevConfig.GetConfig(cellInfo.devId);
 
-        detailObj = Instantiate(Resources.Load<GameObject>("Prefabs/panel/" + devCfg.Prefab), devDetailParent.transform);
+        detailObj = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/" + devCfg.Prefab), devDetailParent.transform);
         detailObj.SetActive(true);
         detailObj.GetComponent<ICityDevNode>().SetDev(cityId, cellInfo.devId);
     }    

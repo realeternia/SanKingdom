@@ -96,6 +96,7 @@ MonoBehaviour:
   - {fileID: 7832150913518438179}
   - {fileID: 1144683166788437900}
   - {fileID: 8830120433004330253}
+  heroIds: 
   confirmButton: {fileID: 5310269549773559669}
 --- !u!1 &1945281506626092232
 GameObject:

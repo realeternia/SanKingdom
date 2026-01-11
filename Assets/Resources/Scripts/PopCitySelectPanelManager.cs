@@ -15,6 +15,7 @@ public class PopCitySelectPanelManager : MonoBehaviour
     public Button closeBtn;
     public Button selectBtn;
     private PopCitySelectPanelCell lastSelectedCell;
+    private System.Action<int> onSelectCallback;
 
 
     // Start is called before the first frame update
@@ -27,25 +28,20 @@ public class PopCitySelectPanelManager : MonoBehaviour
         });
         selectBtn.onClick.AddListener(() =>
         {
-            if (lastSelectedCell != null)
+            if (lastSelectedCell != null && onSelectCallback != null)
             {
+                onSelectCallback(lastSelectedCell.cityId);
                 PanelManager.Instance.HidePopCitySelectPanel();
-                PanelManager.Instance.HideCity();
-                PanelManager.Instance.HideWorld();
-
-                var cityAttack = GameManager.Instance.GetCity(mCityId);
-                var cityDefense = GameManager.Instance.GetCity(lastSelectedCell.cityId);
-
-                BattleManager.Instance.BattleBegin(cityAttack.GetPlayer(), cityDefense.GetPlayer(), cityAttack.GetBattleHeroList(), cityDefense.GetBattleHeroList());
             }
         });
 
     }
 
     // 加载英雄排名
-    private void Init(int cityId)
+    private void Init(int cityId, System.Action<int> callback)
     {
         mCityId = cityId;
+        onSelectCallback = callback;
         // 清除现有的子物体
         foreach (Transform child in rankParent.transform)
         {
@@ -104,9 +100,9 @@ public class PopCitySelectPanelManager : MonoBehaviour
         lastSelectedCell = cellInfo;
     }
 
-    public void OnShow(int cityId)
+    public void OnShow(int cityId, System.Action<int> callback)
     {
-        Init(cityId);
+        Init(cityId, callback);
     }
 
     public void OnHide()

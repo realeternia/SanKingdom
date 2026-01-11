@@ -154,7 +154,7 @@ public class PanelManager : MonoBehaviour
         pickPanel = null;
     }
 
-    public void ShowPopCitySelectPanel(int cityId)
+    public void ShowPopCitySelectPanel(int cityId, System.Action<int> callback)
     {
         if (popCitySelectPanel == null)
         {
@@ -162,7 +162,7 @@ public class PanelManager : MonoBehaviour
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popCitySelectPanel.SetActive(true);
-        popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnShow(cityId);
+        popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnShow(cityId, callback);
 
         ChangePanelCount(popCitySelectPanel, true);
     }
@@ -178,7 +178,7 @@ public class PanelManager : MonoBehaviour
         popCitySelectPanel = null;
     }
 
-    public void ShowPopHeroSelectPanel(int cityId, int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod)
+    public void ShowPopHeroSelectPanel(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod)
     {
         if (popHeroSelectPanel == null)
         {
@@ -186,7 +186,7 @@ public class PanelManager : MonoBehaviour
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popHeroSelectPanel.SetActive(true);
-        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(cityId, heroList, checkedList, attrs, onSelectMethod);
+        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(cityId, selectCount, heroList, checkedList, attrs, onSelectMethod);
 
         ChangePanelCount(popHeroSelectPanel, true);
     }
@@ -202,7 +202,7 @@ public class PanelManager : MonoBehaviour
         popHeroSelectPanel = null;
     }
 
-    public void ShowPopResultPanel(string title, List<string> attrs, List<int> attrOlds, List<int> attrVals, string path)
+    public void ShowPopResultPanel(string title, List<string> attrs, List<int> attrOlds, List<int> attrVals, Action afterRun, string path)
     {
         if (popResultPanel == null)
         {
@@ -210,7 +210,7 @@ public class PanelManager : MonoBehaviour
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popResultPanel.SetActive(true);
-        popResultPanel.GetComponent<PopResultPanelManager>().OnShow(title, attrs, attrOlds, attrVals, path);
+        popResultPanel.GetComponent<PopResultPanelManager>().OnShow(title, attrs, attrOlds, attrVals, afterRun, path);
 
         ChangePanelCount(popResultPanel, true);
     }

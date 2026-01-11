@@ -7,7 +7,7 @@ using CommonConfig;
 using System.Linq;
 using System;
 
-public class CityDevNodeNormal : MonoBehaviour
+public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
 {
     private int cityId;
     private int devId;
@@ -142,7 +142,7 @@ public class CityDevNodeNormal : MonoBehaviour
         PanelManager.Instance.HideCityDev();
         var devConfig = CityDevConfig.GetConfig(devId);
         CheckDev(heroList, out var attrs, out var attrOlds, out var results);
-        PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, attrs, attrOlds, results, devConfig.Mp4);
+        PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, attrs, attrOlds, results, null, devConfig.Mp4);
     }
     
     public void OnShow()

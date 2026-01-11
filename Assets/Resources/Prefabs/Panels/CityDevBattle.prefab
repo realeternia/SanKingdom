@@ -1211,10 +1211,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attr1Text: {fileID: 5809469315194241898}
   attrVal1Text: {fileID: 8574982883240986110}
-  attrDesText: {fileID: 0}
-  goldCostText: {fileID: 0}
+  attrDesText: {fileID: 2752854518019788802}
+  goldCostText: {fileID: 8404568482608822381}
   destButton: {fileID: 2669485495417206175}
-  heroSelect: {fileID: 0}
+  heroSelect: {fileID: 7815889264057398735}
   runButton: {fileID: 8937919555250736604}
 --- !u!1 &6127161080077100884
 GameObject:
@@ -1779,6 +1779,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae98cead6527e7644923ba26387d0a09, type: 3}
+--- !u!114 &7815889264057398735 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2111566582066118618, guid: ae98cead6527e7644923ba26387d0a09, type: 3}
+  m_PrefabInstance: {fileID: 8158929875630869013}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4707bba00157b734fb342bb4b41facfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8671983003885821833 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 676461227284239772, guid: ae98cead6527e7644923ba26387d0a09, type: 3}

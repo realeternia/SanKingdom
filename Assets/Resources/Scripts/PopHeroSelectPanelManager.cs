@@ -9,6 +9,7 @@ using System;
 public class PopHeroSelectPanelManager : MonoBehaviour
 {
     private int mCityId;
+    private int mSelectCount;
     public ScrollRect scrollRect;
     public GameObject rankParent;
     public GameObject cellPrefab; // RankCell预制体引用
@@ -48,9 +49,10 @@ public class PopHeroSelectPanelManager : MonoBehaviour
 
 
     // 加载英雄排名
-    private void Init( int cityId, int[] heroList, int[] checkedList, string[] attrs)
+    private void Init(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs)
     {
         mCityId = cityId;
+        mSelectCount = selectCount;
         // 清除现有的子物体
         foreach (Transform child in rankParent.transform)
         {
@@ -121,7 +123,7 @@ public class PopHeroSelectPanelManager : MonoBehaviour
                 }
             }
         }
-        else if(lastSelectedCells.Count < heroHeads.Length)
+        else if(lastSelectedCells.Count < mSelectCount)
         {
             lastSelectedCells.Add(selectTarget);
         }
@@ -132,20 +134,26 @@ public class PopHeroSelectPanelManager : MonoBehaviour
         {
             cellInfo.OnSelect(true);
             var icon = HeroConfig.GetConfig(cellInfo.heroId).Icon;
-            heroHeads[id].gameObject.SetActive(true);
-            heroHeads[id].sprite = Resources.Load<Sprite>("Skins/" + icon);
+            if (id < heroHeads.Length)
+            {
+                heroHeads[id].gameObject.SetActive(true);
+                heroHeads[id].sprite = Resources.Load<Sprite>("Skins/" + icon);
+            }
             id++;
         }
         for(int i = id; i < heroHeads.Length; i++)
         {
-            heroHeads[i].gameObject.SetActive(false);
+            if (i < heroHeads.Length)
+            {
+                heroHeads[i].gameObject.SetActive(false);
+            }
         }
     }
 
-    public void OnShow(int cityId, int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod)
+    public void OnShow(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod)
     {
         this.onSelectMethod = onSelectMethod;
-        Init(cityId, heroList, checkedList, attrs);
+        Init(cityId, selectCount, heroList, checkedList, attrs);
     }
 
     public void OnHide()

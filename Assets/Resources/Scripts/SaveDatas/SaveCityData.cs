@@ -27,7 +27,7 @@ public class SaveCityData
         return heroList;
     }
 
-    public List<BattleCardData> GetBattleHeroList()
+    public List<BattleCardData> GetBattleHeroList(int[] filterHeroList = null)
     {
         var soldierPerTeam = (int)(soldier / heros.Count);
         UnityEngine.Debug.Log(" soldierPerTeam " + " " + soldierPerTeam + " cityId " + cityId);
@@ -42,6 +42,8 @@ public class SaveCityData
         List<BattleCardData> heroList = new List<BattleCardData>();
         foreach (var member in heros)
         {
+            if(filterHeroList != null && !Array.Exists(filterHeroList, x => x == member.heroId))
+                continue;
             var cardData = new BattleCardData();
             cardData.CardId = member.heroId;
             cardData.Level = member.GetLevel();

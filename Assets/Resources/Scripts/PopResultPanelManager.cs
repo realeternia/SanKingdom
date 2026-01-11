@@ -5,6 +5,7 @@ using UnityEngine.Video;
 using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
+using System;
 
 public class PopResultPanelManager : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class PopResultPanelManager : MonoBehaviour
     public TMP_Text attrVal2Text;
     public TMP_Text attr3Text;
     public TMP_Text attrVal3Text;
+
+    private Action afterRun;
 
     void Start()
     {
@@ -174,15 +177,25 @@ public class PopResultPanelManager : MonoBehaviour
 
     }
 
-    public void OnShow(string title, List<string> attrs, List<int> attrOlds, List<int> attrAddons, string path)
+    public void OnShow(string title, List<string> attrs, List<int> attrOlds, List<int> attrAddons, Action afterRun, string path)
     {
         titleText.text = title;
+        this.afterRun = afterRun;
         runBtn.gameObject.SetActive(false);
-        attr1Text.text = CityAttrConfig.GetConfigByname(attrs[0].ToLower()).Cname;
-        if(attrAddons[0] > 0)
-            attrVal1Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[0], attrAddons[0]);
+        if (attrs.Count > 0)
+        {
+            attr1Text.gameObject.SetActive(true);
+            attr1Text.text = CityAttrConfig.GetConfigByname(attrs[0].ToLower()).Cname;
+            if (attrAddons[0] > 0)
+                attrVal1Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[0], attrAddons[0]);
+            else
+                attrVal1Text.text = string.Format("{0}(<color=red>{1}</color>)", attrOlds[0], attrAddons[0]);
+        }
         else
-            attrVal1Text.text = string.Format("{0}(<color=red>{1}</color>)", attrOlds[0], attrAddons[0]);
+        {
+            attr1Text.gameObject.SetActive(false);
+        }
+
         if (attrs.Count > 1)
         {
             attr2Text.gameObject.SetActive(true);
@@ -270,16 +283,24 @@ public class PopResultPanelManager : MonoBehaviour
     private System.Collections.IEnumerator HideVideoPanelAfterDelay(float delaySeconds)
     {
         Debug.Log("开始等待隐藏videoPanel，延迟时间: " + delaySeconds + "秒");
-        
+
         // 等待指定的延迟时间
         yield return new WaitForSeconds(delaySeconds);
-        
+
         // 隐藏videoPanel
         videoPanel.SetActive(false);
-        infoPanel.SetActive(true);
-        runBtn.gameObject.SetActive(true);
 
-        PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
+        if (afterRun != null)
+        {
+            PanelManager.Instance.HidePopResultPanel();
+            afterRun.Invoke();
+        }
+        else
+        {
+            infoPanel.SetActive(true);
+            runBtn.gameObject.SetActive(true);
+            PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
+        }
     }
 
     public void OnHide()

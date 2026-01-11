@@ -54,10 +54,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             // 实例化预制件并挂载到父对象下
             currentCityView = Instantiate(cityViewPrefab, transform);
             currentCityView.transform.localScale = Vector3.one;
-            currentCityView.transform.Find("ButtonArmy").gameObject.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                PanelManager.Instance.ShowPopCitySelectPanel(cityId);
-            });
 
             foreach (var buildingCfg in CityBuildingConfig.ConfigList)
             {
