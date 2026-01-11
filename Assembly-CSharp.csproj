@@ -75,7 +75,9 @@
     <Compile Include="Assets\Resources\Scripts\BattleHeroInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShield.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityDevNodeBattle.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\OOs\ICityDevNode.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Missile.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitSoldierShield.cs" />

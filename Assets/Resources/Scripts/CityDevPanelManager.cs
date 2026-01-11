@@ -6,6 +6,7 @@ using TMPro;
 using CommonConfig;
 using System.Linq;
 using System;
+using System.Runtime.Versioning;
 
 public class CityDevPanelManager : MonoBehaviour
 {
@@ -18,7 +19,6 @@ public class CityDevPanelManager : MonoBehaviour
     public GameObject devPrefab;
     public GameObject devNodeParent;
 
-    public GameObject devNodeNormalPrefab;
     public GameObject devDetailParent;
 
     private GameObject detailObj;
@@ -96,9 +96,12 @@ public class CityDevPanelManager : MonoBehaviour
         {
             Destroy(detailObj);
         }
-        detailObj = Instantiate(devNodeNormalPrefab, devDetailParent.transform);
+
+        var devCfg = CityDevConfig.GetConfig(cellInfo.devId);
+
+        detailObj = Instantiate(Resources.Load<GameObject>("Prefabs/panel/" + devCfg.Prefab), devDetailParent.transform);
         detailObj.SetActive(true);
-        detailObj.GetComponent<CityDevNodeNormal>().SetDev(cityId, cellInfo.devId);
+        detailObj.GetComponent<ICityDevNode>().SetDev(cityId, cellInfo.devId);
     }    
     
     public void OnShow()
