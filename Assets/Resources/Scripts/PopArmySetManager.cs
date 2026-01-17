@@ -19,6 +19,7 @@ public class PopArmySetManager : MonoBehaviour
     public Slider slider1;
     public TMP_Text textHeroName;
     public Image heroPic;
+    private int maxSoldier;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,11 +32,11 @@ public class PopArmySetManager : MonoBehaviour
             Debug.Log($"okBtn {cityId} {heroId}");
             if (cityId > 0)
             {
-                var total = GameManager.Instance.GetCity(cityId).soldier + GameManager.Instance.GetHero(heroId).soldier;
-                var maxSoldier = Math.Min(1000, total);
                 var soldier = (int)(maxSoldier * slider1.value);
+                var oldSoldier = GameManager.Instance.GetHero(heroId).soldier;
+                var change = soldier - oldSoldier;
                 GameManager.Instance.GetHero(heroId).soldier = soldier;
-                GameManager.Instance.GetCity(cityId).soldier = total - soldier;
+                GameManager.Instance.GetCity(cityId).soldier -= change;
                 PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
                 PanelManager.Instance.HidePopArmySetPanel();
             }
@@ -48,8 +49,11 @@ public class PopArmySetManager : MonoBehaviour
         {
             if (cityId > 0)
             {
-                var maxSoldier = Math.Min(1000, GameManager.Instance.GetCity(cityId).soldier);
-                textSoldier.text = $"{(int)(maxSoldier * slider1.value)}";
+                var soldier = (int)(maxSoldier * slider1.value);
+                textSoldier.text = $"{soldier}";
+                var oldSoldier = GameManager.Instance.GetHero(heroId).soldier;
+                var change = soldier - oldSoldier;
+                textSoldierCity.text = $"{GameManager.Instance.GetCity(cityId).soldier - change}";
             }
         });
     }
@@ -73,7 +77,7 @@ public class PopArmySetManager : MonoBehaviour
         heroPic.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
         textHeroName.text = heroCfg.Name;
 
-        var maxSoldier = Math.Min(1000, GameManager.Instance.GetCity(cityId).soldier + heroData.soldier);
+        maxSoldier = Math.Min(1000, GameManager.Instance.GetCity(cityId).soldier + heroData.soldier);
         slider1.value = (float)heroData.soldier / maxSoldier;
     }
 
