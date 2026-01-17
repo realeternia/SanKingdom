@@ -226,7 +226,7 @@ public class PopResultPanelManager : MonoBehaviour
         InitVideo(path);
 
         // 启动协程，4.5秒后隐藏videoPanel
-        StartCoroutine(HideVideoPanelAfterDelay(4.8f));
+        StartCoroutine(HideVideoPanelAfterDelay(2.96f));
     }
 
     private void InitVideo(string path)

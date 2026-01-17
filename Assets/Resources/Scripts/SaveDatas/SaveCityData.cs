@@ -39,25 +39,17 @@ public class SaveCityData
     public List<BattleCardData> GetBattleHeroList(int[] filterHeroList = null)
     {
         var heroList = GetHeroList();
-        var soldierPerTeam = (int)(soldier / heroIds.Count);
-        UnityEngine.Debug.Log(" soldierPerTeam " + " " + soldierPerTeam + " cityId " + cityId);
-        if(soldierPerTeam > 1000)
-            soldierPerTeam = 1000;
-        soldier -= soldierPerTeam * heroIds.Count;
-        if(soldierPerTeam < 1)
-        {
-            soldierPerTeam = 1;
-            soldier = 0;
-        }
         List<BattleCardData> battleList = new List<BattleCardData>();
         foreach (var member in heroIds)
         {
-            if(filterHeroList != null && !Array.Exists(filterHeroList, x => x == member))
+            if (filterHeroList != null && !Array.Exists(filterHeroList, x => x == member))
                 continue;
+
+            var hero = GameManager.Instance.GetHero(member);
             var cardData = new BattleCardData();
             cardData.CardId = member;
-            cardData.Level = GameManager.Instance.GetHero(member).GetLevel();
-            cardData.SoliderNum = soldierPerTeam;
+            cardData.Level = hero.GetLevel();
+            cardData.SoliderNum = Math.Max(1, hero.soldier); //临时方案，送一个兵
             battleList.Add(cardData);
         }
         return battleList;    
@@ -134,7 +126,16 @@ public class SaveCityData
             case "food":
                 return food;
             case "soldier":
-                return soldier;
+                {
+                    int soldierOnHero = 0;
+                    foreach (var heroId in GetHeroList())
+                    {
+                        var hero = GameManager.Instance.GetHero(heroId);
+                        if (hero != null)
+                            soldierOnHero += hero.soldier;
+                    }
+                    return soldier + soldierOnHero;
+                }
             case "secure":
                 return secure;
             case "wall":

@@ -16,10 +16,8 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
     public TMP_Text attrVal1Text;
     public TMP_Text attrDesText;
 
-    public TMP_Text goldCostText;
-
     public Button destButton;
-    public SelectHeroControl heroSelect;
+    public SelectHeroArmyControl heroSelect;
     public Button runButton;
 
     private int selectedCityId;
@@ -70,7 +68,6 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         var cityData = GameManager.Instance.GetCity(cityId);
 
         attrDesText.text = devCfg.Des;
-        goldCostText.text = devCfg.GoldCost.ToString() + "/" + cityData.gold.ToString();
 
         heroSelect.SetDevId(cityId, devId);
     }

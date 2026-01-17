@@ -5,6 +5,7 @@ using CommonConfig;
 public class SaveHeroData
 {
     public int heroId;
+    public int soldier;
     public int exp;
 
     public int cityId;
@@ -26,6 +27,8 @@ public class SaveHeroData
                 return heroConfig.LeadShip;
             case "charm":
                 return heroConfig.Charm;
+            case "soldier":
+                return soldier;
             default:
                 return 0;
         }

@@ -20,7 +20,9 @@ public class PanelManager : MonoBehaviour
 
     private GameObject popCitySelectPanel;
     private GameObject popHeroSelectPanel;
+    private GameObject popHeroBattleSelectPanel;
     private GameObject popResultPanel;
+    private GameObject popArmySetPanel;
 
     public List<GameObject> openPanelList;
 
@@ -202,6 +204,30 @@ public class PanelManager : MonoBehaviour
         popHeroSelectPanel = null;
     }
 
+    public void ShowPopHeroBattleSelectPanel(int cityId, int selectCount, int[] heroList, bool allowZeroSoldier, int[] checkedList, Action<List<int>> onSelectMethod)
+    {
+        if (popHeroBattleSelectPanel == null)
+        {
+            popHeroBattleSelectPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/PopHeroBattleSelectPanel"), transform);
+        }
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        popHeroBattleSelectPanel.SetActive(true);
+        popHeroBattleSelectPanel.GetComponent<PopHeroBattleSelectPanelManager>().OnShow(cityId, selectCount, heroList, allowZeroSoldier, checkedList, onSelectMethod);
+
+        ChangePanelCount(popHeroBattleSelectPanel, true);
+    }
+
+    public void HidePopHeroBattleSelectPanel()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        popHeroBattleSelectPanel.SetActive(false);
+        popHeroBattleSelectPanel.GetComponent<PopHeroBattleSelectPanelManager>().OnHide();
+
+        ChangePanelCount(popHeroBattleSelectPanel, false);
+        Destroy(popHeroBattleSelectPanel);
+        popHeroBattleSelectPanel = null;
+    }    
+
     public void ShowPopResultPanel(string title, List<string> attrs, List<int> attrOlds, List<int> attrVals, Action afterRun, string path)
     {
         if (popResultPanel == null)
@@ -224,6 +250,27 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(popResultPanel, false);
         Destroy(popResultPanel);
         popResultPanel = null;
+    }
+    public void ShowPopArmySetPanel(int heroId)
+    {
+        if (popArmySetPanel == null)
+        {
+            popArmySetPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/PopArmySetPanel"), transform);
+        }
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        popArmySetPanel.SetActive(true);
+        popArmySetPanel.GetComponent<PopArmySetManager>().OnShow(heroId);
+    }
+
+    public void HidePopArmySetPanel()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        popArmySetPanel.SetActive(false);
+        popArmySetPanel.GetComponent<PopArmySetManager>().OnHide();
+
+        ChangePanelCount(popArmySetPanel, false);
+        Destroy(popArmySetPanel);
+        popArmySetPanel = null;
     }
 
     public void SendSignal(string name, string parm1, int parm2)

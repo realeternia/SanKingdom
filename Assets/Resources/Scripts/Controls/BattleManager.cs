@@ -235,6 +235,13 @@ public class BattleManager : MonoBehaviour
         }
         Debug.Log($"GameUpdatett end logicTime={time} realTime={Time.time}");
 
+        for (int i = 0; i < chessList.Count; i++)
+        {
+            var chess = chessList[i];
+            if (chess.isHero)
+                GameManager.Instance.GetHero(chess.heroId).soldier = chess.hp; //设置士兵数目
+        }
+
         if(showUI)
             battleUIManager.OnBattleEnd(playerList, hasWin);
     }
@@ -331,6 +338,7 @@ public class BattleManager : MonoBehaviour
         bool[] sideHasUnits = new bool[2];
         int aliveSideCount = 0;
 
+        GameManager.Instance.GetHero(dieUnit.heroId).soldier = 0; //设置士兵数目
         foreach (var chessComponent in chessList)
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)

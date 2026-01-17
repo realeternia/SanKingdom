@@ -40,7 +40,7 @@ public class PopCitySelectPanelCell : MonoBehaviour, IPointerClickHandler
 
         cityName.text = cityCfg.Cname;
         textOwner.text = ForceConfig.GetConfig(cityData.forceId).Cname;
-        textSoldier.text = cityData.soldier.ToString();
+        textSoldier.text = cityData.GetAttr("soldier").ToString();
         textHeroCount.text = cityData.GetHeroList().Count.ToString();
 
     }
