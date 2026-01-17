@@ -13,6 +13,7 @@ public class PopArmySetManager : MonoBehaviour
 
     public Button closeBtn;
     public Button okBtn;
+    public Button maxBtn;
     public TMP_Text textSoldierCity;
     public TMP_Text textSoldier;
     public Slider slider1;
@@ -38,6 +39,10 @@ public class PopArmySetManager : MonoBehaviour
                 PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
                 PanelManager.Instance.HidePopArmySetPanel();
             }
+        });
+        maxBtn.onClick.AddListener(() =>
+        {
+            slider1.value = 1;
         });
         slider1.onValueChanged.AddListener((value) =>
         {

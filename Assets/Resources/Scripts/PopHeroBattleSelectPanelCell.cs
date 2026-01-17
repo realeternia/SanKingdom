@@ -10,6 +10,7 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
 {
     public int heroId;
     public bool isSelect;
+    public int attr1Val;
 
     public PopHeroBattleSelectPanelManager popHeroSelectPanelManager;
     public TMP_Text heroName;
@@ -51,17 +52,25 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
         heroName.text = heroCfg.Name;
         
-        textAttrLead.text = heroData.GetAttr("leadShip").ToString();
-        textAttrStr.text = heroData.GetAttr("str").ToString();
-        textAttrIntl.text = heroData.GetAttr("inte").ToString();
+        attr1Val = heroData.GetAttr("leadShip");
+        var attLeadVal = heroData.GetAttr("leadShip");
+        textAttrLead.text = attLeadVal.ToString();
+        textAttrLead.color = attLeadVal >= 95 ? Color.red : (attLeadVal >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+        var attStrVal = heroData.GetAttr("str");
+        textAttrStr.text = attStrVal.ToString();
+        textAttrStr.color = attStrVal >= 95 ? Color.red : (attStrVal >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+        var attIntlVal = heroData.GetAttr("inte");
+        textAttrIntl.text = attIntlVal.ToString();
+        textAttrIntl.color = attIntlVal >= 95 ? Color.red : (attIntlVal >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
         textAttrSoldier.text = heroData.soldier.ToString();
-
+        textAttrSoldier.color = heroData.soldier == 0 ? Color.gray : Color.white;
     }
 
     public void UpdateAttr()
     {
         var heroData = GameManager.Instance.GetHero(heroId);
         textAttrSoldier.text = heroData.soldier.ToString();
+        textAttrSoldier.color = heroData.soldier == 0 ? Color.gray : Color.white;
     }
 
     public void OnSelect(bool isSelect)

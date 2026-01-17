@@ -52,26 +52,49 @@ public class PopCitySelectPanelManager : MonoBehaviour
         var cityData = GameManager.Instance.GetCity(cityId);
         var cityCfg = WorldConfig.GetConfig(cityId);
 
-        foreach(var connectCityId in cityCfg.WorldNearIds)
+        if (findEnemy)
         {
-            var connectCityData = GameManager.Instance.GetCity(connectCityId);
-            var connectCityCfg = WorldConfig.GetConfig(connectCityId);
-
-            if(findEnemy && cityData.forceId != connectCityData.forceId || !findEnemy && cityData.forceId == connectCityData.forceId)
+            foreach (var connectCityId in cityCfg.WorldNearIds)
             {
-                // 实例化RankCell
-                GameObject cell = Instantiate(cellPrefab, rankParent.transform);
-                cell.transform.localScale = Vector3.one;
-                // 获取PopCitySelectPanelCell组件
-                PopCitySelectPanelCell cellInfo = cell.GetComponent<PopCitySelectPanelCell>();
-                cellInfo.popCitySelectPanelManager = this;
-                cellInfo.Init(connectCityId);
-                itemCount++;
+                var connectCityData = GameManager.Instance.GetCity(connectCityId);
+                var connectCityCfg = WorldConfig.GetConfig(connectCityId);
+
+                if (cityData.forceId != connectCityData.forceId)
+                {
+                    // 实例化RankCell
+                    GameObject cell = Instantiate(cellPrefab, rankParent.transform);
+                    cell.transform.localScale = Vector3.one;
+                    // 获取PopCitySelectPanelCell组件
+                    PopCitySelectPanelCell cellInfo = cell.GetComponent<PopCitySelectPanelCell>();
+                    cellInfo.popCitySelectPanelManager = this;
+                    cellInfo.Init(connectCityId);
+                    itemCount++;
+                }
+            }
+        }
+        else
+        {
+            foreach (var worldConfig in WorldConfig.ConfigList)
+            {
+                var targetCityData = GameManager.Instance.GetCity(worldConfig.Id);
+                if (targetCityData != null && targetCityData.forceId == cityData.forceId)
+                {
+                    // 实例化RankCell
+                    GameObject cell = Instantiate(cellPrefab, rankParent.transform);
+                    cell.transform.localScale = Vector3.one;
+                    // 获取PopCitySelectPanelCell组件
+                    PopCitySelectPanelCell cellInfo = cell.GetComponent<PopCitySelectPanelCell>();
+                    cellInfo.popCitySelectPanelManager = this;
+                    cellInfo.Init(worldConfig.Id);
+                    itemCount++;
+                }
             }
         }
 
+
+
         // Get the RectTransform components
-         RectTransform rankParentRect = rankParent.GetComponent<RectTransform>();
+        RectTransform rankParentRect = rankParent.GetComponent<RectTransform>();
          RectTransform cellRect = cellPrefab.GetComponent<RectTransform>();
           
          if (rankParentRect != null && cellRect != null)

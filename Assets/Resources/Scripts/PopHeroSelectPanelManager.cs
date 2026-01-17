@@ -72,7 +72,7 @@ public class PopHeroSelectPanelManager : MonoBehaviour
             textAttr2.text = "";
 
         int itemCount = 0;
-        var cityData = GameManager.Instance.GetCity(mCityId);
+        var sortdata = new List<PopHeroSelectPanelCell>();
         foreach(var heroId in heroList)
         {
             // 实例化RankCell
@@ -91,6 +91,14 @@ public class PopHeroSelectPanelManager : MonoBehaviour
                 if (Array.IndexOf(checkedList, heroId) >= 0)
                     OnSelectItem(cellInfo, true);
             }
+            sortdata.Add(cellInfo);
+        }
+
+        sortdata.Sort((a, b) => b.attr1Val.CompareTo(a.attr1Val));
+
+        for (int i = 0; i < sortdata.Count; i++)
+        {
+            sortdata[i].gameObject.transform.SetSiblingIndex(i);
         }
 
         // Get the RectTransform components

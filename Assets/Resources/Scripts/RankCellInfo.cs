@@ -105,10 +105,9 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         heroPic.gameObject.SetActive(false);
 
         var heroData = GameManager.Instance.GetHero(heroId);
-        var cityData = GameManager.Instance.GetCity(heroData.cityId);
-        Debug.Log($"GetHeroCity {heroId} {heroData.cityId} {cityData.forceId}");
-        if (heroData.cityId >= 0)
+        if (heroData != null && heroData.cityId > 0)
         {
+            var cityData = GameManager.Instance.GetCity(heroData.cityId);
             var cityCfg = WorldConfig.GetConfig(heroData.cityId);
             ownerName.text = "<color=yellow>" + cityCfg.Cname + "</color>-<color=green>" + ForceConfig.GetConfig(cityData.forceId).Cname + "</color>";
         }

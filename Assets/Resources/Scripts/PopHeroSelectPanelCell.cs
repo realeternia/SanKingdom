@@ -10,6 +10,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 {
     public int heroId;
     public bool isSelect;
+    public int attr1Val;
 
     public PopHeroSelectPanelManager popHeroSelectPanelManager;
     public TMP_Text heroName;
@@ -40,9 +41,16 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
         heroName.text = heroCfg.Name;
         
-        textAttr1.text = heroData.GetAttr(attrs[0]).ToString();
+        var att1Val = heroData.GetAttr(attrs[0]);
+        this.attr1Val = att1Val;
+        textAttr1.text = att1Val.ToString();
+        textAttr1.color = att1Val >= 95 ? Color.red : (att1Val >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
         if(attrs.Length > 1)
-            textAttr2.text = heroData.GetAttr(attrs[1]).ToString();
+        {
+            var att2Val = heroData.GetAttr(attrs[1]);
+            textAttr2.text = att2Val.ToString();
+            textAttr2.color = att2Val >= 95 ? Color.red : (att2Val >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+        }
         else
             textAttr2.text = "";
 
