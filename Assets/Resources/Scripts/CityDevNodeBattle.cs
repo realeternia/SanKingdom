@@ -87,6 +87,12 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
 
         // 隐藏相关UI面板
         PanelManager.Instance.HideCityDev();
+        var devConfig = CityDevConfig.GetConfig(devId);
+        if(devConfig.FindEnemy)
+        {
+            PanelManager.Instance.HideCity();
+            PanelManager.Instance.HideWorld();
+        }
         
         // 执行城市战斗发展
         player.ExecuteCityBattleDev(cityId, devId, heroList, selectedCityId);

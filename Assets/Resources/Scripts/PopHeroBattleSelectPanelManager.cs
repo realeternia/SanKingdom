@@ -93,7 +93,11 @@ public class PopHeroBattleSelectPanelManager : MonoBehaviour, IPanelEvent
             sortdata.Add(cellInfo);
         }
 
-        sortdata.Sort((a, b) => b.attr1Val.CompareTo(a.attr1Val));
+        sortdata.Sort((a, b) => {
+            int yearCompare = a.heroYear.CompareTo(b.heroYear);
+            if (yearCompare != 0) return yearCompare;
+            return b.attr1Val.CompareTo(a.attr1Val);
+        });
 
         for (int i = 0; i < sortdata.Count; i++)
         {

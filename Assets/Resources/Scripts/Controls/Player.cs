@@ -96,29 +96,20 @@ public class Player
     }
 
     // 检查英雄是否在当前年份已经执行过动作
-    public bool IsHeroAvailableThisYear(int heroId)
+    public bool CheckHeroRound(int heroId)
     {
         var hero = GameManager.Instance.GetHero(heroId);
-        var currentYear = GameManager.Instance.SaveData.year;
-        return hero.currentYear != currentYear;
+        var currentRound = GameManager.Instance.SaveData.round;
+        return hero.round != currentRound;
     }
 
-    // 更新英雄的currentYear为当前年份
-    public void UpdateHeroCurrentYear(int heroId)
+    public void UpdateHeroesRound(int[] heroIds)
     {
-        var hero = GameManager.Instance.GetHero(heroId);
-        var currentYear = GameManager.Instance.SaveData.year;
-        hero.currentYear = currentYear;
-    }
-
-    // 更新多个英雄的currentYear为当前年份
-    public void UpdateHeroesCurrentYear(int[] heroIds)
-    {
-        var currentYear = GameManager.Instance.SaveData.year;
+        var currentRound = GameManager.Instance.SaveData.round;
         foreach (var heroId in heroIds)
         {
             var hero = GameManager.Instance.GetHero(heroId);
-            hero.currentYear = currentYear;
+            hero.round = currentRound;
         }
     }
 
@@ -128,7 +119,7 @@ public class Player
         var validHeroList = new List<int>();
         foreach (var heroId in heroList)
         {
-            if (IsHeroAvailableThisYear(heroId))
+            if (CheckHeroRound(heroId))
             {
                 validHeroList.Add(heroId);
             }
@@ -243,7 +234,7 @@ public class Player
             attrOlds.Add(cityData.GetAttr(devConfig.DevAttr3));
         }
 
-        UpdateHeroesCurrentYear(heroList);
+        UpdateHeroesRound(heroList);
 
         return true;
     }
@@ -270,7 +261,7 @@ public class Player
         }
                
         // 更新英雄的年份
-        UpdateHeroesCurrentYear(validHeroList);
+        UpdateHeroesRound(validHeroList);
     }
 
     // 移动英雄到目标城市

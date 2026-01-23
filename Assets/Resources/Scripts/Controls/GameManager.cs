@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour
     public void NewGame(int forceId)
     {
         SaveData = new SaveData();
-        SaveData.year = 0;
+        SaveData.round = 1;
         foreach(var cityCfg in WorldConfig.ConfigList)
         {
             var city = new SaveCityData();
@@ -165,7 +165,7 @@ public class GameManager : MonoBehaviour
             SaveData = saveData;
             InitForceControls();
 
-            Debug.Log("游戏数据加载成功 year=" + SaveData.year);
+            Debug.Log("游戏数据加载成功 year=" + SaveData.round);
         }
         catch (System.Exception e)
         {

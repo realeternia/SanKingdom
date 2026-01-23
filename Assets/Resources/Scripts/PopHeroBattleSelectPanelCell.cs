@@ -11,6 +11,7 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
     public int heroId;
     public bool isSelect;
     public int attr1Val;
+    public int heroYear;
     private bool isAvailable; // 标记英雄是否可点击
 
     public PopHeroBattleSelectPanelManager popHeroSelectPanelManager;
@@ -50,8 +51,9 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
     public void Init(SaveHeroData heroData)
     {
         this.heroId = heroData.heroId;
+        heroYear = heroData.round;
         var heroCfg = HeroConfig.GetConfig(heroId);
-        var currentYear = GameManager.Instance.SaveData.year;
+        var currentYear = GameManager.Instance.SaveData.round;
 
         heroName.text = heroCfg.Name;
         
@@ -69,12 +71,16 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
         textAttrSoldier.color = heroData.soldier == 0 ? Color.gray : Color.white;
 
         // 检查英雄是否已经在当前年份执行过任务
-        isAvailable = heroData.currentYear != currentYear;
+        isAvailable = heroData.round != currentYear;
         
-        // 根据英雄是否可用设置不同的背景色
-        if (backgroundImage != null)
+        // 根据英雄是否可用设置不同的文字颜色
+        if(!isAvailable)
         {
-            backgroundImage.color = isAvailable ? normalColor : disabledColor;
+            heroName.color = Color.gray;
+            textAttrLead.color = Color.gray;
+            textAttrStr.color = Color.gray;
+            textAttrIntl.color = Color.gray;
+            textAttrSoldier.color = Color.gray;
         }
     }
 

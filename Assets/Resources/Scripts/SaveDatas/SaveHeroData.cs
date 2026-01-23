@@ -10,7 +10,7 @@ public class SaveHeroData
 
     public int cityId;
     public bool cityOwner; //太守
-    public int currentYear; // 当前年份，用于标记英雄是否已执行动作
+    public int round; // 当前年份，用于标记英雄是否已执行动作
 
     
     public int GetAttr(string attr)

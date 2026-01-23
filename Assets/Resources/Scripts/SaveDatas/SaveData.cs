@@ -8,5 +8,5 @@ public class SaveData
     public List<SaveForceData> forces = new List<SaveForceData>();
     public List<SaveCityData> cities = new List<SaveCityData>();
     public List<SaveHeroData> heros = new List<SaveHeroData>();
-    public int year;
+    public int round;
 }
