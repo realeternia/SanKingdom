@@ -139,9 +139,30 @@ public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
 
     private void OnRun(int devId, int[] heroList)
     {
+        // 过滤掉当前年份已经执行过动作的英雄
+        var validHeroList = new List<int>();
+        var currentYear = GameManager.Instance.SaveData.year;
+        
+        foreach (var heroId in heroList)
+        {
+            var hero = GameManager.Instance.GetHero(heroId);
+            if (hero.currentYear != currentYear)
+            {
+                validHeroList.Add(heroId);
+            }
+        }
+        
         PanelManager.Instance.HideCityDev();
         var devConfig = CityDevConfig.GetConfig(devId);
-        CheckDev(heroList, out var attrs, out var attrOlds, out var results);
+        CheckDev(validHeroList.ToArray(), out var attrs, out var attrOlds, out var results);
+        
+        // 更新英雄的年份
+        foreach (var heroId in validHeroList)
+        {
+            var hero = GameManager.Instance.GetHero(heroId);
+            hero.currentYear = currentYear;
+        }
+        
         PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, attrs, attrOlds, results, null, devConfig.Mp4);
     }
     

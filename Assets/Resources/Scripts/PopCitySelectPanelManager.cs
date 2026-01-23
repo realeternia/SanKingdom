@@ -76,6 +76,9 @@ public class PopCitySelectPanelManager : MonoBehaviour
         {
             foreach (var worldConfig in WorldConfig.ConfigList)
             {
+                if(worldConfig.Id == cityId)
+                    continue;
+
                 var targetCityData = GameManager.Instance.GetCity(worldConfig.Id);
                 if (targetCityData != null && targetCityData.forceId == cityData.forceId)
                 {

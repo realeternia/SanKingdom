@@ -27,6 +27,9 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
     {
         runButton.onClick.AddListener(() =>
         {
+            if (selectedCityId == 0 || heroSelect.heroIds.Length <= 0)
+                return;
+
             var devConfig = CityDevConfig.GetConfig(devId);
             PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, new List<string>(), new List<int>(), new List<int>(), () =>
             {
@@ -79,6 +82,18 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
             return;
         }
 
+        // 过滤掉当前年份已经执行过动作的英雄
+        var validHeroList = new List<int>();
+        var currentYear = GameManager.Instance.SaveData.year;
+        
+        foreach (var heroId in heroList)
+        {
+            var hero = GameManager.Instance.GetHero(heroId);
+            if (hero.currentYear != currentYear)
+            {
+                validHeroList.Add(heroId);
+            }
+        }
 
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(selectedCityId);
@@ -89,16 +104,30 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
             PanelManager.Instance.HideCityDev();
             PanelManager.Instance.HideCity();
             PanelManager.Instance.HideWorld();
-            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(heroList), cityDest.GetBattleHeroList());
+            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), cityId, selectedCityId, citySrc.GetBattleHeroList(validHeroList.ToArray()), cityDest.GetBattleHeroList());
+            
+            // 更新英雄的年份
+            foreach (var heroId in validHeroList)
+            {
+                var hero = GameManager.Instance.GetHero(heroId);
+                hero.currentYear = currentYear;
+            }
         }
         else
         {
             PanelManager.Instance.HideCityDev();
-            citySrc.MoveHeroTo(heroList, selectedCityId);
+            citySrc.MoveHeroTo(validHeroList.ToArray(), selectedCityId);
             citySrc.RecalculateHeros();
             cityDest.RecalculateHeros();
 
             PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
+            
+            // 更新英雄的年份
+            foreach (var heroId in validHeroList)
+            {
+                var hero = GameManager.Instance.GetHero(heroId);
+                hero.currentYear = currentYear;
+            }
         }
 
     }

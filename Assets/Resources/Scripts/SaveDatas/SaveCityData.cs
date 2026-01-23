@@ -157,6 +157,44 @@ public class SaveCityData
         }
     }
 
+    public void Occupy(int forceWin, List<int> winHeroIds, int forceLose, List<int> failHeroIds)
+    {
+        forceId = forceWin;
+        PanelManager.Instance.SendSignal("CityForceChange", "", cityId);
+
+        List<SaveCityData> loseForceCities = GameManager.Instance.GetCitiesByForce(forceLose);
+
+        if (loseForceCities.Count > 0)
+        {
+            SaveCityData destCity = loseForceCities[0];
+            foreach (var heroId in failHeroIds)
+            {
+                var hero = GameManager.Instance.GetHero(heroId);
+                if (hero != null)
+                {
+                    hero.cityId = destCity.cityId;
+                }
+            }
+        }
+        else
+        {
+            //最后一个城了，相当于全部投降
+        }
+
+        foreach (var heroId in winHeroIds)
+        {
+            var hero = GameManager.Instance.GetHero(heroId);
+            if (hero != null)
+            {
+                hero.cityId = cityId;
+            }
+        }
+
+        RecalculateHeros();
+
+        GameManager.Instance.SaveToFile();
+    }
+
     public void RecalculateHeros()
     {
         heroIds = null;

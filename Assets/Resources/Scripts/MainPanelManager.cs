@@ -115,10 +115,10 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         cityDetail.SetCityDetail(pieceId);
         // 高亮显示点击的地块
         var cityCfg = WorldConfig.GetConfig(pieceId);
-        foreach (var piece in worldPieces)
-        {
-            piece.Shine(cityCfg.WorldNearIds != null && Array.Exists(cityCfg.WorldNearIds, x => x == piece.pieceId));
-        }
+        // foreach (var piece in worldPieces)
+        // {
+        //     piece.Shine(cityCfg.WorldNearIds != null && Array.Exists(cityCfg.WorldNearIds, x => x == piece.pieceId));
+        // }
         btnCity.gameObject.GetComponentInChildren<TMP_Text>().text = "进入" + cityCfg.Cname;
         btnCity.gameObject.SetActive(true);
     }
@@ -127,5 +127,11 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     {
         Debug.Log($"WorldManager SendSignal {name} {parm1} {parm2}");
         cityDetail.SendSignal(name, parm1, parm2);
+
+        if(name == "CityForceChange")
+        {
+            var cityId = parm2;
+            worldPieces.Find(x => x.pieceId == cityId).SetColor(GameManager.Instance.GetCity(cityId).forceId);
+        }
     }    
 }

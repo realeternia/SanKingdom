@@ -276,6 +276,10 @@ public class PanelManager : MonoBehaviour
     public void SendSignal(string name, string parm1, int parm2)
     {
         Debug.Log($"PanelManager SendSignal {name} {parm1} {parm2}");
+        if(worldPanel != null)
+        {
+            worldPanel.GetComponent<MainPanelManager>().SendSignal(name, parm1, parm2);
+        }
         foreach (var panel in openPanelList)
         {
             Debug.Log($"PanelManager SendSignal {panel.name} {name} {parm1} {parm2}");

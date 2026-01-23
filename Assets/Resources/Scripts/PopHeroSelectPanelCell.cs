@@ -11,6 +11,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
     public int heroId;
     public bool isSelect;
     public int attr1Val;
+    private bool isAvailable; // 标记英雄是否可点击
 
     public PopHeroSelectPanelManager popHeroSelectPanelManager;
     public TMP_Text heroName;
@@ -21,6 +22,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
     private Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.8f); // 正常状态背景色
     private Color selectedColor = new Color(0.5f, 0.5f, 0.1f, 0.8f); // 高光绿色选中状态
+    private Color disabledColor = new Color(0.1f, 0.1f, 0.1f, 0.5f); // 灰色不可用状态
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +40,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
     {
         this.heroId = heroData.heroId;
         var heroCfg = HeroConfig.GetConfig(heroId);
+        var currentYear = GameManager.Instance.SaveData.year;
 
         heroName.text = heroCfg.Name;
         
@@ -54,6 +57,15 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         else
             textAttr2.text = "";
 
+        // 检查英雄是否已经在当前年份执行过任务
+        isAvailable = heroData.currentYear != currentYear;
+        
+        // 根据英雄是否可用设置不同的背景色
+        if (backgroundImage != null)
+        {
+            backgroundImage.color = isAvailable ? normalColor : disabledColor;
+        }
+
     }
 
     public void OnSelect(bool isSelect)
@@ -63,15 +75,27 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         checkImage.gameObject.SetActive(isSelect);
         if (backgroundImage != null)
         {
-            backgroundImage.color = isSelect ? selectedColor : normalColor;
+            // 只有可用的英雄才能改变选中状态的背景色
+            if (isAvailable)
+            {
+                backgroundImage.color = isSelect ? selectedColor : normalColor;
+            }
+            else
+            {
+                backgroundImage.color = disabledColor;
+            }
         }
     }
     
     // 处理点击事件
     public void OnPointerClick(PointerEventData eventData)
     {
-        // 通知面板管理器当前单元格被点击
-        popHeroSelectPanelManager.OnSelectItem(this, !isSelect);
+        // 只有可用的英雄才能被点击
+        if (isAvailable)
+        {
+            // 通知面板管理器当前单元格被点击
+            popHeroSelectPanelManager.OnSelectItem(this, !isSelect);
+        }
     }
 
     // Update is called once per frame

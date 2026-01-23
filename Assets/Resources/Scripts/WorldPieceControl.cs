@@ -71,7 +71,7 @@ public class WorldPieceControl : MonoBehaviour
         pieceName.text = pieceCfg.Cname;
     }
 
-    private void SetColor(int forceId)
+    public void SetColor(int forceId)
     {
         // 添加空值检查，确保代码健壮性
         if (pieceImage == null)

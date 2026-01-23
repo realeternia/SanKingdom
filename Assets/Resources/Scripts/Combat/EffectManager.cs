@@ -10,6 +10,8 @@ public static class EffectManager
     {
         if(targetChess.viewObj == null || BattleManager.Instance.quickMode)
             return;
+
+        Debug.Log($"PlayHitEffect: {effectName}");
         
         // 播放粒子特效
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
@@ -27,8 +29,8 @@ public static class EffectManager
         if(sourceChess.viewObj == null || BattleManager.Instance.quickMode)
             return null;
 
+        Debug.Log("PlaySkillEffect: " + effect);
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
-        UnityEngine.Debug.Log("PlaySkillEffect: " + effect);
 
         GameObject hitEffect = UnityEngine.Object.Instantiate(hitPrefab, sourceChess.position, hitPrefab.transform.rotation);
         // 设置特效的父对象为目标单位，使其跟随目标移动
@@ -45,8 +47,8 @@ public static class EffectManager
         if(sourceChess.viewObj == null || BattleManager.Instance.quickMode)
             return null;
         
-        var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
         UnityEngine.Debug.Log("PlayPosSkillEffect: " + effect);
+        var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
 
         GameObject hitEffect = UnityEngine.Object.Instantiate(hitPrefab, sourcePos, hitPrefab.transform.rotation);
         // 设置特效的父对象为目标单位，使其跟随目标移动
@@ -64,8 +66,8 @@ public static class EffectManager
         if(sourceChess.viewObj == null || BattleManager.Instance.quickMode)
             return null;
         
-        var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
         UnityEngine.Debug.Log("PlayBuffEffect: " + effect);
+        var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
 
         GameObject hitEffect = UnityEngine.Object.Instantiate(hitPrefab, sourceChess.position, hitPrefab.transform.rotation);
         // 设置特效的父对象为目标单位，使其跟随目标移动

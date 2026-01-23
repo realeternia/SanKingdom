@@ -84,6 +84,11 @@ public class GameManager : MonoBehaviour
         return SaveData.cities.FirstOrDefault(c => c.cityId == cityId);
     }
 
+    public List<SaveCityData> GetCitiesByForce(int forceId)
+    {
+        return SaveData.cities.Where(c => c.forceId == forceId).ToList();
+    }
+
     public SaveHeroData GetHero(int heroId)
     {
         return SaveData.heros.FirstOrDefault(h => h.heroId == heroId);

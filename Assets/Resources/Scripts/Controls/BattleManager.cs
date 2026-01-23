@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
+using System.Linq;
 
 public class BattleManager : MonoBehaviour
 {
@@ -13,8 +14,13 @@ public class BattleManager : MonoBehaviour
     public int gridCellSize = 3; // 每个格子的实际大小(米)
 
     private List<int> playerList = new List<int>();
+    private int cityAtkId;
+
+    private int cityDefId;
 
     private List<Chess> chessList = new List<Chess>(); // 所有棋子
+    private List<int> attackHeroIds = new List<int>();
+    private List<int> defHeroIds = new List<int>();
 
     private NLCoroutineManager coroutineManager = new NLCoroutineManager();
 
@@ -33,11 +39,19 @@ public class BattleManager : MonoBehaviour
         time = 10000;
     }
 
-    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2)
+    public void BattleBegin(Player player1, Player player2, int cityAtkId, int cityDefId, List<BattleCardData> cards1, List<BattleCardData> cards2)
     {
         playerList.Clear();
         playerList.Add(player1.forceId);
         playerList.Add(player2.forceId);
+        this.cityAtkId = cityAtkId;
+        this.cityDefId = cityDefId;
+
+        attackHeroIds.Clear();
+        defHeroIds.Clear();
+        attackHeroIds.AddRange(cards1.Select(x => x.CardId));
+        defHeroIds.AddRange(cards2.Select(x => x.CardId));
+
         chessList.Clear();
 
         var newMapId = 1;
@@ -338,7 +352,9 @@ public class BattleManager : MonoBehaviour
         bool[] sideHasUnits = new bool[2];
         int aliveSideCount = 0;
 
-        GameManager.Instance.GetHero(dieUnit.heroId).soldier = 0; //设置士兵数目
+        var unit = GameManager.Instance.GetHero(dieUnit.heroId);
+        if(unit != null)
+            unit.soldier = 0; //设置士兵数目
         foreach (var chessComponent in chessList)
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
@@ -361,6 +377,12 @@ public class BattleManager : MonoBehaviour
         {
             gameFinish = true;
             hasWin = sideHasUnits[0];
+
+            if (hasWin)
+            {
+                GameManager.Instance.GetCity(cityDefId).Occupy(playerList[0], attackHeroIds, playerList[1], defHeroIds);
+                GameManager.Instance.GetCity(cityAtkId).RecalculateHeros(); //因为有一帮人出去了
+            }
         }
     }
 
