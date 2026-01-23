@@ -11,7 +11,9 @@ public class SelectHeroControl : MonoBehaviour
     public Image[] heroHeads;
     public int[] heroIds;
     public Button confirmButton;
-
+    
+    // 英雄选择变化的回调委托
+    public System.Action<int> OnHeroCountChange;
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +44,12 @@ public class SelectHeroControl : MonoBehaviour
                     heroHeads[0].gameObject.SetActive(true);
                     heroHeads[0].sprite = Resources.Load<Sprite>("Skins/moren");
                 }
+                
+                // 触发英雄数量变化回调
+                if (OnHeroCountChange != null)
+                {
+                    OnHeroCountChange(heroIds.Length);
+                }
             });
         });
     }
@@ -49,7 +57,6 @@ public class SelectHeroControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     public void SetDevId(int cityId, int devId)
@@ -65,5 +72,11 @@ public class SelectHeroControl : MonoBehaviour
         heroHeads[0].sprite = Resources.Load<Sprite>("Skins/moren");
 
         heroIds = new int[0];
+        
+        // 触发英雄数量变化回调
+        if (OnHeroCountChange != null)
+        {
+            OnHeroCountChange(heroIds.Length);
+        }
     }
 }

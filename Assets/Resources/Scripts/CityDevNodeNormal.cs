@@ -33,6 +33,12 @@ public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
                 return;
             OnRun(devId, heroList);
         });
+        
+        // 订阅英雄数量变化事件
+        heroSelect.OnHeroCountChange += (heroCount) =>
+        {
+            UpdateGoldCostText(heroCount > 0 ? heroCount : 1);
+        };
 
     }
 
@@ -67,9 +73,20 @@ public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
         }
 
         attrDesText.text = devCfg.Des;
-        goldCostText.text = devCfg.GoldCost.ToString() + "/" + cityData.gold.ToString();
+        
+        // 初始显示单个英雄的消耗
+        UpdateGoldCostText(1);
 
         heroSelect.SetDevId(cityId, devId);
+    }
+    
+    // 更新黄金消耗显示
+    private void UpdateGoldCostText(int heroCount)
+    {
+        var devCfg = CityDevConfig.GetConfig(devId);
+        var cityData = GameManager.Instance.GetCity(cityId);
+        int totalCost = devCfg.GoldCost * heroCount;
+        goldCostText.text = totalCost.ToString() + "/" + cityData.gold.ToString();
     }
 
     public void CheckDev(int[] heroList, out List<string> attrs, out List<int> attrOlds, out List<int> results)
@@ -151,6 +168,14 @@ public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
                 validHeroList.Add(heroId);
             }
         }
+        
+        if (validHeroList.Count == 0)
+        {
+            return; // 没有可执行动作的英雄
+        }
+        
+        // 更新黄金消耗显示为实际执行的英雄数的消耗
+        UpdateGoldCostText(validHeroList.Count);
         
         PanelManager.Instance.HideCityDev();
         var devConfig = CityDevConfig.GetConfig(devId);
