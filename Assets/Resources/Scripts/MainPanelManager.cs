@@ -11,6 +11,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     public CityDetail cityDetail;
     public Button btnRank;
     public Button btnCity;
+    public Button btnRoundNext;
+    public TMP_Text textYear;
     public GameObject bgPanel;
     private List<WorldPieceControl> worldPieces = new List<WorldPieceControl>();
 
@@ -24,6 +26,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         GameManager.Instance.SaveToFile();
 
         btnCity.gameObject.SetActive(false);
+        var nowRound = GameManager.Instance.SaveData.round;
+        textYear.text = $"{nowRound / 12 + 190}年{nowRound % 12 + 1}月";
 
         btnRank.onClick.AddListener(() =>
         {
@@ -32,6 +36,10 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         btnCity.onClick.AddListener(() =>
         {
             PanelManager.Instance.ShowCity(cityDetail.cityId);
+        });
+        btnRoundNext.onClick.AddListener(() =>
+        {
+            GameManager.Instance.NextRound();
         });
     }
 
@@ -132,6 +140,11 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         {
             var cityId = parm2;
             worldPieces.Find(x => x.pieceId == cityId).SetColor(GameManager.Instance.GetCity(cityId).forceId);
+        }
+        if(name == "RoundChange")
+        {
+            var nowRound = parm2;
+            textYear.text = $"{nowRound / 12 + 190}年{nowRound % 12 + 1}月";
         }
     }    
 }

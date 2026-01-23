@@ -144,6 +144,14 @@ public class GameManager : MonoBehaviour
         InitForceControls();
     }
 
+    // 下轮游戏
+    public void NextRound()
+    {
+        SaveData.round++;
+        PanelManager.Instance.SendSignal("RoundChange", "", SaveData.round);
+        SaveToFile();
+    }
+
     public bool IsGameSaveExist()
     {
         string savePath = Application.persistentDataPath + "/game_save.json";
