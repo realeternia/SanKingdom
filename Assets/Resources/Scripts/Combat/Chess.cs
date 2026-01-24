@@ -160,18 +160,6 @@ public class Chess
             heroInfo.SetAttr(inte, str, leadShip);
     }
 
-    public void UpdateAttr(int inte, int str, int leadShip)
-    {
-        if (inte > 0)
-            this.inte = inte;
-        if (str > 0)
-            this.str = str;
-        if (leadShip > 0)
-            this.leadShip = leadShip;
-        if (heroInfo != null)
-            heroInfo.SetAttr(this.inte, this.str, this.leadShip);
-    }
-
     // 只能开场用
     public void AddSoldierLevel(int lv, int atkAdd, int hpAdd)
     {

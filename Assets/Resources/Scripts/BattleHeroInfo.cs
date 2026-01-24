@@ -38,24 +38,20 @@ public class HeroInfo : MonoBehaviour
 
         // 确定英雄的最高属性
         string highestAttr = "";
-        var highestAttrValue = 0;
 
         var total = inte + leadShip + str;
         if (inte >= leadShip && inte >= str)
         {
             highestAttr = "attrinte";
-            highestAttrValue = inte;
         }
         else if (leadShip >= inte && leadShip >= str)
         {
             highestAttr = "attrlead";
-            highestAttrValue = leadShip;
 
         }
         else if (str >= inte && str >= leadShip)
         {
             highestAttr = "attrstr";
-            highestAttrValue = str;
 
         }
         else if (total >= 235)
@@ -67,27 +63,19 @@ public class HeroInfo : MonoBehaviour
         {
             // 根据最高属性加载对应图片
             classImg.sprite = Resources.Load<Sprite>("Textures/" + highestAttr);
-            if (total >= 600)
-            {
-                classImg.color = new Color(0.3f, 0, .6f);
-            }
-            else if (total >= 500)
-            {
-                classImg.color = new Color(0.8f, 0, 1);
-            }
-            else if (total >= 420)
+            if (total >= 270)
             {
                 classImg.color = Color.red;
             }
-            else if (total >= 350)
+            else if (total >= 250)
             {
                 classImg.color = new Color(1, 0.5f, 0);
             }
-            else if (total >= 290)
+            else if (total >= 220)
             {
                 classImg.color = Color.yellow;
             }
-            else if (total >= 250)
+            else if (total >= 180)
             {
                 classImg.color = Color.green;
             }
@@ -97,27 +85,19 @@ public class HeroInfo : MonoBehaviour
     private void SetText(TMP_Text text, int val)
     {
         text.text = val.ToString();
-        if (val >= 250)
-        {
-            text.color = new Color(0.3f, 0, .6f);
-        }
-        else if (val >= 210)
-        {
-            text.color = new Color(0.8f, 0, 1);
-        }        
-        else if (val >= 170)
+        if (val >= 95)
         {
             text.color = Color.red;
         }
-        else if (val >= 140)
+        else if (val >= 90)
         {
             text.color = new Color(1, 0.5f, 0);
         }
-        else if (val >= 110)
+        else if (val >= 80)
         {
             text.color = Color.yellow;
         }
-        else if (val >= 95)
+        else if (val >= 70)
         {
             text.color = Color.green;
         }
