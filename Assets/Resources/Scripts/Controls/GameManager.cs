@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
     // todo 这里还有一个city数据列表
     private StreamWriter logWriter;  // 日志写入器
     public SaveData SaveData;
-    public GameObject topNode;
 
     public List<Player> players = new List<Player>();
 
@@ -141,7 +140,10 @@ public class GameManager : MonoBehaviour
                 forceData.isPlayer = true;
             SaveData.forces.Add(forceData); 
         }
-        InitForceControls();
+        foreach (var forceData in SaveData.forces)
+        {
+            players.Add(new Player(forceData.forceId));
+        }
     }
 
     // 下轮游戏
@@ -171,7 +173,10 @@ public class GameManager : MonoBehaviour
             string json = File.ReadAllText(savePath);
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
             SaveData = saveData;
-            InitForceControls();
+            foreach (var forceData in SaveData.forces)
+            {
+                players.Add(new Player(forceData.forceId));
+            }
 
             Debug.Log("游戏数据加载成功 year=" + SaveData.round);
         }
@@ -212,23 +217,4 @@ public class GameManager : MonoBehaviour
         return count;
     }
 
-    public void InitForceControls()
-    {
-        var playerForceControl = Resources.Load<GameObject>("Prefabs/Panels/PlayerInfoCell");
-        int idx = 0;
-        var totalWidth = 141 * SaveData.forces.Count;
-        var forceList = new List<int>();
-        foreach(var force in SaveData.forces)
-            forceList.Add(force.forceId);
-        forceList.Sort((a, b) => GetPlayerCityCount(b) - GetPlayerCityCount(a));
-        foreach(var forceId in forceList)
-        {
-            var forceControl = Instantiate(playerForceControl, topNode.transform);
-            var playerInfoControl = forceControl.GetComponent<PlayerInfoControl>();
-            playerInfoControl.Init(idx, forceId);
-            forceControl.GetComponent<RectTransform>().anchoredPosition = new Vector2(-totalWidth / 2 + 141 * idx, 412);
-            players.Add(playerInfoControl.player);
-            idx++;
-        }
-    }
 }

@@ -31,6 +31,7 @@ public class PanelManager : MonoBehaviour
     {
         ShowPick();
     }
+ 
 
     public void ShowWorld()
     {

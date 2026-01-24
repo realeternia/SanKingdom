@@ -15,18 +15,18 @@ public class SkillInitMasterShield : Skill
         var shieldHp = (int)(owner.maxHp * skillCfg.Strength);
         owner.PlayerAnim(skillCfg.Action);
 
-        foreach (var unit in unitList)
-        {
-            if (unit.hp <= 0 || unit == owner)
-                continue;
-            if(!unit.isHero)
-                continue;
-            var heroCfg = HeroConfig.GetConfig(unit.heroId);
-            if (heroCfg.ForceId == mySide)
-            {
-                UnityEngine.Debug.Log("SkillInitMasterShield BattleBegin 护盾值 " + shieldHp);
-                BuffManager.AddBuff(unit, owner, skillCfg.Id, skillCfg.BuffId, skillCfg.BuffTime);
-            }
-        }
+        // foreach (var unit in unitList)
+        // {
+        //     if (unit.hp <= 0 || unit == owner)
+        //         continue;
+        //     if(!unit.isHero)
+        //         continue;
+        //     var heroCfg = HeroConfig.GetConfig(unit.heroId);
+        //     if (heroCfg.ForceId == mySide)
+        //     {
+        //         UnityEngine.Debug.Log("SkillInitMasterShield BattleBegin 护盾值 " + shieldHp);
+        //         BuffManager.AddBuff(unit, owner, skillCfg.Id, skillCfg.BuffId, skillCfg.BuffTime);
+        //     }
+        // }
     }
 }

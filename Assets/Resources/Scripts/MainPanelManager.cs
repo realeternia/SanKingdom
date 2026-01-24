@@ -8,6 +8,7 @@ using System;
 
 public class MainPanelManager : MonoBehaviour, IPanelEvent
 {
+    public GameObject topNode;      
     public CityDetail cityDetail;
     public Button btnRank;
     public Button btnCity;
@@ -22,6 +23,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         cityDetail.gameObject.SetActive(false);
         // 加载地图块
         LoadMapPieces();
+        InitForceControls();
 
         GameManager.Instance.SaveToFile();
 
@@ -48,6 +50,35 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     {
         
     }
+
+    public void InitForceControls()
+    {
+        // 移除topNode下所有子对象
+        foreach (Transform child in topNode.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        var playerForceControl = Resources.Load<GameObject>("Prefabs/Panels/PlayerInfoCell");
+        int idx = 0;
+
+        var gameManager = GameManager.Instance;
+        
+        var totalWidth = 141 * gameManager.SaveData.forces.Count;
+        var forceList = new List<int>();
+        Debug.Log($"InitForceControls 强制数量: {gameManager.SaveData.forces.Count}");
+        foreach(var force in gameManager.SaveData.forces)
+            forceList.Add(force.forceId);
+        forceList.Sort((a, b) => gameManager.GetPlayerCityCount(b) - gameManager.GetPlayerCityCount(a));
+        foreach(var forceId in forceList)
+        {
+            var forceControl = Instantiate(playerForceControl, topNode.transform);
+            var playerInfoControl = forceControl.GetComponent<PlayerInfoControl>();
+            playerInfoControl.Init(forceId);
+            forceControl.GetComponent<RectTransform>().anchoredPosition = new Vector2(-totalWidth / 2 + 141 * idx, 412);
+            idx++;
+        }
+    }      
 
     private void LoadMapPieces()
     {
@@ -140,6 +171,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         {
             var cityId = parm2;
             worldPieces.Find(x => x.pieceId == cityId).SetColor(GameManager.Instance.GetCity(cityId).forceId);
+
+            InitForceControls();
         }
         if(name == "RoundChange")
         {

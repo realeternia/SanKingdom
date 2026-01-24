@@ -160,10 +160,10 @@ public class SaveCityData
     public void Occupy(int forceWin, List<int> winHeroIds, int forceLose, List<int> failHeroIds)
     {
         forceId = forceWin;
-        PanelManager.Instance.SendSignal("CityForceChange", "", cityId);
 
         List<SaveCityData> loseForceCities = GameManager.Instance.GetCitiesByForce(forceLose);
 
+        UnityEngine.Debug.Log($"Occupy forceId: {forceLose} citycount: {loseForceCities.Count}");
         if (loseForceCities.Count > 0)
         {
             SaveCityData destCity = loseForceCities[0];
@@ -178,6 +178,9 @@ public class SaveCityData
         }
         else
         {
+            GameManager.Instance.players.RemoveAll(x => x.forceId == forceLose);
+            GameManager.Instance.SaveData.forces.RemoveAll(x => x.forceId == forceLose);
+            UnityEngine.Debug.Log($"Occupy 强制数量: {GameManager.Instance.SaveData.forces.Count}");
             //最后一个城了，相当于全部投降
         }
 
@@ -191,6 +194,7 @@ public class SaveCityData
         }
 
         RecalculateHeros();
+        PanelManager.Instance.SendSignal("CityForceChange", "", cityId);
 
         GameManager.Instance.SaveToFile();
     }

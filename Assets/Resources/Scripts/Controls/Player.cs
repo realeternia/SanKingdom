@@ -22,9 +22,9 @@ public class Player
     public CastleHUD castleHUD;
     public string imgPath;
 
-    public void Init(int id, int forceId, string imagePath)
+    public Player(int id)
     {
-        this.forceId = forceId;
+        forceId = id;
 
         gold = 0;
         maxFood = 100;
@@ -35,7 +35,7 @@ public class Player
 
         lineColor = ColorUtility.TryParseHtmlString(forceCfg.Color, out lineColor) ? lineColor : Color.white;
         pname = heroCfg.Name;
-        this.imgPath = imagePath;
+        imgPath = "Skins/" + heroCfg.Icon;
     }
 
     public void AddGold(int g)

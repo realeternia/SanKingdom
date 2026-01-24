@@ -32,13 +32,12 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
   		targetImage = GetComponent<Image>();
     }
 
-    public void Init(int id, int forceId)
+    public void Init(int forceId)
     {
-        player = new Player();
+        player = GameManager.Instance.GetPlayer(forceId);
         var forceCfg = ForceConfig.GetConfig(forceId);
         var heroCfg = HeroConfig.GetConfig(forceCfg.HeroId);
         imgPath = "Skins/" + heroCfg.Icon;
-        player.Init(id, forceId, imgPath);
 
         playerNameText.text = player.pname;
 
