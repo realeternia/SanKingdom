@@ -7,7 +7,7 @@ using UnityEngine;
 public class Player
 {
     public string pname;
-    public int forceId;  //配置表id
+    public int forceId;  //配置表idP
 
     public int gold;
 
@@ -21,6 +21,8 @@ public class Player
 
     public CastleHUD castleHUD;
     public string imgPath;
+
+    public bool IsPlayer{ get { return GameManager.Instance.GetForce(forceId).isPlayer; } }
 
     public Player(int id)
     {

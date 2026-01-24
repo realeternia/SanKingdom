@@ -78,6 +78,11 @@ public class GameManager : MonoBehaviour
         return players.Find(p => p.forceId == forceId);
     }
 
+    public SaveForceData GetForce(int forceId)
+    {
+        return SaveData.forces.FirstOrDefault(f => f.forceId == forceId);
+    }
+
     public SaveCityData GetCity(int cityId)
     {
         return SaveData.cities.FirstOrDefault(c => c.cityId == cityId);

@@ -150,6 +150,13 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
     public void OnPieceClick(int pieceId)
     {
+        var cityData = GameManager.Instance.GetCity(pieceId);
+        if (!GameManager.Instance.GetForce(cityData.forceId).isPlayer)
+        {
+            cityDetail.gameObject.SetActive(false);
+            return;
+        }
+
         cityDetail.gameObject.SetActive(true);
         cityDetail.SetCityDetail(pieceId);
         // 高亮显示点击的地块
