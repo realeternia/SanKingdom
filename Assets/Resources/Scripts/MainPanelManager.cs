@@ -14,6 +14,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     public Button btnCity;
     public Button btnRoundNext;
     public TMP_Text textYear;
+    public TMP_Text textAiInfo;
     public GameObject bgPanel;
     private List<WorldPieceControl> worldPieces = new List<WorldPieceControl>();
 
@@ -153,6 +154,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         var cityData = GameManager.Instance.GetCity(pieceId);
         if (!GameManager.Instance.GetForce(cityData.forceId).isPlayer)
         {
+            cityDetail.SetCityDetail(pieceId); //可以看信息
             cityDetail.gameObject.SetActive(false);
             return;
         }
@@ -181,10 +183,24 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
             InitForceControls();
         }
-        if(name == "RoundChange")
+        else if(name == "RoundChange")
         {
             var nowRound = parm2;
             textYear.text = $"{nowRound / 12 + 190}年{nowRound % 12 + 1}月";
+        }
+        else if(name == "AICheck")
+        {
+            var playerName = parm1;
+            var round = parm2;
+            if (playerName == "")
+            {
+                textAiInfo.transform.parent.gameObject.SetActive(false);
+            }
+            else
+            {
+                textAiInfo.transform.parent.gameObject.SetActive(true);
+                textAiInfo.text = $"{playerName} 进行中";
+            }
         }
     }    
 }

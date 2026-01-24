@@ -155,6 +155,25 @@ public class GameManager : MonoBehaviour
     public void NextRound()
     {
         SaveData.round++;
+        StartCoroutine(NextRoundCoroutine());
+    }
+
+    private IEnumerator NextRoundCoroutine()
+    {
+        foreach (var player in players)
+        {
+            PanelManager.Instance.SendSignal("AICheck", player.pname, 0);
+
+            // 跳过玩家势力
+            if (player.IsPlayer)
+                continue;
+            AI.ExecuteAiActions(player);
+
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        PanelManager.Instance.SendSignal("AICheck", "", 0);
+
         PanelManager.Instance.SendSignal("RoundChange", "", SaveData.round);
         SaveToFile();
     }
