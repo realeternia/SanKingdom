@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
+using System;
 
 public class WorldPieceControl : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class WorldPieceControl : MonoBehaviour
     public Image pieceImage;
     public MainPanelManager worldManager;
     public TMP_Text pieceName;
+    public GameObject infoNode;
     // Start is called before the first frame update
     void Start()
     {
@@ -79,7 +81,7 @@ public class WorldPieceControl : MonoBehaviour
             Debug.LogError("pieceImage is null");
             return;
         }
-        
+
         // 获取force配置并检查是否为null
         var forceConfig = ForceConfig.GetConfig(forceId);
         if (forceConfig == null)
@@ -90,6 +92,35 @@ public class WorldPieceControl : MonoBehaviour
 
         Debug.Log($"设置颜色为{forceConfig.Color}");
         defaultColor = ColorUtility.TryParseHtmlString(forceConfig.Color, out var wColor) ? wColor : Color.white;
+
         pieceImage.color = defaultColor;
+        // 使用标准亮度公式：亮度 = 0.299 * R + 0.587 * G + 0.114 * B
+        float brightness = 0.299f * defaultColor.r + 0.587f * defaultColor.g + 0.114f * defaultColor.b;
+        if (brightness > 0.65f)
+            pieceName.color = new Color(0.4f, 0.4f, 0.4f, 1);
+        else
+            pieceName.color = Color.white;
+    }
+
+    public void SetInfos(Dictionary<string, int> infos)
+    {
+        // 在infoNode下挂多个Image，每个32x32，水平分开，path是Resources/Textures/Info/
+        int index = 0;
+        foreach (var info in infos)
+        {
+            //创建GameObject，并添加组件Image
+            var infoImage = new GameObject($"Info_{info.Key}");
+            infoImage.transform.SetParent(infoNode.transform, false);
+            var infoImageComp = infoImage.AddComponent<Image>();
+            infoImageComp.sprite = Resources.Load<Sprite>($"Textures/{info.Key}");
+            if(info.Value >= 3)
+                infoImageComp.color = Color.yellow;
+            else if(info.Value > 5)
+                infoImageComp.color = Color.red;
+
+            infoImageComp.transform.localPosition = new Vector3(index * 32 - infos.Count * 16, 0, 0);   
+            infoImageComp.rectTransform.sizeDelta = new Vector2(32, 32);
+            index++;
+        }
     }
 }

@@ -160,12 +160,12 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         var cityData = GameManager.Instance.GetCity(pieceId);
         if (!GameManager.Instance.GetForce(cityData.forceId).isPlayer)
         {
+            cityDetail.gameObject.SetActive(true);
             cityDetail.SetCityDetail(pieceId); //可以看信息
-            cityDetail.gameObject.SetActive(false);
+            btnCity.gameObject.SetActive(false);
             return;
         }
 
-        cityDetail.gameObject.SetActive(true);
         cityDetail.SetCityDetail(pieceId);
         // 高亮显示点击的地块
         var cityCfg = WorldConfig.GetConfig(pieceId);
@@ -193,6 +193,30 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         {
             var nowRound = parm2;
             textYear.text = $"{nowRound / 12 + 190}年{nowRound % 12 + 1}月";
+
+            for (int i = 0; i < worldPieces.Count; i++)
+            {
+                var piece = worldPieces[i];
+                var cityData = GameManager.Instance.GetCity(piece.pieceId);
+                List<string> infos = new List<string>();
+                foreach (var actionId in cityData.actions)
+                {
+                    var actionConfig = CityDevConfig.GetConfig(actionId);
+                    if (actionConfig.ActionName == "")
+                        continue;
+                    infos.Add(actionConfig.ActionName);
+                }
+                // 对infos计数排序，生成Dictionary<string, int>
+                var infosCount = new Dictionary<string, int>();
+                foreach (var info in infos)
+                {
+                    if (infosCount.ContainsKey(info))
+                        infosCount[info]++;
+                    else
+                        infosCount.Add(info, 1);
+                }
+                piece.SetInfos(infosCount);
+            }
         }
         else if(name == "AICheck")
         {

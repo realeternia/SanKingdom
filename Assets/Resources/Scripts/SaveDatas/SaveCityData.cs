@@ -23,6 +23,8 @@ public class SaveCityData
     [NonSerialized]
     private List<int> heroIds;
 
+    public List<int> actions = new List<int>();
+
     public void OnRound(int round)
     {
         if((round % 3) == 1) // 发钱
@@ -33,6 +35,7 @@ public class SaveCityData
         {
             food += archFood;
         }
+        actions.Clear();
     }
 
     public List<int> GetHeroList()

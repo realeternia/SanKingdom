@@ -177,11 +177,10 @@ public class GameManager : MonoBehaviour
                 continue;
             AI.ExecuteAiActions(player);
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.23f);
         }
 
         PanelManager.Instance.SendSignal("AICheck", "", 0);
-
         PanelManager.Instance.SendSignal("RoundChange", "", SaveData.round);
         SaveToFile();
         forbidPlayerAct = false;

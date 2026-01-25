@@ -169,6 +169,9 @@ public class Player
             attrOlds.Add(cityData.GetAttr(devConfig.DevAttr3));
         }
 
+        // 记录发展动作
+        cityData.actions.Add(devId);
+
         UpdateHeroesRound(heroList);
 
         return true;
