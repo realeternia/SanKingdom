@@ -72,26 +72,30 @@ public class CastleHUD : MonoBehaviour
             return;
         }
 
-        //owner.food如果变化不大，就return，降低开销
-        if (Mathf.Abs(owner.food - lastFood) < 0.1f)
-            return;
-        lastFood = owner.food;
+        var foodInfo = BattleManager.Instance.GetFoodInfo(owner.forceId);
 
-        if (owner.food < owner.maxFood * 0.3)
-            healthImg.color = Color.red;
+        //owner.food如果变化不大，就return，降低开销
+        if (Mathf.Abs(foodInfo.food - lastFood) < 0.1f)
+            return;
+        lastFood = foodInfo.food;
+
+        if (foodInfo.food < foodInfo.maxFood * 0.3)
+            foodImg.color = Color.red;
+        else
+            foodImg.color = Color.white;
 
         if (healthImg != null)
         {
-            healthImg.rectTransform.sizeDelta = new Vector2(owner.food * 90f / owner.maxFood, healthImg.rectTransform.sizeDelta.y);
+            healthImg.rectTransform.sizeDelta = new Vector2(foodInfo.food * 90f / foodInfo.maxFood, healthImg.rectTransform.sizeDelta.y);
         }
 
         // 当食物为0时，启动闪烁协程
-        if (owner.food == 0 && !isFlashing)
+        if (foodInfo.food == 0 && !isFlashing)
         {
             StartCoroutine(FlashFoodImage());
         }
         // 当食物不为0且正在闪烁时，停止闪烁
-        else if (owner.food > 0 && isFlashing)
+        else if (foodInfo.food > 0 && isFlashing)
         {
             StopCoroutine(FlashFoodImage());
             isFlashing = false;
@@ -110,7 +114,8 @@ public class CastleHUD : MonoBehaviour
         isFlashing = true;
         float flashSpeed = 0.5f; // 闪烁速度，单位：秒
 
-        while (owner != null && owner.food == 0 && foodImg != null)
+        var foodInfo = BattleManager.Instance.GetFoodInfo(owner.forceId);
+        while (owner != null && foodInfo.food == 0 && foodImg != null)
         {
             // 从白色渐变到红色
             float t = 0;

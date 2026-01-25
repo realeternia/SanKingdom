@@ -14,11 +14,12 @@ public class SkillHitFood : Skill
     {
         if (CheckBurst(defender))
         {
-            var sub = defender.GetPlayerInfo().SubFood(skillCfg.StrengthInt);
+            var foodInfo = BattleManager.Instance.GetFoodInfo(defender.forceId);
+            var sub = foodInfo.food -= skillCfg.StrengthInt;
             if (sub > 0)
             {
                 owner.PlayerAnim(skillCfg.Action);
-                owner.GetPlayerInfo().AddFood(sub);
+                foodInfo.food += sub;
                 BattleManager.Instance.AddBattleText("粮-" + sub.ToString(), defender.position, new UnityEngine.Vector2(0, -30), Color.red, 3);
                 BattleManager.Instance.AddBattleText("粮+" + sub.ToString(), owner.position, new UnityEngine.Vector2(0, 60), Color.green, 3);
             }

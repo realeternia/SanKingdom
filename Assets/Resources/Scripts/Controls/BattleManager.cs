@@ -7,6 +7,11 @@ using System.Linq;
 
 public class BattleManager : MonoBehaviour
 {
+    public class FoodInfo
+    {
+        public int food;
+        public int maxFood;
+    }
     public static BattleManager Instance;
 
     private GameObject mapObj;
@@ -14,7 +19,7 @@ public class BattleManager : MonoBehaviour
     public int gridCellSize = 3; // 每个格子的实际大小(米)
 
     private List<int> playerForceIdList = new List<int>();
-    private Dictionary<int, int> forceId2FoodDict = new Dictionary<int, int>();
+    private Dictionary<int, FoodInfo> forceId2FoodDict = new Dictionary<int, FoodInfo>();
     private int cityAtkId;
 
     private int cityDefId;
@@ -51,8 +56,8 @@ public class BattleManager : MonoBehaviour
         this.cityDefId = cityDefId;
 
         forceId2FoodDict.Clear(); //todo 这里需要传进来
-        forceId2FoodDict.Add(player1.forceId, 100);
-        forceId2FoodDict.Add(player2.forceId, 100);
+        forceId2FoodDict.Add(player1.forceId, new FoodInfo() { food = 100, maxFood = 100 });
+        forceId2FoodDict.Add(player2.forceId, new FoodInfo() { food = 100, maxFood = 100 });
 
         attackHeroIds.Clear();
         defHeroIds.Clear();
@@ -268,15 +273,15 @@ public class BattleManager : MonoBehaviour
         {
             var food = forceId2FoodDict[forceId];
             // 计算时间差，每5s，扣10点粮食
-            if(food < 10)
+            if(food.food < 10)
             {
                 var units = GetUnitsByForceId(forceId); //todo
                 foreach(var unit in units)
-                    unit.LackFood((float)(10 - food) / 10);
+                    unit.LackFood((float)(10 - food.food) / 10);
             }
-            forceId2FoodDict[forceId] -= 10;
-            if (forceId2FoodDict[forceId] < 0)
-                forceId2FoodDict[forceId] = 0;
+            forceId2FoodDict[forceId].food -= 10;
+            if (forceId2FoodDict[forceId].food < 0)
+                forceId2FoodDict[forceId].food = 0;
 
             // 更新上次扣除粮食的时间
             lastFoodDeductionTime = time;
@@ -548,6 +553,11 @@ public class BattleManager : MonoBehaviour
             }
         }
         return unitsInRange;
+    }
+
+    public FoodInfo GetFoodInfo(int forceId)
+    {
+        return forceId2FoodDict[forceId];
     }
 
     public void AddBattleText(string text, UnityEngine.Vector3 worldPos, UnityEngine.Vector2 speed, Color color, int duration)

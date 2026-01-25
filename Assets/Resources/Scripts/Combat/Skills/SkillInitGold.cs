@@ -12,10 +12,10 @@ public class SkillInitGold : Skill
     {
         EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
 
-        var goldAdd = Math.Max(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillAttrRate, skillCfg.StrengthInt);
-        owner.GetPlayerInfo().AddGold((int)goldAdd);
-        owner.PlayerAnim(skillCfg.Action);
+        // var goldAdd = Math.Max(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillAttrRate, skillCfg.StrengthInt);
+        // owner.GetPlayerInfo().AddGold((int)goldAdd);
+        // owner.PlayerAnim(skillCfg.Action);
 
-        BattleManager.Instance.AddBattleText(goldAdd.ToString() + "金", owner.position, new UnityEngine.Vector2(0, 60), Color.yellow, 2);
+        //BattleManager.Instance.AddBattleText(goldAdd.ToString() + "金", owner.position, new UnityEngine.Vector2(0, 60), Color.yellow, 2);
     }
 }
