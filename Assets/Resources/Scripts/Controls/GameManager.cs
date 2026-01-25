@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public SaveData SaveData;
 
     public List<Player> players = new List<Player>();
+    public bool forbidPlayerAct = false;
 
     private void Awake()
     {
@@ -155,6 +156,13 @@ public class GameManager : MonoBehaviour
     public void NextRound()
     {
         SaveData.round++;
+
+        foreach(var city in SaveData.cities)
+        {
+            city.OnRound(SaveData.round);
+        }
+
+        forbidPlayerAct = true;
         StartCoroutine(NextRoundCoroutine());
     }
 
@@ -176,6 +184,7 @@ public class GameManager : MonoBehaviour
 
         PanelManager.Instance.SendSignal("RoundChange", "", SaveData.round);
         SaveToFile();
+        forbidPlayerAct = false;
     }
 
     public bool IsGameSaveExist()

@@ -151,6 +151,12 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
     public void OnPieceClick(int pieceId)
     {
+        if (GameManager.Instance.forbidPlayerAct)
+        {
+            Debug.LogWarning("当前轮次玩家已操作，不能点击地图");
+            return;
+        }
+
         var cityData = GameManager.Instance.GetCity(pieceId);
         if (!GameManager.Instance.GetForce(cityData.forceId).isPlayer)
         {

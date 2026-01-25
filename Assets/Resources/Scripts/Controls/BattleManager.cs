@@ -13,7 +13,8 @@ public class BattleManager : MonoBehaviour
 
     public int gridCellSize = 3; // 每个格子的实际大小(米)
 
-    private List<int> playerList = new List<int>();
+    private List<int> playerForceIdList = new List<int>();
+    private Dictionary<int, int> forceId2FoodDict = new Dictionary<int, int>();
     private int cityAtkId;
 
     private int cityDefId;
@@ -28,6 +29,8 @@ public class BattleManager : MonoBehaviour
     private bool hasWin;    
     private int idCounter = 100;
     public float time;
+    private float lastFoodDeductionTime = 0;
+
     public bool quickMode = true;
     public bool showUI = true;
 
@@ -41,11 +44,15 @@ public class BattleManager : MonoBehaviour
 
     public void BattleBegin(Player player1, Player player2, int cityAtkId, int cityDefId, List<BattleCardData> cards1, List<BattleCardData> cards2)
     {
-        playerList.Clear();
-        playerList.Add(player1.forceId);
-        playerList.Add(player2.forceId);
+        playerForceIdList.Clear();
+        playerForceIdList.Add(player1.forceId);
+        playerForceIdList.Add(player2.forceId);
         this.cityAtkId = cityAtkId;
         this.cityDefId = cityDefId;
+
+        forceId2FoodDict.Clear(); //todo 这里需要传进来
+        forceId2FoodDict.Add(player1.forceId, 100);
+        forceId2FoodDict.Add(player2.forceId, 100);
 
         attackHeroIds.Clear();
         defHeroIds.Clear();
@@ -70,10 +77,6 @@ public class BattleManager : MonoBehaviour
         }
 
         BattleStatManager.Clear();
-
-        // 通知所有玩家开始战斗
-        player1.OnBattleBegin();
-        player2.OnBattleBegin();
 
         if (showUI)
         {
@@ -155,7 +158,7 @@ public class BattleManager : MonoBehaviour
 
         chess.hitEffect = soldierConfig.HitEffect;
         chess.soldierId = soldierId;
-        chess.playerId = p.forceId;
+        chess.forceId = p.forceId;
         chess.Init(p.forceId, posId, p.lineColor);
 
         chessList.Add(chess);
@@ -187,7 +190,7 @@ public class BattleManager : MonoBehaviour
             chess.viewObj = viewObj;
         chess.id = idCounter;
         chess.isHero = true;
-        chess.heroId = (int)heroConfig.Id;
+        chess.heroId = heroConfig.Id;
         chess.side = side;
         chess.chessName = heroConfig.Icon;
         chess.hitEffect = heroConfig.HitEffect;
@@ -237,11 +240,9 @@ public class BattleManager : MonoBehaviour
                 }
 
                 // 每个回合结束，玩家消耗食物
-                foreach (var forceId in playerList)
+                foreach (var forceId in playerForceIdList)
                 {
-                    var player = GameManager.Instance.GetPlayer(forceId);
-                    if (player != null)
-                        player.RoundFoodCost();
+                    RoundFoodCost(forceId);
                 }
             }
             //    sw.Stop();
@@ -257,8 +258,30 @@ public class BattleManager : MonoBehaviour
         }
 
         if(showUI)
-            battleUIManager.OnBattleEnd(playerList, hasWin);
+            battleUIManager.OnBattleEnd(playerForceIdList, hasWin);
     }
+
+    private void RoundFoodCost(int forceId)
+    {
+        // 粮食扣除逻辑
+        if (time - lastFoodDeductionTime >= 5f) // 每5秒扣除一次粮食
+        {
+            var food = forceId2FoodDict[forceId];
+            // 计算时间差，每5s，扣10点粮食
+            if(food < 10)
+            {
+                var units = GetUnitsByForceId(forceId); //todo
+                foreach(var unit in units)
+                    unit.LackFood((float)(10 - food) / 10);
+            }
+            forceId2FoodDict[forceId] -= 10;
+            if (forceId2FoodDict[forceId] < 0)
+                forceId2FoodDict[forceId] = 0;
+
+            // 更新上次扣除粮食的时间
+            lastFoodDeductionTime = time;
+        }
+    }    
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess, string effectName)
     {
@@ -380,7 +403,7 @@ public class BattleManager : MonoBehaviour
 
             if (hasWin)
             {
-                GameManager.Instance.GetCity(cityDefId).Occupy(playerList[0], attackHeroIds, playerList[1], defHeroIds);
+                GameManager.Instance.GetCity(cityDefId).Occupy(playerForceIdList[0], attackHeroIds, playerForceIdList[1], defHeroIds);
                 GameManager.Instance.GetCity(cityAtkId).RecalculateHeros(); //因为有一帮人出去了
             }
         }
@@ -473,6 +496,20 @@ public class BattleManager : MonoBehaviour
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
             {
                 if (chessComponent.side == mySide)
+                    unitsInRange.Add(chessComponent);
+            }
+        }
+        return unitsInRange;
+    }
+    
+    public List<Chess> GetUnitsByForceId(int forceId)
+    {
+        List<Chess> unitsInRange = new List<Chess>();
+        foreach (var chessComponent in chessList)
+        {
+            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
+            {
+                if (chessComponent.forceId == forceId)
                     unitsInRange.Add(chessComponent);
             }
         }

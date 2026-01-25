@@ -59,7 +59,7 @@ public class ChessViewObj : MonoBehaviour
             }
 
             materialFlag = new Material(rendFlag.sharedMaterial);
-            var playerInfo = GameManager.Instance.GetPlayer(chessUnit.playerId);
+            var playerInfo = GameManager.Instance.GetPlayer(chessUnit.forceId);
             materialFlag.mainTexture = Resources.Load<Texture>(playerInfo.imgPath);
             rendFlag.material = materialFlag;
         }

@@ -23,6 +23,18 @@ public class SaveCityData
     [NonSerialized]
     private List<int> heroIds;
 
+    public void OnRound(int round)
+    {
+        if((round % 3) == 1) // 发钱
+        {
+            gold += archGold;
+        }
+        else if((round % 12) == 7) // 发粮食
+        {
+            food += archFood;
+        }
+    }
+
     public List<int> GetHeroList()
     {
         if(heroIds != null)

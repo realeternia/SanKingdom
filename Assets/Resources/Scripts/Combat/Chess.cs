@@ -11,7 +11,7 @@ public class Chess
 {
     public ChessViewObj viewObj;
     public int id;
-    public int playerId;
+    public int forceId;
 
     public int maxHp = 100;  // 最大生命值
 
@@ -78,7 +78,7 @@ public class Chess
 
     public void Init(int forceId, int posId, Color c)
     {
-        playerId = forceId;
+        this.forceId = forceId;
         pos = posId;
 
         hp = maxHp;
@@ -456,10 +456,10 @@ public class Chess
 
             victim.hp -= damage;
             if (victim != this)
-                victim.lastDamagedPlayerId = playerId;
+                victim.lastDamagedPlayerId = forceId;
             // 记录战斗统计
             if (isHero)
-                BattleStatManager.AddBattleStat(playerId, heroId, damage, true, victim.isHero);
+                BattleStatManager.AddBattleStat(forceId, heroId, damage, true, victim.isHero);
 
             SkillManager.OnAttack(this, victim, damType, damage);
         }
@@ -488,11 +488,11 @@ public class Chess
 
         hp -= damage;
         if(caster != this)
-            lastDamagedPlayerId = caster.playerId;
+            lastDamagedPlayerId = caster.forceId;
 
         // 记录战斗统计
         if(caster.isHero)
-            BattleStatManager.AddBattleStat(caster.playerId, caster.heroId, damage, false, isHero);            
+            BattleStatManager.AddBattleStat(caster.forceId, caster.heroId, damage, false, isHero);            
 
         OnHpChanged();
     }
@@ -590,7 +590,7 @@ public class Chess
 
     public Player GetPlayerInfo()
     {
-        return GameManager.Instance.GetPlayer(playerId);
+        return GameManager.Instance.GetPlayer(forceId);
     }
 
     public bool IsInFight()
