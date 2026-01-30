@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CommonConfig;
 
 public class PanelManager : MonoBehaviour
 {
@@ -32,6 +33,12 @@ public class PanelManager : MonoBehaviour
         ShowPick();
     }
  
+    public void SwitchBGM()
+    {
+        var round = GameManager.Instance.SaveData.round;
+        var seasonCfg = SeasonConfig.GetConfig((round % 12) + 1);
+        BGMPlayer.Instance.PlayBGM("BGMs/" + seasonCfg.BGM);
+    }
 
     public void ShowWorld()
     {
@@ -39,8 +46,7 @@ public class PanelManager : MonoBehaviour
 
         ChangePanelCount(worldPanel, true);
 
-        var roll = UnityEngine.Random.Range(0, 3);
-        BGMPlayer.Instance.PlayBGM(roll == 0 ? "BGMs/chun" : (roll == 1 ? "BGMs/xia" : "BGMs/qiu"));                
+        SwitchBGM();
     }
 
     public void HideWorld()

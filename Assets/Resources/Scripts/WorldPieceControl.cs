@@ -104,7 +104,11 @@ public class WorldPieceControl : MonoBehaviour
 
     public void SetInfos(Dictionary<string, int> infos)
     {
-        // 在infoNode下挂多个Image，每个32x32，水平分开，path是Resources/Textures/Info/
+        // 先清理掉老的infoImage
+        foreach (Transform child in infoNode.transform)
+        {
+            Destroy(child.gameObject);
+        }
         int index = 0;
         foreach (var info in infos)
         {
@@ -118,7 +122,7 @@ public class WorldPieceControl : MonoBehaviour
             else if(info.Value > 5)
                 infoImageComp.color = Color.red;
 
-            infoImageComp.transform.localPosition = new Vector3(index * 32 - infos.Count * 16, 0, 0);   
+            infoImageComp.transform.localPosition = new Vector3(index * 32 + 16 - infos.Count * 16, 0, 0);   
             infoImageComp.rectTransform.sizeDelta = new Vector2(32, 32);
             index++;
         }

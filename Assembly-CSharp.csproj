@@ -70,6 +70,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamageAddRate.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShieldValue.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedShadow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitFood.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleHeroInfo.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Missile.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitSoldierShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitArea.cs" />
+    <Compile Include="Assets\Resources\Scripts\PopArmySetManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\JobConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\RankPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
@@ -160,6 +162,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDamageReal.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\SeasonConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\PlayerBook.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitAround.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXLightFade.cs" />
@@ -167,6 +170,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddCrit.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ForceConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitSoldierUp.cs" />
+    <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAttrZhiheng.cs" />
@@ -179,6 +183,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackSpinAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAntiShield.cs" />
     <Compile Include="Assets\Resources\Scripts\SelectHeroControl.cs" />
+    <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PlayerInfoControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Effect\GlowBeamController.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveCityData.cs" />
@@ -188,6 +193,7 @@
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSuck.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\PlayerConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\SelectHeroArmyControl.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\MapConfig.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillBuffTieqi.cs" />

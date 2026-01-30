@@ -26,12 +26,12 @@ public class BGMPlayer : MonoBehaviour
             {
                 audioSource.clip = lastBGMClip;
             }
-        }
 
-        if (audioSource.clip != null)
-        {
-            audioSource.Stop();
-            audioSource.Play();
+            if (audioSource.clip != null)
+            {
+                audioSource.Stop();
+                audioSource.Play();
+            }
         }
     }
 

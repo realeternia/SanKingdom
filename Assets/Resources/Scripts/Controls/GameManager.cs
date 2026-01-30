@@ -184,6 +184,7 @@ public class GameManager : MonoBehaviour
         PanelManager.Instance.SendSignal("RoundChange", "", SaveData.round);
         SaveToFile();
         forbidPlayerAct = false;
+        PanelManager.Instance.SwitchBGM();
     }
 
     public bool IsGameSaveExist()

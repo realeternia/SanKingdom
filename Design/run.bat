@@ -14,3 +14,4 @@ copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\ForceConfig_s.cs" "D:\U3dPrj\SanK
 copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\CityBuildingConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
 copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\CityDevConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
 copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\CityAttrConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
+copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\SeasonConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
