@@ -30,9 +30,10 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
         btnCity.gameObject.SetActive(false);
         var nowRound = GameManager.Instance.SaveData.round;
-
-        var seasonCfg = SeasonConfig.GetConfig((nowRound % 12) + 1);
-        textYear.text = $"{nowRound / 12 + 185}年{seasonCfg.Name}";
+        
+        var seasonId = GameManager.Instance.SeasonId;
+        var seasonCfg = SeasonConfig.GetConfig(seasonId);
+        textYear.text = $"{nowRound / 36 + 185}年{seasonCfg.Name}";
 
         btnRank.onClick.AddListener(() =>
         {
@@ -194,8 +195,9 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         else if(name == "RoundChange")
         {
             var nowRound = parm2;
-            var seasonCfg = SeasonConfig.GetConfig((nowRound % 12) + 1);
-            textYear.text = $"{nowRound / 12 + 185}年{seasonCfg.Name}";
+            var seasonId = GameManager.Instance.SeasonId;
+            var seasonCfg = SeasonConfig.GetConfig(seasonId);
+            textYear.text = $"{nowRound / 36 + 185}年{seasonCfg.Name}";
 
             for (int i = 0; i < worldPieces.Count; i++)
             {

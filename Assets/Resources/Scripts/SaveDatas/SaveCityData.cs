@@ -25,16 +25,13 @@ public class SaveCityData
     [NonSerialized]
     public Dictionary<int, int> actions = new Dictionary<int, int>();
 
-    public void OnRound(int round)
+    public void OnRound()
     {
-        if((round % 3) == 1) // 发钱
-        {
-            gold += archGold;
-        }
-        else if((round % 12) == 7) // 发粮食
-        {
-            food += archFood;
-        }
+        var seasonCfg = SeasonConfig.GetConfig(GameManager.Instance.SeasonId);
+        if(seasonCfg.AddGold != 0) // 发钱
+            gold += (int)(archGold + seasonCfg.AddGold);
+        else if(seasonCfg.AddFood != 0) // 发粮食
+            food += (int)(archFood * seasonCfg.AddFood);
         actions.Clear();
     }
 

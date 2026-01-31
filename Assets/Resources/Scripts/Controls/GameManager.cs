@@ -159,11 +159,19 @@ public class GameManager : MonoBehaviour
 
         foreach(var city in SaveData.cities)
         {
-            city.OnRound(SaveData.round);
+            city.OnRound();
         }
 
         forbidPlayerAct = true;
         StartCoroutine(NextRoundCoroutine());
+    }
+
+    public int SeasonId
+    {
+        get
+        {
+            return (SaveData.round % 36) + 1;
+        }
     }
 
     private IEnumerator NextRoundCoroutine()
