@@ -22,8 +22,8 @@ public class SaveCityData
     private int ownerHeroId;
     [NonSerialized]
     private List<int> heroIds;
-
-    public List<int> actions = new List<int>();
+    [NonSerialized]
+    public Dictionary<int, int> actions = new Dictionary<int, int>();
 
     public void OnRound(int round)
     {
@@ -36,6 +36,14 @@ public class SaveCityData
             food += archFood;
         }
         actions.Clear();
+    }
+
+    public void AddAction(int devId, int count)
+    {
+        if(actions.ContainsKey(devId))
+            actions[devId] += count;
+        else
+            actions.Add(devId, count);
     }
 
     public List<int> GetHeroList()

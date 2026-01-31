@@ -117,10 +117,10 @@ public class WorldPieceControl : MonoBehaviour
             infoImage.transform.SetParent(infoNode.transform, false);
             var infoImageComp = infoImage.AddComponent<Image>();
             infoImageComp.sprite = Resources.Load<Sprite>($"Textures/{info.Key}");
-            if(info.Value >= 3)
-                infoImageComp.color = Color.yellow;
-            else if(info.Value > 5)
+            if(info.Value > 5)
                 infoImageComp.color = Color.red;
+            else if(info.Value >= 3)
+                infoImageComp.color = Color.yellow;
 
             infoImageComp.transform.localPosition = new Vector3(index * 32 + 16 - infos.Count * 16, 0, 0);   
             infoImageComp.rectTransform.sizeDelta = new Vector2(32, 32);

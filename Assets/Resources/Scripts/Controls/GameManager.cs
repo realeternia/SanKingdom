@@ -170,7 +170,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (var player in players)
         {
-            PanelManager.Instance.SendSignal("AICheck", player.pname, 0);
+            PanelManager.Instance.SendSignal("AICheck", player.pname, player.forceId);
 
             // 跳过玩家势力
             if (player.IsPlayer)

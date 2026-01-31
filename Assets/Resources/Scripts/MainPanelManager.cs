@@ -201,22 +201,14 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             {
                 var piece = worldPieces[i];
                 var cityData = GameManager.Instance.GetCity(piece.pieceId);
-                List<string> infos = new List<string>();
+                var infosCount = new Dictionary<string, int>();
                 foreach (var actionId in cityData.actions)
                 {
-                    var actionConfig = CityDevConfig.GetConfig(actionId);
+                    var actionConfig = CityDevConfig.GetConfig(actionId.Key);
                     if (actionConfig.ActionName == "")
                         continue;
-                    infos.Add(actionConfig.ActionName);
-                }
-                // 对infos计数排序，生成Dictionary<string, int>
-                var infosCount = new Dictionary<string, int>();
-                foreach (var info in infos)
-                {
-                    if (infosCount.ContainsKey(info))
-                        infosCount[info]++;
-                    else
-                        infosCount.Add(info, 1);
+
+                    infosCount[actionConfig.ActionName] = actionId.Value;
                 }
                 piece.SetInfos(infosCount);
             }
@@ -224,7 +216,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         else if(name == "AICheck")
         {
             var playerName = parm1;
-            var round = parm2;
+            var forceId = parm2;
             if (playerName == "")
             {
                 textAiInfo.transform.parent.gameObject.SetActive(false);
@@ -232,7 +224,9 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             else
             {
                 textAiInfo.transform.parent.gameObject.SetActive(true);
-                textAiInfo.text = $"{playerName} 进行中";
+                var color = ForceConfig.GetConfig(forceId).Color;
+                //把color加入富文本中
+                textAiInfo.text = $"<color={color}>{playerName}</color> 进行中";
             }
         }
     }    

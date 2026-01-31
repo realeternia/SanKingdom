@@ -79,7 +79,7 @@ public static class AI
         // 按英雄循环，确保每个英雄都分配任务
         foreach (int heroId in availableHeroes)
         {
-            int devId;
+            int devId = 0;
             
             // 检查城市金钱是否不足500
             if (city.gold < 500)
@@ -97,19 +97,11 @@ public static class AI
                     devId = availableDevIds[randomIndex];
                     Debug.Log($"AI城市 {cityId} 金钱充足，为英雄 {heroId} 分配随机任务 {devId}");
                 }
-                else
-                {
-                    // 没有可用任务，跳过
-                    continue;
-                }
             }
-            
-            // 执行城市发展任务
-            List<string> attrs;
-            List<int> attrOlds;
-            List<int> results;
-            
-            player.ExecuteCityDev(cityId, devId, new int[] { heroId }, out attrs, out attrOlds, out results);
+  
+            if(devId == 0)
+                continue;
+            player.ExecuteCityDev(cityId, devId, new int[] { heroId }, out _, out _, out _);
         }
     }
 }

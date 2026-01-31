@@ -170,7 +170,7 @@ public class Player
         }
 
         // 记录发展动作
-        cityData.actions.Add(devId);
+        cityData.AddAction(devId, heroList.Length);
 
         UpdateHeroesRound(heroList);
 
