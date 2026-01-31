@@ -195,6 +195,7 @@ public class SaveCityData
                     hero.cityId = destCity.cityId;
                 }
             }
+            destCity.RecalculateHeros();
         }
         else
         {
