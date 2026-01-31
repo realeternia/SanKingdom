@@ -16,6 +16,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     public TMP_Text textYear;
     public TMP_Text textAiInfo;
     public GameObject bgPanel;
+    public VideoPanelManager videoPanelManager;
     private List<WorldPieceControl> worldPieces = new List<WorldPieceControl>();
 
     // Start is called before the first frame update
@@ -102,8 +103,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         // 遍历所有地图配置
         foreach (var worldConfig in WorldConfig.ConfigList)
         {
-            try
-            {
+            // try
+            // {
                 // 构建图片路径（Resources/Textures/Maps/下的图片）
                 string texturePath = "Textures/Maps/" + worldConfig.Name;
                 
@@ -144,11 +145,11 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 worldPieces.Add(pieceControl);
                 
                 Debug.Log($"成功加载UI地图: {worldConfig.Cname} ({worldConfig.Name})");
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"加载UI地图 {worldConfig.Cname} 时出错: {e.Message}");
-            }
+            // }
+            // catch (System.Exception e)
+            // {
+            //     Debug.LogError($"加载UI地图 {worldConfig.Cname} 时出错: {e.Message}");
+            // }
         }
     }
 
@@ -214,6 +215,9 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 }
                 piece.SetInfos(infosCount);
             }
+
+            if(seasonCfg.Video != "")
+                videoPanelManager.Play(seasonCfg.Video);
         }
         else if(name == "AICheck")
         {

@@ -120,7 +120,7 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[21001] = new CityDevConfig(21001, "farm", "发展农业", "发展农业,提升粮食产量", "CityDevNormal", false, "farm", 300, 3, "ArchFood", new int[]{4,10}, "ArchPeople", new int[]{300,800}, "", null, new string[]{"Fair","Str"}, "dev", "harve2.mp4");
+            config[21001] = new CityDevConfig(21001, "farm", "发展农业", "发展农业,提升粮食产量", "CityDevNormal", false, "farm", 300, 3, "ArchFood", new int[]{4,10}, "ArchPeople", new int[]{300,800}, "", null, new string[]{"Fair","Str"}, "dev", "farm.mp4");
             config[21002] = new CityDevConfig(21002, "market", "发展商业", "发展商业,提升金钱收入", "CityDevNormal", false, "market", 300, 3, "ArchGold", new int[]{4,10}, "ArchPeople", new int[]{300,800}, "", null, new string[]{"Fair","Inte"}, "dev", "shop3.mp4");
             config[21003] = new CityDevConfig(21003, "gate", "加固城墙", "提升城防", "CityDevNormal", false, "wall", 200, 3, "Wall", new int[]{6,15}, "Secure", new int[]{1,3}, "", null, new string[]{"Str"}, "def", "fix3.mp4");
             config[21004] = new CityDevConfig(21004, "market", "街道巡逻", "提升治安", "CityDevNormal", false, "secure", 150, 3, "Secure", new int[]{2,6}, "ArchPeople", new int[]{200,500}, "", null, new string[]{"Str"}, "dev", "secure2.mp4");
