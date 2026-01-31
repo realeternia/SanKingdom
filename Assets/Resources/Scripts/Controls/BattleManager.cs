@@ -340,14 +340,14 @@ public class BattleManager : MonoBehaviour
         }
         else
         { 
-            var ckSize = 10/2;
+            var ckSize = 7.5f;
             var findInRange = false;
             foreach(var ckUnit in chessList)
             {
                 if(ckUnit == unit)
                     continue;
                 
-                if(Math.Abs(ckUnit.position.x - targetPosition.x) < ckSize && Math.Abs(ckUnit.position.z - targetPosition.z) < ckSize)
+                if(Math.Abs(ckUnit.position.x - targetPosition.x) + Math.Abs(ckUnit.position.z - targetPosition.z) < ckSize)
                 {
                     findInRange = true;
                     break;

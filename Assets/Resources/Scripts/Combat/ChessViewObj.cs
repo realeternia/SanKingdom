@@ -16,6 +16,7 @@ public class ChessViewObj : MonoBehaviour
     private Coroutine colorEffectCoroutine; // 协程引用，用于追踪颜色效果协程
 
     public int lockTargetId;
+    public int moveFailCount;
 
     // Start is called before the first frame update
     void Start()

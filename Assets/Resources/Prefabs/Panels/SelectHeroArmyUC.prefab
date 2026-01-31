@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: 7653126686667376547}
   - component: {fileID: 130449415338595836}
   m_Layer: 5
-  m_Name: Image (5)
+  m_Name: Image (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -650,10 +650,10 @@ MonoBehaviour:
   - {fileID: 7830770702351707245}
   - {fileID: 6653159146684923873}
   - {fileID: 1074454897583957773}
-  - {fileID: 130449415338595836}
-  - {fileID: 3550172643140092934}
   - {fileID: 3108341869250363635}
+  - {fileID: 130449415338595836}
   - {fileID: 4409333761775660520}
+  - {fileID: 3550172643140092934}
   - {fileID: 7405947840506651910}
   heroIds: 
   confirmButton: {fileID: 0}
@@ -1379,10 +1379,10 @@ RectTransform:
   - {fileID: 1995574757095153625}
   - {fileID: 6537071334403987410}
   - {fileID: 3340870928822888697}
-  - {fileID: 7737240606234404044}
-  - {fileID: 8514574435192238522}
   - {fileID: 8737085242234744985}
+  - {fileID: 7737240606234404044}
   - {fileID: 5328229813115219856}
+  - {fileID: 8514574435192238522}
   - {fileID: 449301430112338952}
   m_Father: {fileID: 676461227284239772}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1563,7 +1563,7 @@ GameObject:
   - component: {fileID: 7733494905219214761}
   - component: {fileID: 4409333761775660520}
   m_Layer: 5
-  m_Name: Image (8)
+  m_Name: Image (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1639,7 +1639,7 @@ GameObject:
   - component: {fileID: 3617866179885735785}
   - component: {fileID: 3108341869250363635}
   m_Layer: 5
-  m_Name: Image (7)
+  m_Name: Image (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1715,7 +1715,7 @@ GameObject:
   - component: {fileID: 4978042762534792505}
   - component: {fileID: 3550172643140092934}
   m_Layer: 5
-  m_Name: Image (6)
+  m_Name: Image (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

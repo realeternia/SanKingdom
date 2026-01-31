@@ -259,6 +259,7 @@ public class Chess
         targetChess = scoredTargets[0].chess;
         if(viewObj != null)
             viewObj.lockTargetId = targetChess.id;
+        moveDest = null; // 重置移动目标
     }
 
     // 计算目标分数
@@ -266,17 +267,23 @@ public class Chess
     {
         float score = target.isHero ? 10 : 30;
 
-        // 距离权重（距离越近分数越高）
-    //    score += 100f / (distance + 1f);  // 避免除以0
-
         // 添加最大属性差作为积分项（权重可根据游戏平衡调整）
-        score += CalculateDamage(this, target, out var type) / 2;
-        score += (level - target.level) * 7f;
+        if (distance < attackRange * 2)
+        {
+            score += 30 * UnityEngine.Random.value;
 
-        // 生命值权重（生命值越低分数越高）
-        var targetHpRate = (float)target.hp / target.maxHp;
-        if (targetHpRate < 0.5f)
-            score += (0.5f - targetHpRate) * 100f + 10;
+            score += CalculateDamage(this, target, out var type) / 2;
+            score += (level - target.level) * 7f;
+
+            // 生命值权重（生命值越低分数越高）
+            var targetHpRate = (float)target.hp / target.maxHp;
+            if (targetHpRate < 0.5f)
+                score += (0.5f - targetHpRate) * 100f + 10;
+        }
+        else
+        {
+             score += 100f / (distance + 1f);  // 避免除以0
+        }
 
         return score;
     }
@@ -314,7 +321,6 @@ public class Chess
             // 检查攻击冷却
             if (attackPoint >= 2f) //集气2s
             {
-            //    PlayerAnim("jumpspin");
                 attackPoint = 0;
                 SkillManager.AimTarget(this, targetChess);
                 if (attackRange >= 20)
@@ -333,10 +339,9 @@ public class Chess
         if (noMoveCount > 0 || moveSpeed == 0)
             return;
 
-        var dis = BattleManager.Instance.GetRange(position, targetChess.position);
-
         if (moveFailCount == 0)
         {
+            var dis = BattleManager.Instance.GetRange(position, targetChess.position);
             if (moveDest == null || dis > 40)
                 moveDest = targetChess.position;
 
@@ -353,12 +358,21 @@ public class Chess
             // 尝试锁定目标格子
             if (BattleManager.Instance.MoveTo(this, nextPosition, false))
             {
-                moveFailCount = 0; // 重置失败计数器
+              //  UnityEngine.Debug.LogWarning($"MoveTo recover id: {id}, pos: {position}, dest: {nextPosition} { moveDest.Value}, {moveSpeed * deltaTime}");
+                if (moveFailCount > 0)
+                {
+                    moveFailCount = 0; // 重置失败计数器
+                    if (viewObj != null)
+                        viewObj.moveFailCount = 0;
+                }
             }
             else
             {
+                UnityEngine.Debug.LogWarning($"MoveTo failed id: {id}, pos: {position}, dest: {moveDest.Value}");
                 // 锁定失败，不动
                 moveFailCount++;
+                if (viewObj != null)
+                    viewObj.moveFailCount++;
 
                 // 根据连续失败次数尝试不同角度找路
                 // 如果已经在使用偏移路径或者失败次数达到阈值，则继续使用偏移
