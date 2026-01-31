@@ -115,6 +115,10 @@ public class BattleManager : MonoBehaviour
             battleUIManager.CreateCastleHUD(player2, GetSpawnPosition(2, 5));
         }
 
+        //对cards1和card2都按HeroConfig的Range排序，确保远程在后面
+        cards1.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
+        cards2.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
+
         for (int i = 0; i < Math.Min(cards1.Count, 12); i++)
             SpawnHerosForRegion(player1, i, GetSpawnPosition(1, i), cards1[i], 1);
 
