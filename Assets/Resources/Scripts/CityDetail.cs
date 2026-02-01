@@ -32,11 +32,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         textComponent.color = Color.gray;
         if (cfg.ValLow != 0 && val < cfg.ValLow)
         {
-            textComponent.color = Color.yellow;
-        }
-        if (cfg.ValLow2 != 0 && val < cfg.ValLow2)
-        {
-            textComponent.color = Color.green;
+            textComponent.color = Color.red;
         }
     }
 
@@ -85,8 +81,6 @@ public class CityDetail : MonoBehaviour, IPanelEvent
                 img.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
             }
         }
-
-
 
     }
 

@@ -46,13 +46,26 @@ public static class AI
     private static List<int> GetAvailableDevIds(int cityId)
     {
         List<int> availableDevIds = new List<int>();
+        var cityData = GameManager.Instance.GetCity(cityId);
         
         // 遍历所有发展配置，筛选出可执行的任务
         foreach (var devConfig in CityDevConfig.ConfigList)
         {
             if(devConfig.Prefab == "CityDevBattle")
                 continue;
-            // 这里可以添加更复杂的筛选条件，比如根据城市属性、资源等
+            
+            // 检查发展任务的主要属性是否已达到最大值
+            if (devConfig.Attrs.Length > 0)
+            {
+                string mainAttr = devConfig.Attrs[0];
+                var attrConfig = CityAttrConfig.GetConfigByname(mainAttr);
+                int currentVal = cityData.GetAttr(mainAttr);
+                if (currentVal >= attrConfig.ValMax)
+                {
+                    continue;
+                }
+            }
+            
             availableDevIds.Add(devConfig.Id);
         }
         

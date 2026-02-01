@@ -161,16 +161,16 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             return;
         }
 
+        cityDetail.gameObject.SetActive(true);
+        cityDetail.SetCityDetail(pieceId); //可以看信息
+
         var cityData = GameManager.Instance.GetCity(pieceId);
         if (!GameManager.Instance.GetForce(cityData.forceId).isPlayer)
         {
-            cityDetail.gameObject.SetActive(true);
-            cityDetail.SetCityDetail(pieceId); //可以看信息
             btnCity.gameObject.SetActive(false);
             return;
         }
 
-        cityDetail.SetCityDetail(pieceId);
         // 高亮显示点击的地块
         var cityCfg = WorldConfig.GetConfig(pieceId);
         // foreach (var piece in worldPieces)

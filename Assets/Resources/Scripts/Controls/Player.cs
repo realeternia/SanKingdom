@@ -75,6 +75,18 @@ public class Player
         var devConfig = CityDevConfig.GetConfig(devId);
         var cityData = GameManager.Instance.GetCity(cityId);
         
+        // 检查发展任务的主要属性是否已达到最大值
+        if (devConfig.Attrs.Length > 0)
+        {
+            string mainAttr = devConfig.Attrs[0];
+            var attrConfig = CityAttrConfig.GetConfigByname(mainAttr);
+            int currentVal = cityData.GetAttr(mainAttr);
+            if (currentVal >= attrConfig.ValMax)
+            {
+                return false;
+            }
+        }
+        
         // 检查黄金是否足够
         if (cityData.gold < devConfig.GoldCost * heroList.Length)
         {

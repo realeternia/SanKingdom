@@ -31,7 +31,7 @@ public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
             var heroList = heroSelect.heroIds;
             if(heroList.Length <= 0)
             {
-                SystemTip.Instance.ShowTip("请选择英雄");
+                SystemTip.Instance.ShowTip("请选择至少一个英雄");
                 return;
             }
             OnRun(devId, heroList);
@@ -100,7 +100,11 @@ public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
         List<int> results;
 
         var cityData = GameManager.Instance.GetCity(cityId);
-        cityData.GetPlayer().ExecuteCityDev(cityId, devId, heroList, out attrs, out attrOlds, out results);
+        if(!cityData.GetPlayer().ExecuteCityDev(cityId, devId, heroList, out attrs, out attrOlds, out results))
+        {
+            SystemTip.Instance.ShowTip("发展失败,属性已满");
+            return;
+        }
         var devConfig = CityDevConfig.GetConfig(devId);
         PanelManager.Instance.ShowPopResultPanel(CityDevConfig.GetConfig(devId).Cname, attrs, attrOlds, results, null, devConfig.Mp4);
     }

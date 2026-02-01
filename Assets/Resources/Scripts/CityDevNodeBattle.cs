@@ -27,8 +27,16 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
     {
         runButton.onClick.AddListener(() =>
         {
-            if (selectedCityId == 0 || heroSelect.heroIds.Length <= 0)
+            if (selectedCityId == 0)
+            {
+                SystemTip.Instance.ShowTip("请选择目标城市");
                 return;
+            }
+            if (heroSelect.heroIds.Length <= 0)
+            {
+                SystemTip.Instance.ShowTip("请选择至少一个英雄");
+                return;
+            }
 
             var devConfig = CityDevConfig.GetConfig(devId);
             PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, new List<string>(), new List<int>(), new List<int>(), () =>
@@ -68,7 +76,6 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         this.cityId = cityId;
         this.devId = devId;
         var devCfg = CityDevConfig.GetConfig(devId);
-        var cityData = GameManager.Instance.GetCity(cityId);
 
         attrDesText.text = devCfg.Des;
 
@@ -79,6 +86,7 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
     {
         if(selectedCityId == 0)
         {
+            SystemTip.Instance.ShowTip("请选择目标城市");
             return;
         }
 

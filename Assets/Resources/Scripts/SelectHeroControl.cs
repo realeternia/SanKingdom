@@ -34,7 +34,10 @@ public class SelectHeroControl : MonoBehaviour
             }
 
             if (maxHeroCount == 0)
+            {
+                SystemTip.Instance.ShowTip("金币不足,无法选择英雄");
                 return;
+            }
             
             PanelManager.Instance.ShowPopHeroSelectPanel(cityId, maxHeroCount, heroList, heroIds, attrs, (selectedHeroIds) =>
             {
