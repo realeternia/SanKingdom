@@ -184,6 +184,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAntiShield.cs" />
     <Compile Include="Assets\Resources\Scripts\SelectHeroControl.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\SystemTip.cs" />
     <Compile Include="Assets\Resources\Scripts\PlayerInfoControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Effect\GlowBeamController.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveCityData.cs" />

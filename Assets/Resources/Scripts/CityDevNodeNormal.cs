@@ -30,7 +30,10 @@ public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
         {
             var heroList = heroSelect.heroIds;
             if(heroList.Length <= 0)
+            {
+                SystemTip.Instance.ShowTip("请选择英雄");
                 return;
+            }
             OnRun(devId, heroList);
         });
         
