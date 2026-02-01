@@ -23,7 +23,20 @@ public class SelectHeroControl : MonoBehaviour
             int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList().ToArray();
             var devCfg = CityDevConfig.GetConfig(devId);
             string[] attrs = devCfg.Attrs;
-            PanelManager.Instance.ShowPopHeroSelectPanel(cityId, devCfg.HeroCount, heroList, heroIds, attrs, (selectedHeroIds) =>
+            
+            // 计算最大可选择的英雄数量，不超过经济能力
+            int cityGold = GameManager.Instance.GetCity(cityId).gold;
+            int singleCost = devCfg.GoldCost;
+            int maxHeroCount = devCfg.HeroCount;
+            if (singleCost > 0)
+            {
+                maxHeroCount = System.Math.Min(maxHeroCount, cityGold / singleCost);
+            }
+
+            if (maxHeroCount == 0)
+                return;
+            
+            PanelManager.Instance.ShowPopHeroSelectPanel(cityId, maxHeroCount, heroList, heroIds, attrs, (selectedHeroIds) =>
             {
                 heroIds = selectedHeroIds.ToArray();
                 for (int i = 0; i < heroHeads.Length; i++)

@@ -71,6 +71,12 @@ public class WorldPieceControl : MonoBehaviour
 
         // 设置名称
         pieceName.text = pieceCfg.Cname;
+        if(pieceCfg.MiniMapOffsets != null && pieceCfg.MiniMapOffsets.Length >= 2)
+        {
+            // 修改pieceName和infoNode的坐标偏移
+            pieceName.rectTransform.anchoredPosition += new Vector2(pieceCfg.MiniMapOffsets[0], pieceCfg.MiniMapOffsets[1]);
+            infoNode.GetComponent<RectTransform>().anchoredPosition += new Vector2(pieceCfg.MiniMapOffsets[0], pieceCfg.MiniMapOffsets[1]);
+        }
     }
 
     public void SetColor(int forceId)
