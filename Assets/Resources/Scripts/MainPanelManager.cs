@@ -13,6 +13,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     public Button btnRank;
     public Button btnCity;
     public Button btnRoundNext;
+    public Button btnMode;
+
     public TMP_Text textYear;
     public TMP_Text textAiInfo;
     public GameObject bgPanel;
@@ -47,6 +49,10 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         btnRoundNext.onClick.AddListener(() =>
         {
             GameManager.Instance.NextRound();
+        });
+        btnMode.onClick.AddListener(() =>
+        {
+            SetMode();
         });
     }
 
@@ -181,6 +187,16 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         btnCity.gameObject.SetActive(true);
     }
 
+    private int extraMode = 0;
+    public void SetMode()
+    {
+        extraMode = (extraMode + 1) % 4;
+        foreach (var piece in worldPieces)
+        {
+            piece.SetExtraMode(extraMode);
+        }
+    }
+
     public void SendSignal(string name, string parm1, int parm2)
     {
         Debug.Log($"WorldManager SendSignal {name} {parm1} {parm2}");
@@ -213,7 +229,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
                     infosCount[actionConfig.ActionName] = actionId.Value;
                 }
-                piece.SetInfos(infosCount);
+                Debug.Log($"CityForceChange {cityData.forceId} {cityData.actions.Count} {infosCount.Count}");
+                piece.OnRound(infosCount);
             }
 
             if(seasonCfg.Video != "")

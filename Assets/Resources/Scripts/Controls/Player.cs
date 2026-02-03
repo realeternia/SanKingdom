@@ -78,11 +78,12 @@ public class Player
         // 检查发展任务的主要属性是否已达到最大值
         if (devConfig.Attrs.Length > 0)
         {
-            string mainAttr = devConfig.Attrs[0];
+            string mainAttr = devConfig.DevAttr1.ToLower();
             var attrConfig = CityAttrConfig.GetConfigByname(mainAttr);
             int currentVal = cityData.GetAttr(mainAttr);
             if (currentVal >= attrConfig.ValMax)
             {
+                Debug.LogError($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，{mainAttr} 已达最大值");
                 return false;
             }
         }
@@ -90,6 +91,7 @@ public class Player
         // 检查黄金是否足够
         if (cityData.gold < devConfig.GoldCost * heroList.Length)
         {
+            Debug.LogError($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，黄金不足");
             return false;
         }
         
@@ -105,7 +107,7 @@ public class Player
             var heroData = GameManager.Instance.GetHero(heroList[i]);
             var checkAttr = devConfig.Attrs[0];
             var attrVal = heroData.GetAttr(checkAttr);
-            
+
             // 计算综合属性值
             if (devConfig.Attrs.Length > 1)
             {
@@ -115,47 +117,38 @@ public class Player
                     attrVal += (attrVal2 - attrVal) / 3;
                 }
             }
-            
-            // 计算各属性的发展结果
-            if (resultTmp.Count == 0)
-            {
-                resultTmp.Add(0);
-            }
-            resultTmp[0] += Math.Max(devConfig.DevAttr1Value[0], (float)attrVal / 100 * devConfig.DevAttr1Value[1]);
-            
+
+            resultTmp.Add(0);
+            var val = GetVal(devConfig.DevAttr1, devConfig.DevAttr1Value[0], devConfig.DevAttr1Value[1], cityData.GetAttr(devConfig.DevAttr1), attrVal);
+            resultTmp[0] += val;
+
             if (devConfig.DevAttr2Value != null && devConfig.DevAttr2Value[1] != 0)
             {
-                if (resultTmp.Count < 2)
-                {
-                    resultTmp.Add(0);
-                }
+                resultTmp.Add(0);
                 if (devConfig.DevAttr2Value[1] > 0)
                 {
-                    resultTmp[1] += Math.Max(devConfig.DevAttr2Value[0], (float)attrVal / 100 * devConfig.DevAttr2Value[1]);
+                    resultTmp[1] += GetVal(devConfig.DevAttr2, devConfig.DevAttr2Value[0], devConfig.DevAttr2Value[1], cityData.GetAttr(devConfig.DevAttr2), attrVal);
                 }
                 else
                 {
-                    resultTmp[1] += Math.Min(devConfig.DevAttr2Value[0], (float)attrVal / 100 * devConfig.DevAttr2Value[1]);
+                    resultTmp[1] += GetVal(devConfig.DevAttr2, devConfig.DevAttr2Value[0], devConfig.DevAttr2Value[1], cityData.GetAttr(devConfig.DevAttr2), attrVal);
                 }
             }
-            
+
             if (devConfig.DevAttr3Value != null && devConfig.DevAttr3Value[1] != 0)
             {
-                if (resultTmp.Count < 3)
-                {
-                    resultTmp.Add(0);
-                }
+                resultTmp.Add(0);
                 if (devConfig.DevAttr3Value[1] > 0)
                 {
-                    resultTmp[2] += Math.Max(devConfig.DevAttr3Value[0], (float)attrVal / 100 * devConfig.DevAttr3Value[1]);
+                    resultTmp[2] += GetVal(devConfig.DevAttr3, devConfig.DevAttr3Value[0], devConfig.DevAttr3Value[1], cityData.GetAttr(devConfig.DevAttr3), attrVal);
                 }
                 else
                 {
-                    resultTmp[2] += Math.Min(devConfig.DevAttr3Value[0], (float)attrVal / 100 * devConfig.DevAttr3Value[1]);
+                    resultTmp[2] += GetVal(devConfig.DevAttr3, devConfig.DevAttr3Value[0], devConfig.DevAttr3Value[1], cityData.GetAttr(devConfig.DevAttr3), attrVal);
                 }
             }
         }
-        
+
         // 转换结果为整数
         for (int i = 0; i < resultTmp.Count; i++)
         {
@@ -188,6 +181,15 @@ public class Player
 
         return true;
     }
+
+    private static float GetVal(string resName, int min, int max, int nowVal, int addon)
+    {
+        var cityAttrConfig = CityAttrConfig.GetConfigByname(resName.ToLower());
+        var val = Math.Max(min, (float)addon / 100 * max);
+        val = Math.Min(val, cityAttrConfig.ValMax - nowVal);
+        return val;
+    }
+
 
     // 执行城市战斗发展
     public void ExecuteCityBattleDev(int cityId, int devId, int[] heroList, int targetCityId)

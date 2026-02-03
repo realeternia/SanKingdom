@@ -161,6 +161,7 @@ public class GameManager : MonoBehaviour
         {
             city.OnRound();
         }
+        Debug.Log("NextRound round=" + SaveData.round);
 
         forbidPlayerAct = true;
         StartCoroutine(NextRoundCoroutine());

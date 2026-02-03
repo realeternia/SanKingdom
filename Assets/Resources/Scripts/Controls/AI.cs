@@ -26,15 +26,8 @@ public static class AI
                 continue;
             }
 
-            // 获取可执行的发展任务列表
-            List<int> availableDevIds = GetAvailableDevIds(city.cityId);
-            if (availableDevIds.Count == 0)
-            {
-                continue;
-            }
-
             // 为城市分配英雄执行发展任务
-            AssignHeroesToDevTasks(player, city.cityId, heroList.ToArray(), availableDevIds);
+            AssignHeroesToDevTasks(player, city.cityId, heroList.ToArray());
         }
     }
 
@@ -57,14 +50,15 @@ public static class AI
             // 检查发展任务的主要属性是否已达到最大值
             if (devConfig.Attrs.Length > 0)
             {
-                string mainAttr = devConfig.Attrs[0];
+                string mainAttr = devConfig.DevAttr1.ToLower();
                 var attrConfig = CityAttrConfig.GetConfigByname(mainAttr);
                 int currentVal = cityData.GetAttr(mainAttr);
                 if (currentVal >= attrConfig.ValMax)
-                {
                     continue;
-                }
             }
+
+            if (cityData.gold < devConfig.GoldCost)
+                continue;
             
             availableDevIds.Add(devConfig.Id);
         }
@@ -78,8 +72,7 @@ public static class AI
     /// <param name="player">玩家对象</param>
     /// <param name="cityId">城市ID</param>
     /// <param name="heroList">英雄列表</param>
-    /// <param name="availableDevIds">可执行的发展任务ID列表</param>
-    private static void AssignHeroesToDevTasks(Player player, int cityId, int[] heroList, List<int> availableDevIds)
+    private static void AssignHeroesToDevTasks(Player player, int cityId, int[] heroList)
     {
         // 获取当前年份可用的英雄列表
         List<int> availableHeroes = player.GetAvailableHeroesThisYear(heroList);
@@ -88,31 +81,27 @@ public static class AI
         
         // 获取城市数据
         var city = GameManager.Instance.GetCity(cityId);
-        
+
         // 按英雄循环，确保每个英雄都分配任务
         foreach (int heroId in availableHeroes)
         {
+            // 获取可执行的发展任务列表
+            List<int> availableDevIds = GetAvailableDevIds(city.cityId);
+            if (availableDevIds.Count == 0)
+                continue;
+
             int devId = 0;
-            
+
             // 检查城市金钱是否不足500
-            if (city.gold < 500)
+            // 金钱充足，随机选择一个可用的发展任务
+            if (availableDevIds.Count > 0)
             {
-                // 金钱不足，分配21005或21006任务
-                devId = UnityEngine.Random.value > 0.5f ? 21005 : 21006;
-                Debug.Log($"AI城市 {cityId} 金钱不足500，为英雄 {heroId} 分配任务 {devId}");
+                int randomIndex = UnityEngine.Random.Range(0, availableDevIds.Count);
+                devId = availableDevIds[randomIndex];
+                Debug.Log($"AI城市 {cityId} 金钱充足，为英雄 {heroId} 分配随机任务 {devId}");
             }
-            else
-            {
-                // 金钱充足，随机选择一个可用的发展任务
-                if (availableDevIds.Count > 0)
-                {
-                    int randomIndex = UnityEngine.Random.Range(0, availableDevIds.Count);
-                    devId = availableDevIds[randomIndex];
-                    Debug.Log($"AI城市 {cityId} 金钱充足，为英雄 {heroId} 分配随机任务 {devId}");
-                }
-            }
-  
-            if(devId == 0)
+
+            if (devId == 0)
                 continue;
             player.ExecuteCityDev(cityId, devId, new int[] { heroId }, out _, out _, out _);
         }

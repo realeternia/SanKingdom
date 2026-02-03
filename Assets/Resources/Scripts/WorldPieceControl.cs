@@ -13,6 +13,12 @@ public class WorldPieceControl : MonoBehaviour
     public MainPanelManager worldManager;
     public TMP_Text pieceName;
     public GameObject infoNode;
+    public TMP_Text extraText;
+
+    private int extraMode = 1;
+
+    private Dictionary<string, int> infos = new Dictionary<string, int>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +39,8 @@ public class WorldPieceControl : MonoBehaviour
             // 添加点击事件监听
             button.onClick.AddListener(OnPieceClicked);
         }
+        infoNode.SetActive(false);
+        extraText.gameObject.SetActive(false);
     }
     
     /// <summary>
@@ -75,6 +83,7 @@ public class WorldPieceControl : MonoBehaviour
         {
             // 修改pieceName和infoNode的坐标偏移
             pieceName.rectTransform.anchoredPosition += new Vector2(pieceCfg.MiniMapOffsets[0], pieceCfg.MiniMapOffsets[1]);
+            extraText.rectTransform.anchoredPosition += new Vector2(pieceCfg.MiniMapOffsets[0], pieceCfg.MiniMapOffsets[1]);
             infoNode.GetComponent<RectTransform>().anchoredPosition += new Vector2(pieceCfg.MiniMapOffsets[0], pieceCfg.MiniMapOffsets[1]);
         }
     }
@@ -108,9 +117,48 @@ public class WorldPieceControl : MonoBehaviour
             pieceName.color = Color.white;
     }
 
-    public void SetInfos(Dictionary<string, int> infos)
+    public void SetExtraMode(int mode = 0)
     {
-        // 先清理掉老的infoImage
+        extraMode = mode;
+        if(mode == 0)
+        {
+            infoNode.SetActive(false);
+            extraText.gameObject.SetActive(false);
+            return;
+        }
+
+        if(mode == 1)
+        {
+            infoNode.SetActive(true);
+            extraText.gameObject.SetActive(false);
+            UpdateInfoIcons();
+            return;
+        }
+
+        infoNode.SetActive(false);
+        extraText.gameObject.SetActive(true);
+        var city = GameManager.Instance.GetCity(pieceId);
+
+        if(mode == 2)
+        {
+            extraText.text = $"兵{city.soldier}";
+            extraText.color = Color.red;
+        }
+        else if(mode == 3)
+        {
+            extraText.text = $"金{city.gold}";
+            extraText.color = Color.yellow;
+        }
+    }
+
+    public void OnRound(Dictionary<string, int> infos)
+    {
+        this.infos = infos;
+        SetExtraMode(extraMode); // update
+    }
+
+    private void UpdateInfoIcons()
+    {
         foreach (Transform child in infoNode.transform)
         {
             Destroy(child.gameObject);

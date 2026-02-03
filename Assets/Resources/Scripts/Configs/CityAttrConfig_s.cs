@@ -63,7 +63,7 @@ namespace CommonConfig
             config[1] = new CityAttrConfig(1, "archgold", "商业", 999, 200, 0);
             config[2] = new CityAttrConfig(2, "archfood", "农业", 999, 200, 0);
             config[3] = new CityAttrConfig(3, "archpeople", "人口", 99999, 10000, 0);
-            config[4] = new CityAttrConfig(4, "gold", "金钱", 150, 500, 250);
+            config[4] = new CityAttrConfig(4, "gold", "金钱", 99999, 500, 250);
             config[5] = new CityAttrConfig(5, "food", "粮食", 99999, 500, 250);
             config[6] = new CityAttrConfig(6, "soldier", "士兵", 19999, 500, 250);
             config[7] = new CityAttrConfig(7, "secure", "治安", 99, 60, 40);
