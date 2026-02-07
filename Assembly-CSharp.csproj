@@ -175,8 +175,10 @@
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAttrZhiheng.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidHeal.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\BattleTopInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSpeedDown.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySkillRateTime.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\BattleTopForceBar.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpInitTeach.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamagedAddRate.cs" />

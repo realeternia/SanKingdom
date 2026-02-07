@@ -82,6 +82,10 @@ public class BattleManager : MonoBehaviour
         }
 
         BattleStatManager.Clear();
+        // 计算双方总兵力
+        int leftSoldierTotal = cards1.Sum(x => x.SoldierNum);
+        int rightSoldierTotal = cards2.Sum(x => x.SoldierNum);
+        BattleInfoTop.Instance.Init(player1.forceId, player2.forceId, leftSoldierTotal, rightSoldierTotal);
 
         if (showUI)
         {
@@ -94,6 +98,7 @@ public class BattleManager : MonoBehaviour
 
         foreach (var chess in chessList.ToArray()) //防止召唤
             SkillManager.BattleBegin(chess);
+            
         StartCoroutine(GameUpdate());
     }
 
@@ -211,7 +216,7 @@ public class BattleManager : MonoBehaviour
             var heroInfo = battleUIManager.heroInfoGroup.AddHero(side, heroConfig.Id, heroData.Level);
             chess.heroInfo = heroInfo;
         }
-        chess.CheckInitAttr(heroData.Level, heroData.SoliderNum);
+        chess.CheckInitAttr(heroData.Level, heroData.SoldierNum);
         chess.Init(p.forceId, posId, p.lineColor);
 
         chessList.Add(chess);
@@ -254,6 +259,9 @@ public class BattleManager : MonoBehaviour
                     RoundFoodCost(forceId);
                 }
             }
+            var leftSoldierTotal = chessList.Sum(x => x.forceId == playerForceIdList[0] && x.isHero ? Math.Max(0, x.hp) : 0);
+            var rightSoldierTotal = chessList.Sum(x => x.forceId == playerForceIdList[1] && x.isHero ? Math.Max(0, x.hp) : 0);
+            BattleInfoTop.Instance.UpdateSoldierCount(leftSoldierTotal, rightSoldierTotal);
             //    sw.Stop();
             //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using CommonConfig;
+using System.Linq;
 
 [System.Serializable]
 public class SaveCityData
@@ -69,7 +70,7 @@ public class SaveCityData
             var cardData = new BattleCardData();
             cardData.CardId = member;
             cardData.Level = hero.GetLevel();
-            cardData.SoliderNum = Math.Max(1, hero.soldier); //临时方案，送一个兵
+            cardData.SoldierNum = Math.Max(1, hero.soldier); //临时方案，送一个兵
             battleList.Add(cardData);
         }
         return battleList;    
@@ -209,11 +210,15 @@ public class SaveCityData
             List<int> destCityIds = new List<int>();
             if (nearbyLoseCities.Count > 0)
             {
-                destCityIds.AddRange(destCityIds);
+                destCityIds.AddRange(nearbyLoseCities.Select(x => x.cityId));
+            }
+            else if(cityId != GameManager.Instance.GetPlayer(forceLose).GetKingCity().cityId)
+            {
+                destCityIds.Add(GameManager.Instance.GetPlayer(forceLose).GetKingCity().cityId);
             }
             else
             {
-                destCityIds.Add(GameManager.Instance.GetPlayer(forceLose).GetKingCity().cityId);
+                destCityIds.AddRange(loseForceCities.Select(x => x.cityId));
             }
 
             foreach (var heroId in failHeroIds)
