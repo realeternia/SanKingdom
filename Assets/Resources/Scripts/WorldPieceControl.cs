@@ -141,14 +141,26 @@ public class WorldPieceControl : MonoBehaviour
 
         if(mode == 2)
         {
-            extraText.text = $"兵{city.soldier}";
+            extraText.text = $"兵{GetTextByInt(city.GetAttr("soldier"))}";
             extraText.color = Color.red;
         }
         else if(mode == 3)
         {
-            extraText.text = $"金{city.gold}";
+            extraText.text = $"金{GetTextByInt(city.gold)}";
             extraText.color = Color.yellow;
         }
+    }
+
+    private string GetTextByInt(int count)
+    {
+        if(count < 300)
+            return " 空虚";
+        else if(count < 1000)
+            return " 少量";
+        else if(count < 1000000)
+            return $"{count / 1000.0:F1}K";
+        else
+            return $"{count / 1000000.0:F1}M";
     }
 
     public void OnRound(Dictionary<string, int> infos)

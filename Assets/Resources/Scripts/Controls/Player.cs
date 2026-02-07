@@ -230,11 +230,21 @@ public class Player
         PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
     }
 
-    // 获取城市可用的英雄列表（用于发展）
-    public List<int> GetCityHeroListForDev(int cityId)
+    public List<SaveCityData> GetCityList()
     {
-        var cityData = GameManager.Instance.GetCity(cityId);
-        return cityData.GetHeroList();
+         return GameManager.Instance.GetCitiesByForce(forceId);
     }
 
+    public SaveCityData GetKingCity()
+    {
+          var kingHeroId = ForceConfig.GetConfig(forceId).HeroId;
+        // 找到 kingHeroId 对应的城市
+        foreach (var city in GetCityList())
+        {
+            if (city.GetOwner() == kingHeroId)
+                return city;
+        }
+        return null;
+    }
 }
+

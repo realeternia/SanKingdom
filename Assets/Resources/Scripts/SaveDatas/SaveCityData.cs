@@ -177,6 +177,14 @@ public class SaveCityData
         }
     }
 
+    public int CalculateDistanceTo(int destCityId)
+    {
+        //通过WorldConfig的x,y算距离
+        var curCity = WorldConfig.GetConfig(cityId);
+        var destCity = WorldConfig.GetConfig(destCityId);
+        return Math.Abs(curCity.X - destCity.X) + Math.Abs(curCity.Y - destCity.Y);
+    }
+
     public void Occupy(int forceWin, List<int> winHeroIds, int forceLose, List<int> failHeroIds)
     {
         forceId = forceWin;
@@ -186,16 +194,41 @@ public class SaveCityData
         UnityEngine.Debug.Log($"Occupy forceId: {forceLose} citycount: {loseForceCities.Count}");
         if (loseForceCities.Count > 0)
         {
-            SaveCityData destCity = loseForceCities[0];
+            // 获取当前城市的相邻城市ID列表
+            var currentCityConfig = WorldConfig.GetConfig(cityId);
+            var nearbyCityIds = currentCityConfig.WorldNearIds;
+
+            // 过滤出与当前城市相邻的失败方城市
+            var nearbyLoseCities = new List<SaveCityData>();
+            foreach (var city in loseForceCities)
+            {
+                if (nearbyCityIds != null && Array.Exists(nearbyCityIds, id => id == city.cityId))
+                    nearbyLoseCities.Add(city);
+            }
+
+            List<int> destCityIds = new List<int>();
+            if (nearbyLoseCities.Count > 0)
+            {
+                destCityIds.AddRange(destCityIds);
+            }
+            else
+            {
+                destCityIds.Add(GameManager.Instance.GetPlayer(forceLose).GetKingCity().cityId);
+            }
+
             foreach (var heroId in failHeroIds)
             {
                 var hero = GameManager.Instance.GetHero(heroId);
                 if (hero != null)
                 {
-                    hero.cityId = destCity.cityId;
+                    int randomIndex = UnityEngine.Random.Range(0, destCityIds.Count);
+                    hero.cityId = destCityIds[randomIndex];
                 }
             }
-            destCity.RecalculateHeros();
+            foreach (var destCityId in destCityIds)
+            {
+                GameManager.Instance.GetCity(destCityId).RecalculateHeros();
+            }
         }
         else
         {
@@ -227,6 +260,8 @@ public class SaveCityData
         SelectOwner();
     }
 
+
+
     public void SelectOwner()
     {
         var heroList = GetHeroList();
@@ -235,6 +270,8 @@ public class SaveCityData
 
         int maxScore = -1;
         SaveHeroData bestHero = null;
+
+        var kingHeroId = ForceConfig.GetConfig(forceId).HeroId;
 
         foreach (var heroId in heroList)
         {
@@ -249,7 +286,7 @@ public class SaveCityData
             int charm = hero.GetAttr("charm");
 
             float totalScore = str * .75f + inte + fair + (leadship * 1.5f) + (charm * 1.2f);
-            if (HeroConfig.GetConfig(heroId).Job == "shuai")
+            if (heroId == kingHeroId)
             {
                 totalScore += 9999;
                 UnityEngine.Debug.Log($"帅的分 {heroId} {totalScore}");
