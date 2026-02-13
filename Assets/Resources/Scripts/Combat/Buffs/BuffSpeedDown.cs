@@ -16,13 +16,13 @@ public class BuffSpeedDown : Buff
         chess.moveSpeed -= moveSpeedDiff;
 
         attackRateDiff = chess.attackRate * skillCfg.Strength;
-        chess.attackRate -= attackRateDiff;
+        chess.attackRate -= (int)attackRateDiff;
     }
 
     public override void OnRemove(Chess chess)
     {
         base.OnRemove(chess);
         chess.moveSpeed += moveSpeedDiff;
-        chess.attackRate += attackRateDiff;
+        chess.attackRate += (int)attackRateDiff;
     }
 }

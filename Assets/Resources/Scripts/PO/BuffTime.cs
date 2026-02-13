@@ -1,5 +1,5 @@
 public class BuffTime
 {
     public int id;
-    public float time;
+    public int tick;
 }

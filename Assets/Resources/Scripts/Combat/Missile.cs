@@ -71,8 +71,8 @@ public class Missile// : MonoBehaviour
         float speed = missileSpeed; // 导弹移动速度
 
         float maxY = missileHight;
-
-        var lastTime = BattleManager.Instance.time;
+        
+        var lastTime = BattleManager.Instance.tickIndex;
         while (!BattleManager.Instance.CheckInRange(position, targetPos, 0.5f))
         {
             // if (owner == null || owner.hp <= 0)
@@ -82,7 +82,7 @@ public class Missile// : MonoBehaviour
             // }
             if(target != null && target.hp > 0)
                 targetPos = target.position + new Vector3(0f, 3f, 0f); //修正目标点
-            float distCovered = (BattleManager.Instance.time - lastTime) * speed;
+            float distCovered = (BattleManager.Instance.tickIndex - lastTime) * speed;
             journeyLength = BattleManager.Instance.GetRange(position, targetPos);
             float fractionOfJourney = distCovered / journeyLength;
             
@@ -107,7 +107,7 @@ public class Missile// : MonoBehaviour
                 // 直线路径
                 SetPosition(Vector3.Lerp(position, targetPos, fractionOfJourney));
             }
-            lastTime = BattleManager.Instance.time;
+            lastTime = BattleManager.Instance.tickIndex;
             yield return new NLWaitForSeconds(tickTime);
         }
 
@@ -140,14 +140,14 @@ public class Missile// : MonoBehaviour
         float lastCheckTime = 0.2f;
         var checkedList = new List<Chess>();
 
-        var lastTime = BattleManager.Instance.time;
+        var lastTime = BattleManager.Instance.tickIndex;
         while (true)
         {
             // if (owner == null || owner.hp <= 0)
             //     yield break;
 
             // 计算本次移动的距离（基于速度和时间）
-            var timeElapsed = BattleManager.Instance.time - lastTime;
+            var timeElapsed = BattleManager.Instance.tickIndex - lastTime;
             float moveDistance = speed * timeElapsed;
             // 按方向和距离移动 
             SetPosition(position + direction * moveDistance);
@@ -182,7 +182,7 @@ public class Missile// : MonoBehaviour
                 yield break;
             }
 
-            lastTime = BattleManager.Instance.time; 
+            lastTime = BattleManager.Instance.tickIndex; 
             yield return new NLWaitForSeconds(tickTime);
         }
 

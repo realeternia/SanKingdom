@@ -33,8 +33,8 @@ public class BattleManager : MonoBehaviour
     private bool gameFinish = false;
     private bool hasWin;    
     private int idCounter = 100;
-    public float time;
-    private float lastFoodDeductionTime = 0;
+    public int tickIndex = 1;
+    private int lastFoodDeductionTick = 0;
 
     public bool quickMode = true;
     public bool showUI = true;
@@ -44,7 +44,6 @@ public class BattleManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        time = 10000;
     }
 
     public void BattleBegin(Player player1, Player player2, int cityAtkId, int cityDefId, List<BattleCardData> cards1, List<BattleCardData> cards2)
@@ -228,11 +227,12 @@ public class BattleManager : MonoBehaviour
 
     public static float tickTime = 0.025f;
     public static float tickTimeReal = 0.025f; //加速功能
+    
     private IEnumerator GameUpdate()
     {
         yield return new WaitForSeconds(0.5f);
 
-        Debug.Log($"GameUpdatett start logicTime={time} realTime={Time.time}");
+        Debug.Log($"GameUpdatett start realTime={Time.time}");
         var speed = 1;
         if (quickMode && showUI)
             speed = 10;
@@ -244,14 +244,14 @@ public class BattleManager : MonoBehaviour
             //  var sw = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < speed; i++)
             {
-                time += tickTime;
                 coroutineManager.Update(tickTime);
 
                 foreach (var chess in chessList.ToArray())
                 {
                     if (chess != null && chess.hp > 0)
-                        chess.LogicUpdate(tickTime);
+                        chess.LogicUpdate(tickIndex);
                 }
+                tickIndex++;
 
                 // 每个回合结束，玩家消耗食物
                 foreach (var forceId in playerForceIdList)
@@ -265,7 +265,7 @@ public class BattleManager : MonoBehaviour
             //    sw.Stop();
             //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
         }
-        Debug.Log($"GameUpdatett end logicTime={time} realTime={Time.time}");
+        Debug.Log($"GameUpdatett end realTime={Time.time}");
 
         for (int i = 0; i < chessList.Count; i++)
         {
@@ -281,7 +281,7 @@ public class BattleManager : MonoBehaviour
     private void RoundFoodCost(int forceId)
     {
         // 粮食扣除逻辑
-        if (time - lastFoodDeductionTime >= 5f) // 每5秒扣除一次粮食
+        if (tickIndex - lastFoodDeductionTick >= 200) // 每5秒扣除一次粮食 (5s / 0.025s = 200 ticks)
         {
             var food = forceId2FoodDict[forceId];
             // 计算时间差，每5s，扣10点粮食
@@ -296,7 +296,7 @@ public class BattleManager : MonoBehaviour
                 forceId2FoodDict[forceId].food = 0;
 
             // 更新上次扣除粮食的时间
-            lastFoodDeductionTime = time;
+            lastFoodDeductionTick = tickIndex;
         }
     }    
 

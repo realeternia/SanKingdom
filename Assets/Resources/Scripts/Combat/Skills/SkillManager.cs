@@ -239,13 +239,13 @@ public static class SkillManager
         }
     }
 
-    public static bool CheckAidSkill(Chess attacker)
+    public static bool CheckAidSkill(Chess attacker, int tickIndex)
     {
         foreach (var skill in attacker.skills)
         {
-            if (!skill.IsInCD() && skill.CheckAidSkill())
+            if (!skill.IsInCD() && skill.CheckAidSkill(tickIndex))
             {
-                attacker.attackPoint -= skill.skillCfg.AttackPointReduce;
+                attacker.attackPoint -= (int)skill.skillCfg.AttackPointReduce;
                 return true;
             }
         }

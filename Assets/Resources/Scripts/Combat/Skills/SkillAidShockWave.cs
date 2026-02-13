@@ -11,7 +11,7 @@ public class SkillAidShockWave : Skill
     {
     }
 
-    public override bool CheckAidSkill()
+    public override bool CheckAidSkill(int tickIndex)
     {
         if (owner.targetChess == null)
             return false;

@@ -11,7 +11,7 @@ public class SkillAidSuddenArrow : Skill
     {
     }
 
-    public override bool CheckAidSkill()
+    public override bool CheckAidSkill(int tickIndex)
     {
         var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range, owner.side, true);
         unitsInRange.Remove(owner);

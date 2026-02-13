@@ -16,7 +16,7 @@ public class SkillAttackSpeedAttack : Skill
             owner.PlayerAnim(skillCfg.Action);
             Debug.Log("SkillSpeedAttack");
 
-            owner.Cooldown(2 * skillCfg.Strength);
+            owner.Cooldown((int)(2 * skillCfg.Strength));
         }
     }
 }

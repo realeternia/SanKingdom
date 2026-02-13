@@ -56,10 +56,10 @@ public class Chess
 
 
     // 攻击冷却时间
-    public float attackPoint;
-    public float attackRate; //攻击频率
-    private float lastAttackTime = 0f;
-    private float lastTargetUpdateTime = 0f; // 上次更新目标的时间
+    public int attackPoint;
+    public int attackRate; //攻击频率
+    private int lastAttackTime = 0;
+    private int lastTargetUpdateTick; // 上次更新目标的时间
 
     public HeroInfo heroInfo;
 
@@ -71,9 +71,9 @@ public class Chess
     public int noActionCount = 0;
 
     private bool dieAfterLifeTime;
-    private float lifeTime;
+    private int lifeTickCount; //1s死亡一次
 
-    private float regeTimer; //1s回复一次
+    private int regeTickCount; //1s回复一次
     public int regeHp; //回复血量
 
     public void Init(int forceId, int posId, Color c)
@@ -85,7 +85,7 @@ public class Chess
         if (heroInfo != null) // 英雄
             heroInfo.SetHpRate(hp, maxHp);
         
-        attackPoint = UnityEngine.Random.Range(0f, 1f); // 随机获得初始气力
+        attackPoint = UnityEngine.Random.Range(1, 10); // 随机获得初始气力
         attackRate = 1;
 
         if (isHero)
@@ -104,29 +104,29 @@ public class Chess
             viewObj.Init(this, c);
     }
 
-    public void LogicUpdate(float deltaTime)
+    public void LogicUpdate(int tickIndex)
     {
         if (hp <= 0)
             return;
 
-        buffs.Where(x => BattleManager.Instance.time > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
+        buffs.Where(x => BattleManager.Instance.tickIndex > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
 
         if(regeHp > 0)
         {
-            regeTimer += deltaTime;
-            if(regeTimer >= 1)
+            regeTickCount ++;
+            if(regeTickCount >= 10)
             {
-                regeTimer -= 1;
+                regeTickCount -= 10;
                 AddHp(regeHp);
             }
         }
 
-        MoveAndFight(deltaTime);
+        MoveAndFight(tickIndex);
 
         if (dieAfterLifeTime)
         {
-            lifeTime -= deltaTime;
-            if (lifeTime <= 0)
+            lifeTickCount --;
+            if (lifeTickCount <= 0)
             {
                 Ondying();
             }
@@ -191,7 +191,7 @@ public class Chess
     public void LockTarget(Chess target1)
     {
         targetChess = target1;
-        lastTargetUpdateTime = BattleManager.Instance.time;
+        // lastTargetUpdateTick = BattleManager.Instance.time;
     }
 
     private int lackIndex;
@@ -288,16 +288,16 @@ public class Chess
         return score;
     }
 
-    private void MoveAndFight(float deltaTime)
+    private void MoveAndFight(int tickIndex)
     {
         if (noActionCount > 0)
             return;
 
         // 每3秒重新寻找目标
-        if (BattleManager.Instance.time - lastTargetUpdateTime >= 3f)
+        if (tickIndex - lastTargetUpdateTick >= 30)
         {
             FindTarget();
-            lastTargetUpdateTime = BattleManager.Instance.time;
+            lastTargetUpdateTick = tickIndex;
         }
 
         // 检查目标是否存在
@@ -311,17 +311,17 @@ public class Chess
         }
 
         // 检查是否有辅助技能
-        if (SkillManager.CheckAidSkill(this))
+        if (SkillManager.CheckAidSkill(this, tickIndex))
             return;
 
         // 检查目标是否在攻击范围内
         if (BattleManager.Instance.CheckInRange(position, targetChess.position, attackRange))
         {
-            attackPoint += deltaTime * attackRate;
+            attackPoint += attackRate;
             // 检查攻击冷却
-            if (attackPoint >= 2f) //集气2s
+            if (attackPoint >= 20) //集气2s
             {
-                attackPoint = 0;
+                attackPoint -= 20;
                 SkillManager.AimTarget(this, targetChess);
                 if (attackRange >= 20)
                 {
@@ -332,7 +332,7 @@ public class Chess
                     Attack(targetChess, hitEffect); // 普通攻击
                 }
             }
-            lastAttackTime = BattleManager.Instance.time;
+            lastAttackTime = tickIndex;
             return;
         }
 
@@ -352,52 +352,64 @@ public class Chess
 
         if (moveDest != null)
         {
-            // 计算下一步位置
-            Vector3 nextPosition = Vector3.MoveTowards(position, moveDest.Value, moveSpeed * deltaTime);
+            attackPoint += attackRate;
+            if (attackPoint >= 10)
+            {
+                attackPoint -= 10;
 
-            // 尝试锁定目标格子
-            if (BattleManager.Instance.MoveTo(this, nextPosition, false))
-            {
-              //  UnityEngine.Debug.LogWarning($"MoveTo recover id: {id}, pos: {position}, dest: {nextPosition} { moveDest.Value}, {moveSpeed * deltaTime}");
-                if (moveFailCount > 0)
-                {
-                    moveFailCount = 0; // 重置失败计数器
-                    if (viewObj != null)
-                        viewObj.moveFailCount = 0;
-                }
+                DoMove(tickIndex);
             }
-            else
+
+        }
+    }
+
+    private void DoMove(int tickIndex)
+    {
+        // 计算下一步位置
+        Vector3 nextPosition = Vector3.MoveTowards(position, moveDest.Value, moveSpeed * 0.5f);
+
+        // 尝试锁定目标格子
+        if (BattleManager.Instance.MoveTo(this, nextPosition, false))
+        {
+            //  UnityEngine.Debug.LogWarning($"MoveTo recover id: {id}, pos: {position}, dest: {nextPosition} { moveDest.Value}, {moveSpeed * deltaTime}");
+            if (moveFailCount > 0)
             {
-                UnityEngine.Debug.LogWarning($"MoveTo failed id: {id}, pos: {position}, dest: {moveDest.Value}");
-                // 锁定失败，不动
-                moveFailCount++;
+                moveFailCount = 0; // 重置失败计数器
                 if (viewObj != null)
-                    viewObj.moveFailCount++;
-
-                // 根据连续失败次数尝试不同角度找路
-                // 如果已经在使用偏移路径或者失败次数达到阈值，则继续使用偏移
-                // 计算原始方向
-                Vector3 direction = (targetChess.position - position).normalized;
-                float angleOffset;
-
-                // 根据失败次数确定偏移角度
-                if (moveFailCount <= 3)
-                    angleOffset = 45f;
-                else if (moveFailCount <= 5)
-                    angleOffset = 70f;
-                else
-                    angleOffset = 90f;
-
-                // 随机选择向上或向下偏移
-                angleOffset *= UnityEngine.Random.value > 0.5f ? 1 : -1;
-
-                // 计算旋转后的方向
-                Quaternion rotation = Quaternion.Euler(0, angleOffset, 0);
-                Vector3 newDirection = rotation * direction;
-
-                // 计算新的下一步位置
-                moveDest = position + newDirection * moveSpeed;
+                    viewObj.moveFailCount = 0;
             }
+        }
+        else
+        {
+            Debug.LogWarning($"MoveTo failed id: {id}, pos: {position}, dest: {moveDest.Value}");
+            // 锁定失败，不动
+            moveFailCount++;
+            if (viewObj != null)
+                viewObj.moveFailCount++;
+
+            // 根据连续失败次数尝试不同角度找路
+            // 如果已经在使用偏移路径或者失败次数达到阈值，则继续使用偏移
+            // 计算原始方向
+            Vector3 direction = (targetChess.position - position).normalized;
+            float angleOffset;
+
+            // 根据失败次数确定偏移角度
+            if (moveFailCount <= 3)
+                angleOffset = 45f;
+            else if (moveFailCount <= 5)
+                angleOffset = 70f;
+            else
+                angleOffset = 90f;
+
+            // 随机选择向上或向下偏移
+            angleOffset *= UnityEngine.Random.value > 0.5f ? 1 : -1;
+
+            // 计算旋转后的方向
+            Quaternion rotation = Quaternion.Euler(0, angleOffset, 0);
+            Vector3 newDirection = rotation * direction;
+
+            // 计算新的下一步位置
+            moveDest = position + newDirection * moveSpeed;
         }
     }
 
@@ -591,7 +603,7 @@ public class Chess
         target.AddHp(addon);
     }
 
-    public void Cooldown(float time)
+    public void Cooldown(int time)
     {
         attackPoint += time;
     }
@@ -599,7 +611,7 @@ public class Chess
     public void SetLifeTime(float time)
     {
         dieAfterLifeTime = true;
-        lifeTime = time;
+        // lifeTick = time;
     }
 
     public Player GetPlayerInfo()
@@ -607,18 +619,17 @@ public class Chess
         return GameManager.Instance.GetPlayer(forceId);
     }
 
-    public bool IsInFight()
+    public bool IsInFight(int nowTick)
     {
-        return BattleManager.Instance.time < lastAttackTime + 0.3f;
+        return nowTick < lastAttackTime + 3;
     }
 
     public void AddBuff(Buff buff, Chess caster, float time)
     {
         // 计算buffTimes中所有20秒以内且buffId等于当前buff.id的buff的时间和
-        float buffTimeSum = 0;
         float buffCount = 0;
-        var nowTime = BattleManager.Instance.time;
-        buffTimes.RemoveAll(buff => nowTime - buff.time > 30);
+        var nowTick = BattleManager.Instance.tickIndex;
+        buffTimes.RemoveAll(buff => nowTick - buff.tick > 1200); // 30秒 = 30 / 0.025 = 1200 ticks
         foreach (var existingBuffTime in buffTimes)
         {
             if (existingBuffTime.id == buff.id)
@@ -642,7 +653,7 @@ public class Chess
 
         buffs.Add(buff);
         buff.OnAdd(this, caster);
-        buffTimes.Add(new BuffTime{id = buff.id, time = BattleManager.Instance.time});
+        buffTimes.Add(new BuffTime{id = buff.id, tick = BattleManager.Instance.tickIndex});
     }
 
     public void AddColorEffect(Color start, Color end)

@@ -14,7 +14,7 @@ public class Skill
     public Chess owner;
     public bool isGivenSkill; //别人给的技能
     public SkillConfig skillCfg;
-    private float lastUpdateTime; // 上次更新CD的时间
+    private int lastUpdateTime; // 上次更新CD的时间 (tick index)
     public bool isBurst;
 
     public int skillId{ get{ return skillCfg.Id; } }
@@ -42,7 +42,7 @@ public class Skill
             var cdTime = skillCfg.CD;
             SkillManager.OnCheckCD(owner, skillCfg, ref cdTime);
 
-            lastUpdateTime = BattleManager.Instance.time - skillCfg.CD + cdTime;
+            lastUpdateTime = BattleManager.Instance.tickIndex - (int)(skillCfg.CD / BattleManager.tickTime) + (int)(cdTime / BattleManager.tickTime);
         }
     }
 
@@ -55,7 +55,7 @@ public class Skill
         if(skillCfg.CD <= 0)
             return false;
 
-        return BattleManager.Instance.time < lastUpdateTime + skillCfg.CD;
+        return BattleManager.Instance.tickIndex < lastUpdateTime + (int)(skillCfg.CD / BattleManager.tickTime);
     }
 
     public bool CheckBurst(Chess target)
@@ -109,7 +109,7 @@ public class Skill
     {
     }
 
-    public virtual bool CheckAidSkill()
+    public virtual bool CheckAidSkill(int tickIndex)
     {
         return false;
     }
