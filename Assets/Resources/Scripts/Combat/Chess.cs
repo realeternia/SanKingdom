@@ -40,8 +40,6 @@ public class Chess
 
     public int lastDamagedPlayerId = -1;
 
-    // 最大连续移动尝试次数
-
     // 是否正在使用偏移路径
     public int hp = 100;
     public int attackDamage = 30;
@@ -72,6 +70,8 @@ public class Chess
 
     private int regeTickCount; //1s回复一次
     public int regeHp; //回复血量
+
+    private List<ChessAction> actions = new List<ChessAction>();
 
     public void Init(int forceId, int posId, Color c)
     {
@@ -325,7 +325,7 @@ public class Chess
                 }
                 else
                 {
-                    Attack(targetChess, hitEffect); // 普通攻击
+                    Attack(targetChess, hitEffect, tickIndex); // 普通攻击
                 }
             }
             lastAttackTime = tickIndex;
@@ -342,6 +342,16 @@ public class Chess
             if (attackPoint >= 10)
             {
                 attackPoint -= 10;
+
+                // 创建移动Action并添加到actions列表
+                var moveAction = new MoveAction
+                {
+                    SourceId = id,
+                    Tick = tickIndex,
+                    TargetId = targetChess != null ? targetChess.id : -1,
+                    TargetPosition = moveDest
+                };
+                actions.Add(moveAction);
 
                 BattleManager.Instance.MoveTo(this, moveDest, true);
             }
@@ -400,7 +410,7 @@ public class Chess
     }    
 
     // 攻击目标
-    public void Attack(Chess victim, string hitEffectName)
+    public void Attack(Chess victim, string hitEffectName, int tickIndex)
     {
         if (victim == null)
             return;
@@ -475,6 +485,16 @@ public class Chess
 
             SkillManager.OnAttack(this, victim, damType, damage);
         }
+
+        // 创建攻击Action并添加到actions列表
+        var attackAction = new AttackAction
+        {
+            SourceId = id,
+            Tick = tickIndex,
+            TargetId = victim.id,
+            Damage = damage,
+        };
+        actions.Add(attackAction);
 
         if(!string.IsNullOrEmpty(effect))
             EffectManager.PlayHitEffect(this, victim, effect);

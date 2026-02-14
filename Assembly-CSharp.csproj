@@ -89,6 +89,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\FormulaLearnAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddRege.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefPlantSkin.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuffArea.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ShopConfig_s.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAddDamage.cs" />
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidBuff.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\MoveAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\MissileEffName.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySummonTime.cs" />
@@ -169,6 +171,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitTeleport.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddCrit.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ForceConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitSoldierUp.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />

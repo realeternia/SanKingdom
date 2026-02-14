@@ -208,7 +208,7 @@ public class Missile// : MonoBehaviour
 
         if (skillId == 0)
         {
-            owner.Attack(target, hitEffectName);
+            owner.Attack(target, hitEffectName, BattleManager.Instance.tickIndex);
         }
         else
         {
