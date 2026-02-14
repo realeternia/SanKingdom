@@ -40,9 +40,6 @@ public class Chess
 
     public int lastDamagedPlayerId = -1;
 
-    private Vector3? moveDest = null;
-    // 移动失败计数器
-    private int moveFailCount = 0;
     // 最大连续移动尝试次数
 
     // 是否正在使用偏移路径
@@ -259,7 +256,6 @@ public class Chess
         targetChess = scoredTargets[0].chess;
         if(viewObj != null)
             viewObj.lockTargetId = targetChess.id;
-        moveDest = null; // 重置移动目标
     }
 
     // 计算目标分数
@@ -339,56 +335,41 @@ public class Chess
         if (noMoveCount > 0 || moveSpeed == 0)
             return;
 
-        if (moveFailCount == 0)
-        {
-            var dis = BattleManager.Instance.GetRange(position, targetChess.position);
-            if (moveDest == null || dis > 40)
-                moveDest = targetChess.position;
-
-            //如果当前位置很接近moveDirection，就直接移动到moveDirection
-            if (dis <= moveSpeed * 0.1f)
-                moveDest = targetChess.position;
-        }
-
-        if (moveDest != null)
+        var moveDest = GetMoveDest();
+        if (moveDest != Vector3.zero)
         {
             attackPoint += attackRate;
             if (attackPoint >= 10)
             {
                 attackPoint -= 10;
 
-                DoMove(tickIndex);
+                BattleManager.Instance.MoveTo(this, moveDest, true);
             }
-
         }
     }
 
-    private void DoMove(int tickIndex)
+    private Vector3 GetMoveDest()
     {
-        // 计算下一步位置
-        Vector3 nextPosition = Vector3.MoveTowards(position, moveDest.Value, moveSpeed * 0.5f);
+        int moveFailCount = 0;
+        var moveDis = moveSpeed * 0.5f;
 
-        // 尝试锁定目标格子
-        if (BattleManager.Instance.MoveTo(this, nextPosition, false))
+        for (int i = 0; i < 4; i++)
         {
-            //  UnityEngine.Debug.LogWarning($"MoveTo recover id: {id}, pos: {position}, dest: {nextPosition} { moveDest.Value}, {moveSpeed * deltaTime}");
-            if (moveFailCount > 0)
-            {
-                moveFailCount = 0; // 重置失败计数器
-                if (viewObj != null)
-                    viewObj.moveFailCount = 0;
-            }
+            Vector3 nextPosition = Vector3.MoveTowards(position, targetChess.position, moveDis * (4 - i) / 4); //尝试短距离移动
+            if (BattleManager.Instance.IsPositionFree(this, nextPosition))
+                return nextPosition;
         }
-        else
-        {
-            Debug.LogWarning($"MoveTo failed id: {id}, pos: {position}, dest: {moveDest.Value}");
-            // 锁定失败，不动
-            moveFailCount++;
-            if (viewObj != null)
-                viewObj.moveFailCount++;
 
+        for (int i = 0; i < 10; i++)
+        {
+            Vector3 nextPosition = Vector3.MoveTowards(position, targetChess.position, moveDis * (i + 1) / 4); //尝试长距离移动
+            if (BattleManager.Instance.IsPositionFree(this, nextPosition))
+                return nextPosition;
+        }
+
+        if (moveFailCount == 0)
+        {
             // 根据连续失败次数尝试不同角度找路
-            // 如果已经在使用偏移路径或者失败次数达到阈值，则继续使用偏移
             // 计算原始方向
             Vector3 direction = (targetChess.position - position).normalized;
             float angleOffset;
@@ -408,10 +389,15 @@ public class Chess
             Quaternion rotation = Quaternion.Euler(0, angleOffset, 0);
             Vector3 newDirection = rotation * direction;
 
-            // 计算新的下一步位置
-            moveDest = position + newDirection * moveSpeed;
+            for (int i = 0; i < 4; i++)
+            {
+                var nextPosition = position + newDirection * moveDis * (4 - i) / 4;
+                if (BattleManager.Instance.IsPositionFree(this, nextPosition))
+                    return nextPosition;
+            }
         }
-    }
+        return Vector3.zero;
+    }    
 
     // 攻击目标
     public void Attack(Chess victim, string hitEffectName)

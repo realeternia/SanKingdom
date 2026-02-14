@@ -342,6 +342,28 @@ public class BattleManager : MonoBehaviour
         return new Vector2Int(x, z);
     }
 
+    public bool IsPositionFree(Chess unit, Vector3 targetPosition)
+    {
+        var ckSize = 7.5f;
+        var findInRange = false;
+        foreach(var ckUnit in chessList)
+        {
+            if(ckUnit == unit)
+                continue;
+            
+            if(Math.Abs(ckUnit.position.x - targetPosition.x) + Math.Abs(ckUnit.position.z - targetPosition.z) < ckSize)
+            {
+                findInRange = true;
+                break;
+            }
+        }
+
+        if(findInRange)
+            return false;
+
+        return true;
+    }
+
     public bool MoveTo(Chess unit, Vector3 targetPosition, bool isForce = false)
     {
         if (isForce)
@@ -352,27 +374,12 @@ public class BattleManager : MonoBehaviour
         }
         else
         { 
-            var ckSize = 7.5f;
-            var findInRange = false;
-            foreach(var ckUnit in chessList)
-            {
-                if(ckUnit == unit)
-                    continue;
-                
-                if(Math.Abs(ckUnit.position.x - targetPosition.x) + Math.Abs(ckUnit.position.z - targetPosition.z) < ckSize)
-                {
-                    findInRange = true;
-                    break;
-                }
-            }
-
-            if(findInRange)
+            if(!IsPositionFree(unit, targetPosition))
                 return false;
-
+            
             unit.SetPosition(targetPosition);
             return true;
         }
-
     }
 
     public bool IsEnemy(int a, int b)
