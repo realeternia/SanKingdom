@@ -15,11 +15,9 @@ public class Chess
 
     public int maxHp = 100;  // 最大生命值
 
-    public int side;
     public bool isHero;
     public int heroId;
     public string chessName = "0";
-    public int pos;
 
     public Vector3 position{ get; private set; }
 
@@ -73,10 +71,9 @@ public class Chess
 
     private List<ChessAction> actions = new List<ChessAction>();
 
-    public void Init(int forceId, int posId, Color c)
+    public void Init(int forceId, Color c)
     {
         this.forceId = forceId;
-        pos = posId;
 
         hp = maxHp;
         if (heroInfo != null) // 英雄
@@ -206,7 +203,7 @@ public class Chess
             return;
 
         // 获取所有Chess组件
-        var allChess = BattleManager.Instance.GetUnitsInRange(position, 0, side, true);
+        var allChess = BattleManager.Instance.GetUnitsInRange(position, 0, forceId, true);
         List<(Chess chess, float distance)> validTargets = new List<(Chess, float)>();
 
         // 收集所有有效目标及其距离
@@ -556,7 +553,7 @@ public class Chess
             viewObj = null;
         }
 
-        if ((side == 1 || side == 2 && !isShadow ))
+        if ((forceId == 1 || forceId == 2 && !isShadow ))
             BGMPlayer.Instance.PlaySound("Sounds/tnt", 7);
     }
 

@@ -19,7 +19,7 @@ public class SkillHitRegion : Skill
 
             targetPos = defender.position;
 
-            var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, -1, targetPos, owner.side, "");
+            var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, owner.forceId, "");
             var summonTime = GetSummonTime();
             magicStub.SetLifeTime(summonTime);
 
@@ -38,7 +38,7 @@ public class SkillHitRegion : Skill
             if(owner == null || owner.hp <= 0)
                 yield break;
 
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetPos, skillCfg.SummonArea, owner.side, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetPos, skillCfg.SummonArea, owner.forceId, true);
             if (unitsInRange.Count > 0)
             {
                 BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);

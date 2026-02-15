@@ -26,7 +26,7 @@ public class SkillBuffExpand : Skill
         
         if (CheckBurst(target))
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.side, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.forceId, true);
             if (unitsInRange.Count > 0)
             {
                 owner.PlayerAnim(skillCfg.Action);

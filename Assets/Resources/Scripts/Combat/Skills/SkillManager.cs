@@ -125,7 +125,7 @@ public static class SkillManager
         {
             if (!string.IsNullOrEmpty(skill.skillCfg.HelpSkill) && !skill.isGivenSkill)
             {
-                var unitsInRange = BattleManager.Instance.GetUnitsMySidePosType(chess.side, chess.pos, true, skill.skillCfg.UnitHelpType);
+                var unitsInRange = BattleManager.Instance.GetUnitsMyForce(chess.position, 0, chess.forceId);
                 unitsInRange.Remove(chess);
                 var helpSkillId = ConfigManager.GetSkillConfig(skill.skillCfg.HelpSkill).Id;
                 foreach (var unit in unitsInRange)

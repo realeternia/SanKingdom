@@ -184,7 +184,7 @@ public class Missile// : MonoBehaviour
         // Check for targets in range
         if (tickTimeReal - lastCheckTime >= 0.2f)
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, owner.side, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, owner.forceId, true);
             unitsInRange.RemoveAll(x => checkedList.Contains(x) || x.hp <= 0); // Each unit only once
             if (unitsInRange.Count > 0)
             {

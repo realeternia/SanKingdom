@@ -113,10 +113,10 @@ public class BattleManager : MonoBehaviour
         cards2.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
 
         for (int i = 0; i < Math.Min(cards1.Count, 12); i++)
-            SpawnHerosForRegion(player1, i, GetSpawnPosition(1, i), cards1[i], 1);
+            SpawnHerosForRegion(player1, GetSpawnPosition(1, i), cards1[i], 1);
 
         for (int i = 0; i < Math.Min(cards2.Count, 12); i++)
-            SpawnHerosForRegion(player2, i, GetSpawnPosition(2, i), cards2[i], 2);
+            SpawnHerosForRegion(player2, GetSpawnPosition(2, i), cards2[i], 2);
 
            //   SpawnHerosForRegion(player1, 0, mapConfig.RegionHeroSide1[0], cards1[0], 1);
            //    SpawnHerosForRegion(player2, 0, mapConfig.RegionHeroSide2[0], cards2[0], 2);
@@ -130,7 +130,7 @@ public class BattleManager : MonoBehaviour
             return new Vector3(455 + (indx / 4) * 15, 7, 245 - (indx % 4) * 20);
     }
 
-    public Chess SpawnUnitsForRegion(Player p, int soldierId, int posId, UnityEngine.Vector3 spawnPos, int side, string imgPath)
+    public Chess SpawnUnitsForRegion(Player p, int soldierId, UnityEngine.Vector3 spawnPos, int side, string imgPath)
     {
         var soldierConfig = SoldierConfig.GetConfig(soldierId);
         ChessViewObj viewObj = null;
@@ -150,7 +150,6 @@ public class BattleManager : MonoBehaviour
 
         chess.id = idCounter;
         chess.isHero = false;
-        chess.side = side;
         chess.chessName = imgPath;
         chess.maxHp = soldierConfig.Hp;
         chess.moveSpeed = soldierConfig.MoveSpeed;
@@ -161,7 +160,7 @@ public class BattleManager : MonoBehaviour
         chess.hitEffect = soldierConfig.HitEffect;
         chess.soldierId = soldierId;
         chess.forceId = p.forceId;
-        chess.Init(p.forceId, posId, p.lineColor);
+        chess.Init(p.forceId, p.lineColor);
 
         chessList.Add(chess);
         chess.SetPosition(spawnPos);
@@ -170,7 +169,7 @@ public class BattleManager : MonoBehaviour
         return chess;
     }
 
-    private Chess SpawnHerosForRegion(Player p, int posId, UnityEngine.Vector3 spawnPoint, BattleCardData heroData, int side)
+    private Chess SpawnHerosForRegion(Player p, UnityEngine.Vector3 spawnPoint, BattleCardData heroData, int side)
     {
         var heroConfig = HeroConfig.GetConfig(heroData.CardId);
         ChessViewObj viewObj = null;
@@ -193,7 +192,6 @@ public class BattleManager : MonoBehaviour
         chess.id = idCounter;
         chess.isHero = true;
         chess.heroId = heroConfig.Id;
-        chess.side = side;
         chess.chessName = heroConfig.Icon;
         chess.hitEffect = heroConfig.HitEffect;
         chess.missileSpeed = heroConfig.MissileSpeed;
@@ -205,7 +203,7 @@ public class BattleManager : MonoBehaviour
             chess.heroInfo = heroInfo;
         }
         chess.CheckInitAttr(heroData.Level, heroData.SoldierNum);
-        chess.Init(p.forceId, posId, p.lineColor);
+        chess.Init(p.forceId, p.lineColor);
 
         chessList.Add(chess);
         chess.SetPosition(spawnPoint);
@@ -390,11 +388,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public bool IsEnemy(int a, int b)
-    {
-        return a != b;
-    }
-
     public void OnUnitDying(Chess dieUnit)
     {
         // 从chessList中移除死亡单位
@@ -404,7 +397,7 @@ public class BattleManager : MonoBehaviour
         hasWin = false;
         // 检查所有阵营是否还有存活单位
         // 创建一个数组来统计每个阵营是否有存活单位，数组索引对应阵营编号减1
-        bool[] sideHasUnits = new bool[2];
+        bool[] sideHasUnits = new bool[playerForceIdList.Count];
         int aliveSideCount = 0;
 
         var unit = GameManager.Instance.GetHero(dieUnit.heroId);
@@ -414,7 +407,15 @@ public class BattleManager : MonoBehaviour
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
             {
-                int sideIndex = chessComponent.side - 1;
+                int sideIndex = -1;
+                for (int i = 0; i < playerForceIdList.Count; i++)
+                {
+                    if (playerForceIdList[i].forceId == chessComponent.forceId)
+                    {
+                        sideIndex = i;
+                        break;
+                    }
+                }
                 if (sideIndex >= 0 && sideIndex < sideHasUnits.Length)
                 {
                     if (!sideHasUnits[sideIndex])
@@ -426,7 +427,7 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        UnityEngine.Debug.Log($"id:{dieUnit.id} dieUnit.side:{dieUnit.side} 存活阵营数:{aliveSideCount}");
+        UnityEngine.Debug.Log($"id:{dieUnit.id} dieUnit.forceId:{dieUnit.forceId} 存活阵营数:{aliveSideCount}");
         // 如果只剩一个阵营有存活单位，显示重启按钮
         if (aliveSideCount <= 1)
         {
@@ -452,7 +453,7 @@ public class BattleManager : MonoBehaviour
     }
 
 
-    public List<Chess> GetUnitsInRange(Vector3 wPos, float range, int mySide, bool findEnemy)
+    public List<Chess> GetUnitsInRange(Vector3 wPos, float range, int myForceId, bool findEnemy)
     {
         Vector2Int center = WorldToGridPosition(wPos, true);
         List<Chess> unitsInRange = new List<Chess>();
@@ -465,12 +466,12 @@ public class BattleManager : MonoBehaviour
                 {
                     if(findEnemy)
                     {
-                        if(IsEnemy(chessComponent.side, mySide))
+                        if(chessComponent.forceId != myForceId)
                             unitsInRange.Add(chessComponent);
                     }
                     else
                     {
-                        if(!IsEnemy(chessComponent.side, mySide)) 
+                        if(chessComponent.forceId == myForceId) 
                             unitsInRange.Add(chessComponent);
                     }
                 }
@@ -495,7 +496,7 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public List<Chess> GetUnitsMySide(Vector3 wPos, float range, int mySide)
+    public List<Chess> GetUnitsMyForce(Vector3 wPos, float range, int myForceId)
     {
         Vector2Int center = WorldToGridPosition(wPos, true);
         List<Chess> unitsInRange = new List<Chess>();
@@ -506,28 +507,14 @@ public class BattleManager : MonoBehaviour
                 Vector2Int chessPos = WorldToGridPosition(chessComponent.position, true);
                 if (range == 0 || Vector2Int.Distance(center, chessPos) <= range)
                 {
-                    if(chessComponent.side == mySide)
+                    if(chessComponent.forceId == myForceId)
                         unitsInRange.Add(chessComponent);
                 }
             }
         }
         return unitsInRange;
-    }
+    } 
 
-    public List<Chess> GetUnitsMySide(int mySide)
-    {
-        List<Chess> unitsInRange = new List<Chess>();
-        foreach (var chessComponent in chessList)
-        {
-            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
-            {
-                if (chessComponent.side == mySide)
-                    unitsInRange.Add(chessComponent);
-            }
-        }
-        return unitsInRange;
-    }
-    
     public List<Chess> GetUnitsByForceId(int forceId)
     {
         List<Chess> unitsInRange = new List<Chess>();
@@ -537,40 +524,6 @@ public class BattleManager : MonoBehaviour
             {
                 if (chessComponent.forceId == forceId)
                     unitsInRange.Add(chessComponent);
-            }
-        }
-        return unitsInRange;
-    }
-
-    public Chess FindByHeroIdAndSide(int heroId, int side)
-    {
-        foreach (var chessComponent in chessList)
-        {
-            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
-            {
-                if(chessComponent.isHero && chessComponent.heroId == heroId && chessComponent.side == side)
-                    return chessComponent;
-            }
-        }   
-        return null;
-    }
-
-    public List<Chess> GetUnitsMySidePosType(int mySide, int pos, bool isHero, int selectType)
-    {
-        List<Chess> unitsInRange = new List<Chess>();
-        foreach (var chessComponent in chessList)
-        {
-            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
-            {
-                if (chessComponent.side == mySide && chessComponent.isHero == isHero)
-                {
-                    if(selectType == 1 && pos / 3 == chessComponent.pos / 3)
-                        unitsInRange.Add(chessComponent);
-                    else if(selectType == 2 && ((pos % 3) == (chessComponent.pos % 3)))
-                        unitsInRange.Add(chessComponent);
-                    else if(selectType == 3)
-                        unitsInRange.Add(chessComponent);
-                }
             }
         }
         return unitsInRange;

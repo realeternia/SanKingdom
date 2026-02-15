@@ -26,7 +26,7 @@ public class SkillBuffExpandPos : Skill
         
         if (CheckBurst(target))
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.side, false);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.forceId, false);
             if (unitsInRange.Count > 0)
             {
                 BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
@@ -47,7 +47,7 @@ public class SkillBuffExpandPos : Skill
        
         if (CheckBurst(target))
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.side, false);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.forceId, false);
             unitsInRange.RemoveAll(x => x.HpRate > 0.9f);
             if (unitsInRange.Count > 0)
             {

@@ -65,7 +65,7 @@ public class Skill
         {
             var myAttr = owner.GetAttr(skillCfg.Attr);
             var defAttr = target.GetAttr(skillCfg.Attr);
-            if (owner.side != target.side)
+            if (owner.forceId != target.forceId)
             {
                 if (myAttr > defAttr)
                     rate *= Math.Min(2, 1 + (myAttr - defAttr) * .02f);

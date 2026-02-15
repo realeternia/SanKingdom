@@ -9,7 +9,7 @@ public class SkillInitMasterShield : Skill
 
     public override void BattleBegin()
     {
-        var unitList = BattleManager.Instance.GetUnitsMySide(owner.position, 0, owner.side);
+        var unitList = BattleManager.Instance.GetUnitsMyForce(owner.position, 0, owner.forceId);
 
         var mySide = HeroConfig.GetConfig(owner.heroId).ForceId;
         var shieldHp = (int)(owner.maxHp * skillCfg.Strength);

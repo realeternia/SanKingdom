@@ -30,7 +30,7 @@ public class SkillHitAround : Skill
             if(hitEffect != null)
                 hitEffect.transform.forward = (targetPos - startPos).normalized;
 
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(startPos, skillCfg.Range, owner.side, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(startPos, skillCfg.Range, owner.forceId, true);
             unitsInRange.Remove(defender);
             
             // 筛选startPos到targetPos方向，左右各60°开角内的单位

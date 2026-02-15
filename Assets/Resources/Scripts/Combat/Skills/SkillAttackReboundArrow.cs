@@ -11,7 +11,7 @@ public class SkillAttackReboundArrow : Skill
 
     public override void OnAttack(Chess defender, string damType, int damage)
     {
-        var unitsInRange = BattleManager.Instance.GetUnitsInRange(defender.position, skillCfg.Range, owner.side, true);
+        var unitsInRange = BattleManager.Instance.GetUnitsInRange(defender.position, skillCfg.Range, owner.forceId, true);
         unitsInRange.Remove(defender);
 
         if (unitsInRange.Count > 0 && CheckBurst(defender))

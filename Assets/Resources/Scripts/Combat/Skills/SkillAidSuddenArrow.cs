@@ -13,7 +13,7 @@ public class SkillAidSuddenArrow : Skill
 
     public override bool CheckAidSkill(int tickIndex)
     {
-        var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range, owner.side, true);
+        var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range, owner.forceId, true);
         unitsInRange.Remove(owner);
 
         if (unitsInRange.Count == 0)

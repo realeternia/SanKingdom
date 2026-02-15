@@ -11,7 +11,7 @@ public class SkillInitAttrZhiheng : Skill
     public override void BattleBegin()
     {
         // 获取我方所有单位
-        var unitList = BattleManager.Instance.GetUnitsMySide(owner.position, 0, owner.side);
+        var unitList = BattleManager.Instance.GetUnitsMyForce(owner.position, 0, owner.forceId);
         
         // 统计我方hero的不同Job数量
         System.Collections.Generic.HashSet<string> uniqueJobs = new System.Collections.Generic.HashSet<string>();

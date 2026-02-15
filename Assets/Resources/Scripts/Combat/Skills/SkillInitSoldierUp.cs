@@ -12,7 +12,7 @@ public class SkillInitSoldierUp : Skill
     {
         UnityEngine.Debug.Log("SkillInitSoldierUp BattleBegin");
 
-        var unitsInRange = BattleManager.Instance.GetUnitsMySide(owner.position, skillCfg.Range, owner.side);
+        var unitsInRange = BattleManager.Instance.GetUnitsMyForce(owner.position, skillCfg.Range, owner.forceId);
         var atkAdd = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
         var hpAdd = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillAttrRate);
         owner.PlayerAnim(skillCfg.Action);
