@@ -25,6 +25,7 @@ public class BattleManager : MonoBehaviour
     private int cityDefId;
 
     private List<Chess> chessList = new List<Chess>(); // 所有棋子
+    private List<Missile> missileList = new List<Missile>(); // 所有导弹
     private List<int> attackHeroIds = new List<int>();
     private List<int> defHeroIds = new List<int>();
 
@@ -64,6 +65,7 @@ public class BattleManager : MonoBehaviour
         defHeroIds.AddRange(cards2.Select(x => x.CardId));
 
         chessList.Clear();
+        missileList.Clear();
 
         var newMapId = 1;
         gameFinish = false;
@@ -225,8 +227,7 @@ public class BattleManager : MonoBehaviour
         return chess;
     }
 
-    public static float tickTime = 0.025f;
-    public static float tickTimeReal = 0.025f; //加速功能
+    public static float tickTimeReal = 0.1f; //加速功能
     
     private IEnumerator GameUpdate()
     {
@@ -240,11 +241,21 @@ public class BattleManager : MonoBehaviour
             speed = 400;
         while (!gameFinish)
         {
-            yield return new WaitForSeconds(tickTimeReal);
+            for (int i = 0; i < 4; i++)
+            {
+                yield return new WaitForSeconds(tickTimeReal / 4); //高频帧，给missile这种表现用
+                for (int j = 0; j < missileList.Count; j++)
+                {
+                    var missile = missileList[j];
+                    if (missile != null)
+                        missile.LogicUpdate(tickIndex, (float)j / 4, 1f/40);
+                }   
+            }
+
             //  var sw = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < speed; i++)
             {
-                coroutineManager.Update(tickTime);
+                coroutineManager.Update(tickTimeReal);
 
                 foreach (var chess in chessList.ToArray())
                 {
@@ -304,6 +315,7 @@ public class BattleManager : MonoBehaviour
     {
         var missile = new Missile();
         missile.Init(sourceChess, sourceChess.position, 1, effectName);
+        missileList.Add(missile);
         missile.MoveToTarget(targetChess, sourceChess.missileSpeed, sourceChess.missileHight);
     }
 
@@ -312,6 +324,7 @@ public class BattleManager : MonoBehaviour
         var missile = new Missile();
         missile.Init(sourceChess, startPos, 1, effectName);
         missile.SetSkillInfo(skillId, damage);
+        missileList.Add(missile);
         missile.MoveToTarget(targetChess, Mathf.Max(sourceChess.missileSpeed, 14), sourceChess.missileHight);
     }    
 
@@ -320,9 +333,14 @@ public class BattleManager : MonoBehaviour
         var missile = new Missile();
         missile.Init(sourceChess, sourceChess.position, size, effectName);
         missile.SetSkillInfo(skillId, damage);
+        missileList.Add(missile);
         missile.MoveToDirection(targetPos, time, speed);
     }
-
+    
+    public void RemoveMissile(Missile missile)
+    {
+        missileList.Remove(missile);
+    }
 
     // 世界坐标转格子坐标
     public Vector2Int WorldToGridPosition(Vector3 worldPosition, bool FloorToInt)
@@ -599,6 +617,7 @@ public class BattleManager : MonoBehaviour
     {
         coroutineManager.StopCoroutine(routine);
     }
+
 
 
 }

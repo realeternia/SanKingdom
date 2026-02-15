@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
@@ -19,6 +18,28 @@ public class Missile// : MonoBehaviour
 
     public Vector3 position;
 
+    // Movement state variables
+    private enum MoveState { None, ToTarget, ToDirection }
+    private MoveState moveState = MoveState.None;
+
+    // ToTarget variables
+    private Chess targetChess;
+    private float missileSpeed;
+    private float missileHight;
+    private float journeyLength;
+    private float totalLen;
+    private float realLen;
+    private float maxY;
+
+    // ToDirection variables
+    private Vector3 direction;
+    private float timeLimit;
+    private float detectArea;
+    private int targetCount;
+    private float liveTick;
+    private float lastCheckTime;
+    private List<Chess> checkedList;
+
     public void Init(Chess sourceChess, Vector3 startPos, float size, string effectName)
     {
         this.effectName = effectName;
@@ -36,14 +57,18 @@ public class Missile// : MonoBehaviour
             if (effPrefab == null)
                 effPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
             GameObject missileEffect = UnityEngine.Object.Instantiate(effPrefab, position, effPrefab.transform.rotation, viewObj.transform);
-            //viewObj.transform.rotation = Quaternion.LookRotation(targetPos - position);
             viewObj.transform.position = position;
             missileEffect.transform.localScale = size * effPrefab.transform.localScale;   
             viewObj.ownerName = owner.viewObj.name;
 
             if (missileEffect.TryGetComponent(out MissileEffName missileViewObj))
                 hitEffectName = missileViewObj.hitEffectName;            
-        }        
+        }
+
+        // Reset state
+        moveState = MoveState.None;
+        targetChess = null;
+        checkedList = new List<Chess>();
     }
 
     public void SetSkillInfo(int skillId, int damage)
@@ -56,66 +81,17 @@ public class Missile// : MonoBehaviour
     {
         if(viewObj != null && target != null && target.viewObj != null)
             viewObj.targetName = target.viewObj.name;
-        BattleManager.Instance.StartNLCoroutine(MoveMissileToTarget(target, missileSpeed, missileHight, BattleManager.tickTime));
-    }
 
-    // 定义协程方法，控制导弹移动
-    IEnumerator MoveMissileToTarget( Chess target, float missileSpeed, float missileHight, float tickTime)
-    {
+        // Initialize state for moving to target
+        moveState = MoveState.ToTarget;
+        targetChess = target;
+        this.missileSpeed = missileSpeed;
+        this.missileHight = missileHight;
         var targetPos = target.position;
-
-        float journeyLength = BattleManager.Instance.GetRange(position, targetPos);
-        float totalLen = journeyLength;
-        float realLen = 0;
-        
-        float speed = missileSpeed; // 导弹移动速度
-
-        float maxY = missileHight;
-        
-        var lastTime = BattleManager.Instance.tickIndex;
-        while (!BattleManager.Instance.CheckInRange(position, targetPos, 0.5f))
-        {
-            // if (owner == null || owner.hp <= 0)
-            // {
-            //     Destroy(missile);
-            //     yield break;
-            // }
-            if(target != null && target.hp > 0)
-                targetPos = target.position + new Vector3(0f, 3f, 0f); //修正目标点
-            float distCovered = (BattleManager.Instance.tickIndex - lastTime) * speed;
-            journeyLength = BattleManager.Instance.GetRange(position, targetPos);
-            float fractionOfJourney = distCovered / journeyLength;
-            
-            if (maxY > 0)
-            {
-                Vector3 horizontalPos = Vector3.Lerp(position, targetPos, fractionOfJourney);
-
-                // UnityEngine.Debug.Log("fractionOfJourney: " + fractionOfJourney);
-                realLen += distCovered * 1.1f;
-                if(realLen > totalLen)
-                    realLen = totalLen;
-
-                // 计算抛物线高度
-                float parabolaHeight = maxY * Mathf.Sin((realLen / totalLen) * Mathf.PI);
-                horizontalPos.y += parabolaHeight;
-
-                SetPosition(horizontalPos);
-                SetDirection(Quaternion.LookRotation(targetPos - position));
-            }
-            else
-            {
-                // 直线路径
-                SetPosition(Vector3.Lerp(position, targetPos, fractionOfJourney));
-            }
-            lastTime = BattleManager.Instance.tickIndex;
-            yield return new NLWaitForSeconds(tickTime);
-        }
-
-        OnCrash(target);
-        if (viewObj != null)
-        {
-            UnityEngine.Object.Destroy(viewObj.gameObject);
-        }
+        journeyLength = BattleManager.Instance.GetRange(position, targetPos);
+        totalLen = journeyLength;
+        realLen = 0;
+        maxY = missileHight;
     }
 
     public void MoveToDirection(Vector3 targetPos, float time, float missileSpeed)
@@ -129,63 +105,118 @@ public class Missile// : MonoBehaviour
             targetCount = skillCfg.TargetCount;
         }
 
-        BattleManager.Instance.StartNLCoroutine(MoveMissileToDirection((targetPos - position).normalized, time, missileSpeed, detectArea, targetCount, BattleManager.tickTime));
-    }    
-
- // 让hitEffect飞向targetPos的协程
-    IEnumerator MoveMissileToDirection(Vector3 direction, float time, float speed, float detectArea, int targetCount, float tickTime)
-    {
+        // Initialize state for moving to direction
+        moveState = MoveState.ToDirection;
+        direction = (targetPos - position).normalized;
         direction.y = 0;
-        float timePast = 0;
-        float lastCheckTime = 0.2f;
-        var checkedList = new List<Chess>();
+        timeLimit = time;
+        this.missileSpeed = missileSpeed;
+        this.detectArea = detectArea;
+        this.targetCount = targetCount;
+        liveTick = 0;
+        checkedList = new List<Chess>();
+    }
 
-        var lastTime = BattleManager.Instance.tickIndex;
-        while (true)
+    public void LogicUpdate(int tickIndex, float indexMini, float timeElapsed)
+    {
+        float tickReal = tickIndex + indexMini;
+        switch (moveState)
         {
-            // if (owner == null || owner.hp <= 0)
-            //     yield break;
+            case MoveState.ToTarget:
+                UpdateMoveToTarget(tickReal, timeElapsed);
+                break;
+            case MoveState.ToDirection:
+                UpdateMoveToDirection(tickReal, timeElapsed);
+                break;
+        }
+    }
 
-            // 计算本次移动的距离（基于速度和时间）
-            var timeElapsed = BattleManager.Instance.tickIndex - lastTime;
-            float moveDistance = speed * timeElapsed;
-            // 按方向和距离移动 
-            SetPosition(position + direction * moveDistance);
-            SetDirection(Quaternion.LookRotation(direction));
-
-            if (timePast - lastCheckTime >= 0.2f)
-            {
-                var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, owner.side, true);
-                unitsInRange.RemoveAll(x => checkedList.Contains(x) || x.hp <= 0); //每个单位结算一次
-                if (unitsInRange.Count > 0)
-                {
-                    if (unitsInRange.Count + checkedList.Count > targetCount)
-                        BattleManager.Instance.RandomSelect(unitsInRange, targetCount - checkedList.Count);
-
-                    foreach (var unit in unitsInRange)
-                    {
-                        checkedList.Add(unit);
-                        OnCrash(unit);
-                    }
-                }
-
-                lastCheckTime = timePast;
-            }
-
-            timePast += timeElapsed;
-            if (timePast >= time || checkedList.Count >= targetCount)
-            {
-                if (viewObj != null)
-                {
-                    UnityEngine.Object.Destroy(viewObj.gameObject);
-                }
-                yield break;
-            }
-
-            lastTime = BattleManager.Instance.tickIndex; 
-            yield return new NLWaitForSeconds(tickTime);
+    private void UpdateMoveToTarget(float tickTimeReal, float timeElapsed)
+    {
+        if (targetChess == null || targetChess.hp <= 0)
+        {
+            Cleanup();
+            return;
         }
 
+        var targetPos = targetChess.position + new Vector3(0f, 3f, 0f); // 修正目标点
+        if (BattleManager.Instance.CheckInRange(position, targetPos, 0.5f))
+        {
+            OnCrash(targetChess, (int)Math.Floor(tickTimeReal));
+            Cleanup();
+            return;
+        }
+
+        // Calculate movement
+        float distCovered = timeElapsed * missileSpeed;
+        journeyLength = BattleManager.Instance.GetRange(position, targetPos);
+        float fractionOfJourney = distCovered / journeyLength;
+        
+        if (maxY > 0)
+        {
+            Vector3 horizontalPos = Vector3.Lerp(position, targetPos, fractionOfJourney);
+            realLen += distCovered * 1.1f;
+            if(realLen > totalLen)
+                realLen = totalLen;
+
+            // Calculate parabola height
+            float parabolaHeight = maxY * Mathf.Sin((realLen / totalLen) * Mathf.PI);
+            horizontalPos.y += parabolaHeight;
+
+            SetPosition(horizontalPos);
+            SetDirection(Quaternion.LookRotation(targetPos - position));
+        }
+        else
+        {
+            // Straight path
+            SetPosition(Vector3.Lerp(position, targetPos, fractionOfJourney));
+        }
+    }
+
+    private void UpdateMoveToDirection(float tickTimeReal, float timeElapsed)
+    {
+        // Calculate movement distance based on speed and time
+        float moveDistance = missileSpeed * timeElapsed;
+        // Move in direction
+        SetPosition(position + direction * moveDistance);
+        SetDirection(Quaternion.LookRotation(direction));
+
+        // Check for targets in range
+        if (tickTimeReal - lastCheckTime >= 0.2f)
+        {
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, owner.side, true);
+            unitsInRange.RemoveAll(x => checkedList.Contains(x) || x.hp <= 0); // Each unit only once
+            if (unitsInRange.Count > 0)
+            {
+                if (unitsInRange.Count + checkedList.Count > targetCount)
+                    BattleManager.Instance.RandomSelect(unitsInRange, targetCount - checkedList.Count);
+
+                foreach (var unit in unitsInRange)
+                {
+                    checkedList.Add(unit);
+                    OnCrash(unit, (int)Math.Floor(tickTimeReal));
+                }
+            }
+
+            lastCheckTime = tickTimeReal;
+        }
+
+        liveTick += timeElapsed;
+        if (liveTick >= timeLimit || checkedList.Count >= targetCount)
+        {
+            Cleanup();
+            return;
+        }
+    }
+
+    private void Cleanup()
+    {
+        if (viewObj != null)
+        {
+            UnityEngine.Object.Destroy(viewObj.gameObject);
+        }
+        BattleManager.Instance.RemoveMissile(this);
+        moveState = MoveState.None;
     }
 
     public void SetPosition(Vector3 pos)
@@ -201,14 +232,14 @@ public class Missile// : MonoBehaviour
             viewObj.transform.rotation = dir;
     }    
 
-    private void OnCrash(Chess target)
+    private void OnCrash(Chess target, int tickIndex)
     {
         if (target == null || target.hp <= 0 || owner == null || owner.hp <= 0)
             return;
 
         if (skillId == 0)
         {
-            owner.Attack(target, hitEffectName, BattleManager.Instance.tickIndex);
+            owner.Attack(target, hitEffectName, tickIndex);
         }
         else
         {
