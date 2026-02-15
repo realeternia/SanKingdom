@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using CommonConfig;
 using UnityEngine;
 
@@ -204,7 +205,15 @@ public class Player
         if (devConfig.FindEnemy)
         {
             // 开始战斗
-            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), cityId, targetCityId, citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList());
+            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), (hasWin) => {
+                // 战斗胜利后的逻辑
+                if (hasWin)
+                {
+                    GameManager.Instance.GetCity(targetCityId).Occupy(citySrc.GetPlayer().forceId, citySrc.GetBattleHeroList(validHeroList).Select(x => x.CardId).ToList(),
+                        cityDest.GetPlayer().forceId, cityDest.GetBattleHeroList().Select(x => x.CardId).ToList());
+                    GameManager.Instance.GetCity(cityId).RecalculateHeros(); //因为有一帮人出去了
+                }
+            });
         }
         else
         {

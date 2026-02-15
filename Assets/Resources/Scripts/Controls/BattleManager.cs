@@ -20,14 +20,9 @@ public class BattleManager : MonoBehaviour
 
     private List<int> playerForceIdList = new List<int>();
     private Dictionary<int, FoodInfo> forceId2FoodDict = new Dictionary<int, FoodInfo>();
-    private int cityAtkId;
-
-    private int cityDefId;
 
     private List<Chess> chessList = new List<Chess>(); // 所有棋子
     private List<Missile> missileList = new List<Missile>(); // 所有导弹
-    private List<int> attackHeroIds = new List<int>();
-    private List<int> defHeroIds = new List<int>();
 
     private NLCoroutineManager coroutineManager = new NLCoroutineManager();
 
@@ -40,6 +35,8 @@ public class BattleManager : MonoBehaviour
     public bool quickMode = true;
     public bool showUI = true;
 
+    private Action<bool> battleEndCallback;
+
     public BattleUIManager battleUIManager;
 
     private void Awake()
@@ -47,22 +44,16 @@ public class BattleManager : MonoBehaviour
         Instance = this;
     }
 
-    public void BattleBegin(Player player1, Player player2, int cityAtkId, int cityDefId, List<BattleCardData> cards1, List<BattleCardData> cards2)
+    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, Action<bool> callback = null)
     {
+        battleEndCallback = callback;
         playerForceIdList.Clear();
         playerForceIdList.Add(player1.forceId);
         playerForceIdList.Add(player2.forceId);
-        this.cityAtkId = cityAtkId;
-        this.cityDefId = cityDefId;
 
         forceId2FoodDict.Clear(); //todo 这里需要传进来
         forceId2FoodDict.Add(player1.forceId, new FoodInfo() { food = 100, maxFood = 100 });
         forceId2FoodDict.Add(player2.forceId, new FoodInfo() { food = 100, maxFood = 100 });
-
-        attackHeroIds.Clear();
-        defHeroIds.Clear();
-        attackHeroIds.AddRange(cards1.Select(x => x.CardId));
-        defHeroIds.AddRange(cards2.Select(x => x.CardId));
 
         chessList.Clear();
         missileList.Clear();
@@ -287,6 +278,12 @@ public class BattleManager : MonoBehaviour
 
         if(showUI)
             battleUIManager.OnBattleEnd(playerForceIdList, hasWin);
+
+        // 调用战斗结束回调
+        if (battleEndCallback != null)
+        {
+            battleEndCallback(hasWin);
+        }
     }
 
     private void RoundFoodCost(int forceId)
@@ -442,12 +439,6 @@ public class BattleManager : MonoBehaviour
         {
             gameFinish = true;
             hasWin = sideHasUnits[0];
-
-            if (hasWin)
-            {
-                GameManager.Instance.GetCity(cityDefId).Occupy(playerForceIdList[0], attackHeroIds, playerForceIdList[1], defHeroIds);
-                GameManager.Instance.GetCity(cityAtkId).RecalculateHeros(); //因为有一帮人出去了
-            }
         }
     }
 
