@@ -10,6 +10,8 @@ using UnityEngine.UI;
 public class Chess
 {
     public ChessViewObj viewObj;
+    public HeroInfo heroInfo;
+
     public int id;
     public int forceId;
 
@@ -43,7 +45,7 @@ public class Chess
     public int attackDamage = 30;
     public string hitEffect;
     public int missileSpeed = 10;
-    public float missileHight;
+    public float missileHeight;
     public int soldierId;
     private int soldierLevel = 0;
 
@@ -54,12 +56,10 @@ public class Chess
     private int lastAttackTime = 0;
     private int lastTargetUpdateTick; // 上次更新目标的时间
 
-    public HeroInfo heroInfo;
 
     public List<Skill> skills = new List<Skill>();
 
     public List<Buff> buffs = new List<Buff>();
-    public List<BuffTime> buffTimes = new List<BuffTime>(); //记录最近20s的buff记录
     public int noMoveCount = 0;
     public int noActionCount = 0;
 
@@ -68,8 +68,6 @@ public class Chess
 
     private int regeTickCount; //1s回复一次
     public int regeHp; //回复血量
-
-    private List<ChessAction> actions = new List<ChessAction>();
 
     public void Init(int forceId, Color c)
     {
@@ -348,7 +346,7 @@ public class Chess
                     TargetId = targetChess != null ? targetChess.id : -1,
                     TargetPosition = moveDest
                 };
-                actions.Add(moveAction);
+                BattleManager.Instance.AddChessAction(moveAction);
 
                 BattleManager.Instance.MoveTo(this, moveDest, true);
             }
@@ -491,7 +489,7 @@ public class Chess
             TargetId = victim.id,
             Damage = damage,
         };
-        actions.Add(attackAction);
+        BattleManager.Instance.AddChessAction(attackAction);
 
         if(!string.IsNullOrEmpty(effect))
             EffectManager.PlayHitEffect(this, victim, effect);
@@ -629,21 +627,6 @@ public class Chess
 
     public void AddBuff(Buff buff, Chess caster, float time)
     {
-        // 计算buffTimes中所有20秒以内且buffId等于当前buff.id的buff的时间和
-        float buffCount = 0;
-        var nowTick = BattleManager.Instance.tickIndex;
-        buffTimes.RemoveAll(buff => nowTick - buff.tick > 1200); // 30秒 = 30 / 0.025 = 1200 ticks
-        foreach (var existingBuffTime in buffTimes)
-        {
-            if (existingBuffTime.id == buff.id)
-                buffCount++;
-        }
-        if(buffCount >= 3)
-        {
-            time = Math.Max(.1f, time * (10 - buffCount) * .1f);
-            buff.SetTime(time);
-        }
-
         // 保留原有的buff刷新逻辑
         foreach(var item in buffs)
         {
@@ -656,7 +639,6 @@ public class Chess
 
         buffs.Add(buff);
         buff.OnAdd(this, caster);
-        buffTimes.Add(new BuffTime{id = buff.id, tick = BattleManager.Instance.tickIndex});
     }
 
     public void AddColorEffect(Color start, Color end)

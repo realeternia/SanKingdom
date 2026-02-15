@@ -13,8 +13,6 @@ public class BattleUIManager : MonoBehaviour
     public Camera uiCamera;
     public bool isDebug = true; //自动判定的，不要改
     public GameObject NodeUnits;
-
-    private MapConfig mapConfig;
    
     public HeroInfoGroup heroInfoGroup;
     public Button buttonRestart;

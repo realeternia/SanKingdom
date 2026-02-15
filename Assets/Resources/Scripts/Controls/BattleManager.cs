@@ -19,12 +19,14 @@ public class BattleManager : MonoBehaviour
 
     public int gridCellSize = 3; // 每个格子的实际大小(米)
 
-    private List<FoodInfo> playerForceIdList = new List<FoodInfo>();
+    private List<FoodInfo> playerInfoList = new List<FoodInfo>();
 
     private List<Chess> chessList = new List<Chess>(); // 所有棋子
     private List<Missile> missileList = new List<Missile>(); // 所有导弹
 
     private NLCoroutineManager coroutineManager = new NLCoroutineManager();
+
+    private List<ChessAction> actions = new List<ChessAction>();    
 
     private bool gameFinish = false;
     private bool hasWin;    
@@ -47,9 +49,9 @@ public class BattleManager : MonoBehaviour
     public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, Action<bool> callback = null)
     {
         battleEndCallback = callback;
-        playerForceIdList.Clear();
-        playerForceIdList.Add(new FoodInfo() { forceId = player1.forceId, food = 100, maxFood = 100 });
-        playerForceIdList.Add(new FoodInfo() { forceId = player2.forceId, food = 100, maxFood = 100 });
+        playerInfoList.Clear();
+        playerInfoList.Add(new FoodInfo() { forceId = player1.forceId, food = 100, maxFood = 100 });
+        playerInfoList.Add(new FoodInfo() { forceId = player2.forceId, food = 100, maxFood = 100 });
 
         chessList.Clear();
         missileList.Clear();
@@ -195,7 +197,7 @@ public class BattleManager : MonoBehaviour
         chess.chessName = heroConfig.Icon;
         chess.hitEffect = heroConfig.HitEffect;
         chess.missileSpeed = heroConfig.MissileSpeed;
-        chess.missileHight = heroConfig.MissileHight;
+        chess.missileHeight = heroConfig.MissileHight;
 
         if (showUI)
         {
@@ -252,15 +254,15 @@ public class BattleManager : MonoBehaviour
                 // 每个回合结束，玩家消耗食物
                 if (tickIndex - lastFoodDeductionTick >= 200) // 每5秒扣除一次粮食 (5s / 0.025s = 200 ticks)
                 {
-                    foreach (var foodInfo in playerForceIdList)
+                    foreach (var foodInfo in playerInfoList)
                     {
                         RoundFoodCost(foodInfo);
                     }
                     lastFoodDeductionTick = tickIndex;
                 }
             }
-            var leftSoldierTotal = chessList.Sum(x => x.forceId == playerForceIdList[0].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
-            var rightSoldierTotal = chessList.Sum(x => x.forceId == playerForceIdList[1].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
+            var leftSoldierTotal = chessList.Sum(x => x.forceId == playerInfoList[0].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
+            var rightSoldierTotal = chessList.Sum(x => x.forceId == playerInfoList[1].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
             BattleInfoTop.Instance.UpdateSoldierCount(leftSoldierTotal, rightSoldierTotal);
             //    sw.Stop();
             //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
@@ -275,7 +277,7 @@ public class BattleManager : MonoBehaviour
         }
 
         if(showUI)
-            battleUIManager.OnBattleEnd(playerForceIdList.Select(foodInfo => foodInfo.forceId).ToList(), hasWin);
+            battleUIManager.OnBattleEnd(playerInfoList.Select(foodInfo => foodInfo.forceId).ToList(), hasWin);
 
         // 调用战斗结束回调
         if (battleEndCallback != null)
@@ -304,7 +306,7 @@ public class BattleManager : MonoBehaviour
         var missile = new Missile();
         missile.Init(sourceChess, sourceChess.position, 1, effectName);
         missileList.Add(missile);
-        missile.MoveToTarget(targetChess, sourceChess.missileSpeed, sourceChess.missileHight);
+        missile.MoveToTarget(targetChess, sourceChess.missileSpeed, sourceChess.missileHeight);
     }
 
     public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage, string effectName)
@@ -313,7 +315,7 @@ public class BattleManager : MonoBehaviour
         missile.Init(sourceChess, startPos, 1, effectName);
         missile.SetSkillInfo(skillId, damage);
         missileList.Add(missile);
-        missile.MoveToTarget(targetChess, Mathf.Max(sourceChess.missileSpeed, 14), sourceChess.missileHight);
+        missile.MoveToTarget(targetChess, Mathf.Max(sourceChess.missileSpeed, 14), sourceChess.missileHeight);
     }    
 
     public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, float speed, float size, int skillId, int damage, string effectName)
@@ -397,7 +399,7 @@ public class BattleManager : MonoBehaviour
         hasWin = false;
         // 检查所有阵营是否还有存活单位
         // 创建一个数组来统计每个阵营是否有存活单位，数组索引对应阵营编号减1
-        bool[] sideHasUnits = new bool[playerForceIdList.Count];
+        bool[] sideHasUnits = new bool[playerInfoList.Count];
         int aliveSideCount = 0;
 
         var unit = GameManager.Instance.GetHero(dieUnit.heroId);
@@ -408,9 +410,9 @@ public class BattleManager : MonoBehaviour
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
             {
                 int sideIndex = -1;
-                for (int i = 0; i < playerForceIdList.Count; i++)
+                for (int i = 0; i < playerInfoList.Count; i++)
                 {
-                    if (playerForceIdList[i].forceId == chessComponent.forceId)
+                    if (playerInfoList[i].forceId == chessComponent.forceId)
                     {
                         sideIndex = i;
                         break;
@@ -531,7 +533,7 @@ public class BattleManager : MonoBehaviour
 
     public FoodInfo GetFoodInfo(int forceId)
     {
-        return playerForceIdList.Find(foodInfo => foodInfo.forceId == forceId);
+        return playerInfoList.Find(foodInfo => foodInfo.forceId == forceId);
     }
 
     public void AddBattleText(string text, UnityEngine.Vector3 worldPos, UnityEngine.Vector2 speed, Color color, int duration)
@@ -553,6 +555,11 @@ public class BattleManager : MonoBehaviour
     public void StopNLCoroutine(IEnumerator routine)
     {
         coroutineManager.StopCoroutine(routine);
+    }
+
+    public void AddChessAction(ChessAction action)
+    {
+        actions.Add(action);
     }
 
 
