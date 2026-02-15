@@ -9,6 +9,7 @@ public class BattleManager : MonoBehaviour
 {
     public class FoodInfo
     {
+        public int forceId;
         public int food;
         public int maxFood;
     }
@@ -18,8 +19,7 @@ public class BattleManager : MonoBehaviour
 
     public int gridCellSize = 3; // 每个格子的实际大小(米)
 
-    private List<int> playerForceIdList = new List<int>();
-    private Dictionary<int, FoodInfo> forceId2FoodDict = new Dictionary<int, FoodInfo>();
+    private List<FoodInfo> playerForceIdList = new List<FoodInfo>();
 
     private List<Chess> chessList = new List<Chess>(); // 所有棋子
     private List<Missile> missileList = new List<Missile>(); // 所有导弹
@@ -48,12 +48,8 @@ public class BattleManager : MonoBehaviour
     {
         battleEndCallback = callback;
         playerForceIdList.Clear();
-        playerForceIdList.Add(player1.forceId);
-        playerForceIdList.Add(player2.forceId);
-
-        forceId2FoodDict.Clear(); //todo 这里需要传进来
-        forceId2FoodDict.Add(player1.forceId, new FoodInfo() { food = 100, maxFood = 100 });
-        forceId2FoodDict.Add(player2.forceId, new FoodInfo() { food = 100, maxFood = 100 });
+        playerForceIdList.Add(new FoodInfo() { forceId = player1.forceId, food = 100, maxFood = 100 });
+        playerForceIdList.Add(new FoodInfo() { forceId = player2.forceId, food = 100, maxFood = 100 });
 
         chessList.Clear();
         missileList.Clear();
@@ -256,13 +252,17 @@ public class BattleManager : MonoBehaviour
                 tickIndex++;
 
                 // 每个回合结束，玩家消耗食物
-                foreach (var forceId in playerForceIdList)
+                if (tickIndex - lastFoodDeductionTick >= 200) // 每5秒扣除一次粮食 (5s / 0.025s = 200 ticks)
                 {
-                    RoundFoodCost(forceId);
+                    foreach (var foodInfo in playerForceIdList)
+                    {
+                        RoundFoodCost(foodInfo);
+                    }
+                    lastFoodDeductionTick = tickIndex;
                 }
             }
-            var leftSoldierTotal = chessList.Sum(x => x.forceId == playerForceIdList[0] && x.isHero ? Math.Max(0, x.hp) : 0);
-            var rightSoldierTotal = chessList.Sum(x => x.forceId == playerForceIdList[1] && x.isHero ? Math.Max(0, x.hp) : 0);
+            var leftSoldierTotal = chessList.Sum(x => x.forceId == playerForceIdList[0].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
+            var rightSoldierTotal = chessList.Sum(x => x.forceId == playerForceIdList[1].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
             BattleInfoTop.Instance.UpdateSoldierCount(leftSoldierTotal, rightSoldierTotal);
             //    sw.Stop();
             //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
@@ -277,7 +277,7 @@ public class BattleManager : MonoBehaviour
         }
 
         if(showUI)
-            battleUIManager.OnBattleEnd(playerForceIdList, hasWin);
+            battleUIManager.OnBattleEnd(playerForceIdList.Select(foodInfo => foodInfo.forceId).ToList(), hasWin);
 
         // 调用战斗结束回调
         if (battleEndCallback != null)
@@ -286,26 +286,19 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private void RoundFoodCost(int forceId)
+    private void RoundFoodCost(FoodInfo foodInfo)
     {
         // 粮食扣除逻辑
-        if (tickIndex - lastFoodDeductionTick >= 200) // 每5秒扣除一次粮食 (5s / 0.025s = 200 ticks)
+        // 计算时间差，每5s，扣10点粮食
+        if(foodInfo.food < 10)
         {
-            var food = forceId2FoodDict[forceId];
-            // 计算时间差，每5s，扣10点粮食
-            if(food.food < 10)
-            {
-                var units = GetUnitsByForceId(forceId); //todo
-                foreach(var unit in units)
-                    unit.LackFood((float)(10 - food.food) / 10);
-            }
-            forceId2FoodDict[forceId].food -= 10;
-            if (forceId2FoodDict[forceId].food < 0)
-                forceId2FoodDict[forceId].food = 0;
-
-            // 更新上次扣除粮食的时间
-            lastFoodDeductionTick = tickIndex;
+            var units = GetUnitsByForceId(foodInfo.forceId); //todo
+            foreach(var unit in units)
+                unit.LackFood((float)(10 - foodInfo.food) / 10);
         }
+        foodInfo.food -= 10;
+        if (foodInfo.food < 0)
+            foodInfo.food = 0;
     }    
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess, string effectName)
@@ -585,7 +578,7 @@ public class BattleManager : MonoBehaviour
 
     public FoodInfo GetFoodInfo(int forceId)
     {
-        return forceId2FoodDict[forceId];
+        return playerForceIdList.Find(foodInfo => foodInfo.forceId == forceId);
     }
 
     public void AddBattleText(string text, UnityEngine.Vector3 worldPos, UnityEngine.Vector2 speed, Color color, int duration)
