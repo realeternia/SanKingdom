@@ -7,11 +7,11 @@ using UnityEngine;
 /// <summary>
 /// 技能类，处理技能相关逻辑
 /// </summary>
-
 [Serializable]
-public class Skill
+public class Skill : IRecoverable
 {
     public int id;
+    public int ownerId;
     [NonSerialized]
     public Chess owner;
     public bool isGivenSkill; //别人给的技能
@@ -26,7 +26,14 @@ public class Skill
     {
         this.id = id;
         this.owner = unit;
+        ownerId = unit.id;
 
+        skillCfg = SkillConfig.GetConfig(id);
+    }
+
+    public void OnRecover()
+    {
+        owner = BattleManager.Instance.GetChess(ownerId);
         skillCfg = SkillConfig.GetConfig(id);
     }
 

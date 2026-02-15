@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [Serializable]
-public class Chess
+public class Chess : IRecoverable
 {
     [NonSerialized]
     public ChessViewObj viewObj;
@@ -93,7 +93,51 @@ public class Chess
                     skills.Add(SkillManager.CreateSkill(skillId, this));
             }
         }
+
+        // 创建UI
+        if (BattleManager.Instance.showUI)
+        {
+            Player player = GameManager.Instance.GetPlayer(forceId);
+            if (isHero)
+            {
+                var heroCfg = HeroConfig.GetConfig(heroId);
+                GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
+                GameObject unitModel = UnityEngine.Object.Instantiate(heroPrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
+                unitModel.name = $"Hero_{forceId}_{id}";
+                unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+
+                viewObj = unitModel.GetComponent<ChessViewObj>();
+                viewObj.Init(this, player.lineColor);
+
+                var heroInfo = BattleManager.Instance.battleUIManager.heroInfoGroup.AddHero(forceId, heroId, level);
+                heroInfo.SetHpRate(maxHp, maxHp);
+                this.heroInfo = heroInfo;
+            }
+            else
+            {
+                var soldierConfig = SoldierConfig.GetConfig(soldierId);
+                GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
+                GameObject unitModel = UnityEngine.Object.Instantiate(unitPrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
+                unitModel.name = $"UnitBing_{forceId}_{id}";
+                unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+
+                viewObj = unitModel.GetComponent<ChessViewObj>();
+                viewObj.Init(this, player.lineColor);
+            }
+        }
     }
+
+    public void OnRecover()
+    {
+        for (int i = 0; i < buffs.Count; i++)
+        {
+            buffs[i].OnRecover();
+        }
+        for (int i = 0; i < skills.Count; i++)
+        {
+            skills[i].OnRecover();
+        }
+    }    
 
     public void LogicUpdate(int tickIndex)
     {
@@ -736,5 +780,6 @@ public class Chess
         skillAdd.isGivenSkill = true;
         skills.Add(skillAdd);
     }
+
 }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 [Serializable]
-public class Buff
+public class Buff : IRecoverable
 {
     public int id;
 
@@ -15,8 +15,11 @@ public class Buff
     public Chess owner{get{return BattleManager.Instance.GetChess(ownerId);}}
     
     public int skillId;
-    public BuffConfig buffCfg{get{return BuffConfig.GetConfig(id);}}
-    public SkillConfig skillCfg{get{return SkillConfig.GetConfig(skillId);}}
+
+    [NonSerialized]
+    public BuffConfig buffCfg;
+    [NonSerialized]
+    public SkillConfig skillCfg;
 
     public int endTime;
     [NonSerialized]
@@ -30,7 +33,14 @@ public class Buff
         ownerId = unit.id;
         this.skillId = skillId;
         endTime = BattleManager.Instance.tickIndex + (int)(lastTime / BattleManager.tickTimeReal);
+        buffCfg = BuffConfig.GetConfig(id);
+        skillCfg = SkillConfig.GetConfig(skillId);
+    }
 
+    public void OnRecover()
+    {
+        buffCfg = BuffConfig.GetConfig(id);
+        skillCfg = SkillConfig.GetConfig(skillId);
     }
 
     public void SetTime(float time)
@@ -107,6 +117,5 @@ public class Buff
     public virtual void OnAttacked(Chess attacker, int damage)
     {
     }
-
 
 }

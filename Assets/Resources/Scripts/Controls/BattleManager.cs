@@ -156,23 +156,10 @@ public class BattleManager : MonoBehaviour
         chess.hitEffect = soldierConfig.HitEffect;
         chess.soldierId = soldierId;
         chess.forceId = p.forceId;
-
-        if (showUI)
-        {
-            GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
-            GameObject unitModel = UnityEngine.Object.Instantiate(unitPrefab, spawnPos, Quaternion.identity, battleUIManager.NodeUnits.transform);
-            unitModel.name = $"UnitBing_{side}_{idCounter}";
-            unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-
-            // 获取并初始化Chess组件
-            chess.viewObj = unitModel.GetComponent<ChessViewObj>();
-            chess.viewObj.Init(chess, p.lineColor);
-        }
-
-        chess.Init(p.forceId);
+        chess.position = spawnPos;
 
         chessList.Add(chess);
-        chess.SetPosition(spawnPos);
+        chess.Init(p.forceId);
         idCounter++;
 
         return chess;
@@ -190,31 +177,11 @@ public class BattleManager : MonoBehaviour
         chess.hitEffect = heroConfig.HitEffect;
         chess.missileSpeed = heroConfig.MissileSpeed;
         chess.missileHeight = heroConfig.MissileHight;
+        chess.position = spawnPoint;
 
-        if (showUI)
-        {
-            Debug.Log($"SpawnHerosForRegion Hero_{side}_{idCounter}");
-            GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
-
-            // 实例化单位
-            GameObject unitModel = UnityEngine.Object.Instantiate(heroPrefab, spawnPoint, Quaternion.identity, battleUIManager.NodeUnits.transform);
-            unitModel.name = $"Hero_{side}_{idCounter}";
-            unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-
-            chess.viewObj = unitModel.GetComponent<ChessViewObj>();
-            chess.viewObj.Init(chess, p.lineColor);
-
-            var heroInfo = battleUIManager.heroInfoGroup.AddHero(side, heroConfig.Id, heroData.Level);
-            heroInfo.SetHpRate(chess.maxHp, chess.maxHp);
-            chess.heroInfo = heroInfo;
-               
-        }
-      
         chess.CheckInitAttr(heroData.Level, heroData.SoldierNum);
-        chess.Init(p.forceId);
-
         chessList.Add(chess);
-        chess.SetPosition(spawnPoint);
+        chess.Init(p.forceId);
         idCounter++;
 
         return chess;
@@ -586,6 +553,15 @@ public class BattleManager : MonoBehaviour
         {
             string json = System.IO.File.ReadAllText(filePath);
             JsonUtility.FromJsonOverwrite(json, this);
+
+            foreach (var chessComponent in chessList)
+            {
+                chessComponent.OnRecover();
+            }
+            foreach (var missileComponent in missileList)
+            {
+                missileComponent.OnRecover();
+            }
         }
     }
 

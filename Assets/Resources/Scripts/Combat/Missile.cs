@@ -4,7 +4,7 @@ using CommonConfig;
 using UnityEngine;
 
 [Serializable]
-public class Missile// : MonoBehaviour
+public class Missile : IRecoverable
 {
     private int ownerId;
     public Chess owner{ get{ return BattleManager.Instance.GetChess(ownerId); } }
@@ -74,6 +74,11 @@ public class Missile// : MonoBehaviour
         targetChessId = 0;
         checkedIdList = new List<int>();
     }
+
+    public void OnRecover()
+    {
+        
+    }    
 
     public void SetSkillInfo(int skillId, int damage)
     {
@@ -251,4 +256,5 @@ public class Missile// : MonoBehaviour
             EffectManager.PlaySkillEffect(target, hitEffectName);
         }
     }
+
 }

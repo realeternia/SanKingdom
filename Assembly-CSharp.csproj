@@ -212,6 +212,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitGold.cs" />
     <Compile Include="Assets\Resources\Scripts\VideoPanelManager.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
     <Compile Include="Assets\Resources\Scripts\Tooltip.cs" />
   </ItemGroup>
