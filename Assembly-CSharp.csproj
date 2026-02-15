@@ -145,7 +145,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRegion.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />
     <Compile Include="Assets\Resources\Scripts\MainPanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\PO\BuffTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyBeBuffTime.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\PanelManager.cs" />

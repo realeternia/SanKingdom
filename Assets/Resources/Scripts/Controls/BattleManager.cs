@@ -14,10 +14,10 @@ public class BattleManager : MonoBehaviour
         public int maxFood;
     }
     public static BattleManager Instance;
-
+    public BattleUIManager battleUIManager;
     private GameObject mapObj;
 
-    public int gridCellSize = 3; // 每个格子的实际大小(米)
+    public const int gridCellSize = 3; // 每个格子的实际大小(米)
 
     private List<FoodInfo> playerInfoList = new List<FoodInfo>();
 
@@ -38,8 +38,6 @@ public class BattleManager : MonoBehaviour
     public bool showUI = true;
 
     private Action<bool> battleEndCallback;
-
-    public BattleUIManager battleUIManager;
 
     private void Awake()
     {
@@ -330,6 +328,11 @@ public class BattleManager : MonoBehaviour
     public void RemoveMissile(Missile missile)
     {
         missileList.Remove(missile);
+    }
+
+    public Chess GetChess(int id)
+    {
+        return chessList.Find(x => x.id == id);
     }
 
     // 世界坐标转格子坐标

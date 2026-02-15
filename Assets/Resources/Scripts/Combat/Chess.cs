@@ -23,8 +23,9 @@ public class Chess
 
     public Vector3 position{ get; private set; }
 
+    public int targetChessId;
     // 目标单位
-    public Chess targetChess;
+    public Chess targetChess{ get{ return BattleManager.Instance.GetChess(targetChessId); } }
     // 移动速度
     public float moveSpeed = 5f;
     public float attackRange = 10f;
@@ -182,7 +183,7 @@ public class Chess
 
     public void LockTarget(Chess target1)
     {
-        targetChess = target1;
+        targetChessId = target1.id;
         // lastTargetUpdateTick = BattleManager.Instance.time;
     }
 
@@ -217,7 +218,7 @@ public class Chess
         // 如果没有有效目标，直接返回
         if (validTargets.Count == 0)
         {
-            targetChess = null;
+            targetChessId = 0;
             return;
         }
 
@@ -248,9 +249,9 @@ public class Chess
         scoredTargets.Sort((a, b) => b.score.CompareTo(a.score));
 
         // 选择分数最高的作为目标
-        targetChess = scoredTargets[0].chess;
+        targetChessId = scoredTargets[0].chess.id;
         if(viewObj != null)
-            viewObj.lockTargetId = targetChess.id;
+            viewObj.lockTargetId = targetChessId;
     }
 
     // 计算目标分数

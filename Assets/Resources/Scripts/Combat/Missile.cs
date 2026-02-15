@@ -23,7 +23,8 @@ public class Missile// : MonoBehaviour
     private MoveState moveState = MoveState.None;
 
     // ToTarget variables
-    private Chess targetChess;
+    private int targetChessId;
+    private Chess targetChess{ get{ return BattleManager.Instance.GetChess(targetChessId); } }
     private float missileSpeed;
     private float missileHight;
     private float journeyLength;
@@ -38,7 +39,7 @@ public class Missile// : MonoBehaviour
     private int targetCount;
     private float liveTick;
     private float lastCheckTime;
-    private List<Chess> checkedList;
+    private List<int> checkedIdList; //已结算id列表
 
     public void Init(Chess sourceChess, Vector3 startPos, float size, string effectName)
     {
@@ -67,8 +68,8 @@ public class Missile// : MonoBehaviour
 
         // Reset state
         moveState = MoveState.None;
-        targetChess = null;
-        checkedList = new List<Chess>();
+        targetChessId = 0;
+        checkedIdList = new List<int>();
     }
 
     public void SetSkillInfo(int skillId, int damage)
@@ -84,7 +85,7 @@ public class Missile// : MonoBehaviour
 
         // Initialize state for moving to target
         moveState = MoveState.ToTarget;
-        targetChess = target;
+        targetChessId = target.id;
         this.missileSpeed = missileSpeed;
         this.missileHight = missileHight;
         var targetPos = target.position;
@@ -114,7 +115,7 @@ public class Missile// : MonoBehaviour
         this.detectArea = detectArea;
         this.targetCount = targetCount;
         liveTick = 0;
-        checkedList = new List<Chess>();
+        checkedIdList = new List<int>();
     }
 
     public void LogicUpdate(int tickIndex, float indexMini, float timeElapsed)
@@ -185,15 +186,15 @@ public class Missile// : MonoBehaviour
         if (tickTimeReal - lastCheckTime >= 0.2f)
         {
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, owner.forceId, true);
-            unitsInRange.RemoveAll(x => checkedList.Contains(x) || x.hp <= 0); // Each unit only once
+            unitsInRange.RemoveAll(x => checkedIdList.Contains(x.id) || x.hp <= 0); // Each unit only once
             if (unitsInRange.Count > 0)
             {
-                if (unitsInRange.Count + checkedList.Count > targetCount)
-                    BattleManager.Instance.RandomSelect(unitsInRange, targetCount - checkedList.Count);
+                if (unitsInRange.Count + checkedIdList.Count > targetCount)
+                    BattleManager.Instance.RandomSelect(unitsInRange, targetCount - checkedIdList.Count);
 
                 foreach (var unit in unitsInRange)
                 {
-                    checkedList.Add(unit);
+                    checkedIdList.Add(unit.id);
                     OnCrash(unit, (int)Math.Floor(tickTimeReal));
                 }
             }
@@ -202,7 +203,7 @@ public class Missile// : MonoBehaviour
         }
 
         liveTick += timeElapsed;
-        if (liveTick >= timeLimit || checkedList.Count >= targetCount)
+        if (liveTick >= timeLimit || checkedIdList.Count >= targetCount)
         {
             Cleanup();
             return;

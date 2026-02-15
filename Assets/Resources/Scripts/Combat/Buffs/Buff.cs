@@ -7,8 +7,11 @@ public class Buff
 {
     public int id;
 
-    public Chess caster;
-    public Chess owner;
+    public int casterId;
+    public Chess caster{get{return BattleManager.Instance.GetChess(casterId);}}
+    
+    public int ownerId;
+    public Chess owner{get{return BattleManager.Instance.GetChess(ownerId);}}
     
     public BuffConfig buffCfg;
     public SkillConfig skillCfg;
@@ -20,8 +23,8 @@ public class Buff
     public Buff(int id, int skillId, Chess caster, Chess unit, float lastTime)
     {
         this.id = id;
-        this.caster = caster;
-        owner = unit;
+        casterId = caster.id;
+        ownerId = unit.id;
         buffCfg = BuffConfig.GetConfig(id);
         skillCfg = SkillConfig.GetConfig(skillId);
         endTime = BattleManager.Instance.tickIndex + (int)(lastTime / BattleManager.tickTimeReal);
@@ -36,7 +39,7 @@ public class Buff
     public virtual void OnAdd(Chess chess, Chess caster)
     {
        // UnityEngine.Debug.Log("Buff OnAdd " + id + " " + skillCfg.Id + " " + caster + " " + chess);
-        owner = chess;
+        ownerId = chess.id;
 
         if (!string.IsNullOrEmpty(buffCfg.BuffEffect))
         {
@@ -65,7 +68,7 @@ public class Buff
             chess.RemoveColorEffect();
         }
 
-        owner = null;
+        ownerId = 0;
     }
 
     //刷新
