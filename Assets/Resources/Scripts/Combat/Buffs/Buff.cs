@@ -3,6 +3,7 @@ using CommonConfig;
 using UnityEngine;
 
 
+[Serializable]
 public class Buff
 {
     public int id;
@@ -13,10 +14,12 @@ public class Buff
     public int ownerId;
     public Chess owner{get{return BattleManager.Instance.GetChess(ownerId);}}
     
-    public BuffConfig buffCfg;
-    public SkillConfig skillCfg;
+    public int skillId;
+    public BuffConfig buffCfg{get{return BuffConfig.GetConfig(id);}}
+    public SkillConfig skillCfg{get{return SkillConfig.GetConfig(skillId);}}
 
     public int endTime;
+    [NonSerialized]
     public GameObject effect;
 
 
@@ -25,8 +28,7 @@ public class Buff
         this.id = id;
         casterId = caster.id;
         ownerId = unit.id;
-        buffCfg = BuffConfig.GetConfig(id);
-        skillCfg = SkillConfig.GetConfig(skillId);
+        this.skillId = skillId;
         endTime = BattleManager.Instance.tickIndex + (int)(lastTime / BattleManager.tickTimeReal);
 
     }

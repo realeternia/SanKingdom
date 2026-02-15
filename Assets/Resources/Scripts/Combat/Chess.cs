@@ -7,9 +7,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[Serializable]
 public class Chess
 {
+    [NonSerialized]
     public ChessViewObj viewObj;
+    [NonSerialized]
     public HeroInfo heroInfo;
 
     public int id;
@@ -21,7 +24,7 @@ public class Chess
     public int heroId;
     public string chessName = "0";
 
-    public Vector3 position{ get; private set; }
+    public Vector3 position;
 
     public int targetChessId;
     // 目标单位
@@ -48,15 +51,14 @@ public class Chess
     public int missileSpeed = 10;
     public float missileHeight;
     public int soldierId;
-    private int soldierLevel = 0;
+    public int soldierLevel = 0;
 
 
     // 攻击冷却时间
     public int attackPoint;
     public int attackRate; //攻击频率
-    private int lastAttackTime = 0;
-    private int lastTargetUpdateTick; // 上次更新目标的时间
-
+    public int lastAttackTime = 0;
+    public int lastTargetUpdateTick; // 上次更新目标的时间
 
     public List<Skill> skills = new List<Skill>();
 
@@ -64,19 +66,17 @@ public class Chess
     public int noMoveCount = 0;
     public int noActionCount = 0;
 
-    private bool dieAfterLifeTime;
-    private int lifeTickCount; //1s死亡一次
+    public bool dieAfterLifeTime;
+    public int lifeTickCount; //1s死亡一次
 
-    private int regeTickCount; //1s回复一次
+    public int regeTickCount; //1s回复一次
     public int regeHp; //回复血量
 
-    public void Init(int forceId, Color c)
+    public void Init(int forceId)
     {
         this.forceId = forceId;
 
         hp = maxHp;
-        if (heroInfo != null) // 英雄
-            heroInfo.SetHpRate(hp, maxHp);
         
         attackPoint = UnityEngine.Random.Range(1, 10); // 随机获得初始气力
         attackRate = 1;
@@ -93,8 +93,6 @@ public class Chess
                     skills.Add(SkillManager.CreateSkill(skillId, this));
             }
         }
-        if(viewObj != null)
-            viewObj.Init(this, c);
     }
 
     public void LogicUpdate(int tickIndex)
@@ -738,7 +736,5 @@ public class Chess
         skillAdd.isGivenSkill = true;
         skills.Add(skillAdd);
     }
-
-
 }
 

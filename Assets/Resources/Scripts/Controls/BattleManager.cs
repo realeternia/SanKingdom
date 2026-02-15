@@ -5,38 +5,45 @@ using CommonConfig;
 using UnityEngine;
 using System.Linq;
 
+[Serializable]
 public class BattleManager : MonoBehaviour
 {
+    [Serializable]
     public class FoodInfo
     {
         public int forceId;
         public int food;
         public int maxFood;
     }
+    [NonSerialized]
     public static BattleManager Instance;
+    [NonSerialized]
     public BattleUIManager battleUIManager;
+    [NonSerialized]
     private GameObject mapObj;
 
     public const int gridCellSize = 3; // 每个格子的实际大小(米)
 
     private List<FoodInfo> playerInfoList = new List<FoodInfo>();
 
-    private List<Chess> chessList = new List<Chess>(); // 所有棋子
-    private List<Missile> missileList = new List<Missile>(); // 所有导弹
+    public List<Chess> chessList = new List<Chess>(); // 所有棋子
+    public List<Missile> missileList = new List<Missile>(); // 所有导弹
 
+    [NonSerialized]
     private NLCoroutineManager coroutineManager = new NLCoroutineManager();
 
-    private List<ChessAction> actions = new List<ChessAction>();    
+    public List<ChessAction> actions = new List<ChessAction>();    
 
     private bool gameFinish = false;
     private bool hasWin;    
-    private int idCounter = 100;
+    public int idCounter = 100;
     public int tickIndex = 1;
-    private int lastFoodDeductionTick = 0;
+    public int lastFoodDeductionTick = 0;
 
     public bool quickMode = true;
     public bool showUI = true;
 
+    [NonSerialized]
     private Action<bool> battleEndCallback;
 
     private void Awake()
@@ -86,7 +93,9 @@ public class BattleManager : MonoBehaviour
 
         foreach (var chess in chessList.ToArray()) //防止召唤
             SkillManager.BattleBegin(chess);
-            
+        
+        SaveToFile("battle.json");
+
         StartCoroutine(GameUpdate());
     }
 
@@ -133,20 +142,7 @@ public class BattleManager : MonoBehaviour
     public Chess SpawnUnitsForRegion(Player p, int soldierId, UnityEngine.Vector3 spawnPos, int side, string imgPath)
     {
         var soldierConfig = SoldierConfig.GetConfig(soldierId);
-        ChessViewObj viewObj = null;
-        if (showUI)
-        {
-            GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
-            GameObject unitModel = UnityEngine.Object.Instantiate(unitPrefab, spawnPos, Quaternion.identity, battleUIManager.NodeUnits.transform);
-            unitModel.name = $"UnitBing_{side}_{idCounter}";
-            unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-
-            // 获取并初始化Chess组件
-            viewObj = unitModel.GetComponent<ChessViewObj>();
-        }
         Chess chess = new Chess();
-        if (viewObj != null)
-            chess.viewObj = viewObj;
 
         chess.id = idCounter;
         chess.isHero = false;
@@ -160,7 +156,20 @@ public class BattleManager : MonoBehaviour
         chess.hitEffect = soldierConfig.HitEffect;
         chess.soldierId = soldierId;
         chess.forceId = p.forceId;
-        chess.Init(p.forceId, p.lineColor);
+
+        if (showUI)
+        {
+            GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
+            GameObject unitModel = UnityEngine.Object.Instantiate(unitPrefab, spawnPos, Quaternion.identity, battleUIManager.NodeUnits.transform);
+            unitModel.name = $"UnitBing_{side}_{idCounter}";
+            unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+
+            // 获取并初始化Chess组件
+            chess.viewObj = unitModel.GetComponent<ChessViewObj>();
+            chess.viewObj.Init(chess, p.lineColor);
+        }
+
+        chess.Init(p.forceId);
 
         chessList.Add(chess);
         chess.SetPosition(spawnPos);
@@ -172,23 +181,8 @@ public class BattleManager : MonoBehaviour
     private Chess SpawnHerosForRegion(Player p, UnityEngine.Vector3 spawnPoint, BattleCardData heroData, int side)
     {
         var heroConfig = HeroConfig.GetConfig(heroData.CardId);
-        ChessViewObj viewObj = null;
-        if (showUI)
-        {
-            Debug.Log($"SpawnHerosForRegion Hero_{side}_{idCounter}");
-            GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
-
-            // 实例化单位
-            GameObject unitModel = UnityEngine.Object.Instantiate(heroPrefab, spawnPoint, Quaternion.identity, battleUIManager.NodeUnits.transform);
-            unitModel.name = $"Hero_{side}_{idCounter}";
-            unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-
-            viewObj = unitModel.GetComponent<ChessViewObj>();
-        }
 
         Chess chess = new Chess();
-        if (viewObj != null)
-            chess.viewObj = viewObj;
         chess.id = idCounter;
         chess.isHero = true;
         chess.heroId = heroConfig.Id;
@@ -199,11 +193,25 @@ public class BattleManager : MonoBehaviour
 
         if (showUI)
         {
+            Debug.Log($"SpawnHerosForRegion Hero_{side}_{idCounter}");
+            GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
+
+            // 实例化单位
+            GameObject unitModel = UnityEngine.Object.Instantiate(heroPrefab, spawnPoint, Quaternion.identity, battleUIManager.NodeUnits.transform);
+            unitModel.name = $"Hero_{side}_{idCounter}";
+            unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+
+            chess.viewObj = unitModel.GetComponent<ChessViewObj>();
+            chess.viewObj.Init(chess, p.lineColor);
+
             var heroInfo = battleUIManager.heroInfoGroup.AddHero(side, heroConfig.Id, heroData.Level);
+            heroInfo.SetHpRate(chess.maxHp, chess.maxHp);
             chess.heroInfo = heroInfo;
+               
         }
+      
         chess.CheckInitAttr(heroData.Level, heroData.SoldierNum);
-        chess.Init(p.forceId, p.lineColor);
+        chess.Init(p.forceId);
 
         chessList.Add(chess);
         chess.SetPosition(spawnPoint);
@@ -564,7 +572,21 @@ public class BattleManager : MonoBehaviour
     {
         actions.Add(action);
     }
+    // 序列化到文件
+    public void SaveToFile(string filePath)
+    {
+        string json = JsonUtility.ToJson(this);
+        System.IO.File.WriteAllText(filePath, json);
+    }
 
-
+    // 从文件反序列化
+    public void LoadFromFile(string filePath)
+    {
+        if (System.IO.File.Exists(filePath))
+        {
+            string json = System.IO.File.ReadAllText(filePath);
+            JsonUtility.FromJsonOverwrite(json, this);
+        }
+    }
 
 }

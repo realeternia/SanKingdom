@@ -8,16 +8,19 @@ using UnityEngine;
 /// 技能类，处理技能相关逻辑
 /// </summary>
 
+[Serializable]
 public class Skill
 {
     public int id;
+    [NonSerialized]
     public Chess owner;
     public bool isGivenSkill; //别人给的技能
+    [NonSerialized]
     public SkillConfig skillCfg;
-    private int lastUpdateTime; // 上次更新CD的时间 (tick index)
+    public int lastUpdateTick; // 上次更新CD的时间 (tick index)
+    [NonSerialized]
     public bool isBurst;
-
-    public int skillId{ get{ return skillCfg.Id; } }
+    public int skillId{ get{ return id; } }
 
     public Skill(int id, Chess unit)
     {
@@ -42,7 +45,7 @@ public class Skill
             var cdTime = skillCfg.CD;
             SkillManager.OnCheckCD(owner, skillCfg, ref cdTime);
 
-            lastUpdateTime = BattleManager.Instance.tickIndex - (int)(skillCfg.CD / BattleManager.tickTimeReal) + (int)(cdTime / BattleManager.tickTimeReal);
+            lastUpdateTick = BattleManager.Instance.tickIndex - (int)(skillCfg.CD / BattleManager.tickTimeReal) + (int)(cdTime / BattleManager.tickTimeReal);
         }
     }
 
@@ -55,7 +58,7 @@ public class Skill
         if(skillCfg.CD <= 0)
             return false;
 
-        return BattleManager.Instance.tickIndex < lastUpdateTime + (int)(skillCfg.CD / BattleManager.tickTimeReal);
+        return BattleManager.Instance.tickIndex < lastUpdateTick + (int)(skillCfg.CD / BattleManager.tickTimeReal);
     }
 
     public bool CheckBurst(Chess target)

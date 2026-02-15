@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
+[Serializable]
 public class Missile// : MonoBehaviour
 {
-    public Chess owner;
+    private int ownerId;
+    public Chess owner{ get{ return BattleManager.Instance.GetChess(ownerId); } }
+    [NonSerialized]
     public MissileViewObj viewObj;
 
     public string effectName;
-    private string hitEffectName;
+    public string hitEffectName;
 
     private float size;
 
@@ -19,33 +22,33 @@ public class Missile// : MonoBehaviour
     public Vector3 position;
 
     // Movement state variables
-    private enum MoveState { None, ToTarget, ToDirection }
-    private MoveState moveState = MoveState.None;
+    public enum MoveState { None, ToTarget, ToDirection }
+    public MoveState moveState = MoveState.None;
 
     // ToTarget variables
-    private int targetChessId;
+    public int targetChessId;
     private Chess targetChess{ get{ return BattleManager.Instance.GetChess(targetChessId); } }
-    private float missileSpeed;
-    private float missileHight;
-    private float journeyLength;
-    private float totalLen;
-    private float realLen;
-    private float maxY;
+    public float missileSpeed;
+    public float missileHight;
+    public float journeyLength;
+    public float totalLen;
+    public float realLen;
+    public float maxY;
 
     // ToDirection variables
-    private Vector3 direction;
-    private float timeLimit;
-    private float detectArea;
-    private int targetCount;
-    private float liveTick;
-    private float lastCheckTime;
-    private List<int> checkedIdList; //已结算id列表
+    public Vector3 direction;
+    public float timeLimit;
+    public float detectArea;
+    public int targetCount;
+    public float liveTick;
+    public float lastCheckTime;
+    public List<int> checkedIdList; //已结算id列表
 
     public void Init(Chess sourceChess, Vector3 startPos, float size, string effectName)
     {
         this.effectName = effectName;
         hitEffectName = effectName;
-        owner = sourceChess;
+        ownerId = sourceChess.id;
         this.size = size;
         position = startPos + new Vector3(0f, 2f, 0f);
 
