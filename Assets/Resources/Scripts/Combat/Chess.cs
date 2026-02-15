@@ -95,6 +95,12 @@ public class Chess : IRecoverable
         }
 
         // 创建UI
+        CreateChessView();
+
+    }
+
+    private void CreateChessView()
+    {
         if (BattleManager.Instance.showUI)
         {
             Player player = GameManager.Instance.GetPlayer(forceId);
@@ -125,6 +131,7 @@ public class Chess : IRecoverable
                 viewObj.Init(this, player.lineColor);
             }
         }
+
     }
 
     public void OnRecover()
@@ -137,6 +144,7 @@ public class Chess : IRecoverable
         {
             skills[i].OnRecover();
         }
+        CreateChessView();
     }    
 
     public void LogicUpdate(int tickIndex)

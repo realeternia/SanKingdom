@@ -41,17 +41,29 @@ public class Missile : IRecoverable
     public float detectArea;
     public int targetCount;
     public float liveTick;
-    public float lastCheckTime;
-    public List<int> checkedIdList; //已结算id列表
+    public float lastCheckTick;
+    public List<int> checkedIdList; //已结算单位id列表
 
-    public void Init(Chess sourceChess, Vector3 startPos, float size, string effectName)
+    public Missile(Chess sourceChess, Vector3 startPos, float size, string effectName, int skillId, int damage)
     {
         this.effectName = effectName;
         hitEffectName = effectName;
         ownerId = sourceChess.id;
         this.size = size;
         position = startPos + new Vector3(0f, 2f, 0f);
+        this.skillId = skillId;
+        this.skillDamage = damage;
 
+        CreateMissileView();
+
+        // Reset state
+        moveState = MoveState.None;
+        targetChessId = 0;
+        checkedIdList = new List<int>();
+    }
+
+    private void CreateMissileView()
+    {
         if(!BattleManager.Instance.quickMode && BattleManager.Instance.showUI)
         {
             var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
@@ -68,22 +80,11 @@ public class Missile : IRecoverable
             if (missileEffect.TryGetComponent(out MissileEffName missileViewObj))
                 hitEffectName = missileViewObj.hitEffectName;            
         }
-
-        // Reset state
-        moveState = MoveState.None;
-        targetChessId = 0;
-        checkedIdList = new List<int>();
     }
 
     public void OnRecover()
     {
-        
-    }    
-
-    public void SetSkillInfo(int skillId, int damage)
-    {
-        this.skillId = skillId;        
-        skillDamage = damage;
+        CreateMissileView();
     }
 
     public void MoveToTarget(Chess target, float missileSpeed, float missileHight)
@@ -191,7 +192,7 @@ public class Missile : IRecoverable
         SetDirection(Quaternion.LookRotation(direction));
 
         // Check for targets in range
-        if (tickTimeReal - lastCheckTime >= 0.2f)
+        if (tickTimeReal - lastCheckTick >= 0.2f)
         {
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, owner.forceId, true);
             unitsInRange.RemoveAll(x => checkedIdList.Contains(x.id) || x.hp <= 0); // Each unit only once
@@ -207,7 +208,7 @@ public class Missile : IRecoverable
                 }
             }
 
-            lastCheckTime = tickTimeReal;
+            lastCheckTick = tickTimeReal;
         }
 
         liveTick += timeElapsed;

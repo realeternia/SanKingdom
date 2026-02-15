@@ -276,26 +276,21 @@ public class BattleManager : MonoBehaviour
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess, string effectName)
     {
-        var missile = new Missile();
-        missile.Init(sourceChess, sourceChess.position, 1, effectName);
+        var missile = new Missile(sourceChess, sourceChess.position, 1, effectName, 0, 0);
         missileList.Add(missile);
         missile.MoveToTarget(targetChess, sourceChess.missileSpeed, sourceChess.missileHeight);
     }
 
     public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage, string effectName)
     {
-        var missile = new Missile();
-        missile.Init(sourceChess, startPos, 1, effectName);
-        missile.SetSkillInfo(skillId, damage);
+        var missile = new Missile(sourceChess, startPos, 1, effectName, skillId, damage);
         missileList.Add(missile);
         missile.MoveToTarget(targetChess, Mathf.Max(sourceChess.missileSpeed, 14), sourceChess.missileHeight);
     }    
 
     public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, float speed, float size, int skillId, int damage, string effectName)
     {
-        var missile = new Missile();
-        missile.Init(sourceChess, sourceChess.position, size, effectName);
-        missile.SetSkillInfo(skillId, damage);
+        var missile = new Missile(sourceChess, sourceChess.position, size, effectName, skillId, damage);
         missileList.Add(missile);
         missile.MoveToDirection(targetPos, time, speed);
     }
