@@ -21,13 +21,18 @@ public class Chess : SceneObj
 
     public bool isHero;
     public int heroId;
+    public int soldierId;
+
+    [NonSerialized]
     public string chessName = "0";
 
     public int targetChessId;
     // 目标单位
     public Chess targetChess{ get{ return BattleManager.Instance.GetChess(targetChessId); } }
     // 移动速度
+    [NonSerialized]
     public float moveSpeed = 5f;
+    [NonSerialized]
     public float attackRange = 10f;
     public int inte;
     public int str;
@@ -43,14 +48,16 @@ public class Chess : SceneObj
 
     // 是否正在使用偏移路径
     public int hp = 100;
+    [NonSerialized]
     public int attackDamage = 30;
+
+    [NonSerialized]
     public string hitEffect;
+    [NonSerialized]
     public int missileSpeed = 10;
+    [NonSerialized]
     public float missileHeight;
-    public int soldierId;
-    public int soldierLevel = 0;
-
-
+    
     // 攻击冷却时间
     public int attackPoint;
     public int attackRate; //攻击频率
@@ -103,6 +110,28 @@ public class Chess : SceneObj
 
     private void CreateChessView()
     {
+        if(heroId > 0)
+        {
+            var heroConfig = HeroConfig.GetConfig(heroId);
+            chessName = heroConfig.Icon;
+            hitEffect = heroConfig.HitEffect;
+            missileSpeed = heroConfig.MissileSpeed;
+            missileHeight = heroConfig.MissileHight;
+            moveSpeed = heroConfig.MoveSpeed;
+            attackRange = heroConfig.Range;
+            attackDamage = leadShip / 3;
+        }
+        else if(soldierId > 0)
+        {
+            var soldierConfig = SoldierConfig.GetConfig(soldierId);
+            chessName = "";//HeroConfig.GetConfig(owner.heroId).Icon;
+            hitEffect = soldierConfig.HitEffect;
+            missileSpeed = soldierConfig.MissileSpeed;
+            moveSpeed = soldierConfig.MoveSpeed;
+            attackRange = soldierConfig.Range;
+            attackDamage = soldierConfig.Atk;
+        }
+
         if (BattleManager.Instance.showUI)
         {
             Player player = GameManager.Instance.GetPlayer(forceId);
@@ -188,13 +217,9 @@ public class Chess : SceneObj
     {
         level = lv;
 
-        var heroConfig = HeroConfig.GetConfig(heroId);
         var attr = HeroSelectionTool.GetCardAttr(heroId, lv);
 
         maxHp = soldierNum;
-        moveSpeed = heroConfig.MoveSpeed;
-        attackRange = heroConfig.Range;
-        attackDamage = attr.Lead / 3;
         inte = attr.Inte;
         str = attr.Str;
         leadShip = attr.Lead;
@@ -203,26 +228,6 @@ public class Chess : SceneObj
 
         if (heroInfo != null)
             heroInfo.SetAttr(inte, str, leadShip);
-    }
-
-    // 只能开场用
-    public void AddSoldierLevel(int lv, int atkAdd, int hpAdd)
-    {
-        if (isHero)
-            return;
-
-        var soldierCfg = SoldierConfig.GetConfig(soldierId);
-        if (soldierCfg.SoldierAtkRate <= 0)
-            return;
-
-        //根据level变化模型scale
-        soldierLevel += lv;
-        if(viewObj != null)
-            viewObj.transform.localScale = new Vector3(5 + soldierLevel * 0.75f, 3, 5 + soldierLevel * 0.75f);
-
-        attackDamage += (int)(lv * atkAdd * soldierCfg.SoldierAtkRate);
-        maxHp += (int)(lv * hpAdd * soldierCfg.SoldierHpRate);
-        hp = maxHp;
     }
 
     public override void SetPosition(Vector3 position)
@@ -369,7 +374,7 @@ public class Chess : SceneObj
                 SkillManager.AimTarget(this, targetChess);
                 if (attackRange >= 20)
                 {
-                    BattleManager.Instance.CreateAttackMissile(this, targetChess, hitEffect);
+                    BattleManager.Instance.CreateAttackMissile(this, targetChess);
                 }
                 else
                 {

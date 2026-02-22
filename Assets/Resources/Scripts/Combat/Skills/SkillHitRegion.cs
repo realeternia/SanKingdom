@@ -19,7 +19,7 @@ public class SkillHitRegion : Skill
 
             targetPos = defender.position;
 
-            var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, owner.forceId, "");
+            var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos);
             var summonTime = GetSummonTime();
             magicStub.SetLifeTime(summonTime);
 

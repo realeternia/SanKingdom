@@ -39,7 +39,7 @@ public class SkillAidSuddenArrow : Skill
         owner.PlayerAnim(skillCfg.Action);
         var attrDiff = Math.Max(10, owner.GetAttr(skillCfg.Attr) - targetUnit.GetAttr(skillCfg.Attr));
         var damage = (int)(attrDiff * skillCfg.SkillDamageAttrRate);
-        BattleManager.Instance.CreateSpellMissile(owner, targetUnit, owner.position, id, damage, skillCfg.HitEffect);
+        BattleManager.Instance.CreateSpellMissile(owner, targetUnit, owner.position, id, damage);
 
         return true;
     }

@@ -22,7 +22,6 @@ public class SkillInitSoldierUp : Skill
             if(unit.isHero)
                 continue;
 
-            unit.AddSoldierLevel(1, atkAdd, hpAdd);
             EffectManager.PlaySkillEffect(unit, skillCfg.HitEffect);
         }
         var castleHUD = owner.GetPlayerInfo().castleHUD;

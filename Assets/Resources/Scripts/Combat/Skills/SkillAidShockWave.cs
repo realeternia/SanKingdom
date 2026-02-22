@@ -26,7 +26,7 @@ public class SkillAidShockWave : Skill
 
         owner.PlayerAnim(skillCfg.Action);
         var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
-        BattleManager.Instance.CreateSpellMissile(owner, targetPos, GetSummonTime(), skillCfg.SummonSpeed, skillCfg.EffectSize, skillCfg.Id, damage, skillCfg.HitEffect);
+        BattleManager.Instance.CreateSpellMissile(owner, targetPos, GetSummonTime(), skillCfg.Id, damage);
 
         Debug.Log("SkillAidShockWave id=" + id.ToString() + " damage=" + damage.ToString());
 

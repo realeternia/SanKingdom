@@ -19,7 +19,7 @@ public class SkillAttackMultiArrow : Skill
             owner.PlayerAnim(skillCfg.Action);
             BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
             foreach (var unit in unitsInRange)
-                BattleManager.Instance.CreateAttackMissile(owner, unit, owner.hitEffect);
+                BattleManager.Instance.CreateAttackMissile(owner, unit);
         }
     }
 }

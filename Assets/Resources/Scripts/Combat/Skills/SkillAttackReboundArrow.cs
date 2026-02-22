@@ -21,7 +21,7 @@ public class SkillAttackReboundArrow : Skill
 
             var reboundDamage = (int)(damage * skillCfg.SkillDamageRate);
             foreach (var unit in unitsInRange)
-                BattleManager.Instance.CreateSpellMissile(owner, unit, defender.position, id, reboundDamage, owner.hitEffect);
+                BattleManager.Instance.CreateSpellMissile(owner, unit, defender.position, id, reboundDamage);
         }
     }
 }

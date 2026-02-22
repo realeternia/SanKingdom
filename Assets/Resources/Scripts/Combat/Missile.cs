@@ -11,11 +11,6 @@ public class Missile : SceneObj
     [NonSerialized]
     public MissileViewObj viewObj;
 
-    public string effectName;
-    public string hitEffectName;
-
-    private float size;
-
     public int skillId;
     public int skillDamage;
 
@@ -26,26 +21,36 @@ public class Missile : SceneObj
     // ToTarget variables
     public int targetChessId;
     private Chess targetChess{ get{ return BattleManager.Instance.GetChess(targetChessId); } }
+    
+    [NonSerialized]
+    public string effectName;
+    [NonSerialized]
+    public string hitEffectName;
+    [NonSerialized]
+    private float size;    
+    [NonSerialized]
     public float missileSpeed;
+    [NonSerialized]
     public float maxY;
-
+    [NonSerialized]
+    public float detectArea;
+    [NonSerialized]
+    public int targetCount;    
+ 
     // ToDirection variables
     public Vector3 direction;
     public Vector3 startPos;
-    public float detectArea;
-    public int targetCount;
+
     public float tickTimeTotal;
     public float liveTime;
     public float lastCheckTick;
     public List<int> checkedIdList; //已结算单位id列表
 
-    public Missile(int id, Chess sourceChess, Vector3 startPos, float size, string effectName, int skillId, int damage)
+    public Missile(int id, Chess sourceChess, Vector3 startPos, int skillId, int damage)
     {
         base.id = id;
-        this.effectName = effectName;
-        hitEffectName = effectName;
+
         ownerId = sourceChess.id;
-        this.size = size;
         this.startPos = startPos;
         position = startPos + new Vector3(0f, 2f, 0f);
         this.skillId = skillId;
@@ -64,6 +69,25 @@ public class Missile : SceneObj
 
     private void CreateMissileView()
     {
+        if(skillId > 0)
+        {
+            var skillCfg = SkillConfig.GetConfig(skillId);
+            effectName = skillCfg.HitEffect;
+            hitEffectName = skillCfg.HitEffect;
+            missileSpeed = skillCfg.SummonSpeed;
+            detectArea = skillCfg.SummonArea * 1.5f;
+            targetCount = skillCfg.TargetCount;
+            size = skillCfg.EffectSize;
+        }
+        else
+        {
+            effectName = owner.hitEffect;
+            hitEffectName = owner.hitEffect;
+            missileSpeed = owner.missileSpeed;
+            maxY = owner.missileHeight;
+            size = 1;
+        }
+    
         if(!BattleManager.Instance.quickMode && BattleManager.Instance.showUI)
         {
             var missilePrefab = Resources.Load<MissileViewObj>("Prefabs/MissileCom");
@@ -94,7 +118,7 @@ public class Missile : SceneObj
             viewObj.transform.position = pos;
     }
 
-    public void MoveToTarget(Chess target, float missileSpeed, float missileHight)
+    public void MoveToTarget(Chess target)
     {
         if(viewObj != null && target != null && target.viewObj != null)
             viewObj.targetName = target.viewObj.name;
@@ -102,29 +126,15 @@ public class Missile : SceneObj
         // Initialize state for moving to target
         moveState = MoveState.ToTarget;
         targetChessId = target.id;
-        this.missileSpeed = missileSpeed;
-        maxY = missileHight;
         tickTimeTotal = liveTime / tickTimeTotal;
     }
 
-    public void MoveToDirection(Vector3 targetPos, float time, float missileSpeed)
+    public void MoveToDirection(Vector3 targetPos, float time)
     {
-        var detectArea = 10f;
-        var targetCount = 1;
-        if (skillId > 0)
-        {
-            var skillCfg = SkillConfig.GetConfig(skillId);
-            detectArea = skillCfg.SummonArea * 1.5f;
-            targetCount = skillCfg.TargetCount;
-        }
-
         // Initialize state for moving to direction
         moveState = MoveState.ToDirection;
         direction = (targetPos - position).normalized;
         direction.y = 0;
-        this.missileSpeed = missileSpeed;
-        this.detectArea = detectArea;
-        this.targetCount = targetCount;
         tickTimeTotal = time;
         checkedIdList = new List<int>();
     }
