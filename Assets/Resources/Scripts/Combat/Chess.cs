@@ -399,7 +399,7 @@ public class Chess : IRecoverable
                 };
                 BattleManager.Instance.AddChessAction(moveAction);
 
-                BattleManager.Instance.MoveTo(this, moveDest, true);
+                moveAction.Doing(this);
             }
         }
     }
@@ -468,13 +468,13 @@ public class Chess : IRecoverable
         var damageMulti = 1f;
         var damageReal = 0; //真实伤害
         bool isCrit = false;
+        bool isDodge = false;
 
         SkillManager.DuringAttack(this, victim, damType, ref damageBase, ref damageMulti, ref damageReal, ref effect);
         // 暴击
         if (critRate > 0 && UnityEngine.Random.value < critRate)
         {
             damageMulti += critDamageMulti;
-            BattleManager.Instance.AddBattleText("暴!", position, new UnityEngine.Vector2(0, 40), Color.red, 3);
             isCrit = true;
         }
 
@@ -509,7 +509,7 @@ public class Chess : IRecoverable
             if (victim.dodgeRate > 0 && UnityEngine.Random.value < victim.dodgeRate)
             {
                 damage = 0;
-                BattleManager.Instance.AddBattleText("闪!", victim.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+                isDodge = true;
             }
             else
             {
@@ -522,9 +522,19 @@ public class Chess : IRecoverable
         {
             damage = Math.Max(damage, damageReal);
 
-            victim.hp -= damage;
-            if (victim != this)
-                victim.lastDamagedPlayerId = forceId;
+            // 创建攻击Action并添加到actions列表
+            var attackAction = new AttackAction
+            {
+                SourceId = id,
+                Tick = tickIndex,
+                TargetId = victim.id,
+                Damage = damage,
+                IsCrit = isCrit,
+                IsDodge = isDodge,
+            };
+            BattleManager.Instance.AddChessAction(attackAction);     
+            attackAction.Doing(this);
+
             // 记录战斗统计
             if (isHero)
                 BattleStatManager.AddBattleStat(forceId, heroId, damage, true, victim.isHero);
@@ -532,19 +542,23 @@ public class Chess : IRecoverable
             SkillManager.OnAttack(this, victim, damType, damage);
         }
 
-        // 创建攻击Action并添加到actions列表
-        var attackAction = new AttackAction
-        {
-            SourceId = id,
-            Tick = tickIndex,
-            TargetId = victim.id,
-            Damage = damage,
-        };
-        BattleManager.Instance.AddChessAction(attackAction);
-
         if(!string.IsNullOrEmpty(effect))
             EffectManager.PlayHitEffect(this, victim, effect);
         victim.OnHpChanged();
+    }
+
+    public void OnAttackDamaged(int damage, bool isCrit, bool isDodge, int attackerId)
+    {
+        hp -= damage;
+        if (id != attackerId)
+            lastDamagedPlayerId = attackerId;
+        if(isCrit)
+        {
+            var attacker = BattleManager.Instance.GetChess(attackerId);
+            BattleManager.Instance.AddBattleText("暴!", attacker.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+        }
+        if(isDodge)
+            BattleManager.Instance.AddBattleText("闪!", position, new UnityEngine.Vector2(0, 40), Color.red, 3);
     }
 
     public void OnSkillDamaged(Chess caster, int skillId, int damage, bool isFeedback = false)
