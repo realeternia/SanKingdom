@@ -14,7 +14,7 @@ public class SkillHitBuffArea : Skill
         if (CheckBurst(defender))
         {
             var targetUnit = skillCfg.TargetType == "targetUnit" ? defender : owner;
-            EffectManager.PlaySkillEffect(targetUnit, skillCfg.HitEffect);
+            EffectManager.PlaySkillEffect(targetUnit, skillCfg.EffectHit);
 
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetUnit.position, skillCfg.Range, owner.forceId, true);
             if (unitsInRange.Count > 0)

@@ -9,6 +9,6 @@ public class BuffSuck : Buff
     {
         UnityEngine.Debug.Log("Suck " + damage.ToString());
         owner.AddHp((int)(damage * skillCfg.SkillDamageRate));
-        EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
+        EffectManager.PlaySkillEffect(owner, skillCfg.EffectHit);
     }
 }

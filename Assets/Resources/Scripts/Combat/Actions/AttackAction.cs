@@ -5,10 +5,11 @@ public class AttackAction : ChessAction
     public bool IsCrit;
     public bool IsDodge;
     public string HitEffect;
+    public string DamType;
 
     public override void Doing(Chess chess)
     {
         var targetChess = BattleManager.Instance.GetChess(TargetId);
-        targetChess.OnAttackDamaged(Damage, IsCrit, IsDodge, chess.id);
+        targetChess.OnAttackDamaged(Damage, DamType, HitEffect, IsCrit, IsDodge, chess.id);
     }
 }

@@ -26,7 +26,7 @@ public class SkillHitAround : Skill
             var targetPos = defender.position;
 
             //创建一个hitEffect
-            var hitEffect = EffectManager.PlaySkillEffect(defender, skillCfg.HitEffect);
+            var hitEffect = EffectManager.PlaySkillEffect(defender, skillCfg.EffectHit);
             if(hitEffect != null)
                 hitEffect.transform.forward = (targetPos - startPos).normalized;
 

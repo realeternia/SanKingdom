@@ -24,7 +24,7 @@ public class SkillHitRegion : Skill
             magicStub.SetLifeTime(summonTime);
 
             //创建一个hitEffect
-            EffectManager.PlayPosSkillEffect(magicStub, targetPos, skillCfg.EffectSize, skillCfg.HitEffect, summonTime);
+            EffectManager.PlayPosSkillEffect(magicStub, targetPos, skillCfg.EffectSize, skillCfg.EffectArea, summonTime);
 
             BattleManager.Instance.StartNLCoroutine(DelayDamage(summonTime));
         }

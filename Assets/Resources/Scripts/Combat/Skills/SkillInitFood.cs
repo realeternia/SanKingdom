@@ -10,7 +10,7 @@ public class SkillInitFood : Skill
 
     public override void BattleBegin()
     {
-        EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
+        EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
 
         var addon = Math.Max(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillAttrRate, skillCfg.StrengthInt);        
         var foodInfo = BattleManager.Instance.GetFoodInfo(owner.forceId);

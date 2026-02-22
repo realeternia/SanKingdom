@@ -540,44 +540,47 @@ public class Chess : SceneObj
                 Damage = damage,
                 IsCrit = isCrit,
                 IsDodge = isDodge,
+                HitEffect = hitEffectName,
+                DamType = damType,
             };
             BattleManager.Instance.AddChessAction(attackAction);     
             attackAction.Doing(this);
-
-            // 记录战斗统计
-            if (isHero)
-                BattleStatManager.AddBattleStat(forceId, heroId, damage, true, victim.isHero);
-
-            SkillManager.OnAttack(this, victim, damType, damage);
         }
-
-        if(!string.IsNullOrEmpty(effect))
-            EffectManager.PlayHitEffect(this, victim, effect);
-        victim.OnHpChanged();
     }
 
-    public void OnAttackDamaged(int damage, bool isCrit, bool isDodge, int attackerId)
+    public void OnAttackDamaged(int damage, string damType, string hitEffectName, bool isCrit, bool isDodge, int attackerId)
     {
         hp -= damage;
         if (id != attackerId)
             lastDamagedPlayerId = attackerId;
+
+        var attacker = BattleManager.Instance.GetChess(attackerId);
         if(isCrit)
-        {
-            var attacker = BattleManager.Instance.GetChess(attackerId);
             BattleManager.Instance.AddBattleText("暴!", attacker.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
-        }
         if(isDodge)
             BattleManager.Instance.AddBattleText("闪!", position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+
+        if(damage > 0)
+        {
+            if(!string.IsNullOrEmpty(hitEffectName))
+                EffectManager.PlayHitEffect(this, targetChess, hitEffectName);
+
+            SkillManager.OnAttack(this, targetChess, damType, damage);                
+        }
+
+        // 记录战斗统计
+        if (attacker.isHero)
+            BattleStatManager.AddBattleStat(attacker.forceId, attacker.heroId, damage, true, targetChess.isHero);
+
+        OnHpChanged();      
     }
 
     public void OnSkillDamaged(Chess caster, int skillId, int damage, bool isFeedback = false)
     {
-        // if(damage <= 0)
-        //     throw new Exception("伤害值不能小于等于0");
-
+        var skillCfg = SkillConfig.GetConfig(skillId);
         if (isHero)
         {
-            SkillManager.OnDoSkillDamage(this, caster, SkillConfig.GetConfig(skillId), ref damage, isFeedback);
+            SkillManager.OnDoSkillDamage(this, caster, skillCfg, ref damage, isFeedback);
         }
         else
         {
@@ -590,6 +593,9 @@ public class Chess : SceneObj
         hp -= damage;
         if(caster != this)
             lastDamagedPlayerId = caster.forceId;
+
+        if(!string.IsNullOrEmpty(skillCfg.EffectHit))
+            EffectManager.PlaySkillEffect(this, skillCfg.EffectHit);
 
         // 记录战斗统计
         if(caster.isHero)

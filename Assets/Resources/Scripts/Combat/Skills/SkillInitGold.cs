@@ -10,7 +10,7 @@ public class SkillInitGold : Skill
 
     public override void BattleBegin()
     {
-        EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
+        EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
 
         // var goldAdd = Math.Max(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillAttrRate, skillCfg.StrengthInt);
         // owner.GetPlayerInfo().AddGold((int)goldAdd);

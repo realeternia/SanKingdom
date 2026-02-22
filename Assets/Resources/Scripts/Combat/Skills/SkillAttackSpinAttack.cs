@@ -22,7 +22,7 @@ public class SkillAttackSpinAttack : Skill
                 unit.OnSkillDamaged(owner, skillId, (int)(damage * skillCfg.SkillDamageRate));
             }
 
-            EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
+            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
         }
     }
 }

@@ -22,7 +22,7 @@ public class SkillAttackAddDamage : Skill
             damageBase += skillCfg.StrengthInt;
             if(skillCfg.SkillDamageRate > 0)
                 damageMulti += skillCfg.SkillDamageRate;
-            effect = skillCfg.HitEffect;
+            effect = skillCfg.EffectHit;
         }
     }
 

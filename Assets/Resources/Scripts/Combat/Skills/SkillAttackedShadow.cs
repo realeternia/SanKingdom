@@ -27,8 +27,8 @@ public class SkillAttackedShadow : Skill
                 shadowUnit.viewObj.material.SetFloat("_SecondTexSize", 2f);
                 shadowUnit.viewObj.material.SetTexture("_SecondTex", Resources.Load<Texture>("SkillPic/" + skillCfg.Icon));
             }
-            EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
-            EffectManager.PlaySkillEffect(shadowUnit, skillCfg.HitEffect);
+            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
+            EffectManager.PlaySkillEffect(shadowUnit, skillCfg.EffectHit);
 
             owner.PlayerAnim(skillCfg.Action);
 

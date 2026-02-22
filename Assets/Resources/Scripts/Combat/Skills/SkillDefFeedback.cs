@@ -40,7 +40,6 @@ public class SkillDefFeedback : Skill
         {
             var damageBack = (int)(damage * skillCfg.Strength);
             attacker.OnSkillDamaged(owner, skillId, damageBack, true);
-            EffectManager.PlaySkillEffect(attacker, skillCfg.HitEffect);
 
             BattleManager.Instance.AddBattleText("反" + damageBack.ToString(), attacker.position, new UnityEngine.Vector2(0, 150), new UnityEngine.Color(0.65f, 0.31f, 0), 3);
         }

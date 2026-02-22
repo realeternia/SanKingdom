@@ -27,7 +27,7 @@ public class SkillAttackRunCross : Skill
         {
             // 启动协程移动
             owner.noMoveCount++;
-            EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
+            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
 
             BattleManager.Instance.StartNLCoroutine(JumpToPosition(mirrorPos));
             defender.OnSkillDamaged(owner, skillId, (int)(damage * skillCfg.SkillDamageRate));

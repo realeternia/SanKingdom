@@ -15,8 +15,8 @@ public class SkillDamageReal : Skill
         if((float)defender.hp / defender.maxHp > skillCfg.ConditionParm)
             return;
 
-        if(!string.IsNullOrEmpty(skillCfg.HitEffect))
-            effect = skillCfg.HitEffect;
+        if(!string.IsNullOrEmpty(skillCfg.EffectHit))
+            effect = skillCfg.EffectHit;
 
         if(CheckBurst(defender))
         {

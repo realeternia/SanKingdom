@@ -27,7 +27,7 @@ public class SkillInitSoldierSummon : Skill
                 continue;
 
             unit.attackRange += rangeAdd;
-            EffectManager.PlaySkillEffect(unit, skillCfg.HitEffect);
+            EffectManager.PlaySkillEffect(unit, skillCfg.EffectHit);
         }
     }
 }

@@ -20,7 +20,7 @@ public class SkillHitTeleport : Skill
 
             owner.MoveTo(randomPosition, true);
             owner.LockTarget(attacker);
-            EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
+            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
 
             BuffManager.AddBuff(attacker, owner, id, skillCfg.BuffId, skillCfg.BuffTime);
         }

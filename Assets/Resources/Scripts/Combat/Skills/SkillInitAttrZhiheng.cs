@@ -53,7 +53,7 @@ public class SkillInitAttrZhiheng : Skill
             owner.AddAttr("inte", attrValue); // 智力属性
             UnityEngine.Debug.Log($"BattleBegin SkillInitAttrZhiheng: 我方有{uniqueJobCount}种不同兵种，提升属性{attrValue}点");
 
-            EffectManager.PlaySkillEffect(owner, skillCfg.HitEffect);
+            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
             owner.PlayerAnim(skillCfg.Action);
             BattleManager.Instance.AddBattleText("制衡+" + attrValue.ToString(), owner.position, new UnityEngine.Vector2(0, 60), new Color(1, .3f, .3f), 3);
         }
