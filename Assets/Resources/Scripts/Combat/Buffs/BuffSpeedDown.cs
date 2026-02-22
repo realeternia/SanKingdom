@@ -4,7 +4,7 @@ public class BuffSpeedDown : Buff
 {
     private float moveSpeedDiff;
     private float attackRateDiff;
-    public BuffSpeedDown(int id, int skillId, Chess caster, Chess target, float lastTime)
+    public BuffSpeedDown(int id, int skillId, Chess caster, Chess target, int lastTime)
      : base(id, skillId, caster, target, lastTime)
     {
     }

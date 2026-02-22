@@ -52,7 +52,7 @@ public class Skill : IRecoverable
             var cdTime = skillCfg.CD;
             SkillManager.OnCheckCD(owner, skillCfg, ref cdTime);
 
-            lastUpdateTick = BattleManager.Instance.tickIndex - (int)(skillCfg.CD / BattleManager.tickTimeReal) + (int)(cdTime / BattleManager.tickTimeReal);
+            lastUpdateTick = BattleManager.Instance.tickIndex + BattleManager.Instance.GetTickFromTime(cdTime);
         }
     }
 
@@ -65,7 +65,7 @@ public class Skill : IRecoverable
         if(skillCfg.CD <= 0)
             return false;
 
-        return BattleManager.Instance.tickIndex < lastUpdateTick + (int)(skillCfg.CD / BattleManager.tickTimeReal);
+        return BattleManager.Instance.tickIndex < lastUpdateTick;
     }
 
     public bool CheckBurst(Chess target)
@@ -129,7 +129,7 @@ public class Skill : IRecoverable
         
     }
 
-    public virtual void OnAddBuff(Chess target, ref int buffId, int skillId, ref float time)
+    public virtual void OnAddBuff(Chess target, ref int buffId, int skillId, ref float lastTime)
     {
         
     }
@@ -139,7 +139,7 @@ public class Skill : IRecoverable
 
     }
 
-    public virtual void OnBeAddBuff(Chess caster, ref int buffId, int checkSkillId, ref float time)
+    public virtual void OnBeAddBuff(Chess caster, ref int buffId, int checkSkillId, ref float lastTime)
     {
         
     }

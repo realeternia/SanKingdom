@@ -2,7 +2,7 @@ using System;
 
 public class BuffDamageAddRate : Buff
 {
-    public BuffDamageAddRate(int id, int skillId, Chess caster, Chess target, float lastTime)
+    public BuffDamageAddRate(int id, int skillId, Chess caster, Chess target, int lastTime)
      : base(id, skillId, caster, target, lastTime)
     {
     }

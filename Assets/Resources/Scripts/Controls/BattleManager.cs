@@ -245,6 +245,11 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    public int GetTickFromTime(float time)
+    {
+        return (int)(time / tickTimeReal);
+    }
+
     private void RoundFoodCost(FoodInfo foodInfo)
     {
         // 粮食扣除逻辑

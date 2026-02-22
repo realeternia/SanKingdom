@@ -252,15 +252,15 @@ public static class SkillManager
         return false;
     }
 
-    public static void OnAddBuff(Chess target, Chess caster, ref int buffId, int skillId, ref float time)
+    public static void OnAddBuff(Chess target, Chess caster, ref int buffId, int skillId, ref float lastTime)
     {
         foreach (var skill in caster.skills)
         {
-            skill.OnAddBuff(target, ref buffId, skillId, ref time);
+            skill.OnAddBuff(target, ref buffId, skillId, ref lastTime);
         }
         foreach (var skill in target.skills)
         {
-            skill.OnBeAddBuff(caster, ref buffId, skillId, ref time);
+            skill.OnBeAddBuff(caster, ref buffId, skillId, ref lastTime);
         }
     }
 

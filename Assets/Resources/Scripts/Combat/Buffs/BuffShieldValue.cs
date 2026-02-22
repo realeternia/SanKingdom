@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BuffShieldValue : Buff
 {
-    public BuffShieldValue(int id, int skillId, Chess caster, Chess target, float lastTime)
+    public BuffShieldValue(int id, int skillId, Chess caster, Chess target, int lastTime)
      : base(id, skillId, caster, target, lastTime)
     {
     }

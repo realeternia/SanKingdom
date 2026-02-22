@@ -1,6 +1,6 @@
 public class BuffSuck : Buff
 {
-    public BuffSuck(int id, int skillId, Chess caster, Chess target, float lastTime)
+    public BuffSuck(int id, int skillId, Chess caster, Chess target, int lastTime)
      : base(id, skillId, caster, target, lastTime)
     {
     }

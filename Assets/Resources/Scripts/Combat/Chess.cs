@@ -20,6 +20,9 @@ public class Chess : SceneObj
     public int maxHp = 100;  // 最大生命值
 
     public bool isHero;
+    public bool isFakeHero;
+    public bool isShadow;
+
     public int heroId;
     public int soldierId;
 
@@ -38,8 +41,7 @@ public class Chess : SceneObj
     public int str;
     public int leadShip;
     public int level = 1;
-    public bool isShadow;
-    public bool isFakeHero;
+    
     public float dodgeRate; //闪避
     public float critRate; //暴击
     public float critDamageMulti = 0.5f; //暴击伤害倍率
@@ -48,9 +50,9 @@ public class Chess : SceneObj
 
     // 是否正在使用偏移路径
     public int hp = 100;
+
     [NonSerialized]
     public int attackDamage = 30;
-
     [NonSerialized]
     public string hitEffect;
     [NonSerialized]
@@ -183,7 +185,7 @@ public class Chess : SceneObj
         if (hp <= 0)
             return;
 
-        buffs.Where(x => BattleManager.Instance.tickIndex > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
+        buffs.Where(x => tickIndex > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
 
         if(regeHp > 0)
         {
@@ -697,14 +699,14 @@ public class Chess : SceneObj
         return nowTick < lastAttackTime + 3;
     }
 
-    public void AddBuff(Buff buff, Chess caster, float time)
+    public void AddBuff(Buff buff, Chess caster, int endTick)
     {
         // 保留原有的buff刷新逻辑
         foreach(var item in buffs)
         {
             if(item.id == buff.id)
             {
-                item.Refresh(caster, time);
+                item.Refresh(caster, endTick);
                 return;
             }
         }

@@ -26,13 +26,13 @@ public class Buff : IRecoverable
     public GameObject effect;
 
 
-    public Buff(int id, int skillId, Chess caster, Chess unit, float lastTime)
+    public Buff(int id, int skillId, Chess caster, Chess unit, int endTick)
     {
         this.id = id;
         casterId = caster.id;
         ownerId = unit.id;
         this.skillId = skillId;
-        endTime = BattleManager.Instance.tickIndex + (int)(lastTime / BattleManager.tickTimeReal);
+        endTime = endTick;
         buffCfg = BuffConfig.GetConfig(id);
         skillCfg = SkillConfig.GetConfig(skillId);
     }
@@ -41,11 +41,6 @@ public class Buff : IRecoverable
     {
         buffCfg = BuffConfig.GetConfig(id);
         skillCfg = SkillConfig.GetConfig(skillId);
-    }
-
-    public void SetTime(float time)
-    {
-        endTime = BattleManager.Instance.tickIndex + (int)(time / BattleManager.tickTimeReal);
     }
 
     public virtual void OnAdd(Chess chess, Chess caster)
@@ -84,28 +79,25 @@ public class Buff : IRecoverable
     }
 
     //刷新
-    public virtual void Refresh(Chess caster, float lastTime)
+    public virtual void Refresh(Chess caster, int endTick)
     {
-        endTime = Math.Max(endTime, BattleManager.Instance.tickIndex + (int)(lastTime / BattleManager.tickTimeReal));
+        endTime = Math.Max(endTime, endTick);
     }
 
     public void WaitForRemove()
     {
-        endTime = BattleManager.Instance.tickIndex - 1;
-
+        endTime = 0;
     }
 
     public virtual void DuringAttack(Chess defender, string damType, ref int damageBase, ref float damageMulti, ref string effect)
-
     {
     }
-    public virtual void DuringAttacked(Chess attacker, string damType, ref int damageBase, ref float damageMulti, ref string effect)
 
+    public virtual void DuringAttacked(Chess attacker, string damType, ref int damageBase, ref float damageMulti, ref string effect)
     {
     }
 
     public virtual void BeforeAttacked(Chess defender, ref int damage)
-
     {
     }
 

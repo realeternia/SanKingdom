@@ -1,6 +1,6 @@
 public class BuffNoMove : Buff
 {
-    public BuffNoMove(int id, int skillId, Chess caster, Chess target, float lastTime)
+    public BuffNoMove(int id, int skillId, Chess caster, Chess target, int lastTime)
      : base(id, skillId, caster, target, lastTime)
     {
     }
