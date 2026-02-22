@@ -27,18 +27,15 @@ public class Missile : SceneObj
     public int targetChessId;
     private Chess targetChess{ get{ return BattleManager.Instance.GetChess(targetChessId); } }
     public float missileSpeed;
-    public float missileHight;
-    public float journeyLength;
-    public float totalLen;
-    public float realLen;
     public float maxY;
 
     // ToDirection variables
     public Vector3 direction;
-    public float timeLimit;
+    public Vector3 startPos;
     public float detectArea;
     public int targetCount;
-    public float liveTick;
+    public float tickTimeTotal;
+    public float liveTime;
     public float lastCheckTick;
     public List<int> checkedIdList; //已结算单位id列表
 
@@ -49,6 +46,7 @@ public class Missile : SceneObj
         hitEffectName = effectName;
         ownerId = sourceChess.id;
         this.size = size;
+        this.startPos = startPos;
         position = startPos + new Vector3(0f, 2f, 0f);
         this.skillId = skillId;
         this.skillDamage = damage;
@@ -105,12 +103,8 @@ public class Missile : SceneObj
         moveState = MoveState.ToTarget;
         targetChessId = target.id;
         this.missileSpeed = missileSpeed;
-        this.missileHight = missileHight;
-        var targetPos = target.position;
-        journeyLength = BattleManager.Instance.GetRange(position, targetPos);
-        totalLen = journeyLength;
-        realLen = 0;
         maxY = missileHight;
+        tickTimeTotal = liveTime / tickTimeTotal;
     }
 
     public void MoveToDirection(Vector3 targetPos, float time, float missileSpeed)
@@ -128,11 +122,10 @@ public class Missile : SceneObj
         moveState = MoveState.ToDirection;
         direction = (targetPos - position).normalized;
         direction.y = 0;
-        timeLimit = time;
         this.missileSpeed = missileSpeed;
         this.detectArea = detectArea;
         this.targetCount = targetCount;
-        liveTick = 0;
+        tickTimeTotal = time;
         checkedIdList = new List<int>();
     }
 
@@ -159,27 +152,16 @@ public class Missile : SceneObj
         }
 
         var targetPos = targetChess.position + new Vector3(0f, 3f, 0f); // 修正目标点
-        if (BattleManager.Instance.CheckInRange(position, targetPos, 0.5f))
-        {
-            OnCrash(targetChess, (int)Math.Floor(tickTimeReal));
-            Cleanup();
-            return;
-        }
 
         // Calculate movement
-        float distCovered = timeElapsed * missileSpeed;
-        journeyLength = BattleManager.Instance.GetRange(position, targetPos);
-        float fractionOfJourney = distCovered / journeyLength;
+        float fractionOfJourney = liveTime / tickTimeTotal;
         
         if (maxY > 0)
         {
-            Vector3 horizontalPos = Vector3.Lerp(position, targetPos, fractionOfJourney);
-            realLen += distCovered * 1.1f;
-            if(realLen > totalLen)
-                realLen = totalLen;
+            Vector3 horizontalPos = Vector3.Lerp(startPos, targetPos, fractionOfJourney);
 
             // Calculate parabola height
-            float parabolaHeight = maxY * Mathf.Sin((realLen / totalLen) * Mathf.PI);
+            float parabolaHeight = maxY * Mathf.Sin(fractionOfJourney * Mathf.PI);
             horizontalPos.y += parabolaHeight;
 
             SetPosition(horizontalPos);
@@ -188,14 +170,22 @@ public class Missile : SceneObj
         else
         {
             // Straight path
-            SetPosition(Vector3.Lerp(position, targetPos, fractionOfJourney));
+            SetPosition(Vector3.Lerp(startPos, targetPos, fractionOfJourney));
+        }
+
+        liveTime += timeElapsed;
+        if (liveTime >= tickTimeTotal)
+        {
+            OnCrash(targetChess, (int)Math.Floor(tickTimeReal));
+            Cleanup();
+            return;
         }
     }
 
     private void UpdateMoveToDirection(float tickTimeReal, float timeElapsed)
     {
         // Calculate movement distance based on speed and time
-        float moveDistance = missileSpeed * timeElapsed;
+        float moveDistance = missileSpeed * liveTime;
         // Move in direction
         SetPosition(position + direction * moveDistance);
         SetDirection(Quaternion.LookRotation(direction));
@@ -220,8 +210,8 @@ public class Missile : SceneObj
             lastCheckTick = tickTimeReal;
         }
 
-        liveTick += timeElapsed;
-        if (liveTick >= timeLimit || checkedIdList.Count >= targetCount)
+        liveTime += timeElapsed;
+        if (liveTime >= tickTimeTotal || checkedIdList.Count >= targetCount)
         {
             Cleanup();
             return;
