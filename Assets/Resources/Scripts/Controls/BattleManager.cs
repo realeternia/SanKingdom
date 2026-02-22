@@ -142,9 +142,8 @@ public class BattleManager : MonoBehaviour
     public Chess SpawnUnitsForRegion(Player p, int soldierId, UnityEngine.Vector3 spawnPos, int side, string imgPath)
     {
         var soldierConfig = SoldierConfig.GetConfig(soldierId);
-        Chess chess = new Chess();
+        Chess chess = new Chess(idCounter++);
 
-        chess.id = idCounter;
         chess.isHero = false;
         chess.chessName = imgPath;
         chess.maxHp = soldierConfig.Hp;
@@ -160,7 +159,6 @@ public class BattleManager : MonoBehaviour
 
         chessList.Add(chess);
         chess.Init(p.forceId);
-        idCounter++;
 
         return chess;
     }
@@ -169,8 +167,7 @@ public class BattleManager : MonoBehaviour
     {
         var heroConfig = HeroConfig.GetConfig(heroData.CardId);
 
-        Chess chess = new Chess();
-        chess.id = idCounter;
+        Chess chess = new Chess(idCounter++);
         chess.isHero = true;
         chess.heroId = heroConfig.Id;
         chess.chessName = heroConfig.Icon;
@@ -182,7 +179,6 @@ public class BattleManager : MonoBehaviour
         chess.CheckInitAttr(heroData.Level, heroData.SoldierNum);
         chessList.Add(chess);
         chess.Init(p.forceId);
-        idCounter++;
 
         return chess;
     }
@@ -208,7 +204,7 @@ public class BattleManager : MonoBehaviour
                 {
                     var missile = missileList[j];
                     if (missile != null)
-                        missile.LogicUpdate(tickIndex, (float)j / 4, 1f/40);
+                        missile.FixUpdate(tickIndex, (float)j / 4, 1f/40);
                 }   
             }
 
@@ -276,21 +272,24 @@ public class BattleManager : MonoBehaviour
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess, string effectName)
     {
-        var missile = new Missile(sourceChess, sourceChess.position, 1, effectName, 0, 0);
+        var missile = new Missile(idCounter++, sourceChess, sourceChess.position, 1, effectName, 0, 0);
+        missile.Init();
         missileList.Add(missile);
         missile.MoveToTarget(targetChess, sourceChess.missileSpeed, sourceChess.missileHeight);
     }
 
     public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage, string effectName)
     {
-        var missile = new Missile(sourceChess, startPos, 1, effectName, skillId, damage);
+        var missile = new Missile(idCounter++, sourceChess, startPos, 1, effectName, skillId, damage);
+        missile.Init();
         missileList.Add(missile);
         missile.MoveToTarget(targetChess, Mathf.Max(sourceChess.missileSpeed, 14), sourceChess.missileHeight);
     }    
 
     public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, float speed, float size, int skillId, int damage, string effectName)
     {
-        var missile = new Missile(sourceChess, sourceChess.position, size, effectName, skillId, damage);
+        var missile = new Missile(idCounter++, sourceChess, sourceChess.position, size, effectName, skillId, damage);
+        
         missileList.Add(missile);
         missile.MoveToDirection(targetPos, time, speed);
     }

@@ -8,14 +8,13 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [Serializable]
-public class Chess : IRecoverable
+public class Chess : SceneObj
 {
     [NonSerialized]
     public ChessViewObj viewObj;
     [NonSerialized]
     public HeroInfo heroInfo;
 
-    public int id;
     public int forceId;
 
     public int maxHp = 100;  // 最大生命值
@@ -23,8 +22,6 @@ public class Chess : IRecoverable
     public bool isHero;
     public int heroId;
     public string chessName = "0";
-
-    public Vector3 position;
 
     public int targetChessId;
     // 目标单位
@@ -71,6 +68,11 @@ public class Chess : IRecoverable
 
     public int regeTickCount; //1s回复一次
     public int regeHp; //回复血量
+
+    public Chess(int id)
+    {
+        base.id = id;
+    }
 
     public void Init(int forceId)
     {
@@ -134,7 +136,7 @@ public class Chess : IRecoverable
 
     }
 
-    public void OnRecover()
+    public override void OnRecover()
     {
         for (int i = 0; i < buffs.Count; i++)
         {
@@ -147,7 +149,7 @@ public class Chess : IRecoverable
         CreateChessView();
     }    
 
-    public void LogicUpdate(int tickIndex)
+    public override void LogicUpdate(int tickIndex)
     {
         if (hp <= 0)
             return;
@@ -223,10 +225,10 @@ public class Chess : IRecoverable
         hp = maxHp;
     }
 
-    public void SetPosition(Vector3 position)
+    public override void SetPosition(Vector3 position)
     {
+        base.SetPosition(position);
         position.y = 7 + id * 0.01f;
-        this.position = position;
         if(viewObj != null)
             viewObj.transform.position = position;
     }
@@ -802,6 +804,5 @@ public class Chess : IRecoverable
         skillAdd.isGivenSkill = true;
         skills.Add(skillAdd);
     }
-
 }
 

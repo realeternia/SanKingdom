@@ -4,7 +4,7 @@ using CommonConfig;
 using UnityEngine;
 
 [Serializable]
-public class Missile : IRecoverable
+public class Missile : SceneObj
 {
     private int ownerId;
     public Chess owner{ get{ return BattleManager.Instance.GetChess(ownerId); } }
@@ -18,8 +18,6 @@ public class Missile : IRecoverable
 
     public int skillId;
     public int skillDamage;
-
-    public Vector3 position;
 
     // Movement state variables
     public enum MoveState { None, ToTarget, ToDirection }
@@ -44,8 +42,9 @@ public class Missile : IRecoverable
     public float lastCheckTick;
     public List<int> checkedIdList; //已结算单位id列表
 
-    public Missile(Chess sourceChess, Vector3 startPos, float size, string effectName, int skillId, int damage)
+    public Missile(int id, Chess sourceChess, Vector3 startPos, float size, string effectName, int skillId, int damage)
     {
+        base.id = id;
         this.effectName = effectName;
         hitEffectName = effectName;
         ownerId = sourceChess.id;
@@ -54,12 +53,15 @@ public class Missile : IRecoverable
         this.skillId = skillId;
         this.skillDamage = damage;
 
-        CreateMissileView();
-
         // Reset state
         moveState = MoveState.None;
         targetChessId = 0;
         checkedIdList = new List<int>();
+    }
+
+    public void Init()
+    {
+        CreateMissileView();
     }
 
     private void CreateMissileView()
@@ -82,9 +84,16 @@ public class Missile : IRecoverable
         }
     }
 
-    public void OnRecover()
+    public override void OnRecover()
     {
         CreateMissileView();
+    }
+    
+    public override void SetPosition(Vector3 pos)
+    {
+        base.SetPosition(pos);
+        if(viewObj != null)
+            viewObj.transform.position = pos;
     }
 
     public void MoveToTarget(Chess target, float missileSpeed, float missileHight)
@@ -127,7 +136,7 @@ public class Missile : IRecoverable
         checkedIdList = new List<int>();
     }
 
-    public void LogicUpdate(int tickIndex, float indexMini, float timeElapsed)
+    public override void FixUpdate(int tickIndex, float indexMini, float timeElapsed)
     {
         float tickReal = tickIndex + indexMini;
         switch (moveState)
@@ -229,12 +238,6 @@ public class Missile : IRecoverable
         moveState = MoveState.None;
     }
 
-    public void SetPosition(Vector3 pos)
-    {
-        position = pos;
-        if(viewObj != null)
-            viewObj.transform.position = pos;
-    }
 
     public void SetDirection(Quaternion dir)
     {
@@ -257,5 +260,4 @@ public class Missile : IRecoverable
             EffectManager.PlaySkillEffect(target, hitEffectName);
         }
     }
-
 }
