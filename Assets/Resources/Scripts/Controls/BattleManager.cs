@@ -32,6 +32,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private NLCoroutineManager coroutineManager = new NLCoroutineManager();
 
+    [SerializeReference]
     public List<ChessAction> actions = new List<ChessAction>();    
 
     [NonSerialized]
