@@ -85,38 +85,13 @@ public class BattleManager : MonoBehaviour
         if (showUI)
         {
             battleUIManager.BattleResultPanel.gameObject.SetActive(false);
-        }
-        SpawnUnitsInRegions(player1, cards1, player2, cards2);
-
-        foreach (var chess in chessList.ToArray()) //防止召唤
-            SkillManager.CheckAddSkill(chess);
-
-        foreach (var chess in chessList.ToArray()) //防止召唤
-            SkillManager.BattleBegin(chess);
-        
-        SaveToFile("battle.json");
-
-        StartCoroutine(GameUpdate());
-    }
-
-    private void SpawnUnitsInRegions(Player player1, List<BattleCardData> cards1, Player player2, List<BattleCardData> cards2)
-    {
-        if (showUI)
-        {
             // 清空之前的单位
             foreach (Transform child in battleUIManager.NodeUnits.transform)
-            {
                 UnityEngine.Object.Destroy(child.gameObject);
-            }
-        }
-
-        if (showUI)
-        {
             battleUIManager.heroInfoGroup.Reset();
             battleUIManager.CreateCastleHUD(player1, GetSpawnPosition(1, 5));
-            battleUIManager.CreateCastleHUD(player2, GetSpawnPosition(2, 5));
+            battleUIManager.CreateCastleHUD(player2, GetSpawnPosition(2, 5));            
         }
-
         //对cards1和card2都按HeroConfig的Range排序，确保远程在后面
         cards1.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
         cards2.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
@@ -127,8 +102,15 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < Math.Min(cards2.Count, 12); i++)
             SpawnHerosForRegion(player2, GetSpawnPosition(2, i), cards2[i]);
 
-           //   SpawnHerosForRegion(player1, 0, mapConfig.RegionHeroSide1[0], cards1[0], 1);
-           //    SpawnHerosForRegion(player2, 0, mapConfig.RegionHeroSide2[0], cards2[0], 2);
+        foreach (var chess in chessList.ToArray()) //防止召唤
+            SkillManager.CheckAddSkill(chess);
+
+        foreach (var chess in chessList.ToArray()) //防止召唤
+            SkillManager.BattleBegin(chess);
+        
+        SaveToFile("battle.json");
+
+        StartCoroutine(GameUpdate());
     }
 
     private Vector3 GetSpawnPosition(int side, int indx)
