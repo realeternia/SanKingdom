@@ -2,7 +2,6 @@
 public class CreateMissileAction : ChessAction
 {
     public int Id;
-    public int SourceChessId;
     public int TargetChessId;
     public UnityEngine.Vector3 TargetPos;
     public UnityEngine.Vector3 StartPos;
@@ -11,12 +10,10 @@ public class CreateMissileAction : ChessAction
     public float Time;
     public bool IsDirectional;
 
-    public CreateMissileAction(int sourceId, int tick, int id, int sourceChessId, int targetChessId, UnityEngine.Vector3 startPos, int skillId, int damage)
+    public CreateMissileAction(int sourceId, int tick, int id, int targetChessId, UnityEngine.Vector3 startPos, int skillId, int damage)
+        : base(sourceId, tick)
     {
-        SourceId = sourceId;
-        Tick = tick;
         Id = id;
-        SourceChessId = sourceChessId;
         TargetChessId = targetChessId;
         StartPos = startPos;
         SkillId = skillId;
@@ -24,12 +21,10 @@ public class CreateMissileAction : ChessAction
         IsDirectional = false;
     }
 
-    public CreateMissileAction(int sourceId, int tick, int id, int sourceChessId, UnityEngine.Vector3 targetPos, UnityEngine.Vector3 startPos, int skillId, int damage, float time)
+    public CreateMissileAction(int sourceId, int tick, int id, UnityEngine.Vector3 targetPos, UnityEngine.Vector3 startPos, int skillId, int damage, float time)
+        : base(sourceId, tick)
     {
-        SourceId = sourceId;
-        Tick = tick;
         Id = id;
-        SourceChessId = sourceChessId;
         TargetPos = targetPos;
         StartPos = startPos;
         SkillId = skillId;
@@ -38,10 +33,10 @@ public class CreateMissileAction : ChessAction
         IsDirectional = true;
     }
 
-    public override void Doing(Chess chess)
+    public override void Doing()
     {
         var battleManager = BattleManager.Instance;
-        var sourceChess = battleManager.GetChess(SourceChessId);
+        var sourceChess = battleManager.GetChess(SourceId);
         var missile = new Missile(Id, sourceChess, StartPos, SkillId, Damage);
         missile.Init();
         battleManager.missileList.Add(missile);

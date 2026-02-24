@@ -4,7 +4,13 @@ public class ChessAction
     public int SourceId;
     public int Tick;
 
-    public virtual void Doing(Chess chess)
+    public ChessAction(int sourceId, int tick)
+    {
+        SourceId = sourceId;
+        Tick = tick;
+    }
+
+    public virtual void Doing()
     {
     }
 }

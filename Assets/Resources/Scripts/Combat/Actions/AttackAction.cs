@@ -7,9 +7,20 @@ public class AttackAction : ChessAction
     public string HitEffect;
     public string DamType;
 
-    public override void Doing(Chess chess)
+    public AttackAction(int sourceId, int tick, int targetId, int damage, bool isCrit, bool isDodge, string hitEffect, string damType)
+        : base(sourceId, tick)
+    {
+        TargetId = targetId;
+        Damage = damage;
+        IsCrit = isCrit;
+        IsDodge = isDodge;
+        HitEffect = hitEffect;
+        DamType = damType;
+    }
+
+    public override void Doing()
     {
         var targetChess = BattleManager.Instance.GetChess(TargetId);
-        targetChess.OnAttackDamaged(Damage, DamType, HitEffect, IsCrit, IsDodge, chess.id);
+        targetChess.OnAttackDamaged(Damage, DamType, HitEffect, IsCrit, IsDodge, SourceId);
     }
 }

@@ -399,16 +399,10 @@ public class Chess : SceneObj
                 attackPoint -= 10;
 
                 // 创建移动Action并添加到actions列表
-                var moveAction = new MoveAction
-                {
-                    SourceId = id,
-                    Tick = tickIndex,
-                    TargetId = targetChess != null ? targetChess.id : -1,
-                    TargetPosition = moveDest
-                };
+                var moveAction = new MoveAction(id, tickIndex, targetChess != null ? targetChess.id : -1, moveDest);
                 BattleManager.Instance.AddChessAction(moveAction);
 
-                moveAction.Doing(this);
+                moveAction.Doing();
             }
         }
     }
@@ -532,19 +526,9 @@ public class Chess : SceneObj
             damage = Math.Max(damage, damageReal);
 
             // 创建攻击Action并添加到actions列表
-            var attackAction = new AttackAction
-            {
-                SourceId = id,
-                Tick = tickIndex,
-                TargetId = victim.id,
-                Damage = damage,
-                IsCrit = isCrit,
-                IsDodge = isDodge,
-                HitEffect = hitEffectName,
-                DamType = damType,
-            };
+            var attackAction = new AttackAction(id, tickIndex, victim.id, damage, isCrit, isDodge, hitEffectName, damType);
             BattleManager.Instance.AddChessAction(attackAction);     
-            attackAction.Doing(this);
+            attackAction.Doing();
         }
     }
 

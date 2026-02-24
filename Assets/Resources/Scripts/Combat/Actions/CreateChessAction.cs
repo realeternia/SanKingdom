@@ -16,9 +16,8 @@ public class CreateChessAction : ChessAction
     public Chess CreatedChess { get; private set; }
 
     public CreateChessAction(int sourceId, int tick, int id, int forceId, int soldierId, UnityEngine.Vector3 spawnPos, bool isHero = false, int heroId = 0, int level = 0, int soldierNum = 0, bool isFakeHero = false)
+        : base(sourceId, tick)
     {
-        SourceId = sourceId;
-        Tick = tick;
         Id = id;
         ForceId = forceId;
         SoldierId = soldierId;
@@ -30,7 +29,7 @@ public class CreateChessAction : ChessAction
         IsFakeHero = isFakeHero;
     }
 
-    public override void Doing(Chess chess)
+    public override void Doing()
     {
         var battleManager = BattleManager.Instance;
         var chessObj = new Chess(Id);
