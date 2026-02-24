@@ -123,36 +123,26 @@ public class BattleManager : MonoBehaviour
 
     public Chess SpawnUnitsForRegion(Player p, int soldierId, UnityEngine.Vector3 spawnPos)
     {
-        var soldierConfig = SoldierConfig.GetConfig(soldierId);
-        Chess chess = new Chess(idCounter++);
-        chess.isHero = false;
-        chess.maxHp = soldierConfig.Hp;
+        var id = idCounter++;
+        var action = new CreateChessAction(0, tickIndex, id, p.forceId, soldierId, spawnPos);
+        AddChessAction(action);
+        
+        action.Doing(null);
 
-        chess.isFakeHero = soldierConfig.Model == "UnitHero";
-        chess.soldierId = soldierId;
-        chess.forceId = p.forceId;
-        chess.position = spawnPos;
-
-        chessList.Add(chess);
-        chess.Init(p.forceId);
-
-        return chess;
+        return action.CreatedChess;
     }
 
     private Chess SpawnHerosForRegion(Player p, UnityEngine.Vector3 spawnPoint, BattleCardData heroData)
     {
         var heroConfig = HeroConfig.GetConfig(heroData.CardId);
 
-        Chess chess = new Chess(idCounter++);
-        chess.isHero = true;
-        chess.heroId = heroConfig.Id;
-        chess.position = spawnPoint;
+        var id = idCounter++;
+        var action = new CreateChessAction(0, tickIndex, id, p.forceId, 0, spawnPoint, true, heroConfig.Id, heroData.Level, heroData.SoldierNum);
+        AddChessAction(action);
 
-        chess.CheckInitAttr(heroData.Level, heroData.SoldierNum);
-        chessList.Add(chess);
-        chess.Init(p.forceId);
-
-        return chess;
+        action.Doing(null);
+        
+        return action.CreatedChess;
     }
 
     public static float tickTimeReal = 0.1f; //加速功能
@@ -249,26 +239,29 @@ public class BattleManager : MonoBehaviour
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess)
     {
-        var missile = new Missile(idCounter++, sourceChess, sourceChess.position, 0, 0);
-        missile.Init();
-        missileList.Add(missile);
-        missile.MoveToTarget(targetChess);
+        var id = idCounter++;
+        var action = new CreateMissileAction(sourceChess.id, tickIndex, id, sourceChess.id, targetChess.id, sourceChess.position, 0, 0);
+        AddChessAction(action);
+
+        action.Doing(null);
     }
 
     public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage)
     {
-        var missile = new Missile(idCounter++, sourceChess, startPos, skillId, damage);
-        missile.Init();
-        missileList.Add(missile);
-        missile.MoveToTarget(targetChess);
+        var id = idCounter++;
+        var action = new CreateMissileAction(sourceChess.id, tickIndex, id, sourceChess.id, targetChess.id, startPos, skillId, damage);
+        AddChessAction(action);
+        
+        action.Doing(null);
     }    
 
     public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, int skillId, int damage)
     {
-        var missile = new Missile(idCounter++, sourceChess, sourceChess.position, skillId, damage);
+        var id = idCounter++;
+        var action = new CreateMissileAction(sourceChess.id, tickIndex, id, sourceChess.id, targetPos, sourceChess.position, skillId, damage, time);
+        AddChessAction(action);
         
-        missileList.Add(missile);
-        missile.MoveToDirection(targetPos, time);
+        action.Doing(null);
     }
     
     public void RemoveMissile(Missile missile)
