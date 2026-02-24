@@ -24,7 +24,7 @@ public class BattleManager : MonoBehaviour
 
     public const int gridCellSize = 3; // 每个格子的实际大小(米)
 
-    private List<FoodInfo> playerInfoList = new List<FoodInfo>();
+    public List<FoodInfo> playerInfoList = new List<FoodInfo>();
 
     public List<Chess> chessList = new List<Chess>(); // 所有棋子
     public List<Missile> missileList = new List<Missile>(); // 所有导弹
@@ -34,8 +34,10 @@ public class BattleManager : MonoBehaviour
 
     public List<ChessAction> actions = new List<ChessAction>();    
 
+    [NonSerialized]
     private bool gameFinish = false;
-    private bool hasWin;    
+    [NonSerialized]
+    private bool hasWin;
     public int idCounter = 100;
     public int tickIndex = 1;
     public int lastFoodDeductionTick = 0;

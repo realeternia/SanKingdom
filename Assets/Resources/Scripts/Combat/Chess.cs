@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using CommonConfig;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [Serializable]
@@ -77,6 +76,7 @@ public class Chess : SceneObj
 
     public int regeTickCount; //1s回复一次
     public int regeHp; //回复血量
+    public int lackIndex;
 
     public Chess(int id)
     {
@@ -246,13 +246,11 @@ public class Chess : SceneObj
         // lastTargetUpdateTick = BattleManager.Instance.time;
     }
 
-    private int lackIndex;
     public void LackFood(float lackRate)
     {
         hp = Math.Max(1, hp - (int)((15 + lackIndex * 5) * lackRate)); //饿不死人
         lackIndex++;
     }
-
 
     // 寻找side不等于自己的单位
     public void FindTarget()
@@ -619,7 +617,7 @@ public class Chess : SceneObj
             BGMPlayer.Instance.PlaySound("Sounds/tnt", 7);
     }
 
-    private int CalculateDamage(Chess attacker, Chess defender, out string type)
+    private static int CalculateDamage(Chess attacker, Chess defender, out string type)
     {
         if (!attacker.isHero || !defender.isHero)
         {
@@ -676,7 +674,7 @@ public class Chess : SceneObj
     public void SetLifeTime(float time)
     {
         dieAfterLifeTime = true;
-        // lifeTick = time;
+        lifeTickCount = BattleManager.Instance.GetTickFromTime(time);
     }
 
     public Player GetPlayerInfo()
