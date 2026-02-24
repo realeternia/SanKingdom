@@ -85,6 +85,19 @@ public class Chess : SceneObj
         public int TickPast;
     }
 
+    // 持续伤害相关状态
+    public List<DamageOverTimeState> dotStates = new List<DamageOverTimeState>();
+
+    [Serializable]
+    public class DamageOverTimeState
+    {
+        public int casterId;
+        public int skillId;
+        public float damage;
+        public int tickCount;
+        public int tickInterval;
+    }
+
     public bool dieAfterLifeTime;
     public int lifeTickCount; //1s死亡一次
 
@@ -208,6 +221,29 @@ public class Chess : SceneObj
             {
                 regeTickCount -= 10;
                 AddHp(regeHp);
+            }
+        }
+
+        // 处理持续伤害逻辑
+        for (int i = dotStates.Count - 1; i >= 0; i--)
+        {
+            var dotState = dotStates[i];
+            dotState.tickCount++;
+            
+            if (dotState.tickCount >= dotState.tickInterval)
+            {
+                dotState.tickCount = 0;
+                
+                // 造成伤害
+                if (hp > 0)
+                {
+                    var caster = BattleManager.Instance.GetChess(dotState.casterId);
+                    if (caster != null)
+                    {
+                        DoSkillDamage(caster, dotState.skillId, (int)dotState.damage);
+                        BattleManager.Instance.AddBattleText("-" + ((int)dotState.damage).ToString(), position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
+                    }
+                }
             }
         }
 
@@ -754,6 +790,26 @@ public class Chess : SceneObj
 
         buffs.Add(buff);
         buff.OnAdd(this, caster);
+    }
+
+    // 添加持续伤害状态
+    public void AddDamageOverTimeState(int casterId, int skillId, float damage)
+    {
+        var dotState = new DamageOverTimeState
+        {
+            casterId = casterId,
+            skillId = skillId,
+            damage = damage,
+            tickCount = 0,
+            tickInterval = BattleManager.Instance.GetTickFromTime(1) // 1秒 = 10 tick
+        };
+        dotStates.Add(dotState);
+    }
+
+    // 移除持续伤害状态
+    public void RemoveDamageOverTimeState(int skillId)
+    {
+        dotStates.RemoveAll(state => state.skillId == skillId);
     }
 
     public void AddColorEffect(Color start, Color end)

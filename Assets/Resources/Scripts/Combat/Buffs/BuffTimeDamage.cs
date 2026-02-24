@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class BuffTimeDamage : Buff
@@ -10,49 +9,21 @@ public class BuffTimeDamage : Buff
     {
     }
 
-    private IEnumerator damageCoroutine;
-
     public override void OnAdd(Chess chess, Chess caster)
     {
         base.OnAdd(chess, caster);
         damage = caster.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate;
         
-        // 启动伤害协程
-        damageCoroutine = BattleManager.Instance.StartNLCoroutine(DamageOverTime(chess, caster));
+        // 添加持续伤害状态
+        chess.AddDamageOverTimeState(caster.id, skillCfg.Id, damage);
     }
 
     public override void OnRemove(Chess chess)
     {
         base.OnRemove(chess);
         
-        // 停止伤害协程
-        if (damageCoroutine != null)
-        {
-            BattleManager.Instance.StopNLCoroutine(damageCoroutine);
-            damageCoroutine = null;
-        }
-    }
-
-    // 协程：每1秒造成伤害
-    private IEnumerator DamageOverTime(Chess chess, Chess caster)
-    {
-        while (true)
-        {
-            // 等待1秒
-            yield return new NLWaitForSeconds(1f);
-            
-            // 检查目标是否还存活
-            if (chess.hp > 0)
-            {
-                // 造成Skill类型的伤害
-                chess.DoSkillDamage(caster, skillCfg.Id, (int)damage);
-                BattleManager.Instance.AddBattleText("-" + ((int)damage).ToString(), chess.position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
-            }
-            else
-            {
-                yield break;
-            }
-        }
+        // 移除持续伤害状态
+        chess.RemoveDamageOverTimeState(skillCfg.Id);
     }
 
 }

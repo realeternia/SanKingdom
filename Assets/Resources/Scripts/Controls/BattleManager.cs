@@ -491,16 +491,6 @@ public class BattleManager : MonoBehaviour
         return battleUIManager.TransformWorldToScreen(worldPosition, canvas);
     }
 
-    public IEnumerator StartNLCoroutine(IEnumerator routine)
-    {
-        coroutineManager.StartCoroutine(routine);
-        return routine;
-    }
-    public void StopNLCoroutine(IEnumerator routine)
-    {
-        coroutineManager.StopCoroutine(routine);
-    }
-
     public void AddChessAction(ChessAction action)
     {
         actions.Add(action);
