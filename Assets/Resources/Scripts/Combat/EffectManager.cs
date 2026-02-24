@@ -8,7 +8,7 @@ public static class EffectManager
 
     public static void PlayHitEffect(Chess sourceChess, Chess targetChess, string effectName)
     {
-        if(targetChess.viewObj == null || BattleManager.Instance.quickMode)
+        if(targetChess == null || targetChess.viewObj == null || BattleManager.Instance.quickMode)
             return;
 
         Debug.Log($"PlayHitEffect: {effectName}");

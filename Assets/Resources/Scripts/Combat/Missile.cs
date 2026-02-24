@@ -126,7 +126,18 @@ public class Missile : SceneObj
         // Initialize state for moving to target
         moveState = MoveState.ToTarget;
         targetChessId = target.id;
-        tickTimeTotal = liveTime / tickTimeTotal;
+        
+        // Calculate travel time based on distance and speed
+        Vector3 targetPos = target.position + new Vector3(0f, 3f, 0f);
+        float distance = Vector3.Distance(startPos, targetPos);
+        
+        // Ensure missileSpeed is not zero
+        float speed = missileSpeed > 0 ? missileSpeed : 10f; // Default speed if not set
+        tickTimeTotal = distance / speed;
+        
+        // Ensure minimum travel time to avoid division by zero
+        if (tickTimeTotal <= 0)
+            tickTimeTotal = 0.1f;
     }
 
     public void MoveToDirection(Vector3 targetPos, float time)

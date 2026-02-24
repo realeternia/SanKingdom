@@ -217,6 +217,7 @@ public class BattleManager : MonoBehaviour
         {
             battleEndCallback(hasWin);
         }
+        SaveToFile("battle1.json");
     }
 
     public int GetTickFromTime(float time)

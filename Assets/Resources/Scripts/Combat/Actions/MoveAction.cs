@@ -1,3 +1,4 @@
+[System.Serializable]
 public class MoveAction : ChessAction
 {
     public int TargetId;

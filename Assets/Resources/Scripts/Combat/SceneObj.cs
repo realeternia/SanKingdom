@@ -6,6 +6,11 @@ public class SceneObj : IRecoverable
 {
     public int id;
     public Vector3 position;
+
+    public SceneObj()
+    {
+        position = Vector3.zero;
+    }
     
     public virtual void OnRecover()
     {
