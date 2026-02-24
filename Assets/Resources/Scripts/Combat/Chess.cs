@@ -186,6 +186,7 @@ public class Chess : SceneObj
             return;
 
         buffs.Where(x => tickIndex > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
+        SkillManager.LogicUpdate(this, tickIndex);
 
         if(regeHp > 0)
         {
@@ -643,6 +644,39 @@ public class Chess : SceneObj
         // 伤害 = 最大差值 * 6
         int damage = Mathf.RoundToInt(maxDiff * 6);
         return damage;
+    }
+
+    private void JumpToPosition(Vector3 targetPos, float jumpHeight = 10f, float moveDuration = 0.5f)
+    {
+        Vector3 startPos = position;
+        noMoveCount++;
+
+        float jumpHeight = 10f; // 跳跃高度
+        float moveDuration = 0.5f; // 移动持续时间
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < moveDuration)
+        {
+            // 计算插值因子
+            float t = elapsedTime / moveDuration;
+            
+            // 计算当前位置（带跳跃效果）
+            float yOffset = jumpHeight * Mathf.Sin(t * Mathf.PI);
+            Vector3 currentPos = Vector3.Lerp(startPos, targetPos, t);
+            currentPos.y += yOffset;
+
+            owner.SetPosition(currentPos);
+
+            // 等待下一帧
+            elapsedTime += BattleManager.tickTimeReal;
+            yield return new NLWaitForSeconds(BattleManager.tickTimeReal);
+        }
+        
+        // 确保到达目标位置
+        MoveTo(targetPos, true);
+        noMoveCount --;
+
+        FindTarget(); //重新锁定一次
     }
 
     public void AddHp(int addon)

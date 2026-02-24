@@ -22,6 +22,8 @@ public class Skill : IRecoverable
     public bool isBurst;
     public int skillId{ get{ return id; } }
 
+    public List<int> delayedFrames = new List<int>();
+
     public Skill(int id, Chess unit)
     {
         this.id = id;
@@ -93,9 +95,32 @@ public class Skill : IRecoverable
         return isBurst;
     }
 
+    protected void RegisterDelayEffect(int tickIndex, float time, int count)
+    {
+        delayedFrames.Clear();
+        for (int i = 0; i < count; i++)
+        {
+            var tickDelay = BattleManager.Instance.GetTickFromTime(time * (i + 1) / count);
+            delayedFrames.Add(tickIndex + tickDelay);
+        }
+    }
+
     public virtual void BattleBegin()
     {
 
+    }
+
+    public virtual void LogicUpdate(int tickIndex)
+    {
+        if(delayedFrames.Count > 0 && delayedFrames[0] == tickIndex)
+        {
+            delayedFrames.RemoveAt(0);
+            OnDelayEffectHit();
+        }
+    }
+
+    public virtual void OnDelayEffectHit()
+    {
     }
 
     public virtual void AimTarget(Chess target)

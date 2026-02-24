@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class SkillHitWall : Skill
 {
-    private List<Vector3> targetPosList;
+    public List<Vector3> targetPosList;
     public SkillHitWall(int id, Chess unit) : base(id, unit)
     {
     }
@@ -49,38 +49,34 @@ public class SkillHitWall : Skill
             {
                 EffectManager.PlayPosSkillEffect(magicStub, pos, skillCfg.EffectSize, skillCfg.EffectArea, summonTime);
             }
-            BattleManager.Instance.StartNLCoroutine(DelayDamage(summonTime));
+
+            var term = (int)Math.Floor(summonTime / skillCfg.SummonHitInterval);
+            RegisterDelayEffect(BattleManager.Instance.tickIndex, summonTime, term);
         }
     }
 
-    IEnumerator DelayDamage(float summonTime)
+    public override void OnDelayEffectHit()
     {
-        var term = (int)Math.Floor(summonTime / skillCfg.SummonHitInterval);
-        for (int i = 0; i < term; i++)
+        if (owner == null || owner.hp <= 0)
+            return;
+
+        var unitList = new List<Chess>();
+        foreach (var pos in targetPosList)
         {
-            if (owner == null || owner.hp <= 0)
-                yield break;
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(pos, skillCfg.SummonArea * 1.5f, owner.forceId, true);
+            BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
-            var unitList = new List<Chess>();
-            foreach (var pos in targetPosList)
+            foreach (var unit in unitsInRange)
             {
-                var unitsInRange = BattleManager.Instance.GetUnitsInRange(pos, skillCfg.SummonArea * 1.5f, owner.forceId, true);
-                BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
-
-                foreach (var unit in unitsInRange)
-                {
-                    if (unitList.Contains(unit))
-                        continue;
-                    unitList.Add(unit);
-                }
+                if (unitList.Contains(unit))
+                    continue;
+                unitList.Add(unit);
             }
-            var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
-            foreach (var unit in unitList)
-            {
-                unit.DoSkillDamage(owner, skillId, damage);
-            }
-
-            yield return new NLWaitForSeconds(skillCfg.SummonHitInterval);
+        }
+        var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
+        foreach (var unit in unitList)
+        {
+            unit.DoSkillDamage(owner, skillId, damage);
         }
     }
 

@@ -26,27 +26,23 @@ public class SkillHitRegion : Skill
             //创建一个hitEffect
             EffectManager.PlayPosSkillEffect(magicStub, targetPos, skillCfg.EffectSize, skillCfg.EffectArea, summonTime);
 
-            BattleManager.Instance.StartNLCoroutine(DelayDamage(summonTime));
+            var term = (int) System.Math.Floor(summonTime / skillCfg.SummonHitInterval);
+            RegisterDelayEffect(BattleManager.Instance.tickIndex, summonTime, term);
         }
     }
 
-    IEnumerator DelayDamage(float summonTime)
+    public override void OnDelayEffectHit()
     {
-        var term = (int) System.Math.Floor(summonTime / skillCfg.SummonHitInterval);
-        for (int i = 0; i < term; i++)
-        {
-            if(owner == null || owner.hp <= 0)
-                yield break;
+        if(owner == null || owner.hp <= 0)
+            return;
 
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetPos, skillCfg.SummonArea, owner.forceId, true);
-            if (unitsInRange.Count > 0)
-            {
-                BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
-                var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
-                foreach(var unit in unitsInRange)
-                    unit.DoSkillDamage(owner, skillId, damage);
-            }
-            yield return new NLWaitForSeconds(skillCfg.SummonHitInterval);
+        var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetPos, skillCfg.SummonArea, owner.forceId, true);
+        if (unitsInRange.Count > 0)
+        {
+            BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
+            var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
+            foreach(var unit in unitsInRange)
+                unit.DoSkillDamage(owner, skillId, damage);
         }
     }
 

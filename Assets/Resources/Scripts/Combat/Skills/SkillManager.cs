@@ -125,6 +125,14 @@ public static class SkillManager
         }
     }
 
+    public static void LogicUpdate(Chess chess, int tickIndex)
+    {
+        foreach (var skill in chess.skills)
+        {
+            skill.LogicUpdate(tickIndex);
+        }
+    }
+
     public static void AimTarget(Chess attacker, Chess defender)
     {
         foreach (var skill in attacker.skills)

@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class SkillHitRepeat : Skill
 {
+    public int defenderId;
+    public int damage;
+
     public SkillHitRepeat(int id, Chess unit) : base(id, unit)
     {
     }
@@ -15,21 +18,21 @@ public class SkillHitRepeat : Skill
         {
             BattleManager.Instance.AddBattleText(damage.ToString() + "!", defender.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
             owner.PlayerAnim(skillCfg.Action);
-            BattleManager.Instance.StartNLCoroutine(DelayAttack(defender, damage));
+
+            this.defenderId = defender.id;
+            this.damage = damage;
+            RegisterDelayEffect(BattleManager.Instance.tickIndex, skillCfg.TimeDelay * skillCfg.DoCount, skillCfg.DoCount);
         }
     }
 
-    IEnumerator DelayAttack(Chess defender, int damage)
+    public override void OnDelayEffectHit()
     {
-        for (int i = 0; i < skillCfg.DoCount; i++)
+        var defender = BattleManager.Instance.GetChess(defenderId);
+        if (defender != null && defender.hp > 0)
         {
-            yield return new NLWaitForSeconds(skillCfg.TimeDelay);
-            if (defender != null && defender.hp > 0)
-            {
-                var d = (int)(damage * skillCfg.SkillDamageRate);
-                defender.DoSkillDamage(owner, skillId, d);
-                BattleManager.Instance.AddBattleText(d.ToString() + "!", defender.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
-            }
+            var d = (int)(damage * skillCfg.SkillDamageRate);
+            defender.DoSkillDamage(owner, skillId, d);
+            BattleManager.Instance.AddBattleText(d.ToString() + "!", defender.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
         }
     }
 }
