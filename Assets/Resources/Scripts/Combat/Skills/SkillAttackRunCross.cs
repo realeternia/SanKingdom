@@ -30,7 +30,7 @@ public class SkillAttackRunCross : Skill
             EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
 
             BattleManager.Instance.StartNLCoroutine(JumpToPosition(mirrorPos));
-            defender.OnSkillDamaged(owner, skillId, (int)(damage * skillCfg.SkillDamageRate));
+            defender.DoSkillDamage(owner, skillId, (int)(damage * skillCfg.SkillDamageRate));
 
             BuffManager.AddBuff(defender, owner, id, skillCfg.BuffId, skillCfg.BuffTime); //加负面buff                    
         }

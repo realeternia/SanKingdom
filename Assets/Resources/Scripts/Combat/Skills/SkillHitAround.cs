@@ -56,7 +56,7 @@ public class SkillHitAround : Skill
                     BattleManager.RandomSelect(filteredUnits, skillCfg.TargetCount);
                     var damage2 = (int)(damage * skillCfg.SkillDamageRate);
                     foreach(var unit in filteredUnits)
-                        unit.OnSkillDamaged(owner, skillId, damage2);
+                        unit.DoSkillDamage(owner, skillId, damage2);
                 }
             }
         }

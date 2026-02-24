@@ -16,7 +16,6 @@ public class Chess : SceneObj
 
     public int forceId;
 
-    public int maxHp = 100;  // 最大生命值
 
     public bool isHero;
     public bool isFakeHero;
@@ -47,6 +46,7 @@ public class Chess : SceneObj
 
     public int lastDamagedPlayerId = -1;
 
+    public int maxHp = 100;  // 最大生命值
     // 是否正在使用偏移路径
     public int hp = 100;
 
@@ -139,7 +139,6 @@ public class Chess : SceneObj
             Player player = GameManager.Instance.GetPlayer(forceId);
             if (isHero)
             {
-                var heroCfg = HeroConfig.GetConfig(heroId);
                 GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
                 GameObject unitModel = UnityEngine.Object.Instantiate(heroPrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
                 unitModel.name = $"Hero_{forceId}_{id}";
@@ -213,23 +212,6 @@ public class Chess : SceneObj
     void Update()
     {
 
-    }
-
-    public void CheckInitAttr(int lv, int soldierNum)
-    {
-        level = lv;
-
-        var attr = HeroSelectionTool.GetCardAttr(heroId, lv);
-
-        maxHp = soldierNum;
-        inte = attr.Inte;
-        str = attr.Str;
-        leadShip = attr.Lead;
-
-        hp = maxHp;
-
-        if (heroInfo != null)
-            heroInfo.SetAttr(inte, str, leadShip);
     }
 
     public override void SetPosition(Vector3 position)
@@ -557,25 +539,36 @@ public class Chess : SceneObj
         OnHpChanged();      
     }
 
-    public void OnSkillDamaged(Chess caster, int skillId, int damage, bool isFeedback = false)
+    public void DoSkillDamage(Chess caster, int skillId, int damage, bool isFeedback = false)
     {
-        var skillCfg = SkillConfig.GetConfig(skillId);
+        if(hp <= 0)
+            return;
+
         if (isHero)
         {
+            var skillCfg = SkillConfig.GetConfig(skillId);
             SkillManager.OnDoSkillDamage(this, caster, skillCfg, ref damage, isFeedback);
         }
         else
         {
             damage = Math.Max(damage, caster.attackDamage);//防止对士兵伤害过大
-        }
+        }            
 
-        if(hp <= 0)
-            return;
+        // 创建SkillDamageAction并添加到BattleManager
+        var action = new SkillDamageAction(caster.id, BattleManager.Instance.tickIndex, id, skillId, damage);
+        BattleManager.Instance.AddChessAction(action);
+        
+        // 立即执行Action
+        action.Doing();
+    }
 
+    public void OnSkillDamaged(Chess caster, int skillId, int damage)
+    {
         hp -= damage;
         if(caster != this)
             lastDamagedPlayerId = caster.forceId;
 
+        var skillCfg = SkillConfig.GetConfig(skillId);
         if(!string.IsNullOrEmpty(skillCfg.EffectHit))
             EffectManager.PlaySkillEffect(this, skillCfg.EffectHit);
 

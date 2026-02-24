@@ -256,7 +256,7 @@ public class Missile : SceneObj
         }
         else
         {
-            target.OnSkillDamaged(owner, skillId, skillDamage);
+            target.DoSkillDamage(owner, skillId, skillDamage);
             EffectManager.PlaySkillEffect(target, hitEffectName);
         }
     }

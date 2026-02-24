@@ -40,7 +40,17 @@ public class CreateChessAction : ChessAction
         {
             chessObj.isHero = true;
             chessObj.heroId = HeroId;
-            chessObj.CheckInitAttr(Level, SoldierNum);
+            chessObj.level = Level;
+
+            var attr = HeroSelectionTool.GetCardAttr(HeroId, Level);
+
+            chessObj.maxHp = SoldierNum;
+            chessObj.inte = attr.Inte;
+            chessObj.str = attr.Str;
+            chessObj.leadShip = attr.Lead;
+
+            if (chessObj.heroInfo != null)
+                chessObj.heroInfo.SetAttr(chessObj.inte, chessObj.str, chessObj.leadShip);
         }
         else
         {
@@ -51,6 +61,7 @@ public class CreateChessAction : ChessAction
             chessObj.soldierId = SoldierId;
         }
 
+        chessObj.hp = chessObj.maxHp;
         battleManager.chessList.Add(chessObj);
         chessObj.Init(ForceId);
         

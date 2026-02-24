@@ -45,7 +45,7 @@ public class BuffTimeDamage : Buff
             if (chess.hp > 0)
             {
                 // 造成Skill类型的伤害
-                chess.OnSkillDamaged(caster, skillCfg.Id, (int)damage);
+                chess.DoSkillDamage(caster, skillCfg.Id, (int)damage);
                 BattleManager.Instance.AddBattleText("-" + ((int)damage).ToString(), chess.position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
             }
             else

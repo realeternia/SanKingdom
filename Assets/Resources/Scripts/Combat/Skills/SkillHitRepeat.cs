@@ -27,7 +27,7 @@ public class SkillHitRepeat : Skill
             if (defender != null && defender.hp > 0)
             {
                 var d = (int)(damage * skillCfg.SkillDamageRate);
-                defender.OnSkillDamaged(owner, skillId, d);
+                defender.DoSkillDamage(owner, skillId, d);
                 BattleManager.Instance.AddBattleText(d.ToString() + "!", defender.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
             }
         }

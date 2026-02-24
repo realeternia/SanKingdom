@@ -39,7 +39,7 @@ public class SkillDefFeedback : Skill
         if (CheckBurst(attacker))
         {
             var damageBack = (int)(damage * skillCfg.Strength);
-            attacker.OnSkillDamaged(owner, skillId, damageBack, true);
+            attacker.DoSkillDamage(owner, skillId, damageBack, true);
 
             BattleManager.Instance.AddBattleText("反" + damageBack.ToString(), attacker.position, new UnityEngine.Vector2(0, 150), new UnityEngine.Color(0.65f, 0.31f, 0), 3);
         }
