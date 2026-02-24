@@ -65,7 +65,7 @@ public class SkillHitWall : Skill
             foreach (var pos in targetPosList)
             {
                 var unitsInRange = BattleManager.Instance.GetUnitsInRange(pos, skillCfg.SummonArea * 1.5f, owner.forceId, true);
-                BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
+                BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
                 foreach (var unit in unitsInRange)
                 {

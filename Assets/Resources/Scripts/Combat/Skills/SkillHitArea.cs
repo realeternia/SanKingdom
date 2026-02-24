@@ -24,7 +24,7 @@ public class SkillHitArea : Skill
             unitsInRange.Remove(defender);
             if (unitsInRange.Count > 0)
             {
-                BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
+                BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
                 var damage2 = (int)(damage * skillCfg.SkillDamageRate);
                 if(skillCfg.SkillDamageRate > 0 && damage2 <= 0)
                     return;

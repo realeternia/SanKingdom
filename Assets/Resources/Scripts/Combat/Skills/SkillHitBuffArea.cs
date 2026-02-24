@@ -20,7 +20,7 @@ public class SkillHitBuffArea : Skill
             if (unitsInRange.Count > 0)
             {
                 owner.PlayerAnim(skillCfg.Action);
-                BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
+                BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
                 foreach (var unit in unitsInRange)
                     BuffManager.AddBuff(unit, owner, id, skillCfg.BuffId, skillCfg.BuffTime);

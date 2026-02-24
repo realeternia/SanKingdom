@@ -41,7 +41,7 @@ public class SkillHitRegion : Skill
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetPos, skillCfg.SummonArea, owner.forceId, true);
             if (unitsInRange.Count > 0)
             {
-                BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
+                BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
                 var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
                 foreach(var unit in unitsInRange)
                     unit.OnSkillDamaged(owner, skillId, damage);

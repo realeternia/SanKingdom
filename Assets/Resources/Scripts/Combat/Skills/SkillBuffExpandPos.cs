@@ -29,7 +29,7 @@ public class SkillBuffExpandPos : Skill
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(target.position, skillCfg.Range, owner.forceId, false);
             if (unitsInRange.Count > 0)
             {
-                BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
+                BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
                 foreach (var unit in unitsInRange)
                     BuffManager.AddBuff(unit, owner, checkSkillId, buffId, time);
@@ -52,7 +52,7 @@ public class SkillBuffExpandPos : Skill
             if (unitsInRange.Count > 0)
             {
                 owner.PlayerAnim(skillCfg.Action);
-                BattleManager.Instance.RandomSelect(unitsInRange, skillCfg.TargetCount);
+                BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
                 foreach (var unit in unitsInRange)
                     owner.HealTarget(unit, checkSkillId, addon);

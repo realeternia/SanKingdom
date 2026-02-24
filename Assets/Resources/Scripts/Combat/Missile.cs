@@ -208,7 +208,7 @@ public class Missile : SceneObj
             if (unitsInRange.Count > 0)
             {
                 if (unitsInRange.Count + checkedIdList.Count > targetCount)
-                    BattleManager.Instance.RandomSelect(unitsInRange, targetCount - checkedIdList.Count);
+                    BattleManager.RandomSelect(unitsInRange, targetCount - checkedIdList.Count);
 
                 foreach (var unit in unitsInRange)
                 {

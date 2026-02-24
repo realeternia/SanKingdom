@@ -275,7 +275,7 @@ public class BattleManager : MonoBehaviour
     }
 
     // 世界坐标转格子坐标
-    public Vector2Int WorldToGridPosition(Vector3 worldPosition, bool FloorToInt)
+    public static Vector2Int WorldToGridPosition(Vector3 worldPosition, bool FloorToInt)
     {
         int x = 0;
         int z = 0;
@@ -380,7 +380,7 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public bool CheckInRange(Vector3 pos1, Vector3 pos2, float range)
+    public static bool CheckInRange(Vector3 pos1, Vector3 pos2, float range)
     {
         Vector2Int pos1a = WorldToGridPosition(pos1, true);
         Vector2Int pos2a = WorldToGridPosition(pos2, true);
@@ -388,7 +388,7 @@ public class BattleManager : MonoBehaviour
         return Vector2Int.Distance(pos1a, pos2a) <= range;
     }
 
-    public float GetRange(Vector3 pos1, Vector3 pos2)
+    public static float GetRange(Vector3 pos1, Vector3 pos2)
     {
         Vector2Int pos1a = WorldToGridPosition(pos1, true);
         Vector2Int pos2a = WorldToGridPosition(pos2, true);
@@ -425,7 +425,7 @@ public class BattleManager : MonoBehaviour
         return unitsInRange;
     }
 
-    public void RandomSelect(List<Chess> unitsInRange, int limit)
+    public static void RandomSelect(List<Chess> unitsInRange, int limit)
     {
         if (unitsInRange.Count <= limit)
             return;

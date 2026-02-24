@@ -269,7 +269,7 @@ public class Chess : SceneObj
         {
             if (chess != this)
             {
-                float distance = BattleManager.Instance.GetRange(position, chess.position);
+                float distance = BattleManager.GetRange(position, chess.position);
                 validTargets.Add((chess, distance));
             }
         }
@@ -366,7 +366,7 @@ public class Chess : SceneObj
             return;
 
         // 检查目标是否在攻击范围内
-        if (BattleManager.Instance.CheckInRange(position, targetChess.position, attackRange))
+        if (BattleManager.CheckInRange(position, targetChess.position, attackRange))
         {
             attackPoint += attackRate;
             // 检查攻击冷却

@@ -16,7 +16,7 @@ public class SkillAidShockWave : Skill
         if (owner.targetChess == null)
             return false;
 
-        if (!BattleManager.Instance.CheckInRange(owner.position, owner.targetChess.position, skillCfg.Range))
+        if (!BattleManager.CheckInRange(owner.position, owner.targetChess.position, skillCfg.Range))
             return false;
 
         if (!CheckBurst(null))
