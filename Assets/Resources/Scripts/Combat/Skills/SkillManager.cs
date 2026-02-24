@@ -19,8 +19,6 @@ public static class SkillManager
                 return new SkillAttackAddDamage(skillId, owner);
             case "InitMasterShield":
                 return new SkillInitMasterShield(skillId, owner);
-            case "InitSoldierShield":
-                return new SkillInitSoldierShield(skillId, owner);
             case "AttackedBuff":
                 return new SkillAttackedBuff(skillId, owner);
             case "AttackRunCross":
@@ -47,19 +45,7 @@ public static class SkillManager
             case "DefHpLow":
                 return new SkillDefHpLow(skillId, owner);
             case "DefSkillDamageReduce":
-                return new SkillDefSkillDamageReduce(skillId, owner);
-            case "HelpInitTeach":
-                return new SkillHelpInitTeach(skillId, owner);
-            case "InitSoldierUp":
-                return new SkillInitSoldierUp(skillId, owner);
-            case "InitSoldierSummon":
-                return new SkillInitSoldierSummon(skillId, owner);      
-            case "InitGold":
-                return new SkillInitGold(skillId, owner);
-            case "InitAttrZhiheng":
-                return new SkillInitAttrZhiheng(skillId, owner);
-            case "InitFood":
-                return new SkillInitFood(skillId, owner);                          
+                return new SkillDefSkillDamageReduce(skillId, owner);               
             case "HitBuff":
                 return new SkillHitBuff(skillId, owner);
             case "HitBuffArea":
@@ -68,8 +54,6 @@ public static class SkillManager
                 return new SkillHitRegion(skillId, owner);
             case "HitWall":
                 return new SkillHitWall(skillId, owner);
-            case "DamageReal":
-                return new SkillDamageReal(skillId, owner);
             case "AttackedShadow":
                 return new SkillAttackedShadow(skillId, owner);
 
@@ -89,16 +73,6 @@ public static class SkillManager
                 return new SkillAidSuddenArrow(skillId, owner);
             case "ModifySkillRateTime":
                 return new SkillModifySkillRateTime(skillId, owner);
-            case "BuffExpand":
-                return new SkillBuffExpand(skillId, owner);
-            case "BuffExpandPos":
-                return new SkillBuffExpandPos(skillId, owner);                
-            case "ModifyBuffTime":
-                return new SkillModifyBuffTime(skillId, owner);
-            case "ModifyBeBuffTime":
-                return new SkillModifyBeBuffTime(skillId, owner);
-            case "BuffTieqi":
-                return new SkillBuffTieqi(skillId, owner);
             case "ModifyShootSpeed":
                 return new SkillModifyShootSpeed(skillId, owner);
             case "ModifySummonTime":
@@ -113,10 +87,11 @@ public static class SkillManager
                 return new SkillHitFood(skillId, owner);
 
             case "Dumb":
-                return new SkillDumb(skillId, owner);               
+                return new SkillDumb(skillId, owner);
         }
 
-        throw new System.Exception("Skill not found " + skillCfg.ScriptName);
+        UnityEngine.Debug.LogError("Skill not found " + skillCfg.ScriptName);
+        return new SkillDumb(skillId, owner);
     }
 
     public static void CheckAddSkill(Chess chess)

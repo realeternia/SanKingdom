@@ -49,6 +49,7 @@ public class Chess : SceneObj
     public int maxHp = 100;  // 最大生命值
     // 是否正在使用偏移路径
     public int hp = 100;
+    public float HpRate{ get { return (float)hp / maxHp; } }    
 
     [NonSerialized]
     public int attackDamage = 30;
@@ -743,8 +744,6 @@ public class Chess : SceneObj
         if(heroInfo != null)
             heroInfo.SetAttr(inte, str, leadShip);
     }
-
-    public float HpRate{ get { return (float)hp / maxHp; } }
 
     public bool HasBuff(int id)
     {

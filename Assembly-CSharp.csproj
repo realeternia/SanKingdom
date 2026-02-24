@@ -81,7 +81,6 @@
     <Compile Include="Assets\Resources\Scripts\OOs\ICityDevNode.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Missile.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitSoldierShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitArea.cs" />
     <Compile Include="Assets\Resources\Scripts\PopArmySetManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\JobConfig_s.cs" />
@@ -111,15 +110,12 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDumb.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\RampGeneratorTDE.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitFood.cs" />
     <Compile Include="Assets\Resources\Scripts\CityPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\EffectManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitSoldierSummon.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\Player.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillBuffExpandPos.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\BuffConfig_s.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillBuffExpand.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\Skill.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\Buff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitAttr.cs" />
@@ -133,7 +129,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefFeedback.cs" />
     <Compile Include="Assets\Resources\Scripts\RankCellInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\PanelEvent.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyBuffTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ItemConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\SideInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveForceData.cs" />
@@ -148,7 +143,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRegion.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />
     <Compile Include="Assets\Resources\Scripts\MainPanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyBeBuffTime.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\PanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleHeroInfoGroup.cs" />
@@ -163,7 +157,6 @@
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityBuildingConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDamageReal.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SeasonConfig_s.cs" />
@@ -174,18 +167,14 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddCrit.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ForceConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitSoldierUp.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAttrZhiheng.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidHeal.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSpeedDown.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySkillRateTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopForceBar.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpInitTeach.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamagedAddRate.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackSpinAttack.cs" />
@@ -205,7 +194,6 @@
     <Compile Include="Assets\Resources\Scripts\SelectHeroArmyControl.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\MapConfig.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillBuffTieqi.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackRunCross.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffTimeDamage.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDetail.cs" />
@@ -213,7 +201,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRepeat.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\AttrInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleResultHeroCellControl.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitGold.cs" />
     <Compile Include="Assets\Resources\Scripts\VideoPanelManager.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />
