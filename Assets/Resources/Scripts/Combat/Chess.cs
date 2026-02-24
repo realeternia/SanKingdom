@@ -72,6 +72,19 @@ public class Chess : SceneObj
     public int noMoveCount = 0;
     public int noActionCount = 0;
 
+    // 跳跃相关状态
+    public JumpState jumpState;
+
+    [Serializable]
+    public class JumpState
+    {
+        public Vector3 PosStart;
+        public Vector3 PosTar;
+        public float Height;
+        public int TickTotal;
+        public int TickPast;
+    }
+
     public bool dieAfterLifeTime;
     public int lifeTickCount; //1s死亡一次
 
@@ -198,7 +211,36 @@ public class Chess : SceneObj
             }
         }
 
-        MoveAndFight(tickIndex);
+        // 处理跳跃逻辑
+        if (jumpState != null)
+        {
+            if (jumpState.TickPast < jumpState.TickTotal)
+            {
+                jumpState.TickPast++;
+                // 计算插值因子
+                float t = (float)jumpState.TickPast / jumpState.TickTotal;
+                
+                // 计算当前位置（带跳跃效果）
+                float yOffset = jumpState.Height * Mathf.Sin(t * Mathf.PI);
+                Vector3 currentPos = Vector3.Lerp(jumpState.PosStart, jumpState.PosTar, t);
+                currentPos.y += yOffset;
+
+                if(viewObj != null)
+                    viewObj.transform.position = position; //只改view
+            }
+            else
+            {
+                // 确保到达目标位置
+                MoveTo(jumpState.PosTar, true);
+                jumpState = null;
+
+                FindTarget(); //重新锁定一次
+            }
+        }
+        else
+        {
+            MoveAndFight(tickIndex);
+        }
 
         if (dieAfterLifeTime)
         {
@@ -646,37 +688,20 @@ public class Chess : SceneObj
         return damage;
     }
 
-    private void JumpToPosition(Vector3 targetPos, float jumpHeight = 10f, float moveDuration = 0.5f)
+    public void JumpToPosition(Vector3 targetPos, float jumpHeight = 10f, float moveDuration = 0.5f)
     {
-        Vector3 startPos = position;
-        noMoveCount++;
+        if(BattleManager.Instance.quickMode)
+            return;
 
-        float jumpHeight = 10f; // 跳跃高度
-        float moveDuration = 0.5f; // 移动持续时间
-        float elapsedTime = 0f;
-        
-        while (elapsedTime < moveDuration)
-        {
-            // 计算插值因子
-            float t = elapsedTime / moveDuration;
-            
-            // 计算当前位置（带跳跃效果）
-            float yOffset = jumpHeight * Mathf.Sin(t * Mathf.PI);
-            Vector3 currentPos = Vector3.Lerp(startPos, targetPos, t);
-            currentPos.y += yOffset;
+        if(jumpState != null)
+            return;
 
-            owner.SetPosition(currentPos);
-
-            // 等待下一帧
-            elapsedTime += BattleManager.tickTimeReal;
-            yield return new NLWaitForSeconds(BattleManager.tickTimeReal);
-        }
-        
-        // 确保到达目标位置
-        MoveTo(targetPos, true);
-        noMoveCount --;
-
-        FindTarget(); //重新锁定一次
+        jumpState = new JumpState();
+        jumpState.PosStart = position;
+        jumpState.PosTar = targetPos;
+        jumpState.Height = jumpHeight;
+        jumpState.TickTotal = BattleManager.Instance.GetTickFromTime(moveDuration);
+        jumpState.TickPast = 0;
     }
 
     public void AddHp(int addon)

@@ -29,43 +29,12 @@ public class SkillAttackRunCross : Skill
             owner.noMoveCount++;
             EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
 
-            BattleManager.Instance.StartNLCoroutine(JumpToPosition(mirrorPos));
+            owner.JumpToPosition(mirrorPos, 10f, 0.5f);
+
             defender.DoSkillDamage(owner, skillId, (int)(damage * skillCfg.SkillDamageRate));
 
             BuffManager.AddBuff(defender, owner, id, skillCfg.BuffId, skillCfg.BuffTime); //加负面buff                    
         }
     }
-
-    // 跳跃移动协程
-    private IEnumerator JumpToPosition(Vector3 targetPos)
-    {
-        Vector3 startPos = owner.position;
-        float jumpHeight = 10f; // 跳跃高度
-        float moveDuration = 0.5f; // 移动持续时间
-        float elapsedTime = 0f;
-        
-        while (elapsedTime < moveDuration)
-        {
-            // 计算插值因子
-            float t = elapsedTime / moveDuration;
-            
-            // 计算当前位置（带跳跃效果）
-            float yOffset = jumpHeight * Mathf.Sin(t * Mathf.PI);
-            Vector3 currentPos = Vector3.Lerp(startPos, targetPos, t);
-            currentPos.y += yOffset;
-
-            owner.SetPosition(currentPos);
-
-            // 等待下一帧
-            elapsedTime += BattleManager.tickTimeReal;
-            yield return new NLWaitForSeconds(BattleManager.tickTimeReal);
-        }
-        
-        // 确保到达目标位置
-        owner.MoveTo(targetPos, true);
-        owner.noMoveCount --;
-
-        owner.FindTarget(); //重新锁定一次
-    }
-
+ 
 }
