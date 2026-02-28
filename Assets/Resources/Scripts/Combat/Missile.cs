@@ -151,7 +151,7 @@ public class Missile : SceneObj
         checkedIdList = new List<int>();
     }
 
-    public override void FixUpdate(int tickIndex, float indexMini, float timeElapsed)
+    public override void RenderUpdate(int tickIndex, float indexMini, float timeElapsed)
     {
         float tickReal = tickIndex + indexMini;
         switch (moveState)

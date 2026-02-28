@@ -270,8 +270,10 @@ public class Chess : SceneObj
         }
     }
 
-    public override void RenderUpdate()
+    public override void RenderUpdate(int tickIndex, float indexMini, float timeElapsed)
     {
+        base.RenderUpdate(tickIndex, indexMini, timeElapsed);
+
         if (jumpState != null)
         {
             if (jumpState.TickPast < jumpState.TickTotal)

@@ -165,12 +165,21 @@ public class BattleManager : MonoBehaviour
             for (int i = 0; i < 4; i++)
             {
                 yield return new WaitForSeconds(tickTimeReal / 4); //高频帧，给missile这种表现用
-                for (int j = 0; j < missileList.Count; j++)
+
+                if(showUI)
                 {
-                    var missile = missileList[j];
-                    if (missile != null)
-                        missile.FixUpdate(tickIndex, (float)j / 4, 1f/40);
-                }   
+                    for (int j = 0; j < missileList.Count; j++)                                                             
+                    {
+                        var missile = missileList[j];
+                        if (missile != null)
+                            missile.RenderUpdate(tickIndex, (float)i / 4, 1f/40);
+                    }
+                    foreach (var chess in chessList.ToArray())
+                    {
+                        if (chess != null)
+                            chess.RenderUpdate(tickIndex, (float)i / 4, 1f/40);
+                    }
+                }
             }
 
             //  var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -186,11 +195,7 @@ public class BattleManager : MonoBehaviour
                     if (missile != null)
                         missile.LogicUpdate(tickIndex);
                 }
-                foreach (var chess in chessList.ToArray())
-                {
-                    if (chess != null && chess.hp > 0)
-                        chess.RenderUpdate();
-                }
+
                 coroutineManager.Update(tickTimeReal);
                 tickIndex++;
 

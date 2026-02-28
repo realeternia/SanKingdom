@@ -22,11 +22,7 @@ public class SceneObj : IRecoverable
     }
 
     //表现update
-    public virtual void RenderUpdate()
-    {
-    }
-
-    public virtual void FixUpdate(int tickIndex, float indexMini, float timeElapsed)
+    public virtual void RenderUpdate(int tickIndex, float indexMini, float timeElapsed)
     {
     }
     
