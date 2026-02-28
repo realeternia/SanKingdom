@@ -2,8 +2,8 @@ using System;
 
 public class BuffSpeedDown : Buff
 {
-    private float moveSpeedDiff;
-    private float attackRateDiff;
+    public float moveSpeedDiff;
+    public float attackRateDiff;
     public BuffSpeedDown(int id, int skillId, Chess caster, Chess target, int lastTime)
      : base(id, skillId, caster, target, lastTime)
     {

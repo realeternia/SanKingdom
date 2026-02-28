@@ -255,6 +255,7 @@ public class Chess : SceneObj
             MoveAndFight(tickIndex);
         }
 
+        // 死亡判定
         if (dieAfterLifeTime)
         {
             lifeTickCount--;
@@ -262,6 +263,10 @@ public class Chess : SceneObj
             {
                 Ondying();
             }
+        }
+        else if (hp <= 0)
+        {
+            Ondying();
         }
     }
 
@@ -671,30 +676,13 @@ public class Chess : SceneObj
     {
         if (heroInfo != null) // 英雄
             heroInfo.SetHpRate(hp, maxHp);
-        if (hp <= 0)
-        {
-            Ondying();
-        }
     }
 
     public void Ondying()
     {
-        buffs.Clear();
-        BattleManager.Instance.OnUnitDying(this);
-
-        if (viewObj != null)
-        {
-            viewObj.DestroyHUD();
-        }
-        Debug.Log("OnDying " + id);
-        if (viewObj != null)
-        {
-            UnityEngine.Object.Destroy(viewObj.gameObject);
-            viewObj = null;
-        }
-
-        if ((forceId == 1 || forceId == 2 && !isShadow ))
-            BGMPlayer.Instance.PlaySound("Sounds/tnt", 7);
+        var action = new RemoveChessAction(id, BattleManager.Instance.tickIndex, id);
+        BattleManager.Instance.AddChessAction(action);
+        action.Doing();
     }
 
     private static int CalculateDamage(Chess attacker, Chess defender, out string type)
@@ -748,12 +736,13 @@ public class Chess : SceneObj
     }
 
     public void AddHp(int addon)
-    {
+    {        
         if(addon <= 0)
             throw new Exception("添加的血量不能小于等于0");
 
-        hp = Mathf.Clamp(hp + addon, 0, maxHp);
-        OnHpChanged();
+        var action = new AddHpAction(id, BattleManager.Instance.tickIndex, id, addon);
+        BattleManager.Instance.AddChessAction(action);
+        action.Doing();
     }
 
     public void HealTarget(Chess target, int checkSkillId, int addon)

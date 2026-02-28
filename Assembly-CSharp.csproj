@@ -87,6 +87,9 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddBuffAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveBuffAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddHpAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveMissileAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\RankPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\FormulaLearnAttrConfig_s.cs" />

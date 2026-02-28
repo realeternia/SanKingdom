@@ -278,12 +278,19 @@ public class BattleManager : MonoBehaviour
     
     public void RemoveMissile(Missile missile)
     {
-        missileList.Remove(missile);
+        var action = new RemoveMissileAction(missile.owner.id, tickIndex, missile.id);
+        AddChessAction(action);
+        action.Doing();
     }
 
     public Chess GetChess(int id)
     {
         return chessList.Find(x => x.id == id);
+    }
+
+    public Missile GetMissile(int id)
+    {
+        return missileList.Find(x => x.id == id);
     }
 
     // 世界坐标转格子坐标

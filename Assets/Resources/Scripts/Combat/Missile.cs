@@ -241,10 +241,7 @@ public class Missile : SceneObj
 
     private void Cleanup()
     {
-        if (viewObj != null)
-        {
-            UnityEngine.Object.Destroy(viewObj.gameObject);
-        }
+
         BattleManager.Instance.RemoveMissile(this);
         moveState = MoveState.None;
     }
