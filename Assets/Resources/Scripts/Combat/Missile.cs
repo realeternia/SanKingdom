@@ -39,8 +39,8 @@ public class Missile : SceneObj
     public Vector3 direction;
     public Vector3 startPos;
 
+    public int startTick;
     public int tickTotal;
-    public float tickPast;
     public List<int> checkedIdList; //已结算单位id列表
 
     public Missile(int id, Chess sourceChess, Vector3 startPos, int skillId, int damage)
@@ -57,6 +57,7 @@ public class Missile : SceneObj
         moveState = MoveState.None;
         targetChessId = 0;
         checkedIdList = new List<int>();
+        startTick = BattleManager.Instance.tickIndex;
     }
 
     public void Init()
@@ -156,32 +157,72 @@ public class Missile : SceneObj
         switch (moveState)
         {
             case MoveState.ToTarget:
-                UpdateMoveToTarget(tickReal, timeElapsed);
+                UpdateMoveToTarget(tickReal);
                 break;
             case MoveState.ToDirection:
-                UpdateMoveToDirection(tickReal, timeElapsed);
+                UpdateMoveToDirection(tickReal);
                 break;
         }
     }
     
     public override void LogicUpdate(int tickIndex)
     {
-        
-    }
+        if(targetCount > 0 && checkedIdList.Count < targetCount)
+        {
+            var ownerChess = BattleManager.Instance.GetChess(ownerId);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, ownerChess.forceId, true);
+            unitsInRange.RemoveAll(x => checkedIdList.Contains(x.id) || x.hp <= 0); // Each unit only once
+            if (unitsInRange.Count > 0)
+            {
+                if (unitsInRange.Count + checkedIdList.Count > targetCount)
+                    BattleManager.RandomSelect(unitsInRange, targetCount - checkedIdList.Count);
 
-    private void UpdateMoveToTarget(float tickTimeReal, float timeElapsed)
-    {
-        var targetChess = BattleManager.Instance.GetChess(targetChessId);
-        if (targetChess == null || targetChess.hp <= 0)
+                foreach (var unit in unitsInRange)
+                {
+                    checkedIdList.Add(unit.id);
+                    OnCrash(unit, tickIndex);
+                }
+            }
+        }
+        else if(targetCount > 0 && checkedIdList.Count >= targetCount)
         {
             Cleanup();
             return;
         }
 
+        if(targetChessId > 0)
+        {
+            var targetChess = BattleManager.Instance.GetChess(targetChessId);
+            if (targetChess == null || targetChess.hp <= 0)
+            {
+                Cleanup();
+                return;
+            }
+        }
+        if((tickIndex - startTick) >= tickTotal)
+        {
+            if(targetChessId > 0)
+            {
+                var targetChess = BattleManager.Instance.GetChess(targetChessId);
+                if (targetChess == null)
+                    OnCrash(targetChess, tickIndex);
+            }
+            Cleanup();
+            return;
+        }
+       
+    }
+
+    private void UpdateMoveToTarget(float tickTimeReal)
+    {
+        var targetChess = BattleManager.Instance.GetChess(targetChessId);
+        if (targetChess == null)
+            return;
+
         var targetPos = targetChess.position + new Vector3(0f, 3f, 0f); // 修正目标点
 
         // Calculate movement
-        float fractionOfJourney = tickPast / tickTotal;
+        float fractionOfJourney = (tickTimeReal - startTick) / (float)tickTotal;
         
         if (maxY > 0)
         {
@@ -199,48 +240,15 @@ public class Missile : SceneObj
             // Straight path
             SetPosition(Vector3.Lerp(startPos, targetPos, fractionOfJourney));
         }
-
-        tickPast += timeElapsed;
-        if (tickPast >= tickTotal)
-        {
-            OnCrash(targetChess, (int)Math.Floor(tickTimeReal));
-            Cleanup();
-            return;
-        }
     }
 
-    private void UpdateMoveToDirection(float tickTimeReal, float timeElapsed)
+    private void UpdateMoveToDirection(float tickTimeReal)
     {
         // Calculate movement distance based on speed and time
-        float moveDistance = missileSpeed * tickPast;
+        float moveDistance = missileSpeed * (tickTimeReal - startTick);
         // Move in direction
         SetPosition(position + direction * moveDistance);
         SetDirection(Quaternion.LookRotation(direction));
-
-        // Check for targets in range
-        {
-            var ownerChess = BattleManager.Instance.GetChess(ownerId);
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, ownerChess.forceId, true);
-            unitsInRange.RemoveAll(x => checkedIdList.Contains(x.id) || x.hp <= 0); // Each unit only once
-            if (unitsInRange.Count > 0)
-            {
-                if (unitsInRange.Count + checkedIdList.Count > targetCount)
-                    BattleManager.RandomSelect(unitsInRange, targetCount - checkedIdList.Count);
-
-                foreach (var unit in unitsInRange)
-                {
-                    checkedIdList.Add(unit.id);
-                    OnCrash(unit, (int)Math.Floor(tickTimeReal));
-                }
-            }
-        }
-
-        tickPast += timeElapsed;
-        if (tickPast >= tickTotal || checkedIdList.Count >= targetCount)
-        {
-            Cleanup();
-            return;
-        }
     }
 
     private void Cleanup()
