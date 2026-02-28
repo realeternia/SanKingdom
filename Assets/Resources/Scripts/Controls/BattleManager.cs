@@ -176,13 +176,17 @@ public class BattleManager : MonoBehaviour
             //  var sw = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < speed; i++)
             {
-                coroutineManager.Update(tickTimeReal);
-
                 foreach (var chess in chessList.ToArray())
                 {
                     if (chess != null && chess.hp > 0)
                         chess.LogicUpdate(tickIndex);
                 }
+                foreach (var chess in chessList.ToArray())
+                {
+                    if (chess != null && chess.hp > 0)
+                        chess.RenderUpdate();
+                }
+                coroutineManager.Update(tickTimeReal);
                 tickIndex++;
 
                 // 每个回合结束，玩家消耗食物
@@ -195,9 +199,13 @@ public class BattleManager : MonoBehaviour
                     lastFoodDeductionTick = tickIndex;
                 }
             }
-            var leftSoldierTotal = chessList.Sum(x => x.forceId == playerInfoList[0].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
-            var rightSoldierTotal = chessList.Sum(x => x.forceId == playerInfoList[1].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
-            BattleInfoTop.Instance.UpdateSoldierCount(leftSoldierTotal, rightSoldierTotal);
+
+            if(showUI)
+            {
+                var leftSoldierTotal = chessList.Sum(x => x.forceId == playerInfoList[0].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
+                var rightSoldierTotal = chessList.Sum(x => x.forceId == playerInfoList[1].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
+                BattleInfoTop.Instance.UpdateSoldierCount(leftSoldierTotal, rightSoldierTotal);
+            }
             //    sw.Stop();
             //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
         }

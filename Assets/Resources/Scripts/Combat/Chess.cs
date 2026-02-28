@@ -214,26 +214,18 @@ public class Chess : SceneObj
         buffs.Where(x => tickIndex > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
         SkillManager.LogicUpdate(this, tickIndex);
 
-        if(regeHp > 0)
-        {
-            regeTickCount ++;
-            if(regeTickCount >= 10)
-            {
-                regeTickCount -= 10;
-                AddHp(regeHp);
-            }
-        }
+        CheckHpReg();
 
         // 处理持续伤害逻辑
         for (int i = dotStates.Count - 1; i >= 0; i--)
         {
             var dotState = dotStates[i];
             dotState.tickCount++;
-            
+
             if (dotState.tickCount >= dotState.tickInterval)
             {
                 dotState.tickCount = 0;
-                
+
                 // 造成伤害
                 if (hp > 0)
                 {
@@ -241,7 +233,6 @@ public class Chess : SceneObj
                     if (caster != null)
                     {
                         DoSkillDamage(caster, dotState.skillId, (int)dotState.damage);
-                        BattleManager.Instance.AddBattleText("-" + ((int)dotState.damage).ToString(), position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
                     }
                 }
             }
@@ -250,21 +241,7 @@ public class Chess : SceneObj
         // 处理跳跃逻辑
         if (jumpState != null)
         {
-            if (jumpState.TickPast < jumpState.TickTotal)
-            {
-                jumpState.TickPast++;
-                // 计算插值因子
-                float t = (float)jumpState.TickPast / jumpState.TickTotal;
-                
-                // 计算当前位置（带跳跃效果）
-                float yOffset = jumpState.Height * Mathf.Sin(t * Mathf.PI);
-                Vector3 currentPos = Vector3.Lerp(jumpState.PosStart, jumpState.PosTar, t);
-                currentPos.y += yOffset;
-
-                if(viewObj != null)
-                    viewObj.transform.position = position; //只改view
-            }
-            else
+            if (jumpState.TickPast >= jumpState.TickTotal)
             {
                 // 确保到达目标位置
                 MoveTo(jumpState.PosTar, true);
@@ -280,7 +257,7 @@ public class Chess : SceneObj
 
         if (dieAfterLifeTime)
         {
-            lifeTickCount --;
+            lifeTickCount--;
             if (lifeTickCount <= 0)
             {
                 Ondying();
@@ -288,10 +265,38 @@ public class Chess : SceneObj
         }
     }
 
-
-    void Update()
+    public override void RenderUpdate()
     {
+        if (jumpState != null)
+        {
+            if (jumpState.TickPast < jumpState.TickTotal)
+            {
+                jumpState.TickPast++;
+                // 计算插值因子
+                float t = (float)jumpState.TickPast / jumpState.TickTotal;
 
+                // 计算当前位置（带跳跃效果）
+                float yOffset = jumpState.Height * Mathf.Sin(t * Mathf.PI);
+                Vector3 currentPos = Vector3.Lerp(jumpState.PosStart, jumpState.PosTar, t);
+                currentPos.y += yOffset;
+
+                if (viewObj != null)
+                    viewObj.transform.position = position; //只改view
+            }
+        }     
+    }
+
+    private void CheckHpReg()
+    {
+        if (regeHp > 0)
+        {
+            regeTickCount++;
+            if (regeTickCount >= 10)
+            {
+                regeTickCount -= 10;
+                AddHp(regeHp);
+            }
+        }
     }
 
     public override void SetPosition(Vector3 position)
@@ -654,7 +659,9 @@ public class Chess : SceneObj
 
         // 记录战斗统计
         if(caster.isHero)
-            BattleStatManager.AddBattleStat(caster.forceId, caster.heroId, damage, false, isHero);            
+            BattleStatManager.AddBattleStat(caster.forceId, caster.heroId, damage, false, isHero);    
+
+        BattleManager.Instance.AddBattleText("-" + (damage).ToString(), position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
 
         OnHpChanged();
     }

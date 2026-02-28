@@ -9,6 +9,13 @@ public static class BuffManager
         if(lastTime == 0) //有的技能会先填0，等待buff
             return;
 
+        var action = new AddBuffAction(target.id, BattleManager.Instance.tickIndex, caster.id, skillId, buffId, lastTime);
+        BattleManager.Instance.AddChessAction(action);
+        action.Doing();
+    }
+
+    public static void DoAddBuff(Chess target, Chess caster, int skillId, int buffId, float lastTime)
+    {
         var endTick = BattleManager.Instance.tickIndex + BattleManager.Instance.GetTickFromTime(lastTime);
         
        // UnityEngine.Debug.Log("AddBuff buffId=" + buffId.ToString() + " skillId=" + skillId.ToString() + " time=" + time.ToString());
@@ -63,6 +70,13 @@ public static class BuffManager
     }
 
     public static void RemoveBuff(Chess chess, int buffId)
+    {
+        var action = new RemoveBuffAction(chess.id, BattleManager.Instance.tickIndex, buffId);
+        BattleManager.Instance.AddChessAction(action);
+        action.Doing();
+    }
+
+    public static void DoRemoveBuff(Chess chess, int buffId)
     {
         for(int i = 0; i < chess.buffs.Count; i++)
         {

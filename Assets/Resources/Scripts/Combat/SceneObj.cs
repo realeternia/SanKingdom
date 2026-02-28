@@ -16,7 +16,13 @@ public class SceneObj : IRecoverable
     {
     }
     
+    //计算用update
     public virtual void LogicUpdate(int tickIndex)
+    {
+    }
+
+    //表现update
+    public virtual void RenderUpdate()
     {
     }
 

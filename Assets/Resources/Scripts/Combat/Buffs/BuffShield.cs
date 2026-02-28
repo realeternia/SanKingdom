@@ -2,7 +2,7 @@ using System;
 
 public class BuffShield : Buff
 {
-    private int hp;
+    public int hp;
 
     public BuffShield(int id, int skillId, Chess caster, Chess target, int lastTime)
      : base(id, skillId, caster, target, lastTime)
