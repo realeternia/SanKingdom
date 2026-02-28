@@ -41,8 +41,13 @@ public class SkillDefFeedback : Skill
             var damageBack = (int)(damage * skillCfg.Strength);
             attacker.DoSkillDamage(owner, skillId, damageBack, true);
 
-            BattleManager.Instance.AddBattleText("反" + damageBack.ToString(), attacker.position, new UnityEngine.Vector2(0, 150), new UnityEngine.Color(0.65f, 0.31f, 0), 3);
+            SkillManager.AddSkillAction(owner, null, id, damageBack);
         }
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        BattleManager.Instance.AddBattleText("反" + parm1.ToString(), owner.position, new UnityEngine.Vector2(0, 150), new UnityEngine.Color(0.65f, 0.31f, 0), 3);
     }
 
 }

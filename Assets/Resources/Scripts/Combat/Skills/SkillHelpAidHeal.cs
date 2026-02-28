@@ -22,8 +22,6 @@ public class SkillHelpAidHeal : Skill
         if (!CheckBurst(null))
             return false;
 
-        owner.PlayerAnim(skillCfg.Action);
-
         //排序，优先给hero，然后优先给生命值低的
         unitsInRange.Sort((a, b) =>
         {
@@ -36,8 +34,15 @@ public class SkillHelpAidHeal : Skill
 
         var targetUnit = unitsInRange[0];
         owner.HealTarget(targetUnit, skillId, (int)(owner.inte * skillCfg.SkillAttrRate));
-        EffectManager.PlaySkillEffect(targetUnit, skillCfg.EffectHit);
+
+        SkillManager.AddSkillAction(owner, targetUnit, id, 0);
 
         return true;
     }
+
+    public override void OnPlaySkill(Chess targetUnit, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
+        EffectManager.PlaySkillEffect(targetUnit, skillCfg.EffectHit);
+    }    
 }

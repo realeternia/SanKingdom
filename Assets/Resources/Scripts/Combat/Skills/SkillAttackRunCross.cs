@@ -27,7 +27,8 @@ public class SkillAttackRunCross : Skill
         {
             // 启动协程移动
             owner.noMoveCount++;
-            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
+
+            SkillManager.AddSkillAction(owner, null, id, 0);
 
             owner.JumpToPosition(mirrorPos, 10f, 0.5f);
 
@@ -36,5 +37,9 @@ public class SkillAttackRunCross : Skill
             BuffManager.AddBuff(defender, owner, id, skillCfg.BuffId, skillCfg.BuffTime); //加负面buff                    
         }
     }
- 
+     
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
+    }
 }

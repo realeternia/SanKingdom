@@ -14,18 +14,24 @@ public class SkillHitBuffArea : Skill
         if (CheckBurst(defender))
         {
             var targetUnit = skillCfg.TargetType == "targetUnit" ? defender : owner;
-            EffectManager.PlaySkillEffect(targetUnit, skillCfg.EffectHit);
 
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetUnit.position, skillCfg.Range, owner.forceId, true);
             if (unitsInRange.Count > 0)
             {
-                owner.PlayerAnim(skillCfg.Action);
+                SkillManager.AddSkillAction(targetUnit, null, id, 0);
                 BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
                 foreach (var unit in unitsInRange)
                     BuffManager.AddBuff(unit, owner, id, skillCfg.BuffId, skillCfg.BuffTime);
             }
         }
+    }
+    
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        var targetUnit = skillCfg.TargetType == "targetUnit" ? target : owner;
+        EffectManager.PlaySkillEffect(targetUnit, skillCfg.EffectHit);        
+        targetUnit.PlayerAnim(skillCfg.Action);
     }
 
 }

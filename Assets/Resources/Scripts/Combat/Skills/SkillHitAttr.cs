@@ -16,9 +16,15 @@ public class SkillHitAttr : Skill
             var roll = Random.Range(0, 3);
             var attr = roll == 0 ? "inte" : (roll == 1 ? "str" : "leadShip");
             owner.AddAttr(attr, skillCfg.StrengthInt);
-            owner.PlayerAnim(skillCfg.Action);
-            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
+            SkillManager.AddSkillAction(owner, defender, id, 0);
+
         }
+    }
+
+    public override void OnPlaySkill(Chess targetUnit, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);  
+        EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);        
     }
 
 }

@@ -189,6 +189,11 @@ public class Skill : IRecoverable
 
     }
 
+    public virtual void OnPlaySkill(Chess target, int parm1)
+    {
+        
+    }
+
     public float GetSummonTime()
     {
         var summonTime = skillCfg.SummonTime;

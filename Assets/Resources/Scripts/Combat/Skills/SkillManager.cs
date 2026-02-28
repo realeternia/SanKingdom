@@ -17,8 +17,6 @@ public static class SkillManager
                 return new SkillAttackSpinAttack(skillId, owner);
             case "AttackAddDamage":
                 return new SkillAttackAddDamage(skillId, owner);
-            case "InitMasterShield":
-                return new SkillInitMasterShield(skillId, owner);
             case "AttackedBuff":
                 return new SkillAttackedBuff(skillId, owner);
             case "AttackRunCross":
@@ -262,7 +260,6 @@ public static class SkillManager
             skill.OnBeDoSkillDamage(caster, skillCfg, ref damage, isFeedback);
         }
     }
-
     
     public static void OnHealTarget(Chess healer, Chess target, int checkSkillId, ref int addon)
     {
@@ -270,6 +267,12 @@ public static class SkillManager
         {
             skill.OnHealTarget(target, checkSkillId, ref addon);
         }
+    }
+
+    public static void AddSkillAction(Chess caster, Chess target, int skillId, int parm1)
+    {
+        var skillPlayAction = new SkillPlayAction(caster.id, BattleManager.Instance.tickIndex, target.id, skillId, parm1);
+        BattleManager.Instance.AddChessAction(skillPlayAction);
     }
 
 }

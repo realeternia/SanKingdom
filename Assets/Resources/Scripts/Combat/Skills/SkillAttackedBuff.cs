@@ -13,10 +13,15 @@ public class SkillAttackedBuff : Skill
     {
         if(damage > 10 && CheckBurst(attacker))
         {
-            owner.PlayerAnim(skillCfg.Action);
+            SkillManager.AddSkillAction(owner, null, id, 0);
 
             BuffManager.AddBuff(owner, owner, id, skillCfg.BuffId, skillCfg.BuffTime);
         }
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
     }
 
 }

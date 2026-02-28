@@ -14,11 +14,9 @@ public class SkillHitArea : Skill
     {
         if (CheckBurst(defender))
         {
-            owner.PlayerAnim(skillCfg.Action);
-
             var targetPos = defender.position;
             //创建一个hitEffect
-            EffectManager.PlaySkillEffect(defender, skillCfg.EffectHit);
+            SkillManager.AddSkillAction(owner, defender, id, 0);
 
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetPos, skillCfg.Range, owner.forceId, true);
             unitsInRange.Remove(defender);
@@ -33,5 +31,11 @@ public class SkillHitArea : Skill
             }
         }
     }
+
+    public override void OnPlaySkill(Chess targetUnit, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
+        EffectManager.PlaySkillEffect(targetUnit, skillCfg.EffectHit);
+    }    
 
 }

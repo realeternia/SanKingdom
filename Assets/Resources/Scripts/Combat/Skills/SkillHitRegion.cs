@@ -15,16 +15,13 @@ public class SkillHitRegion : Skill
     {
         if (CheckBurst(defender))
         {
-            owner.PlayerAnim(skillCfg.Action);
-
             targetPos = defender.position;
 
             var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos);
             var summonTime = GetSummonTime();
             magicStub.SetLifeTime(summonTime);
 
-            //创建一个hitEffect
-            EffectManager.PlayPosSkillEffect(magicStub, targetPos, skillCfg.EffectSize, skillCfg.EffectArea, summonTime);
+            SkillManager.AddSkillAction(defender, magicStub, id, 0);
 
             var term = (int) System.Math.Floor(summonTime / skillCfg.SummonHitInterval);
             RegisterDelayEffect(BattleManager.Instance.tickIndex, summonTime, term);
@@ -44,6 +41,14 @@ public class SkillHitRegion : Skill
             foreach(var unit in unitsInRange)
                 unit.DoSkillDamage(owner, skillId, damage);
         }
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
+        var summonTime = GetSummonTime();
+        //创建一个hitEffect
+        EffectManager.PlayPosSkillEffect(target, targetPos, skillCfg.EffectSize, skillCfg.EffectArea, summonTime);        
     }
 
 }

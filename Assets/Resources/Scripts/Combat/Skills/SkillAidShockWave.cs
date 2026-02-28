@@ -25,13 +25,16 @@ public class SkillAidShockWave : Skill
 
         var targetPos = targetChess.position; // 使用目标位置而不是自身位置
 
-        owner.PlayerAnim(skillCfg.Action);
         var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
+        SkillManager.AddSkillAction(owner, targetChess, id, damage);
         BattleManager.Instance.CreateSpellMissile(owner, targetPos, GetSummonTime(), skillCfg.Id, damage);
-
         Debug.Log("SkillAidShockWave id=" + id.ToString() + " damage=" + damage.ToString());
 
         return true;
     }
 
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
+    }
 }

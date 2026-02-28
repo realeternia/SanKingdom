@@ -20,15 +20,10 @@ public class SkillHitAround : Skill
     {
         if (isBurst)
         {
-            owner.PlayerAnim(skillCfg.Action);
-
             var startPos = owner.position;
             var targetPos = defender.position;
 
-            //创建一个hitEffect
-            var hitEffect = EffectManager.PlaySkillEffect(defender, skillCfg.EffectHit);
-            if(hitEffect != null)
-                hitEffect.transform.forward = (targetPos - startPos).normalized;
+            SkillManager.AddSkillAction(owner, defender, id, 0);
 
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(startPos, skillCfg.Range, owner.forceId, true);
             unitsInRange.Remove(defender);
@@ -46,9 +41,7 @@ public class SkillHitAround : Skill
                     
                     // 检查是否在左右各60°开角内（总共120°扇形）
                     if (angle <= 90f)
-                    {
                         filteredUnits.Add(unit);
-                    }
                 }
                 
                 if (filteredUnits.Count > 0)
@@ -61,5 +54,16 @@ public class SkillHitAround : Skill
             }
         }
     }
+
+    public override void OnPlaySkill(Chess targetUnit, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);        
+        var startPos = owner.position;
+        var targetPos = targetUnit.position;        
+        //创建一个hitEffect
+        var hitEffect = EffectManager.PlaySkillEffect(targetUnit, skillCfg.EffectHit);
+        if(hitEffect != null)
+            hitEffect.transform.forward = (targetPos - startPos).normalized;
+    }    
 
 }

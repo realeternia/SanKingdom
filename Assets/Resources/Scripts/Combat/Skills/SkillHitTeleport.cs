@@ -13,17 +13,22 @@ public class SkillHitTeleport : Skill
     {
         if(!BattleManager.CheckInRange(owner.position, attacker.position, skillCfg.Range) && CheckBurst(attacker))
         {
-            owner.PlayerAnim(skillCfg.Action);
+            SkillManager.AddSkillAction(owner, attacker, id, 0);
 
             Vector3 direction = (attacker.position - owner.position).normalized;
             Vector3 randomPosition = attacker.position - direction * 12;
 
             owner.MoveTo(randomPosition, true);
             owner.LockTarget(attacker);
-            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
 
             BuffManager.AddBuff(attacker, owner, id, skillCfg.BuffId, skillCfg.BuffTime);
         }
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
+        EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);        
     }
 
 }

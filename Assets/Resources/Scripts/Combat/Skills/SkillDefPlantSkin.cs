@@ -14,12 +14,12 @@ public class SkillDefPlantSkin : Skill
     {
         if (!skillCfg.CheckAttrs.Contains(damType))
         {
-            BattleManager.Instance.AddBattleText("弱点", owner.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+            SkillManager.AddSkillAction(owner, null, id, 0);
             damageMulti += skillCfg.Strength;
         }
         else if (CheckBurst(attacker))
         {
-            BattleManager.Instance.AddBattleText("抵抗", owner.position, new UnityEngine.Vector2(0, 60), Color.green, 3);
+            SkillManager.AddSkillAction(owner, null, id, 1);
             damageMulti -= skillCfg.Strength;
         }
     }
@@ -31,14 +31,22 @@ public class SkillDefPlantSkin : Skill
 
         if (!skillCfg.CheckAttrs.Contains(checkSkillCfg.Attr))
         {
-            BattleManager.Instance.AddBattleText("弱点", owner.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+            SkillManager.AddSkillAction(owner, null, id, 0);
             damage = (int)(damage * (1 + skillCfg.Strength));
         }
         else if (CheckBurst(caster))
         {
-            BattleManager.Instance.AddBattleText("抵抗", owner.position, new UnityEngine.Vector2(0, 60), Color.green, 3);
+            SkillManager.AddSkillAction(owner, null, id, 1);
             damage = (int)(damage * (1 - skillCfg.Strength));
         }
-    }    
+    }   
+
+     public override void OnPlaySkill(Chess target, int parm1)
+    {
+        if(parm1 == 0)
+        BattleManager.Instance.AddBattleText("弱点", owner.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+        else if(parm1 == 1)
+        BattleManager.Instance.AddBattleText("抵抗", owner.position, new UnityEngine.Vector2(0, 60), Color.green, 3);
+    }
 
 }

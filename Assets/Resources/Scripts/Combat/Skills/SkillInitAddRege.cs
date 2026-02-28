@@ -13,6 +13,10 @@ public class SkillInitAddRege : Skill
     public override void BattleBegin()
     {
         owner.regeHp += skillCfg.StrengthInt;
+        SkillManager.AddSkillAction(owner, null, id, 0);
+    }
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
         owner.PlayerAnim(skillCfg.Action);
     }
 

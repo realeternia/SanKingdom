@@ -16,7 +16,7 @@ public class SkillHitWall : Skill
     {
         if (CheckBurst(defender))
         {
-            owner.PlayerAnim(skillCfg.Action);
+            SkillManager.AddSkillAction(owner, null, id, 0);
             // 在目标位置，以及owner和defender方向90度两侧，各创建一个effect
             var targetPos = defender.position;
 
@@ -44,10 +44,10 @@ public class SkillHitWall : Skill
                 targetPosList.Add(targetPos + rightDirection * 20);
                 targetPosList.Add(targetPos + leftDirection * 20);
             }
-            
-            foreach(var pos in targetPosList)
+
+            for(int i = 0; i < targetPosList.Count; i++)
             {
-                EffectManager.PlayPosSkillEffect(magicStub, pos, skillCfg.EffectSize, skillCfg.EffectArea, summonTime);
+                SkillManager.AddSkillAction(owner, magicStub, id, i + 1);
             }
 
             var term = (int)Math.Floor(summonTime / skillCfg.SummonHitInterval);
@@ -78,6 +78,18 @@ public class SkillHitWall : Skill
         {
             unit.DoSkillDamage(owner, skillId, damage);
         }
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        if(parm1 == 0)
+            owner.PlayerAnim(skillCfg.Action);
+        else
+        {
+            var summonTime = GetSummonTime();
+            EffectManager.PlayPosSkillEffect(target, targetPosList[parm1 - 1], skillCfg.EffectSize, skillCfg.EffectArea, summonTime);
+        }
+
     }
 
 }

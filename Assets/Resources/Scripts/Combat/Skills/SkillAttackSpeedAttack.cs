@@ -13,10 +13,15 @@ public class SkillAttackSpeedAttack : Skill
     {
         if (CheckBurst(defender))
         {
-            owner.PlayerAnim(skillCfg.Action);
+            SkillManager.AddSkillAction(owner, null, id, 0);
             Debug.Log("SkillSpeedAttack");
 
             owner.Cooldown((int)(2 * skillCfg.Strength));
         }
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
     }
 }

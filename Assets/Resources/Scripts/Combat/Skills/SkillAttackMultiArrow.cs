@@ -16,10 +16,15 @@ public class SkillAttackMultiArrow : Skill
 
         if (unitsInRange.Count > 0 && CheckBurst(defender))
         {
-            owner.PlayerAnim(skillCfg.Action);
+            SkillManager.AddSkillAction(owner, null, id, 0);
             BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
             foreach (var unit in unitsInRange)
                 BattleManager.Instance.CreateAttackMissile(owner, unit);
         }
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
     }
 }

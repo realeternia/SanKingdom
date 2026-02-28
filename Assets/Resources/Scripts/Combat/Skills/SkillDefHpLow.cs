@@ -13,7 +13,7 @@ public class SkillDefHpLow : Skill
     {
         if (owner.HpRate < skillCfg.ConditionParm && CheckBurst(attacker))
         {
-            BattleManager.Instance.AddBattleText("抵抗", owner.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+            SkillManager.AddSkillAction(owner, null, id, 0);
             damageMulti -= skillCfg.Strength;
         }
     }
@@ -24,9 +24,16 @@ public class SkillDefHpLow : Skill
             return;
         if (owner.HpRate < skillCfg.ConditionParm && CheckBurst(caster))
         {
-            BattleManager.Instance.AddBattleText("抵抗", owner.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+            SkillManager.AddSkillAction(owner, null, id, 0);
             damage = (int)(damage * (1 - skillCfg.Strength));
         }
     }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        BattleManager.Instance.AddBattleText("抵抗", owner.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+    }
+
+
 
 }

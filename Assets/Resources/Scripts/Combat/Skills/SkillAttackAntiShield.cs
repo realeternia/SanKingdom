@@ -18,9 +18,15 @@ public class SkillAttackAntiShield : Skill
             var shield = buff as BuffShield;
             if (shield != null)
             {
-                owner.PlayerAnim(skillCfg.Action);
+                SkillManager.AddSkillAction(owner, null, id, 0);
+                
                 shield.SubHp((int)(damageBase * skillCfg.Strength));
             }
         }
+    }
+    
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
     }
 }

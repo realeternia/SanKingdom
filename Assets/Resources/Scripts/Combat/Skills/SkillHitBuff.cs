@@ -13,9 +13,14 @@ public class SkillHitBuff : Skill
     {
         if(CheckBurst(defender))
         {
-            owner.PlayerAnim(skillCfg.Action);
+            SkillManager.AddSkillAction(owner, defender, id, 0);
             BuffManager.AddBuff(defender, owner, id, skillCfg.BuffId, skillCfg.BuffTime);
         }
+    }
+
+    public override void OnPlaySkill(Chess targetUnit, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
     }
 
 }

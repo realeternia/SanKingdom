@@ -34,14 +34,20 @@ public class SkillAidSuddenArrow : Skill
             return a.GetAttr(skillCfg.Attr).CompareTo(b.GetAttr(skillCfg.Attr));
         });
 
-        var targetUnit = unitsInRange[0];
+        var targetChess = unitsInRange[0];
 
-        owner.PlayerAnim(skillCfg.Action);
-        var attrDiff = Math.Max(10, owner.GetAttr(skillCfg.Attr) - targetUnit.GetAttr(skillCfg.Attr));
+        SkillManager.AddSkillAction(owner, targetChess, id, 0);
+
+        var attrDiff = Math.Max(10, owner.GetAttr(skillCfg.Attr) - targetChess.GetAttr(skillCfg.Attr));
         var damage = (int)(attrDiff * skillCfg.SkillDamageAttrRate);
-        BattleManager.Instance.CreateSpellMissile(owner, targetUnit, owner.position, id, damage);
+        BattleManager.Instance.CreateSpellMissile(owner, targetChess, owner.position, id, damage);
 
         return true;
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
     }
 
 }

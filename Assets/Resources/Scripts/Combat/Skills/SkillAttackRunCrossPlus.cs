@@ -26,9 +26,15 @@ public class SkillAttackRunCrossPlus : Skill
         {
             // 启动协程移动
             owner.noMoveCount++;
-            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
+
+            SkillManager.AddSkillAction(owner, null, id, 0);
 
             owner.JumpToPosition(mirrorPos, 10f, 0.5f);
         }
+    }
+        
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
     }
 }

@@ -16,9 +16,6 @@ public class SkillHitRepeat : Skill
     {
         if(CheckBurst(defender))
         {
-            BattleManager.Instance.AddBattleText(damage.ToString() + "!", defender.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
-            owner.PlayerAnim(skillCfg.Action);
-
             this.defenderId = defender.id;
             this.damage = damage;
             RegisterDelayEffect(BattleManager.Instance.tickIndex, skillCfg.TimeDelay * skillCfg.DoCount, skillCfg.DoCount);
@@ -32,7 +29,13 @@ public class SkillHitRepeat : Skill
         {
             var d = (int)(damage * skillCfg.SkillDamageRate);
             defender.DoSkillDamage(owner, skillId, d);
-            BattleManager.Instance.AddBattleText(d.ToString() + "!", defender.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+            SkillManager.AddSkillAction(defender, defender, id, d);
         }
     }
-}
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
+        BattleManager.Instance.AddBattleText(parm1.ToString() + "!", target.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+    }
+ }

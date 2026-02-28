@@ -13,7 +13,6 @@ public class SkillAttackSpinAttack : Skill
     {
         if(CheckBurst(defender))
         {
-            owner.PlayerAnim(skillCfg.Action);
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range, owner.forceId, true);
             unitsInRange.Remove(defender);
             BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
@@ -22,7 +21,13 @@ public class SkillAttackSpinAttack : Skill
                 unit.DoSkillDamage(owner, skillId, (int)(damage * skillCfg.SkillDamageRate));
             }
 
-            EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
+            SkillManager.AddSkillAction(owner, null, id, 0);
         }
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
+        EffectManager.PlaySkillEffect(owner, skillCfg.EffectSelf);
     }
 }

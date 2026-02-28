@@ -16,12 +16,17 @@ public class SkillAttackReboundArrow : Skill
 
         if (unitsInRange.Count > 0 && CheckBurst(defender))
         {
-            owner.PlayerAnim(skillCfg.Action);
+            SkillManager.AddSkillAction(owner, null, id, 0);
             BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
             var reboundDamage = (int)(damage * skillCfg.SkillDamageRate);
             foreach (var unit in unitsInRange)
                 BattleManager.Instance.CreateSpellMissile(owner, unit, defender.position, id, reboundDamage);
         }
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
     }
 }

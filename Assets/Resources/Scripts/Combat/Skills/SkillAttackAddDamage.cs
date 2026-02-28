@@ -17,7 +17,7 @@ public class SkillAttackAddDamage : Skill
 
         if(CheckBurst(defender))
         {
-            owner.PlayerAnim(skillCfg.Action);
+            SkillManager.AddSkillAction(owner, null, id, 0);
 
             damageBase += skillCfg.StrengthInt;
             if(skillCfg.SkillDamageRate > 0)
@@ -30,6 +30,11 @@ public class SkillAttackAddDamage : Skill
     {
         if(isBurst)
             BattleManager.Instance.AddBattleText(damage.ToString() + "!", defender.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
+    }
+
+    public override void OnPlaySkill(Chess target, int parm1)
+    {
+        owner.PlayerAnim(skillCfg.Action);
     }
 
 }
