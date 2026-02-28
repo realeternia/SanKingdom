@@ -6,8 +6,7 @@ using UnityEngine;
 [Serializable]
 public class Missile : SceneObj
 {
-    private int ownerId;
-    public Chess owner{ get{ return BattleManager.Instance.GetChess(ownerId); } }
+    public int ownerId;
     [NonSerialized]
     public MissileViewObj viewObj;
 
@@ -20,7 +19,6 @@ public class Missile : SceneObj
 
     // ToTarget variables
     public int targetChessId;
-    private Chess targetChess{ get{ return BattleManager.Instance.GetChess(targetChessId); } }
     
     [NonSerialized]
     public string effectName;
@@ -41,9 +39,8 @@ public class Missile : SceneObj
     public Vector3 direction;
     public Vector3 startPos;
 
-    public float tickTimeTotal;
-    public float liveTime;
-    public float lastCheckTick;
+    public int tickTotal;
+    public float tickPast;
     public List<int> checkedIdList; //已结算单位id列表
 
     public Missile(int id, Chess sourceChess, Vector3 startPos, int skillId, int damage)
@@ -81,10 +78,11 @@ public class Missile : SceneObj
         }
         else
         {
-            effectName = owner.hitEffect;
-            hitEffectName = owner.hitEffect;
-            missileSpeed = owner.missileSpeed;
-            maxY = owner.missileHeight;
+            var ownerChess = BattleManager.Instance.GetChess(ownerId);
+            effectName = ownerChess.hitEffect;
+            hitEffectName = ownerChess.hitEffect;
+            missileSpeed = ownerChess.missileSpeed;
+            maxY = ownerChess.missileHeight;
             size = 1;
         }
     
@@ -98,8 +96,10 @@ public class Missile : SceneObj
                 effPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
             GameObject missileEffect = UnityEngine.Object.Instantiate(effPrefab, position, effPrefab.transform.rotation, viewObj.transform);
             viewObj.transform.position = position;
-            missileEffect.transform.localScale = size * effPrefab.transform.localScale;   
-            viewObj.ownerName = owner.viewObj.name;
+            missileEffect.transform.localScale = size * effPrefab.transform.localScale;
+
+            var ownerChess = BattleManager.Instance.GetChess(ownerId);
+            viewObj.ownerName = ownerChess.viewObj.name;
 
             if (missileEffect.TryGetComponent(out MissileEffName missileViewObj))
                 hitEffectName = missileViewObj.hitEffectName;            
@@ -133,11 +133,11 @@ public class Missile : SceneObj
         
         // Ensure missileSpeed is not zero
         float speed = missileSpeed > 0 ? missileSpeed : 10f; // Default speed if not set
-        tickTimeTotal = distance / speed;
+        tickTotal = BattleManager.Instance.GetTickFromTime(distance / speed);
         
         // Ensure minimum travel time to avoid division by zero
-        if (tickTimeTotal <= 0)
-            tickTimeTotal = 0.1f;
+        if (tickTotal <= 0)
+            tickTotal = 1;
     }
 
     public void MoveToDirection(Vector3 targetPos, float time)
@@ -146,7 +146,7 @@ public class Missile : SceneObj
         moveState = MoveState.ToDirection;
         direction = (targetPos - position).normalized;
         direction.y = 0;
-        tickTimeTotal = time;
+        tickTotal = BattleManager.Instance.GetTickFromTime(time);
         checkedIdList = new List<int>();
     }
 
@@ -163,9 +163,15 @@ public class Missile : SceneObj
                 break;
         }
     }
+    
+    public override void LogicUpdate(int tickIndex)
+    {
+        
+    }
 
     private void UpdateMoveToTarget(float tickTimeReal, float timeElapsed)
     {
+        var targetChess = BattleManager.Instance.GetChess(targetChessId);
         if (targetChess == null || targetChess.hp <= 0)
         {
             Cleanup();
@@ -175,7 +181,7 @@ public class Missile : SceneObj
         var targetPos = targetChess.position + new Vector3(0f, 3f, 0f); // 修正目标点
 
         // Calculate movement
-        float fractionOfJourney = liveTime / tickTimeTotal;
+        float fractionOfJourney = tickPast / tickTotal;
         
         if (maxY > 0)
         {
@@ -194,8 +200,8 @@ public class Missile : SceneObj
             SetPosition(Vector3.Lerp(startPos, targetPos, fractionOfJourney));
         }
 
-        liveTime += timeElapsed;
-        if (liveTime >= tickTimeTotal)
+        tickPast += timeElapsed;
+        if (tickPast >= tickTotal)
         {
             OnCrash(targetChess, (int)Math.Floor(tickTimeReal));
             Cleanup();
@@ -206,15 +212,15 @@ public class Missile : SceneObj
     private void UpdateMoveToDirection(float tickTimeReal, float timeElapsed)
     {
         // Calculate movement distance based on speed and time
-        float moveDistance = missileSpeed * liveTime;
+        float moveDistance = missileSpeed * tickPast;
         // Move in direction
         SetPosition(position + direction * moveDistance);
         SetDirection(Quaternion.LookRotation(direction));
 
         // Check for targets in range
-        if (tickTimeReal - lastCheckTick >= 0.2f)
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, owner.forceId, true);
+            var ownerChess = BattleManager.Instance.GetChess(ownerId);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, ownerChess.forceId, true);
             unitsInRange.RemoveAll(x => checkedIdList.Contains(x.id) || x.hp <= 0); // Each unit only once
             if (unitsInRange.Count > 0)
             {
@@ -227,12 +233,10 @@ public class Missile : SceneObj
                     OnCrash(unit, (int)Math.Floor(tickTimeReal));
                 }
             }
-
-            lastCheckTick = tickTimeReal;
         }
 
-        liveTime += timeElapsed;
-        if (liveTime >= tickTimeTotal || checkedIdList.Count >= targetCount)
+        tickPast += timeElapsed;
+        if (tickPast >= tickTotal || checkedIdList.Count >= targetCount)
         {
             Cleanup();
             return;
@@ -255,16 +259,17 @@ public class Missile : SceneObj
 
     private void OnCrash(Chess target, int tickIndex)
     {
-        if (target == null || target.hp <= 0 || owner == null || owner.hp <= 0)
+        var ownerChess = BattleManager.Instance.GetChess(ownerId);
+        if (target == null || target.hp <= 0 || ownerChess == null || ownerChess.hp <= 0)
             return;
 
         if (skillId == 0)
         {
-            owner.Attack(target, hitEffectName, tickIndex);
+            ownerChess.Attack(target, hitEffectName, tickIndex);
         }
         else
         {
-            target.DoSkillDamage(owner, skillId, skillDamage);
+            target.DoSkillDamage(ownerChess, skillId, skillDamage);
             EffectManager.PlaySkillEffect(target, hitEffectName);
         }
     }

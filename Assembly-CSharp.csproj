@@ -68,6 +68,7 @@
     <Compile Include="Assets\Resources\Scripts\PO\BattleCardData.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveMissileAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamageAddRate.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShieldValue.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI.cs" />
@@ -85,11 +86,7 @@
     <Compile Include="Assets\Resources\Scripts\PopArmySetManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\JobConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateChessAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddBuffAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveBuffAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddHpAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveMissileAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\RankPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\FormulaLearnAttrConfig_s.cs" />
@@ -101,6 +98,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackRunCrossPlus.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\NameTransTool.cs" />
     <Compile Include="Assets\Resources\Scripts\PopResultPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveBuffAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\WorldPieceControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ConfigManager.cs" />
@@ -159,6 +157,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffLock.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitMasterShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitWall.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityBuildingConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
@@ -191,6 +190,7 @@
     <Compile Include="Assets\Resources\Scripts\Effect\GlowBeamController.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveCityData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddDodge.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddBuffAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SkillConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackReboundArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />

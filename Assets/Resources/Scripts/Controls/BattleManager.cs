@@ -278,7 +278,7 @@ public class BattleManager : MonoBehaviour
     
     public void RemoveMissile(Missile missile)
     {
-        var action = new RemoveMissileAction(missile.owner.id, tickIndex, missile.id);
+        var action = new RemoveMissileAction(missile.ownerId, tickIndex, missile.id);
         AddChessAction(action);
         action.Doing();
     }
