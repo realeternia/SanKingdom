@@ -271,7 +271,7 @@ public static class SkillManager
 
     public static void AddSkillAction(Chess caster, Chess target, int skillId, int parm1)
     {
-        var skillPlayAction = new SkillPlayAction(caster.id, BattleManager.Instance.tickIndex, target.id, skillId, parm1);
+        var skillPlayAction = new SkillPlayAction(caster.id, BattleManager.Instance.tickIndex, target != null ? target.id : 0, skillId, parm1);
         BattleManager.Instance.AddChessAction(skillPlayAction);
     }
 

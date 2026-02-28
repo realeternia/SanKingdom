@@ -204,7 +204,7 @@ public class Missile : SceneObj
             if(targetChessId > 0)
             {
                 var targetChess = BattleManager.Instance.GetChess(targetChessId);
-                if (targetChess == null)
+                if (targetChess != null)
                     OnCrash(targetChess, tickIndex);
             }
             Cleanup();

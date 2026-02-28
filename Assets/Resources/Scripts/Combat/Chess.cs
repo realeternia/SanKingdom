@@ -174,6 +174,7 @@ public class Chess : SceneObj
                 viewObj.Init(this, player.lineColor);
 
                 var heroInfo = BattleManager.Instance.battleUIManager.heroInfoGroup.AddHero(forceId, heroId, level);
+                heroInfo.SetAttr(inte, str, leadShip);
                 heroInfo.SetHpRate(maxHp, maxHp);
                 this.heroInfo = heroInfo;
             }
@@ -208,7 +209,19 @@ public class Chess : SceneObj
     public override void LogicUpdate(int tickIndex)
     {
         if (hp <= 0)
+        {
+            Ondying();
             return;
+        }
+        // 死亡判定
+        if (dieAfterLifeTime)
+        {
+            lifeTickCount--;
+            if (lifeTickCount <= 0)
+            {
+                Ondying();
+            }
+        }        
 
         buffs.Where(x => tickIndex > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
         SkillManager.LogicUpdate(this, tickIndex);
@@ -254,19 +267,6 @@ public class Chess : SceneObj
             MoveAndFight(tickIndex);
         }
 
-        // 死亡判定
-        if (dieAfterLifeTime)
-        {
-            lifeTickCount--;
-            if (lifeTickCount <= 0)
-            {
-                Ondying();
-            }
-        }
-        else if (hp <= 0)
-        {
-            Ondying();
-        }
     }
 
     public override void RenderUpdate(int tickIndex, float indexMini, float timeElapsed)
@@ -690,7 +690,7 @@ public class Chess : SceneObj
 
     public void Ondying()
     {
-        var action = new RemoveChessAction(id, BattleManager.Instance.tickIndex, id);
+        var action = new RemoveChessAction(id, BattleManager.Instance.tickIndex);
         BattleManager.Instance.AddChessAction(action);
         action.Doing();
     }

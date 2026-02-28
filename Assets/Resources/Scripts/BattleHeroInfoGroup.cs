@@ -39,10 +39,11 @@ public class HeroInfoGroup : MonoBehaviour
         Debug.Log("Reset " + heroInfoRectSide1.transform.childCount + " " + heroInfoRectSide2.transform.childCount);
     }
 
-    public HeroInfo AddHero(int side, int heroId, int level)
+    public HeroInfo AddHero(int forceId, int heroId, int level)
     {
-        int count = side == 1 ? countSide1 : countSide2;
-        GameObject heroInfoRect = side == 1 ? heroInfoRectSide1 : heroInfoRectSide2;
+        var isSide1 = GameManager.Instance.GetPlayer(forceId).IsPlayer;
+        int count = isSide1 ? countSide1 : countSide2;
+        GameObject heroInfoRect = isSide1 ? heroInfoRectSide1 : heroInfoRectSide2;
         
         HeroInfo heroInfo = Instantiate(heroPrefab, heroInfoRect.transform).GetComponent<HeroInfo>();
         heroInfo.transform.localPosition = new Vector3(0, -47 - 91 * count, 0);
@@ -53,7 +54,7 @@ public class HeroInfoGroup : MonoBehaviour
         heroInfo.heroName.text = heroCfg.Name;
         heroInfo.heroLevelTxt.text = level.ToString();
 
-        if(side == 1)
+        if(isSide1)
         {
             countSide1++;
         }

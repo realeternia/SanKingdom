@@ -187,7 +187,7 @@ public class BattleManager : MonoBehaviour
             {
                 foreach (var chess in chessList.ToArray())
                 {
-                    if (chess != null && chess.hp > 0)
+                    if (chess != null)
                         chess.LogicUpdate(tickIndex);
                 }
                 foreach (var missile in missileList.ToArray())

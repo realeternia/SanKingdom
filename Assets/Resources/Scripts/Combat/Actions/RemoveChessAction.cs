@@ -3,35 +3,33 @@ using UnityEngine;
 [System.Serializable]
 public class RemoveChessAction : ChessAction
 {
-    public int TargetId;
-
-    public RemoveChessAction(int sourceId, int tick, int targetId)
+    public RemoveChessAction(int sourceId, int tick)
         : base(sourceId, tick)
     {
-        TargetId = targetId;
     }
 
     public override void Doing()
     {
-        var targetChess = BattleManager.Instance.GetChess(TargetId);
-        if (targetChess != null)
+        var ownerChess = BattleManager.Instance.GetChess(SourceId);
+        if (ownerChess != null)
         {
-            targetChess.buffs.Clear();
-            BattleManager.Instance.OnUnitDying(targetChess);
-
-            if (targetChess.viewObj != null)
+            ownerChess.buffs.Clear();
+            
+            if (ownerChess.viewObj != null)
             {
-                targetChess.viewObj.DestroyHUD();
+                ownerChess.viewObj.DestroyHUD();
             }
-            Debug.Log("OnDying " + targetChess.id);
-            if (targetChess.viewObj != null)
+            Debug.Log("RemoveChessAction " + ownerChess.id);
+            if (ownerChess.viewObj != null)
             {
-                UnityEngine.Object.Destroy(targetChess.viewObj.gameObject);
-                targetChess.viewObj = null;
+                UnityEngine.Object.Destroy(ownerChess.viewObj.gameObject);
+                ownerChess.viewObj = null;
             }
 
-            if ((targetChess.forceId == 1 || targetChess.forceId == 2) && !targetChess.isShadow)
+            if ((ownerChess.forceId == 1 || ownerChess.forceId == 2) && !ownerChess.isShadow)
                 BGMPlayer.Instance.PlaySound("Sounds/tnt", 7);
+
+            BattleManager.Instance.OnUnitDying(ownerChess);
         }
     }
 }
