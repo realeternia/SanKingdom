@@ -20,9 +20,7 @@ public class SkillHitWall : Skill
             // 在目标位置，以及owner和defender方向90度两侧，各创建一个effect
             var targetPos = defender.position;
 
-            var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos);
-            var summonTime = GetSummonTime();
-            magicStub.SetLifeTime(summonTime);
+            var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, GetSummonTime());
             
             // 计算owner到defender的方向
             Vector3 direction = (defender.position - owner.position).normalized;
@@ -50,6 +48,7 @@ public class SkillHitWall : Skill
                 SkillManager.AddSkillAction(owner, magicStub, id, i + 1);
             }
 
+            var summonTime = GetSummonTime();
             var term = (int)Math.Floor(summonTime / skillCfg.SummonHitInterval);
             RegisterDelayEffect(BattleManager.Instance.tickIndex, summonTime, term);
         }

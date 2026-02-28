@@ -12,10 +12,11 @@ public class CreateChessAction : ChessAction
     public int Level;
     public int SoldierNum;
     public bool IsFakeHero;
+    public float SummonTime;
 
     public Chess CreatedChess { get; private set; }
 
-    public CreateChessAction(int sourceId, int tick, int id, int forceId, int soldierId, UnityEngine.Vector3 spawnPos, bool isHero = false, int heroId = 0, int level = 0, int soldierNum = 0, bool isFakeHero = false)
+    public CreateChessAction(int sourceId, int tick, int id, int forceId, int soldierId, UnityEngine.Vector3 spawnPos, float summonTime = 0, bool isHero = false, int heroId = 0, int level = 0, int soldierNum = 0, bool isFakeHero = false)
         : base(sourceId, tick)
     {
         Id = id;
@@ -27,6 +28,7 @@ public class CreateChessAction : ChessAction
         Level = level;
         SoldierNum = soldierNum;
         IsFakeHero = isFakeHero;
+        SummonTime = summonTime;
     }
 
     public override void Doing()
@@ -64,6 +66,9 @@ public class CreateChessAction : ChessAction
         chessObj.hp = chessObj.maxHp;
         battleManager.chessList.Add(chessObj);
         chessObj.Init(ForceId);
+
+        if (SummonTime > 0)
+            chessObj.SetLifeTime(SummonTime);
         
         CreatedChess = chessObj;
     }

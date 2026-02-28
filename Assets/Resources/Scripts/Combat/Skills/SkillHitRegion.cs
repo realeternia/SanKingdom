@@ -17,12 +17,11 @@ public class SkillHitRegion : Skill
         {
             targetPos = defender.position;
 
-            var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos);
-            var summonTime = GetSummonTime();
-            magicStub.SetLifeTime(summonTime);
-
+            var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, GetSummonTime());
+            
             SkillManager.AddSkillAction(defender, magicStub, id, 0);
 
+            var summonTime = GetSummonTime();
             var term = (int) System.Math.Floor(summonTime / skillCfg.SummonHitInterval);
             RegisterDelayEffect(BattleManager.Instance.tickIndex, summonTime, term);
         }
