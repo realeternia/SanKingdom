@@ -18,7 +18,7 @@ public class SkillHitBuffArea : Skill
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetUnit.position, skillCfg.Range, owner.forceId, true);
             if (unitsInRange.Count > 0)
             {
-                SkillManager.AddSkillAction(targetUnit, null, id, 0);
+                SkillManager.AddSkillAction(owner, targetUnit, id, 0);
                 BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
                 foreach (var unit in unitsInRange)
@@ -29,9 +29,8 @@ public class SkillHitBuffArea : Skill
     
     public override void OnPlaySkill(Chess target, int parm1)
     {
-        var targetUnit = skillCfg.TargetType == "targetUnit" ? target : owner;
-        EffectManager.PlaySkillEffect(targetUnit, skillCfg.EffectHit);        
-        targetUnit.PlayerAnim(skillCfg.Action);
+        EffectManager.PlaySkillEffect(target, skillCfg.EffectHit);        
+        owner.PlayerAnim(skillCfg.Action);
     }
 
 }

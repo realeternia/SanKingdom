@@ -22,7 +22,15 @@ public class SkillPlayAction : ChessAction
 
         if (targetChess != null && casterChess != null)
         {
-            casterChess.skills.Find(x => x.skillId == SkillId).OnPlaySkill(targetChess, Parm1);
+            var skill = casterChess.skills.Find(x => x.skillId == SkillId);
+            if (skill != null)
+            {
+                skill.OnPlaySkill(targetChess, Parm1);
+            }
+            else
+            {
+                UnityEngine.Debug.LogError(string.Format("SkillPlayAction: Hero{0} SkillId {1} not found", casterChess.heroId, SkillId));
+            }
         }
     }
 }

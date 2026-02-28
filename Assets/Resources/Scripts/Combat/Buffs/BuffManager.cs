@@ -11,7 +11,6 @@ public static class BuffManager
 
         var action = new AddBuffAction(target.id, BattleManager.Instance.tickIndex, caster.id, skillId, buffId, lastTime);
         BattleManager.Instance.AddChessAction(action);
-        action.Doing();
     }
 
     public static void DoAddBuff(Chess target, Chess caster, int skillId, int buffId, float lastTime)
@@ -73,7 +72,6 @@ public static class BuffManager
     {
         var action = new RemoveBuffAction(chess.id, BattleManager.Instance.tickIndex, buffId);
         BattleManager.Instance.AddChessAction(action);
-        action.Doing();
     }
 
     public static void DoRemoveBuff(Chess chess, int buffId)

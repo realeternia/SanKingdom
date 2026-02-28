@@ -29,7 +29,7 @@ public class SkillHitRepeat : Skill
         {
             var d = (int)(damage * skillCfg.SkillDamageRate);
             defender.DoSkillDamage(owner, skillId, d);
-            SkillManager.AddSkillAction(defender, defender, id, d);
+            SkillManager.AddSkillAction(owner, defender, id, d);
         }
     }
 

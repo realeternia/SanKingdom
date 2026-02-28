@@ -130,8 +130,6 @@ public class BattleManager : MonoBehaviour
         var action = new CreateChessAction(0, tickIndex, id, p.forceId, soldierId, spawnPos, summonTime);
         AddChessAction(action);
         
-        action.Doing();
-
         return action.CreatedChess;
     }
 
@@ -142,8 +140,6 @@ public class BattleManager : MonoBehaviour
         var id = idCounter++;
         var action = new CreateChessAction(0, tickIndex, id, p.forceId, 0, spawnPoint, 0, true, heroConfig.Id, heroData.Level, heroData.SoldierNum);
         AddChessAction(action);
-
-        action.Doing();
         
         return action.CreatedChess;
     }
@@ -195,6 +191,7 @@ public class BattleManager : MonoBehaviour
                     if (missile != null)
                         missile.LogicUpdate(tickIndex);
                 }
+                actions.FindAll(x => x.Tick == tickIndex).ForEach(x => x.Doing());
 
                 coroutineManager.Update(tickTimeReal);
                 tickIndex++;
@@ -264,8 +261,6 @@ public class BattleManager : MonoBehaviour
         var id = idCounter++;
         var action = new CreateMissileAction(sourceChess.id, tickIndex, id, targetChess.id, sourceChess.position, 0, 0);
         AddChessAction(action);
-
-        action.Doing();
     }
 
     public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage)
@@ -273,8 +268,6 @@ public class BattleManager : MonoBehaviour
         var id = idCounter++;
         var action = new CreateMissileAction(sourceChess.id, tickIndex, id, targetChess.id, startPos, skillId, damage);
         AddChessAction(action);
-        
-        action.Doing();
     }    
 
     public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, int skillId, int damage)
@@ -282,15 +275,12 @@ public class BattleManager : MonoBehaviour
         var id = idCounter++;
         var action = new CreateMissileAction(sourceChess.id, tickIndex, id, targetPos, sourceChess.position, skillId, damage, time);
         AddChessAction(action);
-        
-        action.Doing();
     }
     
     public void RemoveMissile(Missile missile)
     {
         var action = new RemoveMissileAction(missile.ownerId, tickIndex, missile.id);
         AddChessAction(action);
-        action.Doing();
     }
 
     public Chess GetChess(int id)

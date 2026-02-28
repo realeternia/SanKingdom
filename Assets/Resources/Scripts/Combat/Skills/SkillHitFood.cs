@@ -18,7 +18,7 @@ public class SkillHitFood : Skill
             var sub = foodInfo.food -= skillCfg.StrengthInt;
             if (sub > 0)
             {
-                SkillManager.AddSkillAction(defender, null, id, sub);
+                SkillManager.AddSkillAction(owner, defender, id, sub);
                 owner.PlayerAnim(skillCfg.Action);
                 foodInfo.food += sub;
 
@@ -27,7 +27,7 @@ public class SkillHitFood : Skill
     }
     public override void OnPlaySkill(Chess target, int parm1)
     {
-        target.PlayerAnim(skillCfg.Action);
+        owner.PlayerAnim(skillCfg.Action);
         BattleManager.Instance.AddBattleText("粮-" + parm1.ToString(), target.position, new UnityEngine.Vector2(0, -30), Color.red, 3);
         BattleManager.Instance.AddBattleText("粮+" + parm1.ToString(), owner.position, new UnityEngine.Vector2(0, 60), Color.green, 3);        
     }

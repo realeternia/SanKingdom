@@ -87,7 +87,6 @@
     <Compile Include="Assets\Resources\Scripts\Configs\JobConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddHpAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillPlayAction.cs" />
     <Compile Include="Assets\Resources\Scripts\RankPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\FormulaLearnAttrConfig_s.cs" />
@@ -156,7 +155,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevNodeNormal.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffLock.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitMasterShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitWall.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
@@ -185,6 +183,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackSpinAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAntiShield.cs" />
     <Compile Include="Assets\Resources\Scripts\SelectHeroControl.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillPlayAction.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SystemTip.cs" />
     <Compile Include="Assets\Resources\Scripts\PlayerInfoControl.cs" />

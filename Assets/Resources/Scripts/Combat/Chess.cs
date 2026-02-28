@@ -475,8 +475,6 @@ public class Chess : SceneObj
                 targetChess = BattleManager.Instance.GetChess(targetChessId);
                 var moveAction = new MoveAction(id, tickIndex, targetChess != null ? targetChess.id : -1, moveDest);
                 BattleManager.Instance.AddChessAction(moveAction);
-
-                moveAction.Doing();
             }
         }
     }
@@ -604,7 +602,6 @@ public class Chess : SceneObj
             // 创建攻击Action并添加到actions列表
             var attackAction = new AttackAction(id, tickIndex, victim.id, damage, isCrit, isDodge, hitEffectName, damType);
             BattleManager.Instance.AddChessAction(attackAction);     
-            attackAction.Doing();
         }
     }
 
@@ -657,9 +654,6 @@ public class Chess : SceneObj
         // 创建SkillDamageAction并添加到BattleManager
         var action = new SkillDamageAction(caster.id, BattleManager.Instance.tickIndex, id, skillId, damage);
         BattleManager.Instance.AddChessAction(action);
-        
-        // 立即执行Action
-        action.Doing();
     }
 
     public void OnSkillDamaged(Chess caster, int skillId, int damage)
@@ -692,7 +686,6 @@ public class Chess : SceneObj
     {
         var action = new RemoveChessAction(id, BattleManager.Instance.tickIndex);
         BattleManager.Instance.AddChessAction(action);
-        action.Doing();
     }
 
     private static int CalculateDamage(Chess attacker, Chess defender, out string type)
@@ -752,7 +745,6 @@ public class Chess : SceneObj
 
         var action = new AddHpAction(id, BattleManager.Instance.tickIndex, id, addon);
         BattleManager.Instance.AddChessAction(action);
-        action.Doing();
     }
 
     public void HealTarget(Chess target, int checkSkillId, int addon)

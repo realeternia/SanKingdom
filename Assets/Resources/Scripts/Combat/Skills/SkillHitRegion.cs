@@ -19,7 +19,7 @@ public class SkillHitRegion : Skill
 
             var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, GetSummonTime());
             
-            SkillManager.AddSkillAction(defender, magicStub, id, 0);
+            SkillManager.AddSkillAction(owner, magicStub, id, 0);
 
             var summonTime = GetSummonTime();
             var term = (int) System.Math.Floor(summonTime / skillCfg.SummonHitInterval);
