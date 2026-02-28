@@ -9,10 +9,8 @@ public class Buff : IRecoverable
     public int id;
 
     public int casterId;
-    public Chess caster{get{return BattleManager.Instance.GetChess(casterId);}}
     
     public int ownerId;
-    public Chess owner{get{return BattleManager.Instance.GetChess(ownerId);}}
     
     public int skillId;
 

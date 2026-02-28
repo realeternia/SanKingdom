@@ -13,16 +13,17 @@ public class SkillAidShockWave : Skill
 
     public override bool CheckAidSkill(int tickIndex)
     {
-        if (owner.targetChess == null)
+        var targetChess = BattleManager.Instance.GetChess(owner.targetChessId);
+        if (targetChess == null)
             return false;
 
-        if (!BattleManager.CheckInRange(owner.position, owner.targetChess.position, skillCfg.Range))
+        if (!BattleManager.CheckInRange(owner.position, targetChess.position, skillCfg.Range))
             return false;
 
         if (!CheckBurst(null))
             return false;
 
-        var targetPos = owner.targetChess.position; // 使用目标位置而不是自身位置
+        var targetPos = targetChess.position; // 使用目标位置而不是自身位置
 
         owner.PlayerAnim(skillCfg.Action);
         var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);

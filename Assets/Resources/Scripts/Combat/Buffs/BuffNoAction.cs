@@ -8,11 +8,13 @@ public class BuffNoAction : Buff
     public override void OnAdd(Chess chess, Chess caster)
     {
         base.OnAdd(chess, caster);
+        var owner = BattleManager.Instance.GetChess(ownerId);
         owner.noActionCount++;
     }
 
     public override void OnRemove(Chess chess)
     {
+        var owner = BattleManager.Instance.GetChess(ownerId);
         owner.noActionCount--;
         base.OnRemove(chess);
     }

@@ -29,7 +29,6 @@ public class Chess : SceneObj
 
     public int targetChessId;
     // 目标单位
-    public Chess targetChess{ get{ return BattleManager.Instance.GetChess(targetChessId); } }
     // 移动速度
     [NonSerialized]
     public float moveSpeed = 5f;
@@ -424,11 +423,13 @@ public class Chess : SceneObj
         }
 
         // 检查目标是否存在
+        var targetChess = BattleManager.Instance.GetChess(targetChessId);
         if (targetChess == null || targetChess.hp <= 0)
         {
             // 如果没有目标，尝试寻找新目标
             FindTarget();
 
+            targetChess = BattleManager.Instance.GetChess(targetChessId);
             if (targetChess == null)
                 return;
         }
@@ -471,6 +472,7 @@ public class Chess : SceneObj
                 attackPoint -= 10;
 
                 // 创建移动Action并添加到actions列表
+                targetChess = BattleManager.Instance.GetChess(targetChessId);
                 var moveAction = new MoveAction(id, tickIndex, targetChess != null ? targetChess.id : -1, moveDest);
                 BattleManager.Instance.AddChessAction(moveAction);
 
@@ -484,6 +486,8 @@ public class Chess : SceneObj
         int moveFailCount = 0;
         var moveDis = moveSpeed * 0.5f;
 
+        // 检查目标是否存在
+        var targetChess = BattleManager.Instance.GetChess(targetChessId);
         for (int i = 0; i < 4; i++)
         {
             Vector3 nextPosition = Vector3.MoveTowards(position, targetChess.position, moveDis * (4 - i) / 4); //尝试短距离移动
@@ -618,6 +622,7 @@ public class Chess : SceneObj
 
         if(damage > 0)
         {
+            var targetChess = BattleManager.Instance.GetChess(targetChessId);
             if(!string.IsNullOrEmpty(hitEffectName))
                 EffectManager.PlayHitEffect(this, targetChess, hitEffectName);
 
@@ -626,7 +631,10 @@ public class Chess : SceneObj
 
         // 记录战斗统计
         if (attacker.isHero)
+        {
+            var targetChess = BattleManager.Instance.GetChess(targetChessId);
             BattleStatManager.AddBattleStat(attacker.forceId, attacker.heroId, damage, true, targetChess.isHero);
+        }
 
         OnHpChanged();      
     }

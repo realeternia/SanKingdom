@@ -7,6 +7,8 @@ public class BuffLock : Buff
 
     public override void OnAttacked(Chess attacker, int damage)
     {
+        var caster = BattleManager.Instance.GetChess(casterId);
+        var owner = BattleManager.Instance.GetChess(ownerId);
         var unitList = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range * 3, caster.forceId, true);
         UnityEngine.Debug.Log("Lock target count: " + unitList.Count);
         foreach (var unit in unitList)
