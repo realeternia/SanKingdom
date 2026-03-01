@@ -156,6 +156,7 @@ public class BattleManager : MonoBehaviour
             speed = 10;
         else if(quickMode)
             speed = 400;
+        tickIndex = 1;
         while (!gameFinish)
         {
             for (int i = 0; i < 4; i++)
@@ -243,17 +244,15 @@ public class BattleManager : MonoBehaviour
 
     private void RoundFoodCost(FoodInfo foodInfo)
     {
-        // 粮食扣除逻辑
-        // 计算时间差，每5s，扣10点粮食
-        if(foodInfo.food < 10)
+        var costAmount = 10;
+        if (foodInfo.food < costAmount)
         {
-            var units = GetUnitsByForceId(foodInfo.forceId); //todo
-            foreach(var unit in units)
-                unit.LackFood((float)(10 - foodInfo.food) / 10);
+            var units = BattleManager.Instance.GetUnitsByForceId(foodInfo.forceId);
+            foreach (var unit in units)
+                unit.LackFood((float)(costAmount - foodInfo.food) / costAmount);
         }
-        foodInfo.food -= 10;
-        if (foodInfo.food < 0)
-            foodInfo.food = 0;
+        var action = new FoodCostAction(0, tickIndex, foodInfo.forceId, costAmount);
+        AddChessAction(action);
     }    
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess)

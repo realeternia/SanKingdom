@@ -321,7 +321,9 @@ public class Chess : SceneObj
 
     public void LackFood(float lackRate)
     {
-        hp = Math.Max(1, hp - (int)((15 + lackIndex * 5) * lackRate)); //饿不死人
+        var hpval = Math.Max(1, hp - (int)((15 + lackIndex * 5) * lackRate)); //饿不死人
+        var action = new ChessSetHpAction(id, BattleManager.Instance.tickIndex, hpval);
+        BattleManager.Instance.AddChessAction(action);
         lackIndex++;
     }
 
@@ -743,7 +745,8 @@ public class Chess : SceneObj
         if(addon <= 0)
             throw new Exception("添加的血量不能小于等于0");
 
-        var action = new AddHpAction(id, BattleManager.Instance.tickIndex, id, addon);
+        var hpval = Mathf.Clamp(hp + addon, 0, maxHp);
+        var action = new ChessSetHpAction(id, BattleManager.Instance.tickIndex, hpval);
         BattleManager.Instance.AddChessAction(action);
     }
 

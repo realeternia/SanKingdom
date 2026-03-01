@@ -50,9 +50,6 @@ public class CreateChessAction : ChessAction
             chessObj.inte = attr.Inte;
             chessObj.str = attr.Str;
             chessObj.leadShip = attr.Lead;
-
-            if (chessObj.heroInfo != null)
-                chessObj.heroInfo.SetAttr(chessObj.inte, chessObj.str, chessObj.leadShip);
         }
         else
         {

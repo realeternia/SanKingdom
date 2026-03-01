@@ -86,7 +86,6 @@
     <Compile Include="Assets\Resources\Scripts\PopArmySetManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\JobConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateChessAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddHpAction.cs" />
     <Compile Include="Assets\Resources\Scripts\RankPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\FormulaLearnAttrConfig_s.cs" />
@@ -114,6 +113,7 @@
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\RampGeneratorTDE.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
     <Compile Include="Assets\Resources\Scripts\CityPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessSetHpAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\EffectManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
@@ -129,6 +129,7 @@
     <Compile Include="Assets\Resources\Scripts\PopHeroSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAidSuddenArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefSkillDamageReduce.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\FoodCostAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefFeedback.cs" />
     <Compile Include="Assets\Resources\Scripts\RankCellInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\PanelEvent.cs" />
