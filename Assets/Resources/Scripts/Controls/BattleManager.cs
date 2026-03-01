@@ -14,6 +14,8 @@ public class BattleManager : MonoBehaviour
         public int forceId;
         public int food;
         public int maxFood;
+
+        public int soldierNumInit;
     }
     [NonSerialized]
     public static BattleManager Instance;
@@ -43,8 +45,10 @@ public class BattleManager : MonoBehaviour
     public int tickIndex = 1;
     public int lastFoodDeductionTick = 0;
 
-    private bool quickMode = true;
-    private bool showUI = true;
+    [NonSerialized]
+    public bool quickMode = true;
+    [NonSerialized]
+    public bool showUI = true;
 
     [NonSerialized]
     private Action<bool> battleEndCallback;
@@ -64,40 +68,17 @@ public class BattleManager : MonoBehaviour
     {
         battleEndCallback = callback;
         playerInfoList.Clear();
-        playerInfoList.Add(new FoodInfo() { forceId = player1.forceId, food = 100, maxFood = 100 });
-        playerInfoList.Add(new FoodInfo() { forceId = player2.forceId, food = 100, maxFood = 100 });
+        playerInfoList.Add(new FoodInfo() { forceId = player1.forceId, food = 100, maxFood = 100, soldierNumInit = cards1.Sum(x => x.SoldierNum) });
+        playerInfoList.Add(new FoodInfo() { forceId = player2.forceId, food = 100, maxFood = 100, soldierNumInit = cards2.Sum(x => x.SoldierNum) });
 
         chessList.Clear();
         missileList.Clear();
-        BattleStatManager.Clear();        
+        BattleStatManager.Clear();
+        SkillManager.isReplay = false;
 
         gameFinish = false;
 
-        if (showUI)
-        {
-            // 打印加载耗时
-            var startTime = Time.realtimeSinceStartup;
-            var newMapId = 1;
-            var mapNode = Resources.Load<GameObject>("Prefabs/BattleMaps/Map" + newMapId);
-            if (mapObj != null)
-                UnityEngine.Object.Destroy(mapObj);
-
-            mapObj = UnityEngine.Object.Instantiate(mapNode, battleUIManager.NodeUnits.transform.parent);
-            var endTime = Time.realtimeSinceStartup;
-            Debug.Log("加载地图耗时：" + (endTime - startTime) + "秒");
-
-            // 计算双方总兵力
-            int leftSoldierTotal = cards1.Sum(x => x.SoldierNum);
-            int rightSoldierTotal = cards2.Sum(x => x.SoldierNum);
-            BattleInfoTop.Instance.Init(player1.forceId, player2.forceId, leftSoldierTotal, rightSoldierTotal);
-            battleUIManager.BattleResultPanel.gameObject.SetActive(false);
-            // 清空之前的单位
-            foreach (Transform child in battleUIManager.NodeUnits.transform)
-                UnityEngine.Object.Destroy(child.gameObject);
-            battleUIManager.heroInfoGroup.Reset();
-            battleUIManager.CreateCastleHUD(player1, GetSpawnPosition(1, 5));
-            battleUIManager.CreateCastleHUD(player2, GetSpawnPosition(2, 5));            
-        }
+        InitUI(player1, player2);
         //对cards1和card2都按HeroConfig的Range排序，确保远程在后面
         cards1.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
         cards2.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
@@ -113,17 +94,58 @@ public class BattleManager : MonoBehaviour
 
         foreach (var chess in chessList.ToArray()) //防止召唤
             SkillManager.BattleBegin(chess);
-        
-        SaveToFile("battle.json");
 
         StartCoroutine(GameUpdate());
     }
 
+    private void InitUI(Player player1, Player player2)
+    {
+        if (showUI)
+        {
+            // 打印加载耗时
+            var startTime = Time.realtimeSinceStartup;
+            var newMapId = 1;
+            var mapNode = Resources.Load<GameObject>("Prefabs/BattleMaps/Map" + newMapId);
+            if (mapObj != null)
+                UnityEngine.Object.Destroy(mapObj);
+
+            mapObj = UnityEngine.Object.Instantiate(mapNode, battleUIManager.NodeUnits.transform.parent);
+            var endTime = Time.realtimeSinceStartup;
+            Debug.Log("加载地图耗时：" + (endTime - startTime) + "秒");
+
+            // 计算双方总兵力
+            BattleInfoTop.Instance.Init(player1.forceId, player2.forceId, playerInfoList[0].soldierNumInit, playerInfoList[1].soldierNumInit);
+            battleUIManager.BattleResultPanel.gameObject.SetActive(false);
+            // 清空之前的单位
+            foreach (Transform child in battleUIManager.NodeUnits.transform)
+                UnityEngine.Object.Destroy(child.gameObject);
+            battleUIManager.heroInfoGroup.Reset();
+            battleUIManager.CreateCastleHUD(player1, GetSpawnPosition(1, 5));
+            battleUIManager.CreateCastleHUD(player2, GetSpawnPosition(2, 5));
+        }
+    }
+
     public void ReplayBattle()
     {
-        LoadFromFile("battle.json");
+        LoadFromFile("battle1.json");
+        SkillManager.isReplay = true;
 
+        foreach (var playerInfo in playerInfoList)
+        {
+            playerInfo.food = playerInfo.maxFood;
+        }
+
+        chessList.Clear();
+        missileList.Clear();
+        BattleStatManager.Clear();
+
+        gameFinish = false;
+        var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
+        var player2 = GameManager.Instance.GetPlayer(playerInfoList[1].forceId);
         
+        InitUI(player1, player2);
+
+        StartCoroutine(GameUpdate(true));
     }
 
     private Vector3 GetSpawnPosition(int side, int indx)
@@ -156,7 +178,7 @@ public class BattleManager : MonoBehaviour
 
     public static float tickTimeReal = 0.1f; //加速功能
     
-    private IEnumerator GameUpdate()
+    private IEnumerator GameUpdate(bool replay = false)
     {
         yield return new WaitForSeconds(0.5f);
 
@@ -192,30 +214,32 @@ public class BattleManager : MonoBehaviour
             //  var sw = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < speed; i++)
             {
-                foreach (var chess in chessList.ToArray())
+                if(!replay)
                 {
-                    if (chess != null)
-                        chess.LogicUpdate(tickIndex);
-                }
-                foreach (var missile in missileList.ToArray())
-                {
-                    if (missile != null)
-                        missile.LogicUpdate(tickIndex);
+                    foreach (var chess in chessList.ToArray())
+                    {
+                        if (chess != null)
+                            chess.LogicUpdate(tickIndex);
+                    }
+                    foreach (var missile in missileList.ToArray())
+                    {
+                        if (missile != null)
+                            missile.LogicUpdate(tickIndex);
+                    }
+                    // 每个回合结束，玩家消耗食物
+                    if (tickIndex - lastFoodDeductionTick >= 200) // 每5秒扣除一次粮食 (5s / 0.025s = 200 ticks)
+                    {
+                        foreach (var foodInfo in playerInfoList)
+                        {
+                            RoundFoodCost(foodInfo);
+                        }
+                        lastFoodDeductionTick = tickIndex;
+                    }                    
                 }
                 actions.FindAll(x => x.Tick == tickIndex).ForEach(x => x.Doing());
 
                 coroutineManager.Update(tickTimeReal);
                 tickIndex++;
-
-                // 每个回合结束，玩家消耗食物
-                if (tickIndex - lastFoodDeductionTick >= 200) // 每5秒扣除一次粮食 (5s / 0.025s = 200 ticks)
-                {
-                    foreach (var foodInfo in playerInfoList)
-                    {
-                        RoundFoodCost(foodInfo);
-                    }
-                    lastFoodDeductionTick = tickIndex;
-                }
             }
 
             if(showUI)
@@ -237,14 +261,16 @@ public class BattleManager : MonoBehaviour
         }
 
         if(showUI)
-            battleUIManager.OnBattleEnd(playerInfoList.Select(foodInfo => foodInfo.forceId).ToList(), hasWin);
+            battleUIManager.OnBattleEnd(playerInfoList.Select(foodInfo => foodInfo.forceId).ToList(), hasWin, replay);
 
         // 调用战斗结束回调
         if (battleEndCallback != null)
         {
             battleEndCallback(hasWin);
         }
-        SaveToFile("battle1.json");
+
+        if(!replay)
+            SaveToFile("battle1.json");
     }
 
     public int GetTickFromTime(float time)

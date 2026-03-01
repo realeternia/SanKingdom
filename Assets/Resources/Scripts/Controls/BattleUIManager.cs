@@ -88,7 +88,7 @@ public class BattleUIManager : MonoBehaviour
         PanelManager.Instance.ShowWorld();
     }    
 
-    public void OnBattleEnd(List<int> playerList, bool hasWin)
+    public void OnBattleEnd(List<int> playerList, bool hasWin, bool replay)
     {
         if (hasWin)
             textRestart.text = "你获胜了!!!";
@@ -148,8 +148,9 @@ public class BattleUIManager : MonoBehaviour
         battleResultRect.sizeDelta = new Vector2(650, battleResultRect.sizeDelta.y);
         BattleResultPanel.gameObject.SetActive(true);
 
-        PanelManager.Instance.SendSignal("CityAttrChange", "", 0); //士兵数变了
-    }    
+        if(!replay)
+            PanelManager.Instance.SendSignal("CityAttrChange", "", 0); //士兵数变了
+    }
 
     public void ShowBattleResult()
     {

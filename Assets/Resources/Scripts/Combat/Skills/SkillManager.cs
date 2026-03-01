@@ -6,8 +6,9 @@ using CommonConfig;
 
 public static class SkillManager
 {
-    public static Skill CreateSkill(int skillId, Chess owner)
+    public static bool isReplay = false;
 
+    public static Skill CreateSkill(int skillId, Chess owner)
     {
         var skillCfg = SkillConfig.GetConfig(skillId);
 
@@ -94,6 +95,8 @@ public static class SkillManager
 
     public static void CheckAddSkill(Chess chess)
     {
+        if(isReplay)
+            return;
         foreach (var skill in chess.skills)
         {
             if (!string.IsNullOrEmpty(skill.skillCfg.HelpSkill) && !skill.isGivenSkill)
@@ -117,6 +120,8 @@ public static class SkillManager
 
     public static void BattleBegin(Chess chess)
     {
+        if(isReplay)
+            return;
         foreach (var skill in chess.skills)
         {
             skill.BattleBegin();
@@ -125,6 +130,8 @@ public static class SkillManager
 
     public static void LogicUpdate(Chess chess, int tickIndex)
     {
+        if(isReplay)
+            return;
         foreach (var skill in chess.skills)
         {
             skill.LogicUpdate(tickIndex);
@@ -133,6 +140,8 @@ public static class SkillManager
 
     public static void AimTarget(Chess attacker, Chess defender)
     {
+        if(isReplay)
+            return;
         foreach (var skill in attacker.skills)
         {
             skill.AimTarget(defender);
@@ -141,6 +150,8 @@ public static class SkillManager
 
     public static void OnCheckBurst(Chess caster, SkillConfig skillCfg, ref float rate)
     {
+        if(isReplay)
+            return;
         foreach (var skill in caster.skills)
         {
             if(skill.skillId != skillCfg.Id) //防止自己判定自己
@@ -150,6 +161,8 @@ public static class SkillManager
 
     public static void OnCheckCD(Chess caster, SkillConfig skillCfg, ref float cdTime)
     {
+        if(isReplay)
+            return;
         foreach (var skill in caster.skills)
         {
             if(skill.skillId != skillCfg.Id) //防止自己判定自己
@@ -158,6 +171,8 @@ public static class SkillManager
     }
     public static void OnCheckSummonTime(Chess caster, SkillConfig skillCfg, ref float summonTime)
     {
+        if(isReplay)
+            return;
         foreach (var skill in caster.skills)
         {
             if(skill.skillId != skillCfg.Id) //防止自己判定自己
@@ -166,9 +181,10 @@ public static class SkillManager
     }
 
 
-
     public static void DuringAttack(Chess attacker, Chess defender, string damType, ref int damageBase, ref float damageMulti, ref int damageReal, ref string effect)
     {       
+        if(isReplay)
+            return;
         foreach(var skill in attacker.skills)
         {
             skill.DuringAttack(defender, damType, ref damageBase, ref damageMulti, ref damageReal, ref effect);
@@ -193,6 +209,8 @@ public static class SkillManager
     // 护盾要再这一层算
     public static void BeforeAttack(Chess attacker, Chess defender, ref int damage)
     {
+        if(isReplay)
+            return;
         foreach(var buff in defender.buffs)
         {
             buff.BeforeAttacked(attacker, ref damage);
@@ -201,6 +219,8 @@ public static class SkillManager
 
     public static void OnAttack(Chess attacker, Chess defender, string damType, int damage)
     {
+        if(isReplay)
+            return;
         foreach (var skill in attacker.skills)
         {
             skill.OnAttack(defender, damType, damage);
@@ -222,6 +242,8 @@ public static class SkillManager
 
     public static bool CheckAidSkill(Chess attacker, int tickIndex)
     {
+        if(isReplay)
+            return false;
         foreach (var skill in attacker.skills)
         {
             if (!skill.IsInCD() && skill.CheckAidSkill(tickIndex))
@@ -235,6 +257,8 @@ public static class SkillManager
 
     public static void OnAddBuff(Chess target, Chess caster, ref int buffId, int skillId, ref float lastTime)
     {
+        if(isReplay)
+            return;
         foreach (var skill in caster.skills)
         {
             skill.OnAddBuff(target, ref buffId, skillId, ref lastTime);
@@ -247,6 +271,8 @@ public static class SkillManager
 
     public static void OnDoSkillDamage(Chess target, Chess caster, SkillConfig skillCfg, ref int damage, bool isFeedback)
     {
+        if(isReplay)
+            return;
         foreach (var skill in caster.skills)
         {
             if(skillCfg.Id == skill.skillId)
@@ -263,6 +289,8 @@ public static class SkillManager
     
     public static void OnHealTarget(Chess healer, Chess target, int checkSkillId, ref int addon)
     {
+        if(isReplay)
+            return;
         foreach (var skill in healer.skills)
         {
             skill.OnHealTarget(target, checkSkillId, ref addon);
@@ -271,6 +299,8 @@ public static class SkillManager
 
     public static void AddSkillAction(Chess caster, Chess target, int skillId, int parm1)
     {
+        if(isReplay)
+            return;
         var skillPlayAction = new SkillPlayAction(caster.id, BattleManager.Instance.tickIndex, target != null ? target.id : 0, skillId, parm1);
         BattleManager.Instance.AddChessAction(skillPlayAction);
     }

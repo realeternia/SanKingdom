@@ -1,3 +1,6 @@
+using CommonConfig;
+using UnityEngine;
+
 [System.Serializable]
 public class SkillDamageAction : ChessAction
 {
@@ -22,7 +25,21 @@ public class SkillDamageAction : ChessAction
         if (targetChess != null && casterChess != null)
         {
             // 直接执行伤害回调
-            targetChess.OnSkillDamaged(casterChess, SkillId, Damage);
+            targetChess.hp -= Damage;
+            if(casterChess != targetChess)
+                targetChess.lastDamagedPlayerId = casterChess.forceId;
+
+            var skillCfg = SkillConfig.GetConfig(SkillId);
+            if(!string.IsNullOrEmpty(skillCfg.EffectHit))
+                EffectManager.PlaySkillEffect(targetChess, skillCfg.EffectHit);
+
+            // 记录战斗统计
+            if(casterChess.isHero)
+                BattleStatManager.AddBattleStat(casterChess.forceId, casterChess.heroId, Damage, false, targetChess.isHero);    
+
+            BattleManager.Instance.AddBattleText("-" + (Damage).ToString(), targetChess.position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
+
+            targetChess.OnHpChanged();
         }
     }
 }

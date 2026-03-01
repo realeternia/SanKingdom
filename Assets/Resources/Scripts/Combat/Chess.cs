@@ -607,37 +607,6 @@ public class Chess : SceneObj
         }
     }
 
-    public void OnAttackDamaged(int damage, string damType, string hitEffectName, bool isCrit, bool isDodge, int attackerId)
-    {
-        hp -= damage;
-        if (id != attackerId)
-            lastDamagedPlayerId = attackerId;
-
-        var attacker = BattleManager.Instance.GetChess(attackerId);
-        if(isCrit)
-            BattleManager.Instance.AddBattleText("暴!", attacker.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
-        if(isDodge)
-            BattleManager.Instance.AddBattleText("闪!", position, new UnityEngine.Vector2(0, 40), Color.red, 3);
-
-        if(damage > 0)
-        {
-            var targetChess = BattleManager.Instance.GetChess(targetChessId);
-            if(!string.IsNullOrEmpty(hitEffectName))
-                EffectManager.PlayHitEffect(this, targetChess, hitEffectName);
-
-            SkillManager.OnAttack(this, targetChess, damType, damage);                
-        }
-
-        // 记录战斗统计
-        if (attacker.isHero)
-        {
-            var targetChess = BattleManager.Instance.GetChess(targetChessId);
-            BattleStatManager.AddBattleStat(attacker.forceId, attacker.heroId, damage, true, targetChess.isHero);
-        }
-
-        OnHpChanged();      
-    }
-
     public void DoSkillDamage(Chess caster, int skillId, int damage, bool isFeedback = false)
     {
         if(hp <= 0)
@@ -657,26 +626,6 @@ public class Chess : SceneObj
         var action = new SkillDamageAction(caster.id, BattleManager.Instance.tickIndex, id, skillId, damage);
         BattleManager.Instance.AddChessAction(action);
     }
-
-    public void OnSkillDamaged(Chess caster, int skillId, int damage)
-    {
-        hp -= damage;
-        if(caster != this)
-            lastDamagedPlayerId = caster.forceId;
-
-        var skillCfg = SkillConfig.GetConfig(skillId);
-        if(!string.IsNullOrEmpty(skillCfg.EffectHit))
-            EffectManager.PlaySkillEffect(this, skillCfg.EffectHit);
-
-        // 记录战斗统计
-        if(caster.isHero)
-            BattleStatManager.AddBattleStat(caster.forceId, caster.heroId, damage, false, isHero);    
-
-        BattleManager.Instance.AddBattleText("-" + (damage).ToString(), position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
-
-        OnHpChanged();
-    }
-
 
     public void OnHpChanged()
     {

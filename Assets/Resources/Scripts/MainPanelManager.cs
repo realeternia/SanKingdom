@@ -14,6 +14,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     public Button btnCity;
     public Button btnRoundNext;
     public Button btnMode;
+    public Button btnReplay;
 
     public TMP_Text textYear;
     public TMP_Text textAiInfo;
@@ -53,6 +54,13 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         btnMode.onClick.AddListener(() =>
         {
             SetMode();
+        });
+        btnReplay.onClick.AddListener(() =>
+        {
+            PanelManager.Instance.HideWorld();
+            BattleManager.Instance.SetMode(false, true);
+            // 开始战斗
+            BattleManager.Instance.ReplayBattle();
         });
     }
 

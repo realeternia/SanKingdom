@@ -1,3 +1,5 @@
+using UnityEngine;
+
 [System.Serializable]
 public class AttackAction : ChessAction
 {
@@ -21,7 +23,33 @@ public class AttackAction : ChessAction
 
     public override void Doing()
     {
+        var sourceChess = BattleManager.Instance.GetChess(SourceId);
         var targetChess = BattleManager.Instance.GetChess(TargetId);
-        targetChess.OnAttackDamaged(Damage, DamType, HitEffect, IsCrit, IsDodge, SourceId);
+
+        targetChess.hp -= Damage;
+        if (SourceId != targetChess.id)
+            targetChess.lastDamagedPlayerId = SourceId;
+
+        var attacker = BattleManager.Instance.GetChess(SourceId);
+        if(IsCrit)
+            BattleManager.Instance.AddBattleText("暴!", attacker.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+        if(IsDodge)
+            BattleManager.Instance.AddBattleText("闪!", targetChess.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+
+        if(Damage > 0)
+        {
+            if(!string.IsNullOrEmpty(HitEffect))
+                EffectManager.PlayHitEffect(sourceChess, targetChess, HitEffect);
+
+            SkillManager.OnAttack(sourceChess, targetChess, DamType, Damage); 
+        }
+
+        // 记录战斗统计
+        if (attacker.isHero)
+        {
+            BattleStatManager.AddBattleStat(attacker.forceId, attacker.heroId, Damage, true, targetChess.isHero);
+        }
+
+        targetChess.OnHpChanged();   
     }
 }
