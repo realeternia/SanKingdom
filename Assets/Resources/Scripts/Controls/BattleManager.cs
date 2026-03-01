@@ -53,6 +53,15 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private Action<bool> battleEndCallback;
 
+    private const float WaitTime = 1f;
+    private const float BattleBeginTime = 3f;
+
+    private List<BattleCardData> cards1;
+    private List<BattleCardData> cards2;
+
+    private bool isDoingAction = false;
+
+
     private void Awake()
     {
         Instance = this;
@@ -83,17 +92,8 @@ public class BattleManager : MonoBehaviour
         cards1.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
         cards2.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
 
-        for (int i = 0; i < Math.Min(cards1.Count, 12); i++)
-            SpawnHerosForRegion(player1, GetSpawnPosition(1, i), cards1[i]);
-
-        for (int i = 0; i < Math.Min(cards2.Count, 12); i++)
-            SpawnHerosForRegion(player2, GetSpawnPosition(2, i), cards2[i]);
-
-        foreach (var chess in chessList.ToArray()) //防止召唤
-            SkillManager.CheckAddSkill(chess);
-
-        foreach (var chess in chessList.ToArray()) //防止召唤
-            SkillManager.BattleBegin(chess);
+        this.cards1 = cards1;
+        this.cards2 = cards2;
 
         StartCoroutine(GameUpdate());
     }
@@ -156,24 +156,22 @@ public class BattleManager : MonoBehaviour
             return new Vector3(455 + (indx / 4) * 15, 7, 245 - (indx % 4) * 20);
     }
 
-    public Chess SpawnUnitsForRegion(Player p, int soldierId, UnityEngine.Vector3 spawnPos, float summonTime = 0)
+    public int SpawnUnitsForRegion(Player p, int soldierId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)
     {
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickIndex, id, p.forceId, soldierId, spawnPos, summonTime);
+        var action = new CreateChessAction(0, tickIndex, id, p.forceId, soldierId, spawnPos, summonTime, cb);
         AddChessAction(action);
-        
-        return action.CreatedChess;
+
+        return id;
     }
 
-    private Chess SpawnHerosForRegion(Player p, UnityEngine.Vector3 spawnPoint, BattleCardData heroData)
+    private void SpawnHerosForRegion(Player p, int tickAdd, UnityEngine.Vector3 spawnPoint, BattleCardData heroData)
     {
         var heroConfig = HeroConfig.GetConfig(heroData.CardId);
 
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickIndex, id, p.forceId, 0, spawnPoint, 0, true, heroConfig.Id, heroData.Level, heroData.SoldierNum);
+        var action = new CreateChessAction(0, tickAdd, id, p.forceId, spawnPoint, heroConfig.Id, heroData.Level, heroData.SoldierNum);
         AddChessAction(action);
-        
-        return action.CreatedChess;
     }
 
     public static float tickTimeReal = 0.1f; //加速功能
@@ -189,6 +187,13 @@ public class BattleManager : MonoBehaviour
         else if(quickMode)
             speed = 400;
         tickIndex = 1;
+
+        var waitTick = GetTickFromTime(WaitTime);
+        var battleBeginTick = GetTickFromTime(BattleBeginTime);
+
+        var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
+        var magicHelperUnitId = BattleManager.Instance.SpawnUnitsForRegion(player1, 501001, new Vector3(1, 7, 1), 10);
+
         while (!gameFinish)
         {
             for (int i = 0; i < 4; i++)
@@ -214,32 +219,57 @@ public class BattleManager : MonoBehaviour
             //  var sw = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < speed; i++)
             {
+
                 if(!replay)
                 {
-                    foreach (var chess in chessList.ToArray())
+                    if(waitTick > 0 && tickIndex >= waitTick)
                     {
-                        if (chess != null)
-                            chess.LogicUpdate(tickIndex);
+                        InitSummon(magicHelperUnitId);
+                        waitTick = 0;
                     }
-                    foreach (var missile in missileList.ToArray())
-                    {
-                        if (missile != null)
-                            missile.LogicUpdate(tickIndex);
-                    }
-                    // 每个回合结束，玩家消耗食物
-                    if (tickIndex - lastFoodDeductionTick >= 200) // 每5秒扣除一次粮食 (5s / 0.025s = 200 ticks)
-                    {
-                        foreach (var foodInfo in playerInfoList)
-                        {
-                            RoundFoodCost(foodInfo);
-                        }
-                        lastFoodDeductionTick = tickIndex;
-                    }                    
-                }
-                actions.FindAll(x => x.Tick == tickIndex).ForEach(x => x.Doing());
 
+                    if(battleBeginTick > 0)
+                    {
+                        if(tickIndex >= battleBeginTick)
+                        {
+                            foreach (var chess in chessList.ToArray()) //防止召唤
+                                SkillManager.CheckAddSkill(chess);  
+                            foreach (var chess in chessList.ToArray()) //防止召唤
+                                SkillManager.BattleBegin(chess);
+                            lastFoodDeductionTick = tickIndex;
+                            battleBeginTick = 0;
+                        }
+                    }
+
+                    if(battleBeginTick == 0)
+                    {
+                        foreach (var chess in chessList.ToArray())
+                        {
+                            if (chess != null)
+                                chess.LogicUpdate(tickIndex);
+                        }
+                        foreach (var missile in missileList.ToArray())
+                        {
+                            if (missile != null)
+                                missile.LogicUpdate(tickIndex);
+                        }
+                        // 每个回合结束，玩家消耗食物
+                        if (tickIndex - lastFoodDeductionTick >= 200) // 每5秒扣除一次粮食 (5s / 0.025s = 200 ticks)
+                        {
+                            foreach (var foodInfo in playerInfoList)
+                            {
+                                RoundFoodCost(foodInfo);
+                            }
+                            lastFoodDeductionTick = tickIndex;
+                        }
+                    }
+
+                }
+                isDoingAction = true;
+                actions.FindAll(x => x.Tick == tickIndex).ForEach(x => x.Doing());
+                isDoingAction = false;
                 coroutineManager.Update(tickTimeReal);
-                tickIndex++;
+                tickIndex++;                
             }
 
             if(showUI)
@@ -273,6 +303,30 @@ public class BattleManager : MonoBehaviour
             SaveToFile("battle1.json");
     }
 
+    private void InitSummon(int magicHelperUnitId)
+    {
+        var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
+        var player2 = GameManager.Instance.GetPlayer(playerInfoList[1].forceId);
+
+        for (int i = 0; i < Math.Min(cards2.Count, 12); i++)
+        {
+            var tick = tickIndex + (i/3);
+            var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(2, i), "SoftFireBigRed", 0.7f);
+            AddChessAction(eff);
+            SpawnHerosForRegion(player2, tick + 3, GetSpawnPosition(2, i), cards2[i]);
+        }
+
+        for (int i = 0; i < Math.Min(cards1.Count, 12); i++)
+        {
+            var tick = tickIndex + 10 + (i/3);
+            var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(1, i), "LightningExplosionBlue", 0.7f);
+            AddChessAction(eff);
+            SpawnHerosForRegion(player1, tick + 3, GetSpawnPosition(1, i), cards1[i]);
+        }
+
+        UnityEngine.Debug.Log($"InitSummon {player1.pname} {cards1.Count} {player2.pname} {cards2.Count}");
+    }
+
     public int GetTickFromTime(float time)
     {
         return (int)(time / tickTimeReal);
@@ -283,7 +337,7 @@ public class BattleManager : MonoBehaviour
         var costAmount = 10;
         if (foodInfo.food < costAmount)
         {
-            var units = BattleManager.Instance.GetUnitsByForceId(foodInfo.forceId);
+            var units = GetUnitsByForceId(foodInfo.forceId);
             foreach (var unit in units)
                 unit.LackFood((float)(costAmount - foodInfo.food) / costAmount);
         }
@@ -545,8 +599,12 @@ public class BattleManager : MonoBehaviour
 
     public void AddChessAction(ChessAction action)
     {
+        if(isDoingAction && action.Tick == tickIndex)
+            action.Tick ++; //顺延到下一帧
+        
         actions.Add(action);
     }
+
     // 序列化到文件
     public void SaveToFile(string filePath)
     {

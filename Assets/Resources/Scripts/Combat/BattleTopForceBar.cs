@@ -25,6 +25,6 @@ public class BattleForceBar : MonoBehaviour
     {
         v = 1-v;
         cover.sizeDelta = new Vector2(Math.Max(1, bg.sizeDelta.x * v), bg.sizeDelta.y);
-        UnityEngine.Debug.Log($"SetRate {v}");
+        // UnityEngine.Debug.Log($"SetRate {v}");
     }
 }

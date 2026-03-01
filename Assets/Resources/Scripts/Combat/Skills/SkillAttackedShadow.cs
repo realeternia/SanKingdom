@@ -18,19 +18,24 @@ public class SkillAttackedShadow : Skill
         {
             Vector2 randomDir = UnityEngine.Random.insideUnitCircle.normalized;
             Vector3 randomPosition = owner.position + new Vector3(randomDir.x, 0, randomDir.y) * skillCfg.Range;
-            var shadowUnit = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501002, randomPosition);
-
-            //todo 这里需要放到action里
-            shadowUnit.attackDamage = (int)(owner.attackDamage * skillCfg.SkillDamageRate);
-            shadowUnit.maxHp = (int)(owner.maxHp * skillCfg.SkillAttrRate);
-            shadowUnit.hp = (int)(shadowUnit.maxHp * owner.HpRate);
-            if (shadowUnit.viewObj != null)
+            BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501002, randomPosition, 0, (shadowUnitId) =>
             {
-                shadowUnit.viewObj.material.SetFloat("_SecondTexSize", 2f);
-                shadowUnit.viewObj.material.SetTexture("_SecondTex", Resources.Load<Texture>("SkillPic/" + skillCfg.Icon));
-            }
+                var shadowUnit = BattleManager.Instance.GetChess(shadowUnitId);
+                shadowUnit.attackDamage = (int)(owner.attackDamage * skillCfg.SkillDamageRate);
+                shadowUnit.maxHp = (int)(owner.maxHp * skillCfg.SkillAttrRate);
 
-            SkillManager.AddSkillAction(owner, shadowUnit, id, 0);
+                //todo 这里需要放到action里
+                shadowUnit.attackDamage = (int)(owner.attackDamage * skillCfg.SkillDamageRate);
+                shadowUnit.maxHp = (int)(owner.maxHp * skillCfg.SkillAttrRate);
+                shadowUnit.hp = (int)(shadowUnit.maxHp * owner.HpRate);
+                if (shadowUnit.viewObj != null)
+                {
+                    shadowUnit.viewObj.material.SetFloat("_SecondTexSize", 2f);
+                    shadowUnit.viewObj.material.SetTexture("_SecondTex", Resources.Load<Texture>("SkillPic/" + skillCfg.Icon));
+                }
+
+                SkillManager.AddSkillAction(owner, shadowUnit, id, 0);
+            });
 
             count--;
         }

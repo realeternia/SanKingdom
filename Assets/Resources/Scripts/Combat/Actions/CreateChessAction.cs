@@ -1,3 +1,4 @@
+using System;
 using CommonConfig;
 
 [System.Serializable]
@@ -14,25 +15,37 @@ public class CreateChessAction : ChessAction
     public bool IsFakeHero;
     public float SummonTime;
 
-    public Chess CreatedChess { get; private set; }
+    [NonSerialized]
+    public Action<int> CallBack;
 
-    public CreateChessAction(int sourceId, int tick, int id, int forceId, int soldierId, UnityEngine.Vector3 spawnPos, float summonTime = 0, bool isHero = false, int heroId = 0, int level = 0, int soldierNum = 0, bool isFakeHero = false)
+
+    public CreateChessAction(int sourceId, int tick, int id, int forceId, UnityEngine.Vector3 spawnPos, int heroId, int level, int soldierNum)
+        : base(sourceId, tick)
+    {
+        Id = id;
+        ForceId = forceId;
+        SpawnPos = spawnPos;
+        IsHero = true;
+        HeroId = heroId;
+        Level = level;
+        SoldierNum = soldierNum;
+    }
+
+    public CreateChessAction(int sourceId, int tick, int id, int forceId, int soldierId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb)
         : base(sourceId, tick)
     {
         Id = id;
         ForceId = forceId;
         SoldierId = soldierId;
         SpawnPos = spawnPos;
-        IsHero = isHero;
-        HeroId = heroId;
-        Level = level;
-        SoldierNum = soldierNum;
-        IsFakeHero = isFakeHero;
         SummonTime = summonTime;
+        CallBack = cb;
     }
 
     public override void Doing()
     {
+        UnityEngine.Debug.Log($"CreateChessAction {Id} {ForceId} {SpawnPos} {IsHero} {HeroId} {Level} {SoldierNum}");
+
         var battleManager = BattleManager.Instance;
         var chessObj = new Chess(Id);
         chessObj.forceId = ForceId;
@@ -66,7 +79,10 @@ public class CreateChessAction : ChessAction
 
         if (SummonTime > 0)
             chessObj.SetLifeTime(SummonTime);
+
+        if (CallBack != null)
+            CallBack(Id);
         
-        CreatedChess = chessObj;
+        
     }
 }

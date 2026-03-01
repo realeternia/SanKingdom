@@ -120,6 +120,6 @@ public class BattleInfoTop : MonoBehaviour
     {
         leftTopBar.SetRate((float)leftSoldierTotal / this.leftSoldierTotal);
         rightTopBar.SetRate((float)rightSoldierTotal / this.rightSoldierTotal);
-        UnityEngine.Debug.Log($"UpdateSoldierCount: {leftSoldierTotal}/{this.leftSoldierTotal} vs {rightSoldierTotal}/{this.rightSoldierTotal}");
+        // UnityEngine.Debug.Log($"UpdateSoldierCount: {leftSoldierTotal}/{this.leftSoldierTotal} vs {rightSoldierTotal}/{this.rightSoldierTotal}");
     }
 }

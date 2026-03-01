@@ -286,7 +286,7 @@ public class Chess : SceneObj
                 Vector3 currentPos = Vector3.Lerp(jumpState.PosStart, jumpState.PosTar, t);
                 currentPos.y += yOffset;
 
-                if (viewObj != null)
+                if (viewObj != null && position != Vector3.zero)
                     viewObj.transform.position = position; //只改view
             }
         }     
@@ -307,6 +307,8 @@ public class Chess : SceneObj
 
     public override void SetPosition(Vector3 position)
     {
+        if (position == Vector3.zero)
+            return;
         base.SetPosition(position);
         position.y = 7 + id * 0.01f;
         if(viewObj != null)

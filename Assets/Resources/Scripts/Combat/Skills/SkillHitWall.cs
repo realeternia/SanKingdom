@@ -20,34 +20,38 @@ public class SkillHitWall : Skill
             // 在目标位置，以及owner和defender方向90度两侧，各创建一个effect
             var targetPos = defender.position;
 
-            var magicStub = BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, GetSummonTime());
-            
-            // 计算owner到defender的方向
-            Vector3 direction = (defender.position - owner.position).normalized;
-            
-            // 计算90度和-90度旋转的方向
-            Vector3 rightDirection = Quaternion.Euler(0, 90, 0) * direction;
-            Vector3 leftDirection = Quaternion.Euler(0, -90, 0) * direction;
-
-            targetPosList = new List<Vector3>();
-            
-            targetPosList.Add(targetPos);
-            if (skillCfg.SummonCount > 1)
+            BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, GetSummonTime(), (id) =>
             {
-                targetPosList.Add(targetPos + leftDirection * 10);
-                targetPosList.Add(targetPos + rightDirection * 10);
-            }
-            if (skillCfg.SummonCount > 3)
-            {
-                targetPosList.Add(targetPos + rightDirection * 20);
-                targetPosList.Add(targetPos + leftDirection * 20);
-            }
+                var magicStub = BattleManager.Instance.GetChess(id);
+                SkillManager.AddSkillAction(owner, magicStub, id, 0);
 
-            for(int i = 0; i < targetPosList.Count; i++)
-            {
-                SkillManager.AddSkillAction(owner, magicStub, id, i + 1);
-            }
+                // 计算owner到defender的方向
+                Vector3 direction = (defender.position - owner.position).normalized;
+                
+                // 计算90度和-90度旋转的方向
+                Vector3 rightDirection = Quaternion.Euler(0, 90, 0) * direction;
+                Vector3 leftDirection = Quaternion.Euler(0, -90, 0) * direction;
 
+                targetPosList = new List<Vector3>();
+                
+                targetPosList.Add(targetPos);
+                if (skillCfg.SummonCount > 1)
+                {
+                    targetPosList.Add(targetPos + leftDirection * 10);
+                    targetPosList.Add(targetPos + rightDirection * 10);
+                }
+                if (skillCfg.SummonCount > 3)
+                {
+                    targetPosList.Add(targetPos + rightDirection * 20);
+                    targetPosList.Add(targetPos + leftDirection * 20);
+                }
+
+                for(int i = 0; i < targetPosList.Count; i++)
+                {
+                    SkillManager.AddSkillAction(owner, magicStub, id, i + 1);
+                }
+            });
+            
             var summonTime = GetSummonTime();
             var term = (int)Math.Floor(summonTime / skillCfg.SummonHitInterval);
             RegisterDelayEffect(BattleManager.Instance.tickIndex, summonTime, term);
