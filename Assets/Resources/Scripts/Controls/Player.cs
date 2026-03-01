@@ -204,6 +204,7 @@ public class Player
         
         if (devConfig.FindEnemy)
         {
+            BattleManager.Instance.SetMode(false, false);
             // 开始战斗
             BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), (hasWin) => {
                 // 战斗胜利后的逻辑

@@ -43,8 +43,8 @@ public class BattleManager : MonoBehaviour
     public int tickIndex = 1;
     public int lastFoodDeductionTick = 0;
 
-    public bool quickMode = true;
-    public bool showUI = true;
+    private bool quickMode = true;
+    private bool showUI = true;
 
     [NonSerialized]
     private Action<bool> battleEndCallback;
@@ -52,6 +52,12 @@ public class BattleManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+    }
+
+    public void SetMode(bool quickMode, bool showUI)
+    {
+        this.quickMode = quickMode;
+        this.showUI = showUI;
     }
 
     public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, Action<bool> callback = null)
@@ -63,13 +69,15 @@ public class BattleManager : MonoBehaviour
 
         chessList.Clear();
         missileList.Clear();
+        BattleStatManager.Clear();        
 
-        var newMapId = 1;
         gameFinish = false;
+
         if (showUI)
         {
             // 打印加载耗时
             var startTime = Time.realtimeSinceStartup;
+            var newMapId = 1;
             var mapNode = Resources.Load<GameObject>("Prefabs/BattleMaps/Map" + newMapId);
             if (mapObj != null)
                 UnityEngine.Object.Destroy(mapObj);
@@ -77,16 +85,11 @@ public class BattleManager : MonoBehaviour
             mapObj = UnityEngine.Object.Instantiate(mapNode, battleUIManager.NodeUnits.transform.parent);
             var endTime = Time.realtimeSinceStartup;
             Debug.Log("加载地图耗时：" + (endTime - startTime) + "秒");
-        }
 
-        BattleStatManager.Clear();
-        // 计算双方总兵力
-        int leftSoldierTotal = cards1.Sum(x => x.SoldierNum);
-        int rightSoldierTotal = cards2.Sum(x => x.SoldierNum);
-        BattleInfoTop.Instance.Init(player1.forceId, player2.forceId, leftSoldierTotal, rightSoldierTotal);
-
-        if (showUI)
-        {
+            // 计算双方总兵力
+            int leftSoldierTotal = cards1.Sum(x => x.SoldierNum);
+            int rightSoldierTotal = cards2.Sum(x => x.SoldierNum);
+            BattleInfoTop.Instance.Init(player1.forceId, player2.forceId, leftSoldierTotal, rightSoldierTotal);
             battleUIManager.BattleResultPanel.gameObject.SetActive(false);
             // 清空之前的单位
             foreach (Transform child in battleUIManager.NodeUnits.transform)
@@ -114,6 +117,13 @@ public class BattleManager : MonoBehaviour
         SaveToFile("battle.json");
 
         StartCoroutine(GameUpdate());
+    }
+
+    public void ReplayBattle()
+    {
+        LoadFromFile("battle.json");
+
+        
     }
 
     private Vector3 GetSpawnPosition(int side, int indx)
