@@ -51,7 +51,7 @@ public class BattleManager : MonoBehaviour
     public bool showUI = true;
 
     [NonSerialized]
-    private Action<bool> battleEndCallback;
+    private Action<bool, Dictionary<int, int>, Dictionary<int, int>> battleEndCallback;
 
     private const float WaitTime = 1f;
     private const float BattleBeginTime = 3f;
@@ -73,12 +73,12 @@ public class BattleManager : MonoBehaviour
         this.showUI = showUI;
     }
 
-    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, Action<bool> callback = null)
+    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, int food1, int food2, Action<bool, Dictionary<int, int>, Dictionary<int, int>> callback = null)
     {
         battleEndCallback = callback;
         playerInfoList.Clear();
-        playerInfoList.Add(new FoodInfo() { forceId = player1.forceId, food = 100, maxFood = 100, soldierNumInit = cards1.Sum(x => x.SoldierNum) });
-        playerInfoList.Add(new FoodInfo() { forceId = player2.forceId, food = 100, maxFood = 100, soldierNumInit = cards2.Sum(x => x.SoldierNum) });
+        playerInfoList.Add(new FoodInfo() { forceId = player1.forceId, food = food1, maxFood = food1, soldierNumInit = cards1.Sum(x => x.SoldierNum) });
+        playerInfoList.Add(new FoodInfo() { forceId = player2.forceId, food = food2, maxFood = food2, soldierNumInit = cards2.Sum(x => x.SoldierNum) });
 
         chessList.Clear();
         missileList.Clear();
@@ -190,6 +190,7 @@ public class BattleManager : MonoBehaviour
 
         var waitTick = GetTickFromTime(WaitTime);
         var battleBeginTick = GetTickFromTime(BattleBeginTime);
+        var foodDeductionTick = GetTickFromTime(5);
 
         var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
         var magicHelperUnitId = BattleManager.Instance.SpawnUnitsForRegion(player1, 501001, new Vector3(1, 7, 1), 10);
@@ -254,7 +255,7 @@ public class BattleManager : MonoBehaviour
                                 missile.LogicUpdate(tickIndex);
                         }
                         // 每个回合结束，玩家消耗食物
-                        if (tickIndex - lastFoodDeductionTick >= 50) // 每5秒扣除一次粮食 (5s / 0.1s = 50 ticks)
+                        if (tickIndex - lastFoodDeductionTick >= foodDeductionTick)
                         {
                             foreach (var foodInfo in playerInfoList)
                             {
@@ -284,12 +285,6 @@ public class BattleManager : MonoBehaviour
         }
         Debug.Log($"GameUpdatett end realTime={Time.time}");
 
-        for (int i = 0; i < chessList.Count; i++)
-        {
-            var chess = chessList[i];
-            if (chess.isHero)
-                GameManager.Instance.GetHero(chess.heroId).soldier = chess.hp; //设置士兵数目
-        }
 
         if(showUI)
             battleUIManager.OnBattleEnd(playerInfoList.Select(foodInfo => foodInfo.forceId).ToList(), hasWin, replay);
@@ -297,7 +292,17 @@ public class BattleManager : MonoBehaviour
         // 调用战斗结束回调
         if (battleEndCallback != null)
         {
-            battleEndCallback(hasWin);
+            var result = new Dictionary<int, int>();
+            for (int i = 0; i < chessList.Count; i++)
+            {
+                var chess = chessList[i];
+                if (chess.isHero)
+                    result.Add(chess.heroId, chess.hp);
+            }
+            var result2 = new Dictionary<int, int>();
+            result2[playerInfoList[0].forceId] = playerInfoList[0].food;
+            result2[playerInfoList[1].forceId] = playerInfoList[1].food;
+            battleEndCallback(hasWin, result, result2);
         }
 
         if(!replay)

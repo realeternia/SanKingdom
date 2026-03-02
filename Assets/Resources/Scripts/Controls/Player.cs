@@ -193,7 +193,7 @@ public class Player
 
 
     // 执行城市战斗发展
-    public void ExecuteCityBattleDev(int cityId, int devId, int[] heroList, int targetCityId)
+    public void ExecuteCityBattleDev(int cityId, int devId, int[] heroList, int foodUse, int targetCityId)
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
@@ -205,14 +205,28 @@ public class Player
         if (devConfig.FindEnemy)
         {
             BattleManager.Instance.SetMode(false, true);
+
+            citySrc.food -= foodUse;
+            cityDest.food = 0;
             // 开始战斗
-            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), (hasWin) => {
-                // 战斗胜利后的逻辑
+            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, cityDest.food, (hasWin, soldierCount, foodCount) => {
+                foreach (var item in soldierCount)
+                    GameManager.Instance.GetHero(item.Key).soldier = item.Value;
+
+                var destCity2 = GameManager.Instance.GetCity(targetCityId);
+                var srcCity2 = GameManager.Instance.GetCity(cityId);
                 if (hasWin)
                 {
-                    GameManager.Instance.GetCity(targetCityId).Occupy(citySrc.GetPlayer().forceId, citySrc.GetBattleHeroList(validHeroList).Select(x => x.CardId).ToList(),
+                    destCity2.food += foodCount[cityDest.forceId] + foodCount[citySrc.forceId];
+
+                    destCity2.Occupy(citySrc.GetPlayer().forceId, citySrc.GetBattleHeroList(validHeroList).Select(x => x.CardId).ToList(),
                         cityDest.GetPlayer().forceId, cityDest.GetBattleHeroList().Select(x => x.CardId).ToList());
-                    GameManager.Instance.GetCity(cityId).RecalculateHeros(); //因为有一帮人出去了
+                    srcCity2.RecalculateHeros(); //因为有一帮人出去了
+                }
+                else
+                {
+                    srcCity2.food += foodCount[citySrc.forceId];
+                    destCity2.food += foodCount[cityDest.forceId];
                 }
             });
         }

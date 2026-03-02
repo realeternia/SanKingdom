@@ -103,7 +103,8 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         }
         
         // 执行城市战斗发展
-        player.ExecuteCityBattleDev(cityId, devId, heroList, selectedCityId);
+        // todo 100需要ui化
+        player.ExecuteCityBattleDev(cityId, devId, heroList, 100, selectedCityId);
     }
 
     public void OnShow()
