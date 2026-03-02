@@ -2,14 +2,14 @@ using System;
 using UnityEngine;
 
 [System.Serializable]
-public class ChessSetHpAction : ChessAction
+public class ChessChangeHpAction : ChessAction
 {
     public int Value;
 
-    public ChessSetHpAction(int sourceId, int tick, int value)
+    public ChessChangeHpAction(int sourceId, int tick, int changeVal)
         : base(sourceId, tick)
     {
-        Value = value;
+        Value = changeVal;
     }
 
     public override void Doing()
@@ -17,7 +17,11 @@ public class ChessSetHpAction : ChessAction
         var sourceChess = BattleManager.Instance.GetChess(SourceId);
         if (sourceChess != null)
         {
-            sourceChess.hp = Value;
+            if(Value == 0)
+                return;
+            
+            var hpval = Math.Clamp(sourceChess.hp + Value, 1, sourceChess.maxHp);
+            sourceChess.hp = hpval;
             sourceChess.OnHpChanged();
         }
     }
