@@ -114,7 +114,6 @@
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\RampGeneratorTDE.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
     <Compile Include="Assets\Resources\Scripts\CityPanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessChangeHpAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\EffectManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
@@ -149,6 +148,7 @@
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />
     <Compile Include="Assets\Resources\Scripts\MainPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessChangeHpAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\PanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleHeroInfoGroup.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Chess.cs" />

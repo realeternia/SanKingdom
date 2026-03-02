@@ -254,11 +254,12 @@ public class BattleManager : MonoBehaviour
                                 missile.LogicUpdate(tickIndex);
                         }
                         // 每个回合结束，玩家消耗食物
-                        if (tickIndex - lastFoodDeductionTick >= 200) // 每5秒扣除一次粮食 (5s / 0.025s = 200 ticks)
+                        if (tickIndex - lastFoodDeductionTick >= 50) // 每5秒扣除一次粮食 (5s / 0.1s = 50 ticks)
                         {
                             foreach (var foodInfo in playerInfoList)
                             {
-                                RoundFoodCost(foodInfo);
+                                var action = new FoodCostAction(0, tickIndex, foodInfo.forceId);
+                                AddChessAction(action);
                             }
                             lastFoodDeductionTick = tickIndex;
                         }
@@ -330,20 +331,7 @@ public class BattleManager : MonoBehaviour
     public int GetTickFromTime(float time)
     {
         return (int)(time / tickTimeReal);
-    }
-
-    private void RoundFoodCost(FoodInfo foodInfo)
-    {
-        var costAmount = 10;
-        if (foodInfo.food < costAmount)
-        {
-            var units = GetUnitsByForceId(foodInfo.forceId);
-            foreach (var unit in units)
-                unit.LackFood((float)(costAmount - foodInfo.food) / costAmount);
-        }
-        var action = new FoodCostAction(0, tickIndex, foodInfo.forceId, costAmount);
-        AddChessAction(action);
-    }    
+    } 
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess)
     {
