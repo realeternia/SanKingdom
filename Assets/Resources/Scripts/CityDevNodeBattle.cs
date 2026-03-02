@@ -16,9 +16,15 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
     public TMP_Text attrVal1Text;
     public TMP_Text attrDesText;
 
+    public TMP_Text foodText;
+    private int foodCount = 10;
+
     public Button destButton;
     public SelectHeroArmyControl heroSelect;
+    public Button foodButton;
     public Button runButton;
+
+    public TMP_Text foodCostText;
 
     private int selectedCityId;
 
@@ -37,6 +43,14 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
                 SystemTip.Instance.ShowTip("请选择至少一个英雄");
                 return;
             }
+            var soldierTotal = heroSelect.heroIds.Sum(x => GameManager.Instance.GetHero(x).soldier);
+            var foodCost = soldierTotal * foodCount / 20;
+            var citySrc = GameManager.Instance.GetCity(cityId);
+            if(citySrc.food < foodCost)
+            {
+                SystemTip.Instance.ShowTip("食物不足");
+                return;
+            }            
 
             var devConfig = CityDevConfig.GetConfig(devId);
             PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, new List<string>(), new List<int>(), new List<int>(), () =>
@@ -47,6 +61,10 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
                 OnRun(devId, heroList);
             }, devConfig.Mp4);
         });
+        heroSelect.onClick = () =>
+        {
+            UpdateFoodInfo();
+        };
         destButton.onClick.AddListener(() =>
         {
             var devConfig = CityDevConfig.GetConfig(devId);
@@ -62,7 +80,38 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
                 attrVal1Text.text = cityCfg.Cname;
             });
         });
+        foodButton.onClick.AddListener(() =>
+        {
+            // 在10,20,30日粮间切换
+            if(foodCount == 10)
+            {
+                foodCount = 20;
+            }
+            else if(foodCount == 20)
+            {
+                foodCount = 30;
+            }
+            else if(foodCount == 30)
+            {
+                foodCount = 10;
+            }
 
+            foodText.text = foodCount.ToString() + "日粮";
+            UpdateFoodInfo();
+        });
+
+    }
+
+    private void UpdateFoodInfo()
+    {
+        if (heroSelect.heroIds.Length <= 0)
+            return;
+        var heroList = heroSelect.heroIds;
+        var soldierTotal = heroList.Sum(x => GameManager.Instance.GetHero(x).soldier);
+        var foodCost = soldierTotal * foodCount / 20;
+        var citySrc = GameManager.Instance.GetCity(cityId);
+        foodCostText.text = string.Format("{0} / {1}", foodCost, citySrc.food);
+        foodCostText.color = foodCost <= citySrc.food ? Color.white : Color.red;
     }
 
     // Update is called once per frame
@@ -76,6 +125,19 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         this.cityId = cityId;
         this.devId = devId;
         var devCfg = CityDevConfig.GetConfig(devId);
+        if(devCfg.FindEnemy)
+        {
+            foodCount = 20;
+            foodText.text = foodCount.ToString() + "日粮";
+            foodButton.gameObject.SetActive(true);
+            foodCostText.transform.parent.parent.gameObject.SetActive(true);
+            foodCostText.text = "待计算";
+        }
+        else
+        {
+            foodButton.gameObject.SetActive(false);
+            foodCostText.transform.parent.parent.gameObject.SetActive(false);
+        }
 
         attrDesText.text = devCfg.Des;
 
@@ -84,14 +146,11 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
 
     private void OnRun(int devId, int[] heroList)
     {
-        if(selectedCityId == 0)
-        {
-            SystemTip.Instance.ShowTip("请选择目标城市");
-            return;
-        }
-
         var citySrc = GameManager.Instance.GetCity(cityId);
         var player = citySrc.GetPlayer();
+
+        var soldierTotal = heroList.Sum(x => GameManager.Instance.GetHero(x).soldier);
+        var foodCost = soldierTotal * foodCount / 20;
 
         // 隐藏相关UI面板
         PanelManager.Instance.HideCityDev();
@@ -100,11 +159,10 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         {
             PanelManager.Instance.HideCity();
             PanelManager.Instance.HideWorld();
-        }
+        }        
         
         // 执行城市战斗发展
-        // todo 100需要ui化
-        player.ExecuteCityBattleDev(cityId, devId, heroList, 100, selectedCityId);
+        player.ExecuteCityBattleDev(cityId, devId, heroList, foodCost, selectedCityId);
     }
 
     public void OnShow()

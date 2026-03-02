@@ -4,6 +4,7 @@ using CommonConfig;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class SelectHeroArmyControl : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class SelectHeroArmyControl : MonoBehaviour
     public Image[] heroHeads;
     public int[] heroIds;
     public Button confirmButton;
+
+    public Action onClick;
 
 
     // Start is called before the first frame update
@@ -47,6 +50,7 @@ public class SelectHeroArmyControl : MonoBehaviour
                     heroHeads[0].gameObject.SetActive(true);
                     heroHeads[0].sprite = Resources.Load<Sprite>("Skins/moren");
                 }
+                onClick?.Invoke();
             });
         });
     }
