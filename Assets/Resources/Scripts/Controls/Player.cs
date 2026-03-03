@@ -207,9 +207,10 @@ public class Player
             BattleManager.Instance.SetMode(false, true);
 
             citySrc.food -= foodUse;
+            var defenceFood = cityDest.food;
             cityDest.food = 0;
             // 开始战斗
-            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, cityDest.food, (hasWin, soldierCount, foodCount) => {
+            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, (hasWin, soldierCount, foodCount) => {
                 foreach (var item in soldierCount)
                     GameManager.Instance.GetHero(item.Key).soldier = item.Value;
 

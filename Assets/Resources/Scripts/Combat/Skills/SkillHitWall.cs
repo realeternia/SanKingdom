@@ -20,9 +20,9 @@ public class SkillHitWall : Skill
             // 在目标位置，以及owner和defender方向90度两侧，各创建一个effect
             var targetPos = defender.position;
 
-            BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, GetSummonTime(), (id) =>
+            BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, GetSummonTime(), (stubId) =>
             {
-                var magicStub = BattleManager.Instance.GetChess(id);
+                var magicStub = BattleManager.Instance.GetChess(stubId);
                 SkillManager.AddSkillAction(owner, magicStub, id, 0);
 
                 // 计算owner到defender的方向
