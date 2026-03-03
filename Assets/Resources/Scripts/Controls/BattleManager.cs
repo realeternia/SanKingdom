@@ -259,8 +259,19 @@ public class BattleManager : MonoBehaviour
                         {
                             foreach (var foodInfo in playerInfoList)
                             {
-                                var action = new FoodCostAction(0, tickIndex, foodInfo.forceId);
+                                var soldierNum = GetUnitsByForceId(foodInfo.forceId).Where(x => x.isHero).Sum(x => x.hp);
+                                var costAmount = soldierNum / 20; // 20回合消耗20天的粮食
+
+                                var action = new FoodCostAction(0, tickIndex, foodInfo.forceId, costAmount);
                                 AddChessAction(action);
+
+                                if(foodInfo.food < costAmount)
+                                {
+                                    var units = GetUnitsByForceId(foodInfo.forceId);
+                                    foreach (var unit in units)
+                                        unit.LackFood((float)(costAmount - foodInfo.food) / costAmount);
+                                }
+
                             }
                             lastFoodDeductionTick = tickIndex;
                         }
