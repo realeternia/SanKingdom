@@ -48,7 +48,7 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
             var citySrc = GameManager.Instance.GetCity(cityId);
             if(citySrc.food < foodCost)
             {
-                SystemTip.Instance.ShowTip("食物不足");
+                SystemTip.Instance.ShowTip("粮食不足");
                 return;
             }            
 

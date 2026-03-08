@@ -271,5 +271,62 @@ public class Player
         }
         return null;
     }
+
+
+    // 执行城市发展
+    public bool ExecuteCityChange(int cityId, int devId, int[] heroList, bool isBuying, int amount, float rate, out List<string> attrs, out List<int> attrOlds, out List<int> results)
+    {
+        heroList = GetAvailableHeroesThisYear(heroList).ToArray();
+
+        attrs = new List<string>();
+        attrOlds = new List<int>();
+        results = new List<int>();
+        
+        var cityData = GameManager.Instance.GetCity(cityId);
+
+        if(isBuying)
+        {
+            if(cityData.gold < amount)
+            {
+                SystemTip.Instance.ShowTip("黄金不足");
+                return false;
+            }
+
+            cityData.AddAttr("Gold", - amount);
+            attrs.Add("Gold");
+            attrOlds.Add(cityData.GetAttr("Gold"));
+            results.Add(- amount);
+
+            cityData.AddAttr("Food", (int)(rate * amount));
+            attrs.Add("Food");
+            attrOlds.Add(cityData.GetAttr("Food"));
+            results.Add((int)(rate * amount));
+        }
+        else
+        {
+            if(cityData.food < amount)
+            {
+                SystemTip.Instance.ShowTip("粮食不足");
+                return false;
+            }
+
+            cityData.AddAttr("Food", -amount);
+            attrs.Add("Food");
+            attrOlds.Add(cityData.GetAttr("Food"));
+            results.Add(-amount);
+
+            cityData.AddAttr("Gold", (int)(rate * amount));
+            attrs.Add("Gold");
+            attrOlds.Add(cityData.GetAttr("Gold")); 
+            results.Add((int)(rate * amount));
+        }
+
+        // 记录发展动作
+        cityData.AddAction(devId, heroList.Length);
+
+        UpdateHeroesRound(heroList);
+
+        return true;
+    }    
 }
 

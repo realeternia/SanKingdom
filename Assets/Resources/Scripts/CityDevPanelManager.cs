@@ -6,7 +6,6 @@ using TMPro;
 using CommonConfig;
 using System.Linq;
 using System;
-using System.Runtime.Versioning;
 
 public class CityDevPanelManager : MonoBehaviour
 {
