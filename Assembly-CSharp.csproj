@@ -160,6 +160,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffLock.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitWall.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityDevUseHero.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityBuildingConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />

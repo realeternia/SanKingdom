@@ -392,6 +392,32 @@ public class Player
         UpdateHeroesRound(heroList);
 
         return true;
-    }    
+    }
+
+    // 执行城市使用在野英雄
+    public bool ExecuteCityUseHero(int cityId, int devId, int[] heroList, int targetHeroId, out List<string> attrs, out List<int> attrOlds, out List<int> results)
+    {
+        attrs = new List<string>();
+        attrOlds = new List<int>();
+        results = new List<int>();
+        
+        var cityData = GameManager.Instance.GetCity(cityId);
+
+        var hero = GameManager.Instance.GetHero(targetHeroId);
+        if(hero.state != HeroState.Wild || hero.cityId != cityId)
+        {
+            SystemTip.Instance.ShowTip("只有在野英雄才能使用");
+            return false;
+        }
+        hero.state = HeroState.Normal;
+        hero.round = int.MaxValue; // 重置回合，使英雄可以执行任务
+
+        // 记录发展动作
+        cityData.AddAction(devId, heroList.Length);
+
+        UpdateHeroesRound(heroList);
+
+        return true;
+    }
 }
 
