@@ -54,6 +54,7 @@ namespace CommonConfig
             config[20002] = new CityBuildingConfig(20002, "gate", "城墙", "ButtonGate");
             config[20003] = new CityBuildingConfig(20003, "army", "军营", "ButtonArmy");
             config[20004] = new CityBuildingConfig(20004, "market", "集市", "ButtonJishi");
+            config[20005] = new CityBuildingConfig(20005, "house", "议事厅", "ButtonHouse");
 
 
 
