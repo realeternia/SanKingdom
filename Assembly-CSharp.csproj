@@ -157,7 +157,6 @@
     <Compile Include="Assets\Resources\Scripts\Configs\CityAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevNodeNormal.cs" />
-    <Compile Include="Assets\Resources\Scripts\CityDevNodeChange.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffLock.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitWall.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />

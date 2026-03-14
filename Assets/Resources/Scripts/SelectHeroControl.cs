@@ -20,7 +20,7 @@ public class SelectHeroControl : MonoBehaviour
     {
         confirmButton.onClick.AddListener(() =>
         {
-            int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList().ToArray();
+            int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList(false).ToArray(); // 不包含在野英雄，因为他们无法执行任务
             var devCfg = CityDevConfig.GetConfig(devId);
             string[] attrs = devCfg.Attrs;
             

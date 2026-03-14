@@ -178,10 +178,75 @@ public class Player
         // 记录发展动作
         cityData.AddAction(devId, heroList.Length);
 
+        // 处理搜索动作，发现在野英雄
+        if (devConfig.ActionName == "find")
+        {
+            CheckFindAction(cityId, cityData);
+        }
+
         UpdateHeroesRound(heroList);
 
         return true;
     }
+
+    private static void CheckFindAction(int cityId, SaveCityData cityData)
+    {
+        // 创建城市名称到城市ID的映射字典（提高效率）
+        Dictionary<string, int> cityNameToIdMap = new Dictionary<string, int>();
+        foreach (var cityConfig in WorldConfig.ConfigList)
+        {
+            cityNameToIdMap[cityConfig.Cname] = cityConfig.Id;
+        }
+
+        // 遍历所有英雄配置
+        foreach (var heroConfig in HeroConfig.ConfigList)
+        {
+            // 先检查出生地是否匹配当前城市（提高效率）
+            // 查找heroConfig.BornCity对应的城市ID
+            int bornCityId;
+            if (!cityNameToIdMap.TryGetValue(heroConfig.BornCity, out bornCityId))
+                continue;
+
+            // 用城市ID比较（更高效）
+            if (bornCityId != cityId)
+                continue;
+            
+            // 检查英雄年龄是否达到16岁
+            float currentYear = GameManager.Instance.GetCurrentYear();
+            if (currentYear - heroConfig.BornYear < 16)
+                continue;
+
+            // 检查英雄是否已经在游戏中
+            bool isHeroInGame = false;
+            foreach (var existingHero in GameManager.Instance.SaveData.heros)
+            {
+                if (existingHero.heroId == heroConfig.Id)
+                {
+                    isHeroInGame = true;
+                    break;
+                }
+            }
+
+            // 如果英雄不在游戏中
+            if (!isHeroInGame)
+            {
+                // 创建新的在野英雄
+                SaveHeroData newHero = SaveHeroData.CreateWildHero(heroConfig.Id, cityId);
+
+                // 添加到游戏中
+                GameManager.Instance.SaveData.heros.Add(newHero);
+
+                // 显示发现提示
+                SystemTip.Instance.ShowTip("发现了" + heroConfig.Name);
+
+                // 重新计算城市英雄
+                cityData.RecalculateHeros();
+
+                break; // 每次搜索只发现一个英雄
+            }
+        }
+    }
+
 
     private static float GetVal(string resName, int min, int max, int nowVal, int addon)
     {

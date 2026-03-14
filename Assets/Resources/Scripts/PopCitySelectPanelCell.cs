@@ -41,7 +41,7 @@ public class PopCitySelectPanelCell : MonoBehaviour, IPointerClickHandler
         cityName.text = cityCfg.Cname;
         textOwner.text = ForceConfig.GetConfig(cityData.forceId).Cname;
         textSoldier.text = cityData.GetAttr("soldier").ToString();
-        textHeroCount.text = cityData.GetHeroList().Count.ToString();
+        textHeroCount.text = cityData.GetHeroList(false).Count.ToString(); // 包含在野英雄，因为城市选择面板需要显示所有英雄数量
 
     }
 

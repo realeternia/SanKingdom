@@ -12,6 +12,10 @@ public class GameManager : MonoBehaviour
     // todo 这里还有一个city数据列表
     private StreamWriter logWriter;  // 日志写入器
     public SaveData SaveData;
+    
+    // 游戏时间常量
+    public const int BASE_YEAR = 185; // 游戏起始年份
+    public const int SEASONS_PER_YEAR = 36; // 一年的季节数
 
     public List<Player> players = new List<Player>();
     public bool forbidPlayerAct = false;
@@ -129,7 +133,7 @@ public class GameManager : MonoBehaviour
             if(cityCfg == null)
                 continue;
 
-            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id };
+            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal };
             SaveData.heros.Add(hero);
         }
         foreach(var city in SaveData.cities)
@@ -171,8 +175,21 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            return (SaveData.round % 36) + 1;
+            return (SaveData.round % SEASONS_PER_YEAR) + 1;
         }
+    }
+
+    // 获取当前年份（包含季节的浮点数表示）
+    // 例如：195年第18个季节 = 195.5
+    public float GetCurrentYear()
+    {
+        // 计算当前年份和季节
+        int totalSeasons = SaveData.round;
+        int years = totalSeasons / SEASONS_PER_YEAR;
+        int seasons = totalSeasons % SEASONS_PER_YEAR;
+        
+        // 转换为浮点数表示
+        return BASE_YEAR + years + (seasons / (float)SEASONS_PER_YEAR);
     }
 
     private IEnumerator NextRoundCoroutine()

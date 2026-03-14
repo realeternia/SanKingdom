@@ -22,8 +22,6 @@ public class SaveCityData
     [NonSerialized]
     private int ownerHeroId;
     [NonSerialized]
-    private List<int> heroIds;
-    [NonSerialized]
     public Dictionary<int, int> actions = new Dictionary<int, int>();
 
     public void OnRound()
@@ -44,14 +42,12 @@ public class SaveCityData
             actions.Add(devId, count);
     }
 
-    public List<int> GetHeroList()
+    public List<int> GetHeroList(bool includeWild)
     {
-        if(heroIds != null)
-            return heroIds;
-        heroIds = new List<int>();
+        var heroIds = new List<int>();
         foreach (var member in GameManager.Instance.SaveData.heros)
         {
-            if(member.cityId == cityId)
+            if(member.cityId == cityId && (includeWild || member.state != HeroState.Wild))
                 heroIds.Add(member.heroId);
         }
         return heroIds;
@@ -59,9 +55,9 @@ public class SaveCityData
 
     public List<BattleCardData> GetBattleHeroList(int[] filterHeroList = null)
     {
-        var heroList = GetHeroList();
+        var heroList = GetHeroList(false); // 不包含在野英雄，因为他们无法参与战斗
         List<BattleCardData> battleList = new List<BattleCardData>();
-        foreach (var member in heroIds)
+        foreach (var member in heroList)
         {
             if (filterHeroList != null && !Array.Exists(filterHeroList, x => x == member))
                 continue;
@@ -85,12 +81,15 @@ public class SaveCityData
     {
         if(ownerHeroId > 0)
             return ownerHeroId;
-        foreach (var member in GameManager.Instance.SaveData.heros)
+        foreach (var memberId in GetHeroList(false)) // 不包含在野英雄，因为他们无法成为太守
         {
-            if (member.cityId == cityId && member.cityOwner)
+            var hero = GameManager.Instance.GetHero(memberId);
+            if (hero == null)
+                continue;
+            if (hero.cityId == cityId && hero.cityOwner)
             {
-                ownerHeroId = member.heroId;
-                return member.heroId;
+                ownerHeroId = memberId;
+                return memberId;
             }
         }
         return 0;
@@ -148,7 +147,7 @@ public class SaveCityData
                 return food;
             case "soldier":
                 int soldierOnHero = 0;
-                foreach (var heroId in GetHeroList())
+                foreach (var heroId in GetHeroList(false)) // 不包含在野英雄，因为他们的士兵不计入城市总士兵数
                 {
                     var hero = GameManager.Instance.GetHero(heroId);
                     if (hero != null)
@@ -260,16 +259,13 @@ public class SaveCityData
 
     public void RecalculateHeros()
     {
-        heroIds = null;
         ownerHeroId = 0;
         SelectOwner();
     }
 
-
-
     public void SelectOwner()
     {
-        var heroList = GetHeroList();
+        var heroList = GetHeroList(false); // 不包含在野英雄，因为他们无法成为太守
         if (heroList.Count == 0)
             return;
 
@@ -316,7 +312,7 @@ public class SaveCityData
 
     public void AutoSetSoldierOnInit()
     {
-        var heroList = GetHeroList();
+        var heroList = GetHeroList(false); // 不包含在野英雄，因为他们不参与初始士兵分配
         if (heroList.Count == 0)
             return;
 
@@ -378,7 +374,7 @@ public class SaveCityData
             }
         }
 
-        foreach (var heroId in heroIds)
+        foreach (var heroId in heroList)
         {
             SaveHeroData hero = GameManager.Instance.GetHero(heroId);
             if (hero != owner)

@@ -20,7 +20,7 @@ public static class AI
             Debug.Log($"AI处理城市: {city.cityId}");
 
             // 获取城市的英雄列表
-            List<int> heroList = city.GetHeroList();
+            List<int> heroList = city.GetHeroList(false); // 不包含在野英雄，因为他们无法执行任务
             if (heroList.Count == 0)
             {
                 continue;
