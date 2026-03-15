@@ -64,7 +64,6 @@ public class RankPanelManager : MonoBehaviour
         closeBtn.onClick.AddListener(() =>
         {      
             PanelManager.Instance.HideRank();
-          //  CardShopManager.Instance.OnShow();
         });
 
     }
@@ -129,7 +128,17 @@ public class RankPanelManager : MonoBehaviour
             if (scrollRectMode != null)
             {
                 scrollRectMode.normalizedPosition = new Vector2(0, 1);
-            }            
+            }
+            
+            // 默认选中第一个模式
+            if (rankRegionMode.transform.childCount > 0)
+            {
+                RankCellMode firstMode = rankRegionMode.transform.GetChild(0).GetComponent<RankCellMode>();
+                if (firstMode != null)
+                {
+                    OnSelectMode(firstMode, true);
+                }
+            }
         }
 
 
@@ -156,15 +165,44 @@ public class RankPanelManager : MonoBehaviour
             if (scrollRectForce != null)
             {
                 scrollRectForce.normalizedPosition = new Vector2(0, 1);
-            }            
+            }
+            
+            // 默认选中第一个势力
+            if (rankRegionForce.transform.childCount > 0)
+            {
+                RankCellForce firstForce = rankRegionForce.transform.GetChild(0).GetComponent<RankCellForce>();
+                if (firstForce != null)
+                {
+                    OnSelectForce(firstForce, true);
+                }
+            }
         }
 
+        // 加载英雄单元格
+        LoadHeroCells();
+    }
+    
+    // 加载英雄单元格
+    private void LoadHeroCells()
+    {
+        // 清除现有的子物体
+        foreach (Transform child in rankRegionMain.transform)
+            Destroy(child.gameObject);
+        
         // 获取所有英雄配置
         var heroConfigs = HeroConfig.ConfigList;
 
         // 为每个英雄配置创建一个RankCell
+        int count = 0;
         foreach (var heroConfig in heroConfigs)
         {
+            var heroData = GameManager.Instance.GetHero(heroConfig.Id);
+            if (heroData == null)
+                continue;
+            var cityData = GameManager.Instance.GetCity(heroData.cityId);
+            if (heroData.state != HeroState.Normal || cityData.forceId != lastSelectedForce.forceId)
+                continue;
+
             // 实例化RankCell
             GameObject cell = Instantiate(rankCellPrefab, rankRegionMain.transform);
             cell.transform.localScale = Vector3.one;
@@ -174,15 +212,16 @@ public class RankPanelManager : MonoBehaviour
             cellInfo.rankPanelManager = this;
             if (cellInfo != null)
                 cellInfo.Init(heroConfig);
+            count++;
         }
         // Get the RectTransform components
          RectTransform rankParentRect = rankRegionMain.GetComponent<RectTransform>();
          RectTransform cellRect = rankCellPrefab.GetComponent<RectTransform>();
-          
+           
          if (rankParentRect != null && cellRect != null)
          {
              // Set the height of rankParent based on the number of cells
-             rankParentRect.sizeDelta = new Vector2(rankParentRect.sizeDelta.x, cellRect.sizeDelta.y * heroConfigs.Count);
+             rankParentRect.sizeDelta = new Vector2(rankParentRect.sizeDelta.x, cellRect.sizeDelta.y * count);
          }
         // 确保scrollRect不为空，然后滚动到最前面
         if (scrollRectMain != null)
@@ -206,33 +245,42 @@ public class RankPanelManager : MonoBehaviour
         lastSelectedHero = cellInfo;
     }
 
-    public void OnSelectMode(RankCellMode cellMode)
+    public void OnSelectMode(RankCellMode cellMode, bool init = false)
     {
-        // 取消上次选中的英雄
+        // 取消上次选中的模式
         if (lastSelectedMode != null && lastSelectedMode != cellMode)
         {
-          //  lastSelectedMode.modeName.gameObject.SetActive(false);
+            lastSelectedMode.SetSelected(false);
         }
         
-        // 选中当前英雄
-      //  cellMode.modeName.gameObject.SetActive(true);
+        // 选中当前模式
+        cellMode.SetSelected(true);
         
-        // 更新缓存的上次选中英雄
+        // 更新缓存的上次选中模式
         lastSelectedMode = cellMode;
+        
+        // 重新加载英雄单元格
+        if (!init)
+            LoadHeroCells();
     }
-    public void OnSelectForce(RankCellForce cellForce)
+
+    public void OnSelectForce(RankCellForce cellForce, bool init = false)
     {
-        // 取消上次选中的英雄
+        // 取消上次选中的势力
         if (lastSelectedForce != null && lastSelectedForce != cellForce)
         {
-         //   lastSelectedForce.forceName.gameObject.SetActive(false);
+            lastSelectedForce.SetSelected(false);
         }
         
-        // 选中当前英雄
-      //  cellForce.forceName.gameObject.SetActive(true);
+        // 选中当前势力
+        cellForce.SetSelected(true);
         
-        // 更新缓存的上次选中英雄
+        // 更新缓存的上次选中势力
         lastSelectedForce = cellForce;
+        
+        // 重新加载英雄单元格
+        if (!init)
+            LoadHeroCells();
     }
 
     public void OnShow()

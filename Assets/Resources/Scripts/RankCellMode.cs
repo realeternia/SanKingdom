@@ -11,11 +11,20 @@ public class RankCellMode : MonoBehaviour, IPointerDownHandler
     public RankPanelManager rankPanelManager;
 
     public TMP_Text modeName;
+    public bool isSelect = false;
+    public Image backgroundImage;
+    public Color normalColor = Color.black;
+    public Color selectedColor = Color.blue;
 
     // Start is called before the first frame update
     void Start()
     {
         modeName.raycastTarget = false;
+        if (backgroundImage == null)
+        {
+            backgroundImage = GetComponent<Image>();
+        }
+        UpdateBackgroundColor();
     }
 
     public void Init(string mode)
@@ -23,6 +32,19 @@ public class RankCellMode : MonoBehaviour, IPointerDownHandler
         modeName.text = mode;
     }
 
+    public void SetSelected(bool selected)
+    {
+        isSelect = selected;
+        UpdateBackgroundColor();
+    }
+
+    private void UpdateBackgroundColor()
+    {
+        if (backgroundImage != null)
+        {
+            backgroundImage.color = isSelect ? selectedColor : normalColor;
+        }
+    }
 
     public void OnPointerDown(PointerEventData eventData)
     {

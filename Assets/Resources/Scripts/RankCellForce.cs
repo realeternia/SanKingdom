@@ -10,19 +10,50 @@ public class RankCellForce : MonoBehaviour, IPointerDownHandler
 {
     public RankPanelManager rankPanelManager;
 
+    public int forceId;
     public TMP_Text forceName;
+    public bool isSelect = false;
+    public Image backgroundImage;
+    public Color normalColor = Color.black;
+    public Color selectedColor = Color.green;
 
     // Start is called before the first frame update
     void Start()
     {
         forceName.raycastTarget = false;
+        if (backgroundImage == null)
+        {
+            backgroundImage = GetComponent<Image>();
+        }
+        UpdateBackgroundColor();
     }
 
     public void Init(string force)
     {
+        foreach (var forceCfg in ForceConfig.ConfigList)
+        {
+            if (forceCfg.Cname == force)
+            {
+                forceId = forceCfg.Id;
+                break;
+            }
+        }
         forceName.text = force;
     }
 
+    public void SetSelected(bool selected)
+    {
+        isSelect = selected;
+        UpdateBackgroundColor();
+    }
+
+    private void UpdateBackgroundColor()
+    {
+        if (backgroundImage != null)
+        {
+            backgroundImage.color = isSelect ? selectedColor : normalColor;
+        }
+    }
 
     public void OnPointerDown(PointerEventData eventData)
     {
