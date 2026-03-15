@@ -18,6 +18,7 @@ public class SaveHeroData
     public bool cityOwner; //太守
     public int round; // 当前年份，用于标记英雄是否已执行动作
     public HeroState state; // 状态
+    public int loyalty; // 忠心值，100为最大值
 
     
     public int GetAttr(string attr)
@@ -58,6 +59,7 @@ public class SaveHeroData
         newHero.cityOwner = false;
         newHero.round = int.MaxValue; // 设置为很大的值，使英雄无法执行任务
         newHero.state = HeroState.Wild;
+        newHero.loyalty = 90; // 在野转化的英雄忠心值为90
         return newHero;
     }
 

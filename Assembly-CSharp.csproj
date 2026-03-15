@@ -94,6 +94,8 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefPlantSkin.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuffArea.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ShopConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\RankCellForce.cs" />
+    <Compile Include="Assets\Resources\Scripts\RankCellMode.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackRunCrossPlus.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\NameTransTool.cs" />
     <Compile Include="Assets\Resources\Scripts\PopResultPanelManager.cs" />

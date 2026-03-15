@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4659908372636682739}
   - component: {fileID: 8052880847736871399}
   m_Layer: 5
-  m_Name: RankCell
+  m_Name: RankCellMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
