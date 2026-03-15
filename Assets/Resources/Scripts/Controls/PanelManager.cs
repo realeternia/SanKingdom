@@ -126,6 +126,11 @@ public class PanelManager : MonoBehaviour
     public void ShowRank()
     {
         BGMPlayer.Instance.PlaySound("Sounds/deck");
+        if (rankPanel == null)
+        {
+            var rankPanelPrefab = Resources.Load<GameObject>("Prefabs/Panels/RankInfoPanel");
+            rankPanel = Instantiate(rankPanelPrefab, transform);
+        }        
         rankPanel.SetActive(true);
         rankPanel.GetComponent<RankPanelManager>().OnShow();
 
@@ -137,6 +142,9 @@ public class PanelManager : MonoBehaviour
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         rankPanel.SetActive(false);
         rankPanel.GetComponent<RankPanelManager>().OnHide();
+
+        ChangePanelCount(rankPanel, false);
+        Destroy(rankPanel);
 
         ChangePanelCount(rankPanel, false);        
     }

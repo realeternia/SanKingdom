@@ -108,7 +108,7 @@ public class RankPanelManager : MonoBehaviour
         
         if(rankRegionMode.transform.childCount == 0)
         {
-            string[] modeNames = {"势力武将", "势力战力"};
+            string[] modeNames = {"势力武将", "势力战力", "势力城市"};
             for(int i = 0; i < modeNames.Length; i++)
             {
                 GameObject cell = Instantiate(rankCellModePrefab, rankRegionMode.transform);
@@ -117,7 +117,21 @@ public class RankPanelManager : MonoBehaviour
                 cellMode.rankPanelManager = this;
                 cellMode.Init(modeNames[i]);
             }
+            RectTransform rankRect1 = rankRegionMode.GetComponent<RectTransform>();
+            RectTransform cellRect1 = rankCellModePrefab.GetComponent<RectTransform>();
+
+            if (rankRect1 != null && cellRect1 != null)
+            {
+                // Set the height of rankParent based on the number of cells
+                rankRect1.sizeDelta = new Vector2(rankRect1.sizeDelta.x, cellRect1.sizeDelta.y * modeNames.Length);
+            }
+            // 确保scrollRect不为空，然后滚动到最前面
+            if (scrollRectMode != null)
+            {
+                scrollRectMode.normalizedPosition = new Vector2(0, 1);
+            }            
         }
+
 
         if(rankRegionForce.transform.childCount == 0)
         {
@@ -130,6 +144,19 @@ public class RankPanelManager : MonoBehaviour
                 var forceCfg = ForceConfig.GetConfig(GameManager.Instance.SaveData.forces[i].forceId);
                 cellForce.Init(forceCfg.Cname);
             }
+            RectTransform rankRect2 = rankRegionForce.GetComponent<RectTransform>();
+            RectTransform cellRect2 = rankCellForcePrefab.GetComponent<RectTransform>();
+
+            if (rankRect2 != null && cellRect2 != null)
+            {
+                // Set the height of rankParent based on the number of cells
+                rankRect2.sizeDelta = new Vector2(rankRect2.sizeDelta.x, cellRect2.sizeDelta.y * GameManager.Instance.SaveData.forces.Count);
+            }
+            // 确保scrollRect不为空，然后滚动到最前面
+            if (scrollRectForce != null)
+            {
+                scrollRectForce.normalizedPosition = new Vector2(0, 1);
+            }            
         }
 
         // 获取所有英雄配置
@@ -184,11 +211,11 @@ public class RankPanelManager : MonoBehaviour
         // 取消上次选中的英雄
         if (lastSelectedMode != null && lastSelectedMode != cellMode)
         {
-            lastSelectedMode.modeName.gameObject.SetActive(false);
+          //  lastSelectedMode.modeName.gameObject.SetActive(false);
         }
         
         // 选中当前英雄
-        cellMode.modeName.gameObject.SetActive(true);
+      //  cellMode.modeName.gameObject.SetActive(true);
         
         // 更新缓存的上次选中英雄
         lastSelectedMode = cellMode;
@@ -198,11 +225,11 @@ public class RankPanelManager : MonoBehaviour
         // 取消上次选中的英雄
         if (lastSelectedForce != null && lastSelectedForce != cellForce)
         {
-            lastSelectedForce.forceName.gameObject.SetActive(false);
+         //   lastSelectedForce.forceName.gameObject.SetActive(false);
         }
         
         // 选中当前英雄
-        cellForce.forceName.gameObject.SetActive(true);
+      //  cellForce.forceName.gameObject.SetActive(true);
         
         // 更新缓存的上次选中英雄
         lastSelectedForce = cellForce;
