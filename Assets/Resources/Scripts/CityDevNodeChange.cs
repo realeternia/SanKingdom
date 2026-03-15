@@ -150,16 +150,14 @@ public class CityDevNodeChange : MonoBehaviour, ICityDevNode
         var cityData = GameManager.Instance.GetCity(cityId);
         var devConfig = CityDevConfig.GetConfig(devId);
     
-        List<string> attrs;
-        List<int> attrOlds;
-        List<int> results;
+        List<PopResultPanelManager.AttrData> attrDatas;
 
-        if(!cityData.GetPlayer().ExecuteCityChange(cityId, devId, heroList, isBuying, amount, EXCHANGE_RATE, out attrs, out attrOlds, out results))
+        if(!cityData.GetPlayer().ExecuteCityChange(cityId, devId, heroList, isBuying, amount, EXCHANGE_RATE, out attrDatas))
         {
             return;
         }
         
         PanelManager.Instance.HideCityDev();     
-        PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, attrs, attrOlds, results, null, devConfig.Mp4);
+        PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, attrDatas, null, devConfig.Mp4);
     }
 }

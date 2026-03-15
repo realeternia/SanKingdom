@@ -8,7 +8,6 @@ public class SelectHeroControl : MonoBehaviour
 {
     private int cityId;
     private int devId;
-    private bool onlyWildHeroes = false;
     public Image[] heroHeads;
     public int[] heroIds;
     public Button confirmButton;
@@ -21,7 +20,7 @@ public class SelectHeroControl : MonoBehaviour
     {
         confirmButton.onClick.AddListener(() =>
         {
-            int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList(onlyWildHeroes).ToArray(); // 根据onlyFreeHeroes参数决定是否包含在野英雄
+            int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList(true, false).ToArray(); // 根据onlyFreeHeroes参数决定是否包含在野英雄
             var devCfg = CityDevConfig.GetConfig(devId);
             string[] attrs = devCfg.Attrs;
             
@@ -78,14 +77,8 @@ public class SelectHeroControl : MonoBehaviour
 
     public void SetDevId(int cityId, int devId)
     {
-        SetDevId(cityId, devId, false);
-    }
-
-    public void SetDevId(int cityId, int devId, bool onlyFreeHeroes)
-    {
         this.cityId = cityId;
         this.devId = devId;
-        this.onlyWildHeroes = onlyFreeHeroes;
 
         for (int i = 0; i < heroHeads.Length; i++)
         {

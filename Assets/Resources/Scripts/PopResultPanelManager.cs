@@ -7,8 +7,18 @@ using TMPro;
 using CommonConfig;
 using System;
 
+
 public class PopResultPanelManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class AttrData
+    {
+        public string attr;
+        public int valOld;
+        public int valAddon;
+        public string valStr;
+    }
+
     public VideoPlayer videoPlayer;
     public RawImage rawImage; // 用于显示视频画面的RawImage组件
 
@@ -177,46 +187,71 @@ public class PopResultPanelManager : MonoBehaviour
 
     }
 
-    public void OnShow(string title, List<string> attrs, List<int> attrOlds, List<int> attrAddons, Action afterRun, string path)
+    public void OnShow(string title, List<AttrData> attrDatas, Action afterRun, string path)
     {
         titleText.text = title;
         this.afterRun = afterRun;
         runBtn.gameObject.SetActive(false);
-        if (attrs.Count > 0)
+        if (attrDatas.Count > 0)
         {
             attr1Text.gameObject.SetActive(true);
-            attr1Text.text = CityAttrConfig.GetConfigByname(attrs[0].ToLower()).Cname;
-            if (attrAddons[0] > 0)
-                attrVal1Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[0], attrAddons[0]);
+            
+            if (!string.IsNullOrEmpty(attrDatas[0].valStr))
+            {
+                attr1Text.text = attrDatas[0].attr;
+                attrVal1Text.text = attrDatas[0].valStr;
+            }
             else
-                attrVal1Text.text = string.Format("{0}(<color=red>{1}</color>)", attrOlds[0], attrAddons[0]);
+            {
+                attr1Text.text = CityAttrConfig.GetConfigByname(attrDatas[0].attr.ToLower()).Cname;
+                if (attrDatas[0].valAddon > 0)
+                    attrVal1Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrDatas[0].valOld, attrDatas[0].valAddon);
+                else
+                    attrVal1Text.text = string.Format("{0}(<color=red>{1}</color>)", attrDatas[0].valOld, attrDatas[0].valAddon);
+            }
         }
         else
         {
             attr1Text.gameObject.SetActive(false);
         }
 
-        if (attrs.Count > 1)
+        if (attrDatas.Count > 1)
         {
             attr2Text.gameObject.SetActive(true);
-            attr2Text.text = CityAttrConfig.GetConfigByname(attrs[1].ToLower()).Cname;
-            if(attrAddons[1] > 0)
-                attrVal2Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[1], attrAddons[1]);
+            if (!string.IsNullOrEmpty(attrDatas[1].valStr))
+            {
+                attr2Text.text = attrDatas[1].attr;
+                attrVal2Text.text = attrDatas[1].valStr;
+            }
             else
-                attrVal2Text.text = string.Format("{0}(<color=red>{1}</color>)", attrOlds[1], attrAddons[1]);
+            {
+                attr2Text.text = CityAttrConfig.GetConfigByname(attrDatas[1].attr.ToLower()).Cname;
+                if(attrDatas[1].valAddon > 0)
+                    attrVal2Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrDatas[1].valOld, attrDatas[1].valAddon);
+                else
+                    attrVal2Text.text = string.Format("{0}(<color=red>{1}</color>)", attrDatas[1].valOld, attrDatas[1].valAddon);
+            }
         }
         else
         {
             attr2Text.gameObject.SetActive(false);
         }
-        if (attrs.Count > 2)
+        if (attrDatas.Count > 2)
         {
             attr3Text.gameObject.SetActive(true);
-            attr3Text.text = CityAttrConfig.GetConfigByname(attrs[2].ToLower()).Cname;
-            if(attrAddons[2] > 0)
-                attrVal3Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrOlds[2], attrAddons[2]);
+            if (!string.IsNullOrEmpty(attrDatas[2].valStr))
+            {
+                attr3Text.text = attrDatas[2].attr;
+                attrVal3Text.text = attrDatas[2].valStr;
+            }
             else
-                attrVal3Text.text = string.Format("{0}(<color=red>{1}</color>)", attrOlds[2], attrAddons[2]);
+            {
+                attr3Text.text = CityAttrConfig.GetConfigByname(attrDatas[2].attr.ToLower()).Cname;
+                if(attrDatas[2].valAddon > 0)
+                    attrVal3Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrDatas[2].valOld, attrDatas[2].valAddon);
+                else
+                    attrVal3Text.text = string.Format("{0}(<color=red>{1}</color>)", attrDatas[2].valOld, attrDatas[2].valAddon);
+            }
         }
         else
         {

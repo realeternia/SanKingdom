@@ -64,13 +64,11 @@ public class Player
     }
 
     // 执行城市发展
-    public bool ExecuteCityDev(int cityId, int devId, int[] heroList, out List<string> attrs, out List<int> attrOlds, out List<int> results)
+    public bool ExecuteCityDev(int cityId, int devId, int[] heroList, out List<PopResultPanelManager.AttrData> attrDatas)
     {
         heroList = GetAvailableHeroesThisYear(heroList).ToArray();
 
-        attrs = new List<string>();
-        attrOlds = new List<int>();
-        results = new List<int>();
+        attrDatas = new List<PopResultPanelManager.AttrData>();
         var resultTmp = new List<float>();
         
         var devConfig = CityDevConfig.GetConfig(devId);
@@ -150,29 +148,48 @@ public class Player
             }
         }
 
-        // 转换结果为整数
+        // 转换结果为整数并创建 AttrData
+        List<int> results = new List<int>();
         for (int i = 0; i < resultTmp.Count; i++)
         {
             results.Add((int)resultTmp[i]);
         }
         
         // 更新城市属性
+        int attr1Old = cityData.GetAttr(devConfig.DevAttr1);
         cityData.AddAttr(devConfig.DevAttr1, results[0]);
-        attrs.Add(devConfig.DevAttr1);
-        attrOlds.Add(cityData.GetAttr(devConfig.DevAttr1));
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = devConfig.DevAttr1,
+            valOld = attr1Old,
+            valAddon = results[0],
+            valStr = null
+        });
         
         if (!string.IsNullOrEmpty(devConfig.DevAttr2))
         {
+            int attr2Old = cityData.GetAttr(devConfig.DevAttr2);
             cityData.AddAttr(devConfig.DevAttr2, results[1]);
-            attrs.Add(devConfig.DevAttr2);
-            attrOlds.Add(cityData.GetAttr(devConfig.DevAttr2));
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = devConfig.DevAttr2,
+                valOld = attr2Old,
+                valAddon = results[1],
+                valStr = null
+            });
         }
         
         if (!string.IsNullOrEmpty(devConfig.DevAttr3))
         {
+            int attr3Old = cityData.GetAttr(devConfig.DevAttr3);
             cityData.AddAttr(devConfig.DevAttr3, results[2]);
-            attrs.Add(devConfig.DevAttr3);
-            attrOlds.Add(cityData.GetAttr(devConfig.DevAttr3));
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = devConfig.DevAttr3,
+                valOld = attr3Old,
+                valAddon = results[2],
+                valStr = null
+            });
         }
 
         // 记录发展动作
@@ -181,7 +198,7 @@ public class Player
         // 处理搜索动作，发现在野英雄
         if (devConfig.ActionName == "find")
         {
-            CheckFindAction(cityId, cityData);
+            CheckFindAction(cityId, cityData, attrDatas);
         }
 
         UpdateHeroesRound(heroList);
@@ -189,7 +206,7 @@ public class Player
         return true;
     }
 
-    private static void CheckFindAction(int cityId, SaveCityData cityData)
+    private static void CheckFindAction(int cityId, SaveCityData cityData, List<PopResultPanelManager.AttrData> attrDatas)
     {
         // 创建城市名称到城市ID的映射字典（提高效率）
         Dictionary<string, int> cityNameToIdMap = new Dictionary<string, int>();
@@ -236,8 +253,11 @@ public class Player
                 // 添加到游戏中
                 GameManager.Instance.SaveData.heros.Add(newHero);
 
-                // 显示发现提示
-                SystemTip.Instance.ShowTip("发现了" + heroConfig.Name);
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attr = "发现",
+                    valStr = string.Format("<color=green>{0}</color>", heroConfig.Name),
+                });
 
                 // 重新计算城市英雄
                 cityData.RecalculateHeros();
@@ -339,13 +359,11 @@ public class Player
 
 
     // 执行城市发展
-    public bool ExecuteCityChange(int cityId, int devId, int[] heroList, bool isBuying, int amount, float rate, out List<string> attrs, out List<int> attrOlds, out List<int> results)
+    public bool ExecuteCityChange(int cityId, int devId, int[] heroList, bool isBuying, int amount, float rate, out List<PopResultPanelManager.AttrData> attrDatas)
     {
         heroList = GetAvailableHeroesThisYear(heroList).ToArray();
 
-        attrs = new List<string>();
-        attrOlds = new List<int>();
-        results = new List<int>();
+        attrDatas = new List<PopResultPanelManager.AttrData>();
         
         var cityData = GameManager.Instance.GetCity(cityId);
 
@@ -357,15 +375,25 @@ public class Player
                 return false;
             }
 
+            int goldOld = cityData.GetAttr("Gold");
             cityData.AddAttr("Gold", - amount);
-            attrs.Add("Gold");
-            attrOlds.Add(cityData.GetAttr("Gold"));
-            results.Add(- amount);
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = "Gold",
+                valOld = goldOld,
+                valAddon = - amount,
+                valStr = null
+            });
 
+            int foodOld = cityData.GetAttr("Food");
             cityData.AddAttr("Food", (int)(rate * amount));
-            attrs.Add("Food");
-            attrOlds.Add(cityData.GetAttr("Food"));
-            results.Add((int)(rate * amount));
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = "Food",
+                valOld = foodOld,
+                valAddon = (int)(rate * amount),
+                valStr = null
+            });
         }
         else
         {
@@ -375,15 +403,25 @@ public class Player
                 return false;
             }
 
+            int foodOld = cityData.GetAttr("Food");
             cityData.AddAttr("Food", -amount);
-            attrs.Add("Food");
-            attrOlds.Add(cityData.GetAttr("Food"));
-            results.Add(-amount);
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = "Food",
+                valOld = foodOld,
+                valAddon = -amount,
+                valStr = null
+            });
 
+            int goldOld = cityData.GetAttr("Gold");
             cityData.AddAttr("Gold", (int)(rate * amount));
-            attrs.Add("Gold");
-            attrOlds.Add(cityData.GetAttr("Gold")); 
-            results.Add((int)(rate * amount));
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = "Gold",
+                valOld = goldOld,
+                valAddon = (int)(rate * amount),
+                valStr = null
+            });
         }
 
         // 记录发展动作
@@ -395,11 +433,9 @@ public class Player
     }
 
     // 执行城市使用在野英雄
-    public bool ExecuteCityUseHero(int cityId, int devId, int[] heroList, int targetHeroId, out List<string> attrs, out List<int> attrOlds, out List<int> results)
+    public bool ExecuteCityUseHero(int cityId, int devId, int[] heroList, int targetHeroId, out List<PopResultPanelManager.AttrData> attrDatas)
     {
-        attrs = new List<string>();
-        attrOlds = new List<int>();
-        results = new List<int>();
+        attrDatas = new List<PopResultPanelManager.AttrData>();
         
         var cityData = GameManager.Instance.GetCity(cityId);
 
@@ -411,6 +447,12 @@ public class Player
         }
         hero.state = HeroState.Normal;
         hero.round = int.MaxValue; // 重置回合，使英雄可以执行任务
+
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
+            valStr = "<color=green>成功</color>",
+        });
 
         // 记录发展动作
         cityData.AddAction(devId, heroList.Length);

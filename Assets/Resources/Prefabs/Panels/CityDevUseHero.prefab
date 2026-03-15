@@ -1032,7 +1032,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3478796030764839235}
-  - component: {fileID: 75415101277177034}
   - component: {fileID: 1071653080440122849}
   m_Layer: 5
   m_Name: CityDevUseHero
@@ -1064,26 +1063,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &75415101277177034
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6063851950643633686}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a79ef12e65de6143b9f13be97e4dfad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attr1Text: {fileID: 5809469315194241898}
-  attr2Text: {fileID: 0}
-  attrVal1Text: {fileID: 8574982883240986110}
-  attrVal2Text: {fileID: 0}
-  attrDesText: {fileID: 2752854518019788802}
-  goldCostText: {fileID: 8404568482608822381}
-  heroSelect: {fileID: 7815889264057398735}
-  runButton: {fileID: 8937919555250736604}
 --- !u!114 &1071653080440122849
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -42,12 +42,14 @@ public class SaveCityData
             actions.Add(devId, count);
     }
 
-    public List<int> GetHeroList(bool includeWild)
+    public List<int> GetHeroList(bool showNormal, bool showWild)
     {
         var heroIds = new List<int>();
         foreach (var member in GameManager.Instance.SaveData.heros)
         {
-            if(member.cityId == cityId && (includeWild || member.state != HeroState.Wild))
+            if(member.cityId == cityId && 
+               ((showNormal && member.state != HeroState.Wild) || 
+                (showWild && member.state == HeroState.Wild)))
                 heroIds.Add(member.heroId);
         }
         return heroIds;
@@ -55,7 +57,7 @@ public class SaveCityData
 
     public List<BattleCardData> GetBattleHeroList(int[] filterHeroList = null)
     {
-        var heroList = GetHeroList(false); // 不包含在野英雄，因为他们无法参与战斗
+        var heroList = GetHeroList(true, false); // 不包含在野英雄，因为他们无法参与战斗
         List<BattleCardData> battleList = new List<BattleCardData>();
         foreach (var member in heroList)
         {
@@ -81,7 +83,7 @@ public class SaveCityData
     {
         if(ownerHeroId > 0)
             return ownerHeroId;
-        foreach (var memberId in GetHeroList(false)) // 不包含在野英雄，因为他们无法成为太守
+        foreach (var memberId in GetHeroList(true, false)) // 不包含在野英雄，因为他们无法成为太守
         {
             var hero = GameManager.Instance.GetHero(memberId);
             if (hero == null)
@@ -147,7 +149,7 @@ public class SaveCityData
                 return food;
             case "soldier":
                 int soldierOnHero = 0;
-                foreach (var heroId in GetHeroList(false)) // 不包含在野英雄，因为他们的士兵不计入城市总士兵数
+                foreach (var heroId in GetHeroList(true, false)) // 不包含在野英雄，因为他们的士兵不计入城市总士兵数
                 {
                     var hero = GameManager.Instance.GetHero(heroId);
                     if (hero != null)
@@ -265,7 +267,7 @@ public class SaveCityData
 
     public void SelectOwner()
     {
-        var heroList = GetHeroList(false); // 不包含在野英雄，因为他们无法成为太守
+        var heroList = GetHeroList(true, false); // 不包含在野英雄，因为他们无法成为太守
         if (heroList.Count == 0)
             return;
 
@@ -312,7 +314,7 @@ public class SaveCityData
 
     public void AutoSetSoldierOnInit()
     {
-        var heroList = GetHeroList(false); // 不包含在野英雄，因为他们不参与初始士兵分配
+        var heroList = GetHeroList(true, false); // 不包含在野英雄，因为他们不参与初始士兵分配
         if (heroList.Count == 0)
             return;
 

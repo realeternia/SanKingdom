@@ -95,18 +95,17 @@ public class CityDevNodeNormal : MonoBehaviour, ICityDevNode
     {
         PanelManager.Instance.HideCityDev();
         
-        List<string> attrs;
-        List<int> attrOlds;
-        List<int> results;
+        List<PopResultPanelManager.AttrData> attrDatas;
 
         var cityData = GameManager.Instance.GetCity(cityId);
-        if(!cityData.GetPlayer().ExecuteCityDev(cityId, devId, heroList, out attrs, out attrOlds, out results))
+        if(!cityData.GetPlayer().ExecuteCityDev(cityId, devId, heroList, out attrDatas))
         {
             SystemTip.Instance.ShowTip("发展失败,属性已满");
             return;
         }
         var devConfig = CityDevConfig.GetConfig(devId);
-        PanelManager.Instance.ShowPopResultPanel(CityDevConfig.GetConfig(devId).Cname, attrs, attrOlds, results, null, devConfig.Mp4);
+        
+        PanelManager.Instance.ShowPopResultPanel(CityDevConfig.GetConfig(devId).Cname, attrDatas, null, devConfig.Mp4);
     }
 
     public void OnShow()

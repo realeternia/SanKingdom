@@ -53,7 +53,7 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
             }            
 
             var devConfig = CityDevConfig.GetConfig(devId);
-            PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, new List<string>(), new List<int>(), new List<int>(), () =>
+            PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, new List<PopResultPanelManager.AttrData>(), () =>
             {
                 var heroList = heroSelect.heroIds;
                 if (heroList.Length <= 0)

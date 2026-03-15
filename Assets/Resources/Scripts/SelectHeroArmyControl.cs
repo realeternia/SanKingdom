@@ -22,7 +22,7 @@ public class SelectHeroArmyControl : MonoBehaviour
     {
         confirmButton.onClick.AddListener(() =>
         {
-            int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList(false).ToArray(); // 不包含在野英雄，因为他们无法参与战斗
+            int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList(true, false).ToArray(); // 不包含在野英雄，因为他们无法参与战斗
             var devCfg = CityDevConfig.GetConfig(devId);
             string[] attrs = devCfg.Attrs;
             PanelManager.Instance.ShowPopHeroBattleSelectPanel(cityId, devCfg.HeroCount, heroList, !devCfg.FindEnemy, heroIds, (selectedHeroIds) =>
