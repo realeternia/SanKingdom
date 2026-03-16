@@ -7,11 +7,12 @@ using UnityEngine.EventSystems;
 using CommonConfig;
 
 
-public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IRankDetailInfo
 {
     public RankPanelManager rankPanelManager;
 
     public Image heroPic;
+    public GameObject heroPicContainer;
     public Image[] heroSkill;
     public TMP_Text heroName;
     public TMP_Text heroStr;
@@ -42,10 +43,30 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
     }
 
+    public int GetValInt(string key)
+    {
+        switch (key)
+        {
+            case "Str":
+                return str;
+            case "Inte":
+                return inte;
+            case "LeadShip":
+                return leadShip;
+            case "Fair":
+                return fair;
+            case "Charm":
+                return charm;
+            default:
+                return 0;
+        }
+    }
+
     public void Init(HeroConfig heroConfig)
     {
         // 设置英雄信息
         heroPic.sprite = Resources.Load<Sprite>("Skins/" + heroConfig.Icon);
+        heroPicContainer = heroPic.gameObject;
 
         for (int i = 0; i < heroSkill.Length; i++)
         {
@@ -164,5 +185,22 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     void Update()
     {
         
+    }
+    
+    public void OnSelectHero(bool isSelected)
+    {
+        if (heroPicContainer != null)
+        {
+            if (isSelected)
+            {
+                // 选中英雄
+                heroPicContainer.SetActive(true);
+            }
+            else
+            {
+                // 取消选中英雄
+                heroPicContainer.SetActive(false);
+            }
+        }
     }
 }

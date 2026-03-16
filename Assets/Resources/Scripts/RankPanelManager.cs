@@ -27,7 +27,7 @@ public class RankPanelManager : MonoBehaviour
 
     public Button closeBtn;
 
-    private RankCellInfo lastSelectedHero; // 缓存上次选中的英雄
+    private IRankDetailInfo lastSelectedHero; // 缓存上次选中的英雄
     private RankCellMode lastSelectedMode; // 缓存上次选中的模式
     private RankCellForce lastSelectedForce; // 缓存上次选中的力量
 
@@ -70,30 +70,20 @@ public class RankPanelManager : MonoBehaviour
 
     private void SortItems(string rankType)
     {
-        List<RankCellInfo> cellInfos = new List<RankCellInfo>();
+        List<IRankDetailInfo> cellInfos = new List<IRankDetailInfo>();
         foreach (Transform child in rankRegionMain.transform)
         {
-            cellInfos.Add(child.GetComponent<RankCellInfo>());
+            cellInfos.Add(child.GetComponent<IRankDetailInfo>());
         }
 
         cellInfos.Sort((a, b) =>
         {
-            if(rankType == "LeadShip")
-                return b.leadShip.CompareTo(a.leadShip);
-            else if(rankType == "Str")
-                return b.str.CompareTo(a.str);
-            else if(rankType == "Inte")
-                return b.inte.CompareTo(a.inte);
-            else if(rankType == "Fair")
-                return b.fair.CompareTo(a.fair);
-            else if(rankType == "Charm")
-                return b.charm.CompareTo(a.charm);
-            return 0;
+            return b.GetValInt(rankType).CompareTo(a.GetValInt(rankType));
         });
 
         for(int i = 0; i < cellInfos.Count; i++)
         {
-            cellInfos[i].gameObject.transform.SetSiblingIndex(i);
+            (cellInfos[i] as MonoBehaviour).gameObject.transform.SetSiblingIndex(i);
         }
         scrollRectMain.normalizedPosition = new Vector2(0, 1);
     }
@@ -230,16 +220,16 @@ public class RankPanelManager : MonoBehaviour
         }
     }
 
-    public void OnSelectHero(RankCellInfo cellInfo)
+    public void OnSelectHero(IRankDetailInfo cellInfo)
     {
         // 取消上次选中的英雄
         if (lastSelectedHero != null && lastSelectedHero != cellInfo)
         {
-            lastSelectedHero.heroPic.gameObject.SetActive(false);
+            lastSelectedHero.OnSelectHero(false);
         }
         
         // 选中当前英雄
-        cellInfo.heroPic.gameObject.SetActive(true);
+        cellInfo.OnSelectHero(true);
         
         // 更新缓存的上次选中英雄
         lastSelectedHero = cellInfo;

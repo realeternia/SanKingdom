@@ -168,6 +168,7 @@
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />
+    <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SeasonConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\PlayerBook.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitAround.cs" />
