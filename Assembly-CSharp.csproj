@@ -131,6 +131,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAidSuddenArrow.cs" />
+    <Compile Include="Assets\Resources\Scripts\RankCellInfoHeader.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefSkillDamageReduce.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\FoodCostAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefFeedback.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffTimeDamage.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDetail.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SoldierConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfoHeader.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRepeat.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\AttrInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleResultHeroCellControl.cs" />

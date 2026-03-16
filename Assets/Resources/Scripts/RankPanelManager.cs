@@ -19,15 +19,12 @@ public class RankPanelManager : MonoBehaviour
     public GameObject rankRegionForce;
     public GameObject rankCellForcePrefab; // RankCellForce预制体引用
 
-    public Button btnLeadShip;
-    public Button btnStr;
-    public Button btnInte;
-    public Button btnFair;
-    public Button btnCharm;
+    public GameObject rankRegionMainHeader;
 
     public Button closeBtn;
 
     private IRankDetailInfo lastSelectedHero; // 缓存上次选中的英雄
+    private IRankDetailInfoHeader rankHeader;
     private RankCellMode lastSelectedMode; // 缓存上次选中的模式
     private RankCellForce lastSelectedForce; // 缓存上次选中的力量
 
@@ -41,26 +38,6 @@ public class RankPanelManager : MonoBehaviour
         // 加载所有英雄配置
         LoadHeroRankings();
 
-        btnLeadShip.onClick.AddListener(() =>
-        {
-            SortItems("LeadShip");
-        });
-        btnStr.onClick.AddListener(() =>
-        {
-            SortItems("Str");
-        });
-        btnInte.onClick.AddListener(() =>
-        {
-            SortItems("Inte");
-        });
-        btnFair.onClick.AddListener(() =>
-        {
-            SortItems("Fair");
-        });
-        btnCharm.onClick.AddListener(() =>
-        {
-            SortItems("Charm");
-        });
         closeBtn.onClick.AddListener(() =>
         {      
             PanelManager.Instance.HideRank();
@@ -68,7 +45,7 @@ public class RankPanelManager : MonoBehaviour
 
     }
 
-    private void SortItems(string rankType)
+    public void SortItems(string rankType)
     {
         List<IRankDetailInfo> cellInfos = new List<IRankDetailInfo>();
         foreach (Transform child in rankRegionMain.transform)
@@ -175,9 +152,22 @@ public class RankPanelManager : MonoBehaviour
     // 加载英雄单元格
     private void LoadHeroCells()
     {
+        if(rankHeader != null)
+        {
+            Destroy((rankHeader as MonoBehaviour).gameObject);
+        }
+
         // 清除现有的子物体
         foreach (Transform child in rankRegionMain.transform)
             Destroy(child.gameObject);
+
+        // 实例化RankCellInfoHeader
+        var rankCellInfoHeaderPrefab = Resources.Load<GameObject>("Prefabs/Panels/RankCellMainHeader");
+        var obj = Instantiate(rankCellInfoHeaderPrefab, rankRegionMainHeader.transform);
+        var newHeader = obj.GetComponent<RankCellInfoHeader>();
+        newHeader.rankPanelManager = this;
+
+        rankHeader = newHeader;
         
         // 获取所有英雄配置
         var heroConfigs = HeroConfig.ConfigList;
@@ -218,6 +208,7 @@ public class RankPanelManager : MonoBehaviour
         {
             scrollRectMain.normalizedPosition = new Vector2(0, 1);
         }
+
     }
 
     public void OnSelectHero(IRankDetailInfo cellInfo)
