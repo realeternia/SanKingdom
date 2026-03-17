@@ -179,6 +179,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\RankCellInfoCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidHeal.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopInfo.cs" />

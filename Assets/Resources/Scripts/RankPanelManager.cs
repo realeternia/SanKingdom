@@ -160,42 +160,69 @@ public class RankPanelManager : MonoBehaviour
         foreach (Transform child in rankRegionMain.transform)
             Destroy(child.gameObject);
 
-        // 实例化RankCellInfoHeader
-        var rankCellInfoHeaderPrefab = Resources.Load<GameObject>("Prefabs/Panels/RankCellMain");
-        var obj = Instantiate(rankCellInfoHeaderPrefab, rankRegionMainHeader.transform);
-        var newHeader = obj.GetComponent<RankCellInfo>();
-        newHeader.rankPanelManager = this;
-        newHeader.SetMode(true);
+        var prefabName = "RankCellMain";
+        if(lastSelectedMode.modeName.text == "势力城市")
+            prefabName = "RankCellMainCity";
 
+        // 实例化RankCellInfoHeader
+        var rankCellInfoHeaderPrefab = Resources.Load<GameObject>("Prefabs/Panels/" + prefabName);
+        var obj = Instantiate(rankCellInfoHeaderPrefab, rankRegionMainHeader.transform);
+        var newHeader = obj.GetComponent<IRankDetailInfoHeader>();
+        newHeader.SetManager(this);
+        newHeader.SetMode(true);
         rankHeader = newHeader;
         
-        // 获取所有英雄配置
-        var heroConfigs = HeroConfig.ConfigList;
-        var rankCellInfoPrefab = Resources.Load<GameObject>("Prefabs/Panels/RankCellMain");
+        var rankCellInfoPrefab = Resources.Load<GameObject>("Prefabs/Panels/" + prefabName);
 
         // 为每个英雄配置创建一个RankCell
         int count = 0;
-        foreach (var heroConfig in heroConfigs)
+        if (prefabName == "RankCellMain")
         {
-            var heroData = GameManager.Instance.GetHero(heroConfig.Id);
-            if (heroData == null)
-                continue;
-            var cityData = GameManager.Instance.GetCity(heroData.cityId);
-            if (heroData.state != HeroState.Normal || cityData.forceId != lastSelectedForce.forceId)
-                continue;
+            var heroConfigs = HeroConfig.ConfigList;
+            foreach (var heroConfig in heroConfigs)
+            {
+                var heroData = GameManager.Instance.GetHero(heroConfig.Id);
+                if (heroData == null)
+                    continue;
+                var cityData = GameManager.Instance.GetCity(heroData.cityId);
+                if (heroData.state != HeroState.Normal || cityData.forceId != lastSelectedForce.forceId)
+                    continue;
 
-            // 实例化RankCell
-            GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
-            cell.transform.localScale = Vector3.one;
+                // 实例化RankCell
+                GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
+                cell.transform.localScale = Vector3.one;
 
-            // 获取RankCellInfo组件
-            RankCellInfo cellInfo = cell.GetComponent<RankCellInfo>();
-            cellInfo.rankPanelManager = this;
-            cellInfo.SetMode(false);
-            if (cellInfo != null)
-                cellInfo.Init(heroConfig);
-            count++;
+                // 获取RankCellInfo组件
+                RankCellInfo cellInfo = cell.GetComponent<RankCellInfo>();
+                cellInfo.rankPanelManager = this;
+                cellInfo.SetMode(false);
+                if (cellInfo != null)
+                    cellInfo.Init(heroConfig);
+                count++;
+            }
         }
+        else if (prefabName == "RankCellMainCity")
+        {
+            foreach (var cityData in GameManager.Instance.GetCitiesByForce(lastSelectedForce.forceId))
+            {
+                var cityConfig = WorldConfig.GetConfig(cityData.cityId);
+                if (cityConfig == null)
+                    continue;
+                
+                // 实例化RankCell
+                GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
+                cell.transform.localScale = Vector3.one;
+
+                // 获取RankCellInfo组件
+                RankCellInfoCity cellInfo = cell.GetComponent<RankCellInfoCity>();
+                cellInfo.rankPanelManager = this;
+                cellInfo.SetMode(false);
+                if (cellInfo != null)
+                    cellInfo.Init(cityData.cityId);
+                count++;
+            }
+        }
+
         // Get the RectTransform components
          RectTransform rankParentRect = rankRegionMain.GetComponent<RectTransform>();
          RectTransform cellRect = rankCellInfoPrefab.GetComponent<RectTransform>();

@@ -51,6 +51,11 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         heroCharm.raycastTarget = false;
     }
 
+    public void SetManager(RankPanelManager rankPanelManager)
+    {
+        this.rankPanelManager = rankPanelManager;
+    }
+
     public void SetMode(bool isHeader)
     {
         if(isHeader)
