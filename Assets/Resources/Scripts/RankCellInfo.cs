@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using CommonConfig;
 
 
-public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IRankDetailInfo
+public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IRankDetailInfo, IRankDetailInfoHeader
 {
     public RankPanelManager rankPanelManager;
 
@@ -21,6 +21,15 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public TMP_Text heroFair;
     public TMP_Text heroCharm;
     public TMP_Text ownerName;
+
+    public Button btnLeadShip;
+    public Button btnStr;
+    public Button btnInte;
+    public Button btnFair;
+    public Button btnCharm;    
+
+    public GameObject nodeHeader;
+    public GameObject nodeRow;
 
     public int heroId;
     public int str;
@@ -40,7 +49,40 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         heroLeadShip.raycastTarget = false;
         heroFair.raycastTarget = false;
         heroCharm.raycastTarget = false;
+    }
 
+    public void SetMode(bool isHeader)
+    {
+        if(isHeader)
+        {
+            nodeHeader.SetActive(true);
+            nodeRow.SetActive(false);
+            btnLeadShip.onClick.AddListener(() =>
+            {
+                rankPanelManager.SortItems("LeadShip");
+            });
+            btnStr.onClick.AddListener(() =>
+            {
+                rankPanelManager.SortItems("Str");
+            });
+            btnInte.onClick.AddListener(() =>
+            {
+                rankPanelManager.SortItems("Inte");
+            });
+            btnFair.onClick.AddListener(() =>
+            {
+                rankPanelManager.SortItems("Fair");
+            });
+            btnCharm.onClick.AddListener(() =>
+            {
+                rankPanelManager.SortItems("Charm");
+            });
+        }
+        else
+        {
+            nodeHeader.SetActive(false);
+            nodeRow.SetActive(true);
+        }
     }
 
     public int GetValInt(string key)

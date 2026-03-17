@@ -9,7 +9,6 @@ public class RankPanelManager : MonoBehaviour
 {
     public ScrollRect scrollRectMain;
     public GameObject rankRegionMain;
-    public GameObject rankCellPrefab; // RankCell预制体引用
 
     public ScrollRect scrollRectMode;
     public GameObject rankRegionMode;
@@ -162,15 +161,17 @@ public class RankPanelManager : MonoBehaviour
             Destroy(child.gameObject);
 
         // 实例化RankCellInfoHeader
-        var rankCellInfoHeaderPrefab = Resources.Load<GameObject>("Prefabs/Panels/RankCellMainHeader");
+        var rankCellInfoHeaderPrefab = Resources.Load<GameObject>("Prefabs/Panels/RankCellMain");
         var obj = Instantiate(rankCellInfoHeaderPrefab, rankRegionMainHeader.transform);
-        var newHeader = obj.GetComponent<RankCellInfoHeader>();
+        var newHeader = obj.GetComponent<RankCellInfo>();
         newHeader.rankPanelManager = this;
+        newHeader.SetMode(true);
 
         rankHeader = newHeader;
         
         // 获取所有英雄配置
         var heroConfigs = HeroConfig.ConfigList;
+        var rankCellInfoPrefab = Resources.Load<GameObject>("Prefabs/Panels/RankCellMain");
 
         // 为每个英雄配置创建一个RankCell
         int count = 0;
@@ -184,19 +185,20 @@ public class RankPanelManager : MonoBehaviour
                 continue;
 
             // 实例化RankCell
-            GameObject cell = Instantiate(rankCellPrefab, rankRegionMain.transform);
+            GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
             cell.transform.localScale = Vector3.one;
 
             // 获取RankCellInfo组件
             RankCellInfo cellInfo = cell.GetComponent<RankCellInfo>();
             cellInfo.rankPanelManager = this;
+            cellInfo.SetMode(false);
             if (cellInfo != null)
                 cellInfo.Init(heroConfig);
             count++;
         }
         // Get the RectTransform components
          RectTransform rankParentRect = rankRegionMain.GetComponent<RectTransform>();
-         RectTransform cellRect = rankCellPrefab.GetComponent<RectTransform>();
+         RectTransform cellRect = rankCellInfoPrefab.GetComponent<RectTransform>();
            
          if (rankParentRect != null && cellRect != null)
          {

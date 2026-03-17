@@ -97,7 +97,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollRectMain: {fileID: 7979293216819945416}
   rankRegionMain: {fileID: 8127510769363811203}
-  rankCellPrefab: {fileID: 76827737818314668, guid: 6c391dfaa40c7ad4bbce42929d1c8af0, type: 3}
   scrollRectMode: {fileID: 2770608539309558115}
   rankRegionMode: {fileID: 818773695012911939}
   rankCellModePrefab: {fileID: 6220797925647248127, guid: e85d17c3a82385e419caffb05004f461, type: 3}
@@ -1226,6 +1225,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -50}
+  m_AnchoredPosition: {x: 177, y: -134}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
