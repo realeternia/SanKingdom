@@ -100,6 +100,7 @@
     <Compile Include="Assets\Resources\Scripts\SystemTool\NameTransTool.cs" />
     <Compile Include="Assets\Resources\Scripts\PopResultPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveBuffAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\RankCellInfoForce.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\WorldPieceControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ConfigManager.cs" />

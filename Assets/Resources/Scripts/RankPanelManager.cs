@@ -163,6 +163,10 @@ public class RankPanelManager : MonoBehaviour
         var prefabName = "RankCellMain";
         if(lastSelectedMode.modeName.text == "势力城市")
             prefabName = "RankCellMainCity";
+        else if(lastSelectedMode.modeName.text == "势力战力")
+            prefabName = "RankCellMainForce"; // 使用城市模板显示势力信息，但会用RankCellInfoForce组件
+        else if(lastSelectedMode.modeName.text == "势力武将")
+            prefabName = "RankCellMain"; // 显示武将列表
 
         // 实例化RankCellInfoHeader
         var rankCellInfoHeaderPrefab = Resources.Load<GameObject>("Prefabs/Panels/" + prefabName);
@@ -219,6 +223,24 @@ public class RankPanelManager : MonoBehaviour
                 cellInfo.SetMode(false);
                 if (cellInfo != null)
                     cellInfo.Init(cityData.cityId);
+                count++;
+            }
+        }
+        // 新增势力战力模式的处理
+        else if (prefabName == "RankCellMainForce")
+        {
+            // 显示所有势力信息
+            foreach (var forceData in GameManager.Instance.SaveData.forces)
+            {
+                // 实例化 RankCell
+                GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
+                cell.transform.localScale = Vector3.one;
+
+                // 首先尝试获取 RankCellInfoForce 组件（如果预制体被正确配置）
+                RankCellInfoForce cellInfo = cell.GetComponent<RankCellInfoForce>();
+                cellInfo.rankPanelManager = this;
+                cellInfo.SetMode(false);
+                cellInfo.Init(forceData.forceId);
                 count++;
             }
         }
