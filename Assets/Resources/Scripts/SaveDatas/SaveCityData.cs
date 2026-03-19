@@ -49,7 +49,7 @@ public class SaveCityData
         foreach (var member in GameManager.Instance.SaveData.heros)
         {
             if(member.cityId == cityId && 
-               ((showNormal && member.state != HeroState.Wild) || 
+               ((showNormal && member.state == HeroState.Normal) || 
                 (showWild && member.state == HeroState.Wild)))
                 heroIds.Add(member.heroId);
         }
@@ -61,7 +61,18 @@ public class SaveCityData
         var heroIds = new List<int>();
         foreach (var member in GameManager.Instance.SaveData.heros)
         {
-            if(member.cityId == cityId && member.state != HeroState.Wild)
+            if(member.cityId == cityId && member.state == HeroState.Normal)
+                heroIds.Add(member.heroId);
+        }
+        return heroIds;
+    }
+
+    public List<int> GetCatchedHeroList()
+    {
+        var heroIds = new List<int>();
+        foreach (var member in GameManager.Instance.SaveData.heros)
+        {
+            if(member.cityId == cityId && member.state == HeroState.Catched)
                 heroIds.Add(member.heroId);
         }
         return heroIds;
@@ -208,44 +219,29 @@ public class SaveCityData
         UnityEngine.Debug.Log($"Occupy forceId: {forceLose} citycount: {loseForceCities.Count}");
         if (loseForceCities.Count > 0)
         {
-            // 获取当前城市的相邻城市ID列表
-            var currentCityConfig = WorldConfig.GetConfig(cityId);
-            var nearbyCityIds = currentCityConfig.WorldNearIds;
-
-            // 过滤出与当前城市相邻的失败方城市
-            var nearbyLoseCities = new List<SaveCityData>();
-            foreach (var city in loseForceCities)
-            {
-                if (nearbyCityIds != null && Array.Exists(nearbyCityIds, id => id == city.cityId))
-                    nearbyLoseCities.Add(city);
-            }
-
-            List<int> destCityIds = new List<int>();
-            if (nearbyLoseCities.Count > 0)
-            {
-                destCityIds.AddRange(nearbyLoseCities.Select(x => x.cityId));
-            }
-            else if(cityId != GameManager.Instance.GetPlayer(forceLose).GetKingCity().cityId)
-            {
-                destCityIds.Add(GameManager.Instance.GetPlayer(forceLose).GetKingCity().cityId);
-            }
-            else
-            {
-                destCityIds.AddRange(loseForceCities.Select(x => x.cityId));
-            }
-
+            var kingHeroId = ForceConfig.GetConfig(forceLose).HeroId;
+            var destCityIds = new HashSet<int>();
             foreach (var heroId in failHeroIds)
             {
                 var hero = GameManager.Instance.GetHero(heroId);
                 if (hero != null)
                 {
-                    int randomIndex = UnityEngine.Random.Range(0, destCityIds.Count);
-                    hero.cityId = destCityIds[randomIndex];
+                    if (heroId == kingHeroId || UnityEngine.Random.Range(0, 100) >= 15)
+                    {
+                        hero.cityId = GameManager.Instance.GetRandomForceCityId(cityId, forceLose);
+                        destCityIds.Add(hero.cityId);
+                    }
+                    else
+                    {
+                        hero.state = HeroState.Catched;
+                    }
                 }
             }
-            foreach (var destCityId in destCityIds)
+            foreach (var cityId in destCityIds)
             {
-                GameManager.Instance.GetCity(destCityId).RecalculateHeros();
+                SaveCityData city = GameManager.Instance.GetCity(cityId);
+                if (city != null)
+                    city.RecalculateHeros();
             }
         }
         else
@@ -253,7 +249,6 @@ public class SaveCityData
             GameManager.Instance.players.RemoveAll(x => x.forceId == forceLose);
             GameManager.Instance.SaveData.forces.RemoveAll(x => x.forceId == forceLose);
             UnityEngine.Debug.Log($"Occupy 强制数量: {GameManager.Instance.SaveData.forces.Count}");
-            //最后一个城了，相当于全部投降
         }
 
         foreach (var heroId in winHeroIds)

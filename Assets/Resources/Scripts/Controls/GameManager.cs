@@ -98,6 +98,47 @@ public class GameManager : MonoBehaviour
         return SaveData.cities.Where(c => c.forceId == forceId).ToList();
     }
 
+    public List<int> GetNearbyForceCityIds(int fromCityId, int forceId)
+    {
+        var result = new List<int>();
+        var fromCityCfg = WorldConfig.GetConfig(fromCityId);
+        if (fromCityCfg == null || fromCityCfg.WorldNearIds == null)
+            return result;
+
+        foreach (var nearCityId in fromCityCfg.WorldNearIds)
+        {
+            var nearCity = GetCity(nearCityId);
+            if (nearCity != null && nearCity.forceId == forceId)
+            {
+                result.Add(nearCityId);
+            }
+        }
+        return result;
+    }
+
+    public int GetRandomForceCityId(int fromCityId, int forceId)
+    {
+        var nearbyCityIds = GetNearbyForceCityIds(fromCityId, forceId);
+        if (nearbyCityIds.Count > 0)
+        {
+            return nearbyCityIds[UnityEngine.Random.Range(0, nearbyCityIds.Count)];
+        }
+
+        var kingCity = GetPlayer(forceId)?.GetKingCity();
+        if (kingCity != null && fromCityId != kingCity.cityId)
+        {
+            return kingCity.cityId;
+        }
+
+        var forceCities = GetCitiesByForce(forceId);
+        if (forceCities.Count > 0)
+        {
+            return forceCities[UnityEngine.Random.Range(0, forceCities.Count)].cityId;
+        }
+
+        return 0;
+    }
+
     public SaveHeroData GetHero(int heroId)
     {
         return SaveData.heros.FirstOrDefault(h => h.heroId == heroId);
@@ -165,10 +206,29 @@ public class GameManager : MonoBehaviour
         {
             city.OnRound();
         }
+
+        ProcessCatchedHeros();
+
         Debug.Log("NextRound round=" + SaveData.round);
 
         forbidPlayerAct = true;
         StartCoroutine(NextRoundCoroutine());
+    }
+
+    private void ProcessCatchedHeros()
+    {
+        foreach (var hero in SaveData.heros)
+        {
+            if (hero.state == HeroState.Catched && UnityEngine.Random.Range(0, 100) < 15)
+            {
+                var destCityId = GetRandomForceCityId(hero.cityId, hero.forceId);
+                if (destCityId > 0)
+                {
+                    hero.state = HeroState.Normal;
+                    hero.cityId = destCityId;
+                }
+            }
+        }
     }
 
     public int SeasonId
