@@ -122,14 +122,10 @@ public class RankCellInfoForce : MonoBehaviour, IRankDetailInfo, IRankDetailInfo
         int totalSoldier = 0;        
         foreach (var heroData in GameManager.Instance.SaveData.heros)
         {
-            if (heroData.state == HeroState.Normal)
+            if (heroData.state == HeroState.Normal && heroData.forceId == forceId)
             {
-                var heroCity = GameManager.Instance.GetCity(heroData.cityId);
-                if (heroCity != null && heroCity.forceId == forceId)
-                {
-                    heroCount++;
-                    totalSoldier += heroData.soldier;
-                }
+                heroCount++;
+                totalSoldier += heroData.soldier;
             }
         }
         heroesValue = heroCount;

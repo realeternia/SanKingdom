@@ -59,7 +59,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
             textLeader.text = "无";
         textLeader.color = Color.gray;
         
-        var heroList = city.GetHeroList(true, false); // 包含在野英雄，因为城市详情需要显示所有英雄
+        var heroList = city.GetNormalHeroList();
         //todo 清理一下heroHeadRegion.transform下所有对象
         foreach (Transform child in heroHeadRegion.transform)
             Destroy(child.gameObject);

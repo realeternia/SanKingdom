@@ -42,6 +42,7 @@ public class SaveCityData
             actions.Add(devId, count);
     }
 
+    
     public List<int> GetHeroList(bool showNormal, bool showWild)
     {
         var heroIds = new List<int>();
@@ -55,9 +56,20 @@ public class SaveCityData
         return heroIds;
     }
 
+    public List<int> GetNormalHeroList()
+    {
+        var heroIds = new List<int>();
+        foreach (var member in GameManager.Instance.SaveData.heros)
+        {
+            if(member.cityId == cityId && member.state != HeroState.Wild)
+                heroIds.Add(member.heroId);
+        }
+        return heroIds;
+    }
+
     public List<BattleCardData> GetBattleHeroList(int[] filterHeroList = null)
     {
-        var heroList = GetHeroList(true, false); // 不包含在野英雄，因为他们无法参与战斗
+        var heroList = GetNormalHeroList();
         List<BattleCardData> battleList = new List<BattleCardData>();
         foreach (var member in heroList)
         {
@@ -83,7 +95,7 @@ public class SaveCityData
     {
         if(ownerHeroId > 0)
             return ownerHeroId;
-        foreach (var memberId in GetHeroList(true, false)) // 不包含在野英雄，因为他们无法成为太守
+        foreach (var memberId in GetNormalHeroList())
         {
             var hero = GameManager.Instance.GetHero(memberId);
             if (hero == null)
@@ -149,7 +161,7 @@ public class SaveCityData
                 return food;
             case "soldier":
                 int soldierOnHero = 0;
-                foreach (var heroId in GetHeroList(true, false)) // 不包含在野英雄，因为他们的士兵不计入城市总士兵数
+                foreach (var heroId in GetNormalHeroList())
                 {
                     var hero = GameManager.Instance.GetHero(heroId);
                     if (hero != null)
@@ -267,7 +279,7 @@ public class SaveCityData
 
     public void SelectOwner()
     {
-        var heroList = GetHeroList(true, false); // 不包含在野英雄，因为他们无法成为太守
+        var heroList = GetNormalHeroList();
         if (heroList.Count == 0)
             return;
 
@@ -314,7 +326,7 @@ public class SaveCityData
 
     public void AutoSetSoldierOnInit()
     {
-        var heroList = GetHeroList(true, false); // 不包含在野英雄，因为他们不参与初始士兵分配
+        var heroList = GetNormalHeroList();
         if (heroList.Count == 0)
             return;
 

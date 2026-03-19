@@ -188,8 +188,7 @@ public class RankPanelManager : MonoBehaviour
                 var heroData = GameManager.Instance.GetHero(heroConfig.Id);
                 if (heroData == null)
                     continue;
-                var cityData = GameManager.Instance.GetCity(heroData.cityId);
-                if (heroData.state != HeroState.Normal || cityData.forceId != lastSelectedForce.forceId)
+                if (heroData.state != HeroState.Normal || heroData.forceId != lastSelectedForce.forceId)
                     continue;
 
                 // 实例化RankCell

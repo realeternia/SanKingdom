@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
             if(cityCfg == null)
                 continue;
 
-            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = 100 };
+            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = 100, forceId = cityCfg.ForceId };
             SaveData.heros.Add(hero);
         }
         foreach(var city in SaveData.cities)

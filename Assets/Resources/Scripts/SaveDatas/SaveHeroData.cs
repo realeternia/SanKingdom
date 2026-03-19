@@ -4,7 +4,8 @@ using CommonConfig;
 public enum HeroState
 {
     Normal, // 正常
-    Wild    // 在野
+    Wild,   // 在野
+    Catched // 被俘虏
 }
 
 [System.Serializable]
@@ -15,10 +16,11 @@ public class SaveHeroData
     public int exp;
 
     public int cityId;
-    public bool cityOwner; //太守
-    public int round; // 当前年份，用于标记英雄是否已执行动作
-    public HeroState state; // 状态
-    public int loyalty; // 忠心值，100为最大值
+    public bool cityOwner;
+    public int round;
+    public HeroState state;
+    public int loyalty;
+    public int forceId;
 
     
     public int GetAttr(string attr)
@@ -48,18 +50,18 @@ public class SaveHeroData
         return HeroSelectionTool.GetCardLevel(exp, true);
     }
 
-    // 创建在野英雄的静态方法
     public static SaveHeroData CreateWildHero(int heroId, int cityId)
     {
         SaveHeroData newHero = new SaveHeroData();
         newHero.heroId = heroId;
-        newHero.soldier = 100; // 初始士兵数
+        newHero.soldier = 100;
         newHero.exp = 0;
         newHero.cityId = cityId;
         newHero.cityOwner = false;
-        newHero.round = int.MaxValue; // 设置为很大的值，使英雄无法执行任务
+        newHero.round = int.MaxValue;
         newHero.state = HeroState.Wild;
-        newHero.loyalty = 90; // 在野转化的英雄忠心值为90
+        newHero.loyalty = 90;
+        newHero.forceId = 0;
         return newHero;
     }
 

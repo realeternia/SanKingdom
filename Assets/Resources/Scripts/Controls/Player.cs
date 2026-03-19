@@ -440,7 +440,7 @@ public class Player
         var cityData = GameManager.Instance.GetCity(cityId);
 
         var hero = GameManager.Instance.GetHero(targetHeroId);
-        if(hero.state != HeroState.Wild || hero.cityId != cityId)
+        if(hero.state == HeroState.Normal || hero.cityId != cityId)
         {
             SystemTip.Instance.ShowTip("只有在野英雄才能使用");
             return false;
