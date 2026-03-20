@@ -174,7 +174,7 @@ public class GameManager : MonoBehaviour
             if(cityCfg == null)
                 continue;
 
-            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = 100, forceId = cityCfg.ForceId };
+            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId };
             SaveData.heros.Add(hero);
         }
         foreach(var city in SaveData.cities)
@@ -219,13 +219,20 @@ public class GameManager : MonoBehaviour
     {
         foreach (var hero in SaveData.heros)
         {
-            if (hero.state == HeroState.Catched && UnityEngine.Random.Range(0, 100) < 15)
+            if (hero.state == HeroState.Catched)
             {
-                var destCityId = GetRandomForceCityId(hero.cityId, hero.forceId);
-                if (destCityId > 0)
+                hero.loyalty -= UnityEngine.Random.Range(1, 4);
+                if (hero.loyalty < 0)
+                    hero.loyalty = 0;
+
+                if (UnityEngine.Random.Range(0, 100) < 15)
                 {
-                    hero.state = HeroState.Normal;
-                    hero.cityId = destCityId;
+                    var destCityId = GetRandomForceCityId(hero.cityId, hero.forceId);
+                    if (destCityId > 0)
+                    {
+                        hero.state = HeroState.Normal;
+                        hero.cityId = destCityId;
+                    }
                 }
             }
         }

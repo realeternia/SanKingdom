@@ -432,7 +432,6 @@ public class Player
         return true;
     }
 
-    // 执行城市使用在野英雄
     public bool ExecuteCityUseHero(int cityId, int devId, int[] heroList, int targetHeroId, out List<PopResultPanelManager.AttrData> attrDatas)
     {
         attrDatas = new List<PopResultPanelManager.AttrData>();
@@ -440,26 +439,72 @@ public class Player
         var cityData = GameManager.Instance.GetCity(cityId);
 
         var hero = GameManager.Instance.GetHero(targetHeroId);
-        if(hero.state == HeroState.Normal || hero.cityId != cityId)
+        if(hero.state == HeroState.Normal && hero.forceId == cityData.forceId)
         {
-            SystemTip.Instance.ShowTip("只有在野英雄才能使用");
+            SystemTip.Instance.ShowTip("该英雄已经是己方英雄");
             return false;
         }
-        hero.state = HeroState.Normal;
-        hero.round = int.MaxValue; // 重置回合，使英雄可以执行任务
-
-        attrDatas.Add(new PopResultPanelManager.AttrData()
+        if(hero.cityId != cityId)
         {
-            attr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
-            valStr = "<color=green>成功</color>",
-        });
+            SystemTip.Instance.ShowTip("英雄不在当前城市");
+            return false;
+        }
 
-        // 记录发展动作
-        cityData.AddAction(devId, heroList.Length);
+        bool success = false;
+        string resultMsg = "";
 
-        UpdateHeroesRound(heroList);
+        if(hero.state == HeroState.Wild)
+        {
+            success = true;
+            resultMsg = "成功";
+        }
+        else if(hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
+        {
+            int loyalty = hero.loyalty;
+            int diff = 100 - loyalty;
+            int baseSuccessRate = diff * diff / 100;
+            int randomVal = UnityEngine.Random.Range(0, 100);
+            success = randomVal < baseSuccessRate;
+            
+            if(success)
+            {
+                resultMsg = string.Format("成功 (忠诚度{0}, 成功率{1}%)", loyalty, baseSuccessRate);
+            }
+            else
+            {
+                resultMsg = string.Format("失败 (忠诚度{0}, 成功率{1}%)", loyalty, baseSuccessRate);
+            }
+        }
 
-        return true;
+        if(success)
+        {
+            hero.state = HeroState.Normal;
+            hero.forceId = cityData.forceId;
+            hero.loyalty = 70;
+            hero.SetRoundForRecruit();
+
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
+                valStr = string.Format("<color=green>{0}</color>", resultMsg),
+            });
+
+            cityData.AddAction(devId, heroList.Length);
+            UpdateHeroesRound(heroList);
+            return true;
+        }
+        else
+        {
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
+                valStr = string.Format("<color=red>{0}</color>", resultMsg),
+            });
+
+            cityData.AddAction(devId, heroList.Length);
+            UpdateHeroesRound(heroList);
+            return true;
+        }
     }
 }
 

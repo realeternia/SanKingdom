@@ -56,6 +56,29 @@ public class SaveCityData
         return heroIds;
     }
 
+    public List<int> GetRecruitableHeroList()
+    {
+        var heroIds = new List<int>();
+        var nearCityIds = WorldConfig.GetConfig(cityId)?.WorldNearIds;
+        
+        foreach (var member in GameManager.Instance.SaveData.heros)
+        {
+            if(member.cityId == cityId)
+            {
+                if(member.state == HeroState.Wild)
+                    heroIds.Add(member.heroId);
+                else if(member.state == HeroState.Catched)
+                    heroIds.Add(member.heroId);
+            }
+            else if(member.state == HeroState.Normal && member.forceId != forceId && member.loyalty < 95)
+            {
+                if(nearCityIds != null && System.Array.Exists(nearCityIds, id => id == member.cityId))
+                    heroIds.Add(member.heroId);
+            }
+        }
+        return heroIds;
+    }
+
     public List<int> GetNormalHeroList()
     {
         var heroIds = new List<int>();

@@ -42,14 +42,14 @@ public class CityDevUseHero : MonoBehaviour, ICityDevNode
 
     private void OnWildHeroSelectButtonClick()
     {
-        int[] heroList = GameManager.Instance.GetCity(cityId).GetHeroList(false, true).ToArray(); // 只获取在野英雄
+        int[] heroList = GameManager.Instance.GetCity(cityId).GetRecruitableHeroList().ToArray();
         int[] initialSelected = wildHeroId > 0 ? new int[] { wildHeroId } : new int[0];
 
         PanelManager.Instance.ShowPopHeroSelectPanel(cityId, 1, heroList, initialSelected, new string[]{"Str", "Inte"}, (selectedIds) =>
         {
             if (selectedIds.Count > 0)
             {
-                wildHeroId = selectedIds[0]; // 保持选中的heroId，只取第一个
+                wildHeroId = selectedIds[0];
                 var heroCfg = HeroConfig.GetConfig(wildHeroId);
                 wildHeroText.text = heroCfg.Name;
             }

@@ -50,6 +50,11 @@ public class SaveHeroData
         return HeroSelectionTool.GetCardLevel(exp, true);
     }
 
+    public void SetRoundForRecruit()
+    {
+        round = GameManager.Instance.SaveData.round + 1;
+    }
+
     public static SaveHeroData CreateWildHero(int heroId, int cityId)
     {
         SaveHeroData newHero = new SaveHeroData();
