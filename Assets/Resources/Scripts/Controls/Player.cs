@@ -444,12 +444,6 @@ public class Player
             SystemTip.Instance.ShowTip("该英雄已经是己方英雄");
             return false;
         }
-        if(hero.cityId != cityId)
-        {
-            SystemTip.Instance.ShowTip("英雄不在当前城市");
-            return false;
-        }
-
         bool success = false;
         string resultMsg = "";
 

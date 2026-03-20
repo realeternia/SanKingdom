@@ -18,6 +18,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
     public TMP_Text heroName;
     public TMP_Text textAttr1;
     public TMP_Text textAttr2;
+    public TMP_Text textLoyalty;
     public Image backgroundImage;
     public Image checkImage;
 
@@ -59,15 +60,18 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         else
             textAttr2.text = "";
 
-        // 检查英雄是否已经在当前年份执行过任务
+        textLoyalty.text = heroData.loyalty.ToString();
+        textLoyalty.color = heroData.loyalty < 50 ? Color.red : (heroData.loyalty < 80 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+
         isAvailable = heroData.round != currentYear;
         
-        // 根据英雄是否可用设置不同的文字颜色
         if(!isAvailable)
         {
             heroName.color = Color.gray;
             textAttr1.color = Color.gray;
             textAttr2.color = Color.gray;
+            if(textLoyalty != null)
+                textLoyalty.color = Color.gray;
         }
 
     }
