@@ -74,6 +74,7 @@
     <Compile Include="Assets\Resources\Scripts\Controls\AI.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedShadow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitFood.cs" />
+    <Compile Include="Assets\Resources\Scripts\HeroInfoCell.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleHeroInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShield.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuffArea.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ShopConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\RankCellForce.cs" />
+    <Compile Include="Assets\Resources\Scripts\HeroInfoPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\RankCellMode.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackRunCrossPlus.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\NameTransTool.cs" />

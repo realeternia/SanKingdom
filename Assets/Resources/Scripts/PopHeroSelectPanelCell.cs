@@ -22,6 +22,8 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
     public Image backgroundImage;
     public Image checkImage;
 
+    public Button viewButton;
+
     private Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.8f); // 正常状态背景色
     private Color selectedColor = new Color(0.5f, 0.5f, 0.1f, 0.8f); // 高光绿色选中状态
     private Color disabledColor = new Color(0.1f, 0.1f, 0.1f, 0.5f); // 灰色不可用状态
@@ -33,6 +35,11 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         textAttr1.raycastTarget = false;
         textAttr2.raycastTarget = false;
         checkImage.raycastTarget = false;
+        
+        if (viewButton != null)
+        {
+            viewButton.onClick.AddListener(OnViewButtonClick);
+        }
         
         // 初始化背景色为正常状态
       //  OnSelect(false);
@@ -106,7 +113,12 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    // Update is called once per frame
+    private void OnViewButtonClick()
+    {
+        PanelManager.Instance.ShowHeroInfoPanel(popHeroSelectPanelManager.mHeroList, heroId);
+    }
+
+    // Update is called once per update
     void Update()
     {
         

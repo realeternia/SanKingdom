@@ -9,6 +9,7 @@ using System;
 public class PopHeroSelectPanelManager : MonoBehaviour
 {
     private int mCityId;
+    public int[] mHeroList;
     private int mSelectCount;
     public ScrollRect scrollRect;
     public GameObject rankParent;
@@ -52,6 +53,7 @@ public class PopHeroSelectPanelManager : MonoBehaviour
     private void Init(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs)
     {
         mCityId = cityId;
+        mHeroList = heroList;
         mSelectCount = selectCount;
         // 清除现有的子物体
         foreach (Transform child in rankParent.transform)
