@@ -447,34 +447,49 @@ public class Player
         bool success = false;
         string resultMsg = "";
 
+        int baseSuccessRate = 0;
+        
         if(hero.state == HeroState.Wild)
         {
-            success = true;
-            resultMsg = "成功";
+            baseSuccessRate = 30;
         }
         else if(hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
         {
             int loyalty = hero.loyalty;
             int diff = 100 - loyalty;
-            int baseSuccessRate = diff * diff / 100;
-            int randomVal = UnityEngine.Random.Range(0, 100);
-            success = randomVal < baseSuccessRate;
-            
-            if(success)
+            baseSuccessRate = diff * diff / 22 + diff / 8;
+        }
+
+        if(heroList.Length > 0)
+        {
+            var executorHero = GameManager.Instance.GetHero(heroList[0]);
+            if(executorHero != null)
             {
-                resultMsg = string.Format("成功 (忠诚度{0}, 成功率{1}%)", loyalty, baseSuccessRate);
+                int charm = executorHero.GetAttr("charm");
+                if(charm >= 90)
+                    baseSuccessRate = baseSuccessRate * 130 / 100;
+                else if(charm >= 80)
+                    baseSuccessRate = baseSuccessRate * 115 / 100;
             }
-            else
-            {
-                resultMsg = string.Format("失败 (忠诚度{0}, 成功率{1}%)", loyalty, baseSuccessRate);
-            }
+        }
+
+        int randomVal = UnityEngine.Random.Range(0, 100);
+        success = randomVal < baseSuccessRate;
+        
+        if(success)
+        {
+            resultMsg = string.Format("成功 ({0}%)", baseSuccessRate);
+        }
+        else
+        {
+            resultMsg = string.Format("失败 ({0}%)", baseSuccessRate);
         }
 
         if(success)
         {
             hero.state = HeroState.Normal;
             hero.forceId = cityData.forceId;
-            hero.loyalty = 70;
+            hero.loyalty = 85;
             hero.SetRoundForRecruit();
 
             attrDatas.Add(new PopResultPanelManager.AttrData()

@@ -207,7 +207,7 @@ public class GameManager : MonoBehaviour
             city.OnRound();
         }
 
-        ProcessCatchedHeros();
+        ProcessHeros();
 
         Debug.Log("NextRound round=" + SaveData.round);
 
@@ -215,7 +215,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(NextRoundCoroutine());
     }
 
-    private void ProcessCatchedHeros()
+    private void ProcessHeros()
     {
         foreach (var hero in SaveData.heros)
         {
@@ -232,6 +232,18 @@ public class GameManager : MonoBehaviour
                     {
                         hero.state = HeroState.Normal;
                         hero.cityId = destCityId;
+                    }
+                }
+            }
+            else if (hero.state == HeroState.Wild)
+            {
+                if (UnityEngine.Random.Range(0, 100) < 20)
+                {
+                    var cityCfg = WorldConfig.GetConfig(hero.cityId);
+                    if (cityCfg != null && cityCfg.WorldNearIds != null && cityCfg.WorldNearIds.Length > 0)
+                    {
+                        int randomIndex = UnityEngine.Random.Range(0, cityCfg.WorldNearIds.Length);
+                        hero.cityId = cityCfg.WorldNearIds[randomIndex];
                     }
                 }
             }

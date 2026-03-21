@@ -13,7 +13,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
     public Image heroPic;
     public GameObject heroPicContainer;
-    public Image[] heroSkill;
+    public Button viewButton;
     public TMP_Text heroName;
     public TMP_Text heroStr;
     public TMP_Text heroInte;
@@ -41,14 +41,17 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     // Start is called before the first frame update
     void Start()
     {
-        for(int i = 0; i < heroSkill.Length; i++)
-            heroSkill[i].raycastTarget = false;
         heroName.raycastTarget = false;
         heroStr.raycastTarget = false;
         heroInte.raycastTarget = false;
         heroLeadShip.raycastTarget = false;
         heroFair.raycastTarget = false;
         heroCharm.raycastTarget = false;
+
+        viewButton.onClick.AddListener(() =>
+        {
+            PanelManager.Instance.ShowHeroInfoPanel(rankPanelManager.mHeroList, heroId);
+        });
     }
 
     public void SetManager(RankPanelManager rankPanelManager)
@@ -60,6 +63,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     {
         if(isHeader)
         {
+            viewButton.gameObject.SetActive(false);
             nodeHeader.SetActive(true);
             nodeRow.SetActive(false);
             btnLeadShip.onClick.AddListener(() =>
@@ -114,21 +118,6 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         // 设置英雄信息
         heroPic.sprite = Resources.Load<Sprite>("Skins/" + heroConfig.Icon);
         heroPicContainer = heroPic.gameObject;
-
-        for (int i = 0; i < heroSkill.Length; i++)
-        {
-            if (i < heroConfig.Skills.Length)
-            {
-                var skillIcon = SkillConfig.GetConfig(heroConfig.Skills[i]).Icon;
-                heroSkill[i].sprite = Resources.Load<Sprite>("SkillPic/" + skillIcon);
-            }
-            else
-            {
-                heroSkill[i].sprite = null;
-                if(i > 0)
-                    heroSkill[i].gameObject.SetActive(false);// 第一个永远显示
-            }
-        }
 
         heroName.text = heroConfig.Name;
         heroId = heroConfig.Id;
@@ -201,31 +190,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         Debug.Log($"UI 元素被按下，位置：{eventData.position}");
 
         // 判断点击是否在heroSkill区域内
-        bool isClickOnHeroSkill = false;
-        for(int i = 0; i < heroSkill.Length; i++)
-        {
-            if (RectTransformUtility.RectangleContainsScreenPoint(
-            heroSkill[i].rectTransform, 
-            eventData.position, 
-            eventData.pressEventCamera))
-            {
-                isClickOnHeroSkill = true;
-                break;
-            }
-        }
-
-        if (!isClickOnHeroSkill)
-        {
-            rankPanelManager.OnSelectHero(this);
-        }
-        else
-        {
-            var heroCfg = HeroConfig.GetConfig(heroId);
-            if (heroCfg.Skills != null && heroCfg.Skills.Length > 0)
-            {
-                Tooltip.Instance.ShowTooltip(heroCfg.Skills, heroId);
-            }
-        }
+        rankPanelManager.OnSelectHero(this);
     }
 
     // Update is called once per frame

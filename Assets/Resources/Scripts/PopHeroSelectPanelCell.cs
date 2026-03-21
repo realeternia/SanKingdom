@@ -36,10 +36,10 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         textAttr2.raycastTarget = false;
         checkImage.raycastTarget = false;
         
-        if (viewButton != null)
+        viewButton.onClick.AddListener(() =>
         {
-            viewButton.onClick.AddListener(OnViewButtonClick);
-        }
+            PanelManager.Instance.ShowHeroInfoPanel(popHeroSelectPanelManager.mHeroList, heroId);
+        });
         
         // 初始化背景色为正常状态
       //  OnSelect(false);
@@ -111,11 +111,6 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
             // 通知面板管理器当前单元格被点击
             popHeroSelectPanelManager.OnSelectItem(this, !isSelect);
         }
-    }
-
-    private void OnViewButtonClick()
-    {
-        PanelManager.Instance.ShowHeroInfoPanel(popHeroSelectPanelManager.mHeroList, heroId);
     }
 
     // Update is called once per update

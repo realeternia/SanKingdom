@@ -269,6 +269,17 @@ public class SaveCityData
         }
         else
         {
+            foreach (var heroId in failHeroIds)
+            {
+                var hero = GameManager.Instance.GetHero(heroId);
+                if (hero != null)
+                {
+                    hero.state = HeroState.Wild;
+                    hero.forceId = 0;
+                    hero.loyalty = 90;
+                }
+            }
+            
             GameManager.Instance.players.RemoveAll(x => x.forceId == forceLose);
             GameManager.Instance.SaveData.forces.RemoveAll(x => x.forceId == forceLose);
             UnityEngine.Debug.Log($"Occupy 强制数量: {GameManager.Instance.SaveData.forces.Count}");

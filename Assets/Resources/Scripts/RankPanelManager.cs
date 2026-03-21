@@ -22,6 +22,8 @@ public class RankPanelManager : MonoBehaviour
 
     public Button closeBtn;
 
+    public int[] mHeroList;
+
     private IRankDetailInfo lastSelectedHero; // 缓存上次选中的英雄
     private IRankDetailInfoHeader rankHeader;
     private RankCellMode lastSelectedMode; // 缓存上次选中的模式
@@ -183,6 +185,7 @@ public class RankPanelManager : MonoBehaviour
         if (prefabName == "RankCellMain")
         {
             var heroConfigs = HeroConfig.ConfigList;
+            List<int> heroList = new List<int>();
             foreach (var heroConfig in heroConfigs)
             {
                 var heroData = GameManager.Instance.GetHero(heroConfig.Id);
@@ -202,7 +205,9 @@ public class RankPanelManager : MonoBehaviour
                 if (cellInfo != null)
                     cellInfo.Init(heroConfig);
                 count++;
+                heroList.Add(heroConfig.Id);
             }
+            mHeroList = heroList.ToArray();
         }
         else if (prefabName == "RankCellMainCity")
         {
