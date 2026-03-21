@@ -16,6 +16,14 @@ public class HeroInfoPanelManager : MonoBehaviour
     public TMP_Text leaderText;
     public TMP_Text loyalText;
 
+    public TMP_Text gexingText;
+    public TMP_Text pinzhiText;
+    public TMP_Text aihaoText;
+    public TMP_Text paixiText;
+    public TMP_Text likesText;
+    public TMP_Text hatesText;
+    public TMP_Text storyText;
+
     public Image heroImage;
 
     public ScrollRect scrollRectNames;
@@ -26,6 +34,7 @@ public class HeroInfoPanelManager : MonoBehaviour
 
     private HeroInfoCell lastSelectedMode; // 上次选中的模式单元格
     private List<HeroInfoCell> heroInfoCells = new List<HeroInfoCell>();
+    public AttrRadarChart attrRadarChart;
 
     private void Start()
     {
@@ -133,6 +142,29 @@ public class HeroInfoPanelManager : MonoBehaviour
         
         leaderText.text = heroData.forceId == 0 ? "-" : ForceConfig.GetConfig(heroData.forceId).Cname;
         
+        if (attrRadarChart != null)
+        {
+            attrRadarChart.SetAttrValues(
+                heroConfig.LeadShip,
+                heroConfig.Str,
+                heroConfig.Inte,
+                heroConfig.Fair,
+                heroConfig.Charm
+            );
+        }
+
+        gexingText.text = string.IsNullOrEmpty(heroConfig.Xingge) ? "无" : heroConfig.Xingge;
+        pinzhiText.text = heroConfig.Pinzhi != null && heroConfig.Pinzhi.Length > 0 
+            ? string.Join(" ", heroConfig.Pinzhi) : "无";
+        aihaoText.text = heroConfig.Aihao != null && heroConfig.Aihao.Length > 0 
+            ? string.Join(" ", heroConfig.Aihao) : "无";
+        paixiText.text = string.IsNullOrEmpty(heroConfig.Paixi) ? "无" : heroConfig.Paixi;
+        likesText.text = heroConfig.Likes != null && heroConfig.Likes.Length > 0 
+            ? string.Join(" ", heroConfig.Likes) : "无";
+        hatesText.text = heroConfig.Hates != null && heroConfig.Hates.Length > 0 
+            ? string.Join(" ", heroConfig.Hates) : "无";
+        storyText.text = heroConfig.Story != null && heroConfig.Story.Length > 0 
+            ? string.Join(" ", heroConfig.Story) : "无";
     }
 
     public void OnHide()
