@@ -295,19 +295,24 @@ public class Player
             var defenceFood = cityDest.food;
             cityDest.food = 0;
             // 开始战斗
-            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, (hasWin, soldierCount, foodCount) => {
+            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, (result, soldierCount, foodCount) => {
                 foreach (var item in soldierCount)
                     GameManager.Instance.GetHero(item.Key).soldier = item.Value;
 
                 var destCity2 = GameManager.Instance.GetCity(targetCityId);
                 var srcCity2 = GameManager.Instance.GetCity(cityId);
-                if (hasWin)
+                if (result == BattleResult.Win)
                 {
                     destCity2.food += foodCount[cityDest.forceId] + foodCount[citySrc.forceId];
 
                     destCity2.Occupy(citySrc.GetPlayer().forceId, citySrc.GetBattleHeroList(validHeroList).Select(x => x.CardId).ToList(),
                         cityDest.GetPlayer().forceId, cityDest.GetBattleHeroList().Select(x => x.CardId).ToList());
                     srcCity2.RecalculateHeros(); //因为有一帮人出去了
+                }
+                else if (result == BattleResult.Lose)
+                {
+                    srcCity2.food += foodCount[citySrc.forceId];
+                    destCity2.food += foodCount[cityDest.forceId];
                 }
                 else
                 {

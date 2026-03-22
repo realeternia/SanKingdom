@@ -88,12 +88,14 @@ public class BattleUIManager : MonoBehaviour
         PanelManager.Instance.ShowWorld();
     }    
 
-    public void OnBattleEnd(List<int> playerList, bool hasWin, bool replay)
+    public void OnBattleEnd(List<int> playerList, BattleResult result, bool replay)
     {
-        if (hasWin)
+        if (result == BattleResult.Win)
             textRestart.text = "你获胜了!!!";
-        else
+        else if (result == BattleResult.Lose)
             textRestart.text = "你输了!!!";
+        else
+            textRestart.text = "平局!!!";
 
         // 销毁之前的结果单元格
         foreach (GameObject cell in battleResultCells)

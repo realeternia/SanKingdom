@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
+using TMPro;
 
 public class BattleInfoTop : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class BattleInfoTop : MonoBehaviour
     public BattleForceBar rightTopBar;
     public Image leftImg;
     public Image rightImg;
+    public TMP_Text roundText;
 
     private int leftSoldierTotal;
     private int rightSoldierTotal;
@@ -121,5 +123,11 @@ public class BattleInfoTop : MonoBehaviour
         leftTopBar.SetRate((float)leftSoldierTotal / this.leftSoldierTotal);
         rightTopBar.SetRate((float)rightSoldierTotal / this.rightSoldierTotal);
         // UnityEngine.Debug.Log($"UpdateSoldierCount: {leftSoldierTotal}/{this.leftSoldierTotal} vs {rightSoldierTotal}/{this.rightSoldierTotal}");
+    }
+
+    public void UpdateRound(int round, int maxRound)
+    {
+        if (roundText != null)
+            roundText.text = $"{round}/{maxRound}合";
     }
 }

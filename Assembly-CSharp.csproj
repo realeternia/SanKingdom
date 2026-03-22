@@ -129,6 +129,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitAttr.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\HeroSelectionTool.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackMultiArrow.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\RoundUpdateAction.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevNodeChange.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />

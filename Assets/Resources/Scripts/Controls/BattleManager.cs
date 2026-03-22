@@ -5,6 +5,13 @@ using CommonConfig;
 using UnityEngine;
 using System.Linq;
 
+public enum BattleResult
+{
+    Win,
+    Lose,
+    Draw
+}
+
 [Serializable]
 public class BattleManager : MonoBehaviour
 {
@@ -40,10 +47,12 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private bool gameFinish = false;
     [NonSerialized]
-    private bool hasWin;
+    private BattleResult battleResult;
     public int idCounter = 100;
     public int tickIndex = 1;
     public int lastFoodDeductionTick = 0;
+    public int round = 0;
+    public const int MaxRound = 30;
 
     [NonSerialized]
     public bool quickMode = true;
@@ -51,14 +60,17 @@ public class BattleManager : MonoBehaviour
     public bool showUI = true;
 
     [NonSerialized]
-    private Action<bool, Dictionary<int, int>, Dictionary<int, int>> battleEndCallback;
+    private Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> battleEndCallback;
 
     private const float WaitTime = 1f;
     private const float BattleBeginTime = 3f;
 
+    [NonSerialized]
     private List<BattleCardData> cards1;
+    [NonSerialized]
     private List<BattleCardData> cards2;
 
+    [NonSerialized]
     private bool isDoingAction = false;
 
 
@@ -73,7 +85,7 @@ public class BattleManager : MonoBehaviour
         this.showUI = showUI;
     }
 
-    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, int food1, int food2, Action<bool, Dictionary<int, int>, Dictionary<int, int>> callback = null)
+    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, int food1, int food2, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
     {
         battleEndCallback = callback;
         playerInfoList.Clear();
@@ -86,6 +98,7 @@ public class BattleManager : MonoBehaviour
         SkillManager.isReplay = false;
 
         gameFinish = false;
+        round = 0;
 
         InitUI(player1, player2);
         //对cards1和card2都按HeroConfig的Range排序，确保远程在后面
@@ -122,6 +135,7 @@ public class BattleManager : MonoBehaviour
             battleUIManager.heroInfoGroup.Reset();
             battleUIManager.CreateCastleHUD(player1, GetSpawnPosition(1, 5));
             battleUIManager.CreateCastleHUD(player2, GetSpawnPosition(2, 5));
+            BattleInfoTop.Instance.UpdateRound(0, MaxRound);
         }
     }
 
@@ -193,7 +207,7 @@ public class BattleManager : MonoBehaviour
         var foodDeductionTick = GetTickFromTime(5);
 
         var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
-        var magicHelperUnitId = BattleManager.Instance.SpawnUnitsForRegion(player1, 501001, new Vector3(1, 7, 1), 10);
+        var magicHelperUnitId = SpawnUnitsForRegion(player1, 501001, new Vector3(1, 7, 1), 10);
 
         while (!gameFinish)
         {
@@ -274,6 +288,14 @@ public class BattleManager : MonoBehaviour
 
                             }
                             lastFoodDeductionTick = tickIndex;
+                            var roundAction = new RoundUpdateAction(0, tickIndex, round + 1);
+                            AddChessAction(roundAction);
+                            if (round >= MaxRound)
+                            {
+                                gameFinish = true;
+                                battleResult = BattleResult.Draw;
+                                Debug.Log($"战斗达到{MaxRound}回合，强制结束，平局");
+                            }
                         }
                     }
 
@@ -298,7 +320,7 @@ public class BattleManager : MonoBehaviour
 
 
         if(showUI)
-            battleUIManager.OnBattleEnd(playerInfoList.Select(foodInfo => foodInfo.forceId).ToList(), hasWin, replay);
+            battleUIManager.OnBattleEnd(playerInfoList.Select(foodInfo => foodInfo.forceId).ToList(), battleResult, replay);
 
         // 调用战斗结束回调
         if (battleEndCallback != null)
@@ -313,7 +335,7 @@ public class BattleManager : MonoBehaviour
             var result2 = new Dictionary<int, int>();
             result2[playerInfoList[0].forceId] = playerInfoList[0].food;
             result2[playerInfoList[1].forceId] = playerInfoList[1].food;
-            battleEndCallback(hasWin, result, result2);
+            battleEndCallback(battleResult, result, result2);
         }
 
         if(!replay)
@@ -325,17 +347,19 @@ public class BattleManager : MonoBehaviour
         var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
         var player2 = GameManager.Instance.GetPlayer(playerInfoList[1].forceId);
 
-        for (int i = 0; i < Math.Min(cards2.Count, 12); i++)
+        int count = Math.Min(cards2.Count, 12);
+        for (int i = 0; i < count; i++)
         {
-            var tick = tickIndex + (i/3);
+            var tick = tickIndex + (count > 6 ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(2, i), "SoftFireBigRed", 0.7f);
             AddChessAction(eff);
             SpawnHerosForRegion(player2, tick + 3, GetSpawnPosition(2, i), cards2[i]);
         }
 
-        for (int i = 0; i < Math.Min(cards1.Count, 12); i++)
+        count = Math.Min(cards1.Count, 12);
+        for (int i = 0; i < count; i++) 
         {
-            var tick = tickIndex + 10 + (i/3);
+            var tick = tickIndex + 10 + (count > 6 ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(1, i), "LightningExplosionBlue", 0.7f);
             AddChessAction(eff);
             SpawnHerosForRegion(player1, tick + 3, GetSpawnPosition(1, i), cards1[i]);
@@ -450,7 +474,7 @@ public class BattleManager : MonoBehaviour
         chessList.Remove(dieUnit);
 
         gameFinish = false;
-        hasWin = false;
+        battleResult = BattleResult.Lose;
         // 检查所有阵营是否还有存活单位
         // 创建一个数组来统计每个阵营是否有存活单位，数组索引对应阵营编号减1
         bool[] sideHasUnits = new bool[playerInfoList.Count];
@@ -488,7 +512,7 @@ public class BattleManager : MonoBehaviour
         if (aliveSideCount <= 1)
         {
             gameFinish = true;
-            hasWin = sideHasUnits[0];
+            battleResult = sideHasUnits[0] ? BattleResult.Win : BattleResult.Lose;
         }
     }
 
