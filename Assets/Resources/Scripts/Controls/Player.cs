@@ -230,7 +230,7 @@ public class Player
             
             // 检查英雄年龄是否达到16岁
             float currentYear = GameManager.Instance.GetCurrentYear();
-            if (currentYear - heroConfig.BornYear < 16)
+            if (currentYear - heroConfig.BornYear < GameManager.BORN_AGE)
                 continue;
 
             // 检查英雄是否已经在游戏中

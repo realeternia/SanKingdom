@@ -14,7 +14,8 @@ public class GameManager : MonoBehaviour
     public SaveData SaveData;
     
     // 游戏时间常量
-    public const int BASE_YEAR = 185; // 游戏起始年份
+    public const int BASE_YEAR = 190; // 游戏起始年份
+    public const int BORN_AGE = 16;
     public const int SEASONS_PER_YEAR = 36; // 一年的季节数
 
     public List<Player> players = new List<Player>();
@@ -172,6 +173,8 @@ public class GameManager : MonoBehaviour
                 continue;
             var cityCfg = WorldConfig.ConfigList.FirstOrDefault(c => c.Cname == heroCfg.City);
             if(cityCfg == null)
+                continue;
+            if(BASE_YEAR - heroCfg.BornYear  < BORN_AGE) //15岁才能登场
                 continue;
 
             var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId };
