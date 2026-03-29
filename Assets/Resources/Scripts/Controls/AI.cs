@@ -44,7 +44,7 @@ public static class AI
         // 遍历所有发展配置，筛选出可执行的任务
         foreach (var devConfig in CityDevConfig.ConfigList)
         {
-            if(devConfig.Prefab == "CityDevBattle")
+            if(devConfig.Prefab == "CityDevBattle" || devConfig.Prefab == "CityDevUseHero" || devConfig.Prefab == "CityDevChange")
                 continue;
             
             // 检查发展任务的主要属性是否已达到最大值
@@ -65,8 +65,6 @@ public static class AI
         
         return availableDevIds;
     }
-    
-    /// <summary>
     /// 为城市分配英雄执行发展任务
     /// </summary>
     /// <param name="player">玩家对象</param>
