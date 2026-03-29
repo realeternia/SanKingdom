@@ -18,6 +18,7 @@ public class PanelManager : MonoBehaviour
     public GameObject worldPanel;
     public GameObject cityPanel;
     private GameObject cityDevPanel;
+    private GameObject systemPanel;
 
     private GameObject popCitySelectPanel;
     private GameObject popHeroSelectPanel;
@@ -122,6 +123,31 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(cityDevPanel, false);
         Destroy(cityDevPanel);
         cityDevPanel = null;
+    }
+
+    public void ShowSystemPanel()
+    {
+        if (systemPanel == null)
+        {
+            var systemPanelPrefab = Resources.Load<GameObject>("Prefabs/Panels/SystemInfoPanel");
+            systemPanel = Instantiate(systemPanelPrefab, transform);
+        }
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        systemPanel.SetActive(true);
+        systemPanel.GetComponent<SystemPanelManager>().OnShow();
+
+        ChangePanelCount(systemPanel, true);
+    }
+
+    public void HideSystemPanel()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        systemPanel.SetActive(false);
+        systemPanel.GetComponent<SystemPanelManager>().OnHide();
+
+        ChangePanelCount(systemPanel, false);
+        Destroy(systemPanel);
+        systemPanel = null;
     }
   
 

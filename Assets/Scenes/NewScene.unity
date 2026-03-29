@@ -1823,7 +1823,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u6392\u884C\u699C"
+  m_text: "\u7CFB\u7EDF"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2cf81e00e11058e48bf63753305874df, type: 2}
   m_sharedMaterial: {fileID: -2551621216232197282, guid: 2cf81e00e11058e48bf63753305874df, type: 2}
@@ -4057,7 +4057,7 @@ GameObject:
   - component: {fileID: 1090962206}
   - component: {fileID: 1090962205}
   m_Layer: 5
-  m_Name: ButtonRank
+  m_Name: ButtonSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4611,7 +4611,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topNode: {fileID: 1083717912}
   cityDetail: {fileID: 683616325}
-  btnRank: {fileID: 1090962205}
+  btnSystem: {fileID: 1090962205}
   btnCity: {fileID: 656844184}
   btnRoundNext: {fileID: 2084598303}
   btnMode: {fileID: 141083486}

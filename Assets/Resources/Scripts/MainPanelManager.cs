@@ -10,7 +10,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 {
     public GameObject topNode;      
     public CityDetail cityDetail;
-    public Button btnRank;
+    public Button btnSystem;
     public Button btnCity;
     public Button btnRoundNext;
     public Button btnMode;
@@ -40,9 +40,9 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         int years = nowRound / GameManager.SEASONS_PER_YEAR;
         textYear.text = $"{GameManager.BASE_YEAR + years}年{seasonCfg.Name}";
 
-        btnRank.onClick.AddListener(() =>
+        btnSystem.onClick.AddListener(() =>
         {
-            PanelManager.Instance.ShowRank();
+            PanelManager.Instance.ShowSystemPanel();
         });        
         btnCity.onClick.AddListener(() =>
         {
