@@ -24,7 +24,7 @@ public class SkillDamageAction : ChessAction
 
         if (targetChess != null && casterChess != null)
         {
-            // 直接执行伤害回调
+            var actualDamage = Mathf.Min(Damage, targetChess.hp);
             targetChess.hp -= Damage;
             if(casterChess != targetChess)
                 targetChess.lastDamagedPlayerId = casterChess.forceId;
@@ -33,13 +33,13 @@ public class SkillDamageAction : ChessAction
             if(!string.IsNullOrEmpty(skillCfg.EffectHit))
                 EffectManager.PlaySkillEffect(targetChess, skillCfg.EffectHit);
 
-            if(casterChess.isHero && Damage > 0)
-                BattleStatManager.AddDamage(casterChess.forceId, casterChess.heroId, Damage);
+            if(casterChess.isHero && actualDamage > 0)
+                BattleStatManager.AddDamage(casterChess.forceId, casterChess.heroId, actualDamage);
             
-            if(targetChess.isHero && Damage > 0)
-                BattleStatManager.AddBeDamaged(targetChess.forceId, targetChess.heroId, Damage);
+            if(targetChess.isHero && actualDamage > 0)
+                BattleStatManager.AddBeDamaged(targetChess.forceId, targetChess.heroId, actualDamage);
 
-            BattleManager.Instance.AddBattleText("-" + (Damage).ToString(), targetChess.position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
+            BattleManager.Instance.AddBattleText("-" + (Damage).ToString(), targetChess.position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 7);
 
             targetChess.OnHpChanged();
         }

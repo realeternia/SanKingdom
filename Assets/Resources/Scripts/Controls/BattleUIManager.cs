@@ -104,6 +104,7 @@ public class BattleUIManager : MonoBehaviour
         }
 
         PanelManager.Instance.ShowWorld();
+        PanelManager.Instance.ShowBattleResultPanel(BattleManager.Instance.battleId);
     }       
 
     public void AddBattleText(string text, Vector3 worldPos, Vector2 speed, Color color, int duration)

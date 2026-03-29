@@ -95,6 +95,11 @@ public class Missile : SceneObj
             var effPrefab = Resources.Load<GameObject>("Prefabs/Missile/" + effectName);
             if (effPrefab == null)
                 effPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
+            if (effPrefab == null)
+            {
+                Debug.LogError($"Missile effect not found: {effectName}, skillId: {skillId}, using fallback");
+                effPrefab = Resources.Load<GameObject>("Prefabs/Missile/BulletExplosionFire");
+            }
             GameObject missileEffect = UnityEngine.Object.Instantiate(effPrefab, position, effPrefab.transform.rotation, viewObj.transform);
             viewObj.transform.position = position;
             missileEffect.transform.localScale = size * effPrefab.transform.localScale;

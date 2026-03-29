@@ -25,6 +25,7 @@ public class PanelManager : MonoBehaviour
     private GameObject popResultPanel;
     private GameObject popArmySetPanel;
     private GameObject heroInfoPanel;
+    private GameObject battleResultPanel;
 
     public List<GameObject> openPanelList;
 
@@ -311,6 +312,31 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(heroInfoPanel, false);
         Destroy(heroInfoPanel);
         heroInfoPanel = null;
+    }
+
+
+    public void ShowBattleResultPanel(int battleId)
+    {
+        if (battleResultPanel == null)
+        {
+            battleResultPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/BattleResultPanel"), transform);
+        }
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        battleResultPanel.SetActive(true);
+        battleResultPanel.GetComponent<BattleResultPanelManager>().OnShow(battleId);
+
+        ChangePanelCount(battleResultPanel, true);
+    }
+
+    public void HideBattleResultPanel()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        battleResultPanel.SetActive(false);
+        battleResultPanel.GetComponent<BattleResultPanelManager>().OnHide();
+
+        ChangePanelCount(battleResultPanel, false);
+        Destroy(battleResultPanel);
+        battleResultPanel = null;
     }
 
     public void SendSignal(string name, string parm1, int parm2)

@@ -289,13 +289,13 @@ public class Player
         
         if (devConfig.FindEnemy)
         {
-            BattleManager.Instance.SetMode(false, true);
+            BattleManager.Instance.SetMode(true, true);
 
             citySrc.food -= foodUse;
             var defenceFood = cityDest.food;
             cityDest.food = 0;
             // 开始战斗
-            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, 
+            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, targetCityId,
                 (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, foodCount, cityId, targetCityId, validHeroList, citySrc.forceId, cityDest.forceId));
         }
         else

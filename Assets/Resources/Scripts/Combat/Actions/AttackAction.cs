@@ -26,6 +26,7 @@ public class AttackAction : ChessAction
         var sourceChess = BattleManager.Instance.GetChess(SourceId);
         var targetChess = BattleManager.Instance.GetChess(TargetId);
 
+        var actualDamage = Mathf.Min(Damage, targetChess.hp);
         targetChess.hp -= Damage;
         if (SourceId != targetChess.id)
             targetChess.lastDamagedPlayerId = SourceId;
@@ -44,14 +45,14 @@ public class AttackAction : ChessAction
             SkillManager.OnAttack(sourceChess, targetChess, DamType, Damage); 
         }
 
-        if (attacker.isHero && Damage > 0)
+        if (attacker.isHero && actualDamage > 0)
         {
-            BattleStatManager.AddDamage(attacker.forceId, attacker.heroId, Damage);
+            BattleStatManager.AddDamage(attacker.forceId, attacker.heroId, actualDamage);
         }
         
-        if (targetChess.isHero && Damage > 0)
+        if (targetChess.isHero && actualDamage > 0)
         {
-            BattleStatManager.AddBeDamaged(targetChess.forceId, targetChess.heroId, Damage);
+            BattleStatManager.AddBeDamaged(targetChess.forceId, targetChess.heroId, actualDamage);
         }
 
         targetChess.OnHpChanged();   

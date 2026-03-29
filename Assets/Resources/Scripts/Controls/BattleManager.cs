@@ -32,6 +32,8 @@ public class BattleManager : MonoBehaviour
     private GameObject mapObj;
 
     public int battleId;
+    [NonSerialized]
+    public int cityId;
 
     public const int gridCellSize = 3; // 每个格子的实际大小(米)
 
@@ -87,9 +89,10 @@ public class BattleManager : MonoBehaviour
         this.showUI = showUI;
     }
 
-    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, int food1, int food2, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
+    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, int food1, int food2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
     {
         battleEndCallback = callback;
+        this.cityId = cityId;
         playerInfoList.Clear();
         playerInfoList.Add(new FoodInfo() { forceId = player1.forceId, food = food1, maxFood = food1, soldierNumInit = cards1.Sum(x => x.SoldierNum) });
         playerInfoList.Add(new FoodInfo() { forceId = player2.forceId, food = food2, maxFood = food2, soldierNumInit = cards2.Sum(x => x.SoldierNum) });
@@ -134,9 +137,9 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void ReplayBattle()
+    public void ReplayBattle(int replayBattleId)
     {
-        LoadFromFile("battle1.json");
+        LoadFromFile("battlereplayer" + replayBattleId + ".json");
         SkillManager.isReplay = true;
 
         foreach (var playerInfo in playerInfoList)
@@ -341,6 +344,7 @@ public class BattleManager : MonoBehaviour
             var foodCost2 = playerInfoList[1].maxFood - playerInfoList[1].food;
             
             GameManager.Instance.SaveData.battleStatManager.SaveCurrentBattle(
+                cityId,
                 playerInfoList[0].forceId, playerInfoList[1].forceId,
                 battleResult,
                 soldierLoss1, soldierLoss2,

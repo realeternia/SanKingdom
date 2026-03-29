@@ -70,6 +70,7 @@ public class CreateChessAction : ChessAction
             var soldierConfig = SoldierConfig.GetConfig(SoldierId);
             chessObj.maxHp = soldierConfig.Hp;
             chessObj.isFakeHero = IsFakeHero || soldierConfig.Model == "UnitHero";
+            chessObj.isShadow = soldierConfig.IsShadow;
             chessObj.soldierId = SoldierId;
         }
 
