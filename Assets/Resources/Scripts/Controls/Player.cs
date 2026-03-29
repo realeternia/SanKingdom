@@ -295,31 +295,8 @@ public class Player
             var defenceFood = cityDest.food;
             cityDest.food = 0;
             // 开始战斗
-            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, (result, soldierCount, foodCount) => {
-                foreach (var item in soldierCount)
-                    GameManager.Instance.GetHero(item.Key).soldier = item.Value;
-
-                var destCity2 = GameManager.Instance.GetCity(targetCityId);
-                var srcCity2 = GameManager.Instance.GetCity(cityId);
-                if (result == BattleResult.Win)
-                {
-                    destCity2.food += foodCount[cityDest.forceId] + foodCount[citySrc.forceId];
-
-                    destCity2.Occupy(citySrc.GetPlayer().forceId, citySrc.GetBattleHeroList(validHeroList).Select(x => x.CardId).ToList(),
-                        cityDest.GetPlayer().forceId, cityDest.GetBattleHeroList().Select(x => x.CardId).ToList());
-                    srcCity2.RecalculateHeros(); //因为有一帮人出去了
-                }
-                else if (result == BattleResult.Lose)
-                {
-                    srcCity2.food += foodCount[citySrc.forceId];
-                    destCity2.food += foodCount[cityDest.forceId];
-                }
-                else
-                {
-                    srcCity2.food += foodCount[citySrc.forceId];
-                    destCity2.food += foodCount[cityDest.forceId];
-                }
-            });
+            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, 
+                (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, foodCount, cityId, targetCityId, validHeroList, citySrc.forceId, cityDest.forceId));
         }
         else
         {
@@ -329,6 +306,28 @@ public class Player
                
         // 更新英雄的年份
         UpdateHeroesRound(validHeroList);
+    }
+
+    private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, Dictionary<int, int> foodCount, int cityId, int targetCityId, int[] validHeroList, int srcForceId, int destForceId)
+    {
+        foreach (var item in soldierCount)
+            GameManager.Instance.GetHero(item.Key).soldier = item.Value;
+
+        var destCity = GameManager.Instance.GetCity(targetCityId);
+        var srcCity = GameManager.Instance.GetCity(cityId);
+        if (result == BattleResult.Win)
+        {
+            destCity.food += foodCount[destForceId] + foodCount[srcForceId];
+
+            destCity.Occupy(forceId, srcCity.GetBattleHeroList(validHeroList).Select(x => x.CardId).ToList(),
+                destForceId, destCity.GetBattleHeroList().Select(x => x.CardId).ToList());
+            srcCity.RecalculateHeros();
+        }
+        else
+        {
+            srcCity.food += foodCount[srcForceId];
+            destCity.food += foodCount[destForceId];
+        }
     }
 
     // 移动英雄到目标城市

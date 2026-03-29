@@ -44,10 +44,9 @@ public class AttackAction : ChessAction
             SkillManager.OnAttack(sourceChess, targetChess, DamType, Damage); 
         }
 
-        // 记录战斗统计
-        if (attacker.isHero)
+        if (attacker.isHero && Damage > 0)
         {
-            BattleStatManager.AddBattleStat(attacker.forceId, attacker.heroId, Damage, true, targetChess.isHero);
+            BattleStatManager.AddBattleStat(attacker.forceId, attacker.heroId, Damage);
         }
 
         targetChess.OnHpChanged();   

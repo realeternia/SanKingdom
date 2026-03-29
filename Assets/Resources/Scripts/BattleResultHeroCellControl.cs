@@ -36,10 +36,10 @@ public class BattleResultHeroCellControl : MonoBehaviour
         var heroCfg = HeroConfig.GetConfig(battleStat.heroId);
         playerName.text = heroLevel.ToString() + heroCfg.Name;
 
-        playerRank.text = rank.ToString(); // 假设按match顺序排列
-        playerMark1.text = "总:" + battleStat.damage.ToString();
-        playerMark2.text = "技:" + battleStat.skillDamage.ToString();
-        playerMark3.text = "英:" + battleStat.heroDamage.ToString();
+        playerRank.text = rank.ToString();
+        playerMark1.text = "伤:" + battleStat.damage.ToString("F0");
+        playerMark2.text = "杀:" + battleStat.killSoldier.ToString();
+        playerMark3.text = "亡:" + battleStat.lostSoldier.ToString() + (battleStat.isDead ? "(亡)" : "");
 
         playerIcon.sprite = Resources.Load<Sprite>(player.imgPath);
         heroIcon.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);

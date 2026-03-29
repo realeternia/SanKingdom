@@ -1,32 +1,92 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public static class BattleStatManager
+[Serializable]
+public class BattleStatManager
 {
+    [Serializable]
     public class BattleStat
     {
         public int playerId;
         public int heroId;
         public float damage;
-        public int attackCount;
-        public float skillDamage;
-        public float heroDamage;
+        public int killSoldier;
+        public int lostSoldier;
+        public bool isDead;
     }
 
-    private static Dictionary<int, BattleStat> battleStats = new Dictionary<int, BattleStat>();
-
-    public static void AddBattleStat(int playerId, int heroId, float damage, bool isAttack, bool isToHero)
+    [Serializable]
+    public class BattleRecord
     {
+        public int battleId;
+        public int forceId1;
+        public int forceId2;
+        public BattleResult result;
+        public int soldierLoss1;
+        public int soldierLoss2;
+        public int foodCost1;
+        public int foodCost2;
+        public List<BattleStat> battleStats = new List<BattleStat>();
+    }
+
+    private const int MaxBattleCount = 20;
+    public List<BattleRecord> battleRecords = new List<BattleRecord>();
+    public int nextBattleId = 1000;
+    
+    [NonSerialized]
+    private static BattleStatManager currentInstance;
+    
+    [NonSerialized]
+    private Dictionary<int, BattleStat> currentBattleStats;
+    
+    [NonSerialized]
+    private int currentBattleId;
+
+    [NonSerialized]
+    private bool isReplayMode;
+
+    public int OnNewBattle()
+    {
+        currentInstance = this;
+        currentBattleId = nextBattleId++;
+        currentBattleStats = new Dictionary<int, BattleStat>();
+        isReplayMode = false;
+        return currentBattleId;
+    }
+
+    public void LoadBattleForReplay(int battleId)
+    {
+        currentInstance = this;
+        currentBattleId = battleId;
+        isReplayMode = true;
+        
+        var record = battleRecords.FirstOrDefault(r => r.battleId == battleId);
+        if (record != null)
+        {
+            currentBattleStats = new Dictionary<int, BattleStat>();
+            foreach (var stat in record.battleStats)
+            {
+                var uid = stat.playerId * 1000000 + stat.heroId;
+                currentBattleStats[uid] = stat;
+            }
+        }
+        else
+        {
+            currentBattleStats = null;
+        }
+    }
+
+    public static void AddBattleStat(int playerId, int heroId, float damage)
+    {
+        if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
+            return;
+            
+        var battleStats = currentInstance.currentBattleStats;
         var uid = playerId * 1000000 + heroId;
         if (battleStats.TryGetValue(uid, out var battleStat))
         {
             battleStat.damage += damage;
-            if (isAttack)
-                battleStat.attackCount++;
-            else
-                battleStat.skillDamage += damage;
-            if (isToHero)
-                battleStat.heroDamage += damage;
         }
         else
         {
@@ -35,21 +95,108 @@ public static class BattleStatManager
                 playerId = playerId,
                 heroId = heroId,
                 damage = damage,
-                attackCount = isAttack ? 1 : 0,
-                skillDamage = isAttack ? 0 : damage,
-                heroDamage = isToHero ? damage : 0,
             };
             battleStats.Add(uid, battleStat1);
         }
     }
 
-    public static void Clear()
+    public static void AddKillSoldier(int playerId, int heroId, int killCount)
     {
-        battleStats.Clear();
+        if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
+            return;
+            
+        var battleStats = currentInstance.currentBattleStats;
+        var uid = playerId * 1000000 + heroId;
+        if (battleStats.TryGetValue(uid, out var battleStat))
+        {
+            battleStat.killSoldier += killCount;
+        }
+        else
+        {
+            var battleStat1 = new BattleStat
+            {
+                playerId = playerId,
+                heroId = heroId,
+                killSoldier = killCount,
+            };
+            battleStats.Add(uid, battleStat1);
+        }
     }
 
-    public static List<BattleStat> GetTop10()
+    public static void AddLostSoldier(int playerId, int heroId, int lostCount)
     {
-        return battleStats.Values.OrderByDescending(x => x.damage).Take(10).ToList();
+        if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
+            return;
+            
+        var battleStats = currentInstance.currentBattleStats;
+        var uid = playerId * 1000000 + heroId;
+        if (battleStats.TryGetValue(uid, out var battleStat))
+        {
+            battleStat.lostSoldier += lostCount;
+        }
+        else
+        {
+            var battleStat1 = new BattleStat
+            {
+                playerId = playerId,
+                heroId = heroId,
+                lostSoldier = lostCount,
+            };
+            battleStats.Add(uid, battleStat1);
+        }
+    }
+
+    public static void SetHeroDead(int playerId, int heroId)
+    {
+        if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
+            return;
+            
+        var battleStats = currentInstance.currentBattleStats;
+        var uid = playerId * 1000000 + heroId;
+        if (battleStats.TryGetValue(uid, out var battleStat))
+        {
+            battleStat.isDead = true;
+        }
+        else
+        {
+            var battleStat1 = new BattleStat
+            {
+                playerId = playerId,
+                heroId = heroId,
+                isDead = true,
+            };
+            battleStats.Add(uid, battleStat1);
+        }
+    }
+
+    public void SaveCurrentBattle(int forceId1, int forceId2, BattleResult result, int soldierLoss1, int soldierLoss2, int foodCost1, int foodCost2)
+    {
+        if (currentBattleStats == null || currentBattleId == 0 || isReplayMode)
+            return;
+            
+        var record = new BattleRecord
+        {
+            battleId = currentBattleId,
+            forceId1 = forceId1,
+            forceId2 = forceId2,
+            result = result,
+            soldierLoss1 = soldierLoss1,
+            soldierLoss2 = soldierLoss2,
+            foodCost1 = foodCost1,
+            foodCost2 = foodCost2,
+            battleStats = currentBattleStats.Values.ToList()
+        };
+        
+        battleRecords.Add(record);
+        if (battleRecords.Count > MaxBattleCount)
+            battleRecords.RemoveAt(0);
+    }
+
+
+    public List<BattleStat> GetTop10()
+    {
+        if (currentBattleStats == null)
+            return new List<BattleStat>();
+        return currentBattleStats.Values.OrderByDescending(x => x.damage).Take(10).ToList();
     }
 }

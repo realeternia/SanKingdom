@@ -31,6 +31,8 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private GameObject mapObj;
 
+    public int battleId;
+
     public const int gridCellSize = 3; // 每个格子的实际大小(米)
 
     public List<FoodInfo> playerInfoList = new List<FoodInfo>();
@@ -69,6 +71,8 @@ public class BattleManager : MonoBehaviour
     private List<BattleCardData> cards1;
     [NonSerialized]
     private List<BattleCardData> cards2;
+    [NonSerialized]
+    private Dictionary<int, int> heroInitSoldier = new Dictionary<int, int>();
 
     [NonSerialized]
     private bool isDoingAction = false;
@@ -94,7 +98,8 @@ public class BattleManager : MonoBehaviour
 
         chessList.Clear();
         missileList.Clear();
-        BattleStatManager.Clear();
+        heroInitSoldier.Clear();
+        battleId = GameManager.Instance.SaveData.battleStatManager.OnNewBattle();
         SkillManager.isReplay = false;
 
         gameFinish = false;
@@ -106,7 +111,7 @@ public class BattleManager : MonoBehaviour
         cards2.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
 
         this.cards1 = cards1;
-        this.cards2 = cards2;
+        this.cards2 = cards2;    
 
         StartCoroutine(GameUpdate());
     }
@@ -126,16 +131,9 @@ public class BattleManager : MonoBehaviour
             var endTime = Time.realtimeSinceStartup;
             Debug.Log("加载地图耗时：" + (endTime - startTime) + "秒");
 
-            // 计算双方总兵力
-            BattleInfoTop.Instance.Init(player1.forceId, player2.forceId, playerInfoList[0].soldierNumInit, playerInfoList[1].soldierNumInit);
-            battleUIManager.BattleResultPanel.gameObject.SetActive(false);
-            // 清空之前的单位
-            foreach (Transform child in battleUIManager.NodeUnits.transform)
-                UnityEngine.Object.Destroy(child.gameObject);
-            battleUIManager.heroInfoGroup.Reset();
+            battleUIManager.ShowBattleBegin(player1, player2, MaxRound, playerInfoList[0].soldierNumInit, playerInfoList[1].soldierNumInit);
             battleUIManager.CreateCastleHUD(player1, GetSpawnPosition(1, 5));
             battleUIManager.CreateCastleHUD(player2, GetSpawnPosition(2, 5));
-            BattleInfoTop.Instance.UpdateRound(0, MaxRound);
         }
     }
 
@@ -151,7 +149,7 @@ public class BattleManager : MonoBehaviour
 
         chessList.Clear();
         missileList.Clear();
-        BattleStatManager.Clear();
+        GameManager.Instance.SaveData.battleStatManager.LoadBattleForReplay(battleId);
 
         gameFinish = false;
         var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
@@ -186,6 +184,8 @@ public class BattleManager : MonoBehaviour
         var id = idCounter++;
         var action = new CreateChessAction(0, tickAdd, id, p.forceId, spawnPoint, heroConfig.Id, heroData.Level, heroData.SoldierNum);
         AddChessAction(action);
+        
+        heroInitSoldier[heroConfig.Id] = heroData.SoldierNum;
     }
 
     public static float tickTimeReal = 0.1f; //加速功能
@@ -320,7 +320,7 @@ public class BattleManager : MonoBehaviour
 
 
         if(showUI)
-            battleUIManager.OnBattleEnd(playerInfoList.Select(foodInfo => foodInfo.forceId).ToList(), battleResult, replay);
+            battleUIManager.OnBattleEnd(battleResult, replay);
 
         // 调用战斗结束回调
         if (battleEndCallback != null)
@@ -339,7 +339,29 @@ public class BattleManager : MonoBehaviour
         }
 
         if(!replay)
-            SaveToFile("battle1.json");
+        {
+            var soldierLoss1 = playerInfoList[0].soldierNumInit - chessList.Where(x => x.forceId == playerInfoList[0].forceId && x.isHero).Sum(x => Math.Max(0, x.hp));
+            var soldierLoss2 = playerInfoList[1].soldierNumInit - chessList.Where(x => x.forceId == playerInfoList[1].forceId && x.isHero).Sum(x => Math.Max(0, x.hp));
+            var foodCost1 = playerInfoList[0].maxFood - playerInfoList[0].food;
+            var foodCost2 = playerInfoList[1].maxFood - playerInfoList[1].food;
+            
+            foreach (var chess in chessList.Where(x => x.isHero))
+            {
+                if (heroInitSoldier.TryGetValue(chess.heroId, out var initSoldier))
+                {
+                    var lost = initSoldier - Math.Max(0, chess.hp);
+                    if (lost > 0)
+                        BattleStatManager.AddLostSoldier(chess.forceId, chess.heroId, lost);
+                }
+            }
+            
+            GameManager.Instance.SaveData.battleStatManager.SaveCurrentBattle(
+                playerInfoList[0].forceId, playerInfoList[1].forceId,
+                battleResult,
+                soldierLoss1, soldierLoss2,
+                foodCost1, foodCost2);
+            SaveToFile("battlereplayer" + battleId + ".json");
+        }
     }
 
     private void InitSummon(int magicHelperUnitId)
@@ -470,19 +492,27 @@ public class BattleManager : MonoBehaviour
 
     public void OnUnitDying(Chess dieUnit)
     {
-        // 从chessList中移除死亡单位
+        if (dieUnit.isHero)
+        {
+            BattleStatManager.SetHeroDead(dieUnit.forceId, dieUnit.heroId);
+            
+            var killerChess = GetChess(dieUnit.lastDamagedPlayerId);
+            if (killerChess != null && killerChess.isHero && killerChess.forceId != dieUnit.forceId)
+            {
+                BattleStatManager.AddKillSoldier(killerChess.forceId, killerChess.heroId, dieUnit.maxHp);
+            }
+        }
+
         chessList.Remove(dieUnit);
 
         gameFinish = false;
         battleResult = BattleResult.Lose;
-        // 检查所有阵营是否还有存活单位
-        // 创建一个数组来统计每个阵营是否有存活单位，数组索引对应阵营编号减1
         bool[] sideHasUnits = new bool[playerInfoList.Count];
         int aliveSideCount = 0;
 
         var unit = GameManager.Instance.GetHero(dieUnit.heroId);
         if(unit != null)
-            unit.soldier = 0; //设置士兵数目
+            unit.soldier = 0;
         foreach (var chessComponent in chessList)
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
@@ -508,7 +538,6 @@ public class BattleManager : MonoBehaviour
         }
 
         UnityEngine.Debug.Log($"id:{dieUnit.id} dieUnit.forceId:{dieUnit.forceId} 存活阵营数:{aliveSideCount}");
-        // 如果只剩一个阵营有存活单位，显示重启按钮
         if (aliveSideCount <= 1)
         {
             gameFinish = true;
