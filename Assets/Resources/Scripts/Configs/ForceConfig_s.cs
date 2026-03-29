@@ -57,7 +57,7 @@ namespace CommonConfig
             config.Clear();
             config[1] = new ForceConfig(1, "刘备", 4, 100001, "#387800");
             config[2] = new ForceConfig(2, "曹操", 1, 100002, "#2828E9");
-            config[3] = new ForceConfig(3, "孙权", 2, 100003, "#D10028");
+            config[3] = new ForceConfig(3, "孙策", 2, 100003, "#D10028");
             config[4] = new ForceConfig(4, "袁绍", 3, 100004, "#DBD33A");
             config[5] = new ForceConfig(5, "董卓", 3, 100005, "#646464");
             config[6] = new ForceConfig(6, "马腾", 4, 100006, "#B28500");

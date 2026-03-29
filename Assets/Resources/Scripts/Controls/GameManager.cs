@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public SaveData SaveData;
     
     // 游戏时间常量
-    public const int BASE_YEAR = 190; // 游戏起始年份
+    public const int BASE_YEAR = 194; // 游戏起始年份
     public const int BORN_AGE = 16;
     public const int SEASONS_PER_YEAR = 36; // 一年的季节数
 
