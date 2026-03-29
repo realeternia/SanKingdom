@@ -46,7 +46,12 @@ public class AttackAction : ChessAction
 
         if (attacker.isHero && Damage > 0)
         {
-            BattleStatManager.AddBattleStat(attacker.forceId, attacker.heroId, Damage);
+            BattleStatManager.AddDamage(attacker.forceId, attacker.heroId, Damage);
+        }
+        
+        if (targetChess.isHero && Damage > 0)
+        {
+            BattleStatManager.AddBeDamaged(targetChess.forceId, targetChess.heroId, Damage);
         }
 
         targetChess.OnHpChanged();   

@@ -8,11 +8,10 @@ public class BattleStatManager
     [Serializable]
     public class BattleStat
     {
-        public int playerId;
+        public int forceId;
         public int heroId;
         public float damage;
-        public int killSoldier;
-        public int lostSoldier;
+        public float beDamaged;
         public bool isDead;
     }
 
@@ -67,7 +66,7 @@ public class BattleStatManager
             currentBattleStats = new Dictionary<int, BattleStat>();
             foreach (var stat in record.battleStats)
             {
-                var uid = stat.playerId * 1000000 + stat.heroId;
+                var uid = stat.forceId * 1000000 + stat.heroId;
                 currentBattleStats[uid] = stat;
             }
         }
@@ -77,13 +76,13 @@ public class BattleStatManager
         }
     }
 
-    public static void AddBattleStat(int playerId, int heroId, float damage)
+    public static void AddDamage(int forceId, int heroId, float damage)
     {
         if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
             return;
             
         var battleStats = currentInstance.currentBattleStats;
-        var uid = playerId * 1000000 + heroId;
+        var uid = forceId * 1000000 + heroId;
         if (battleStats.TryGetValue(uid, out var battleStat))
         {
             battleStat.damage += damage;
@@ -92,7 +91,7 @@ public class BattleStatManager
         {
             var battleStat1 = new BattleStat
             {
-                playerId = playerId,
+                forceId = forceId,
                 heroId = heroId,
                 damage = damage,
             };
@@ -100,59 +99,36 @@ public class BattleStatManager
         }
     }
 
-    public static void AddKillSoldier(int playerId, int heroId, int killCount)
+    public static void AddBeDamaged(int forceId, int heroId, float damage)
     {
         if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
             return;
             
         var battleStats = currentInstance.currentBattleStats;
-        var uid = playerId * 1000000 + heroId;
+        var uid = forceId * 1000000 + heroId;
         if (battleStats.TryGetValue(uid, out var battleStat))
         {
-            battleStat.killSoldier += killCount;
+            battleStat.beDamaged += damage;
         }
         else
         {
             var battleStat1 = new BattleStat
             {
-                playerId = playerId,
+                forceId = forceId,
                 heroId = heroId,
-                killSoldier = killCount,
+                beDamaged = damage,
             };
             battleStats.Add(uid, battleStat1);
         }
     }
 
-    public static void AddLostSoldier(int playerId, int heroId, int lostCount)
+    public static void SetHeroDead(int forceId, int heroId)
     {
         if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
             return;
             
         var battleStats = currentInstance.currentBattleStats;
-        var uid = playerId * 1000000 + heroId;
-        if (battleStats.TryGetValue(uid, out var battleStat))
-        {
-            battleStat.lostSoldier += lostCount;
-        }
-        else
-        {
-            var battleStat1 = new BattleStat
-            {
-                playerId = playerId,
-                heroId = heroId,
-                lostSoldier = lostCount,
-            };
-            battleStats.Add(uid, battleStat1);
-        }
-    }
-
-    public static void SetHeroDead(int playerId, int heroId)
-    {
-        if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
-            return;
-            
-        var battleStats = currentInstance.currentBattleStats;
-        var uid = playerId * 1000000 + heroId;
+        var uid = forceId * 1000000 + heroId;
         if (battleStats.TryGetValue(uid, out var battleStat))
         {
             battleStat.isDead = true;
@@ -161,7 +137,7 @@ public class BattleStatManager
         {
             var battleStat1 = new BattleStat
             {
-                playerId = playerId,
+                forceId = forceId,
                 heroId = heroId,
                 isDead = true,
             };

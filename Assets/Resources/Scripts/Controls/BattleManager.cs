@@ -71,8 +71,6 @@ public class BattleManager : MonoBehaviour
     private List<BattleCardData> cards1;
     [NonSerialized]
     private List<BattleCardData> cards2;
-    [NonSerialized]
-    private Dictionary<int, int> heroInitSoldier = new Dictionary<int, int>();
 
     [NonSerialized]
     private bool isDoingAction = false;
@@ -98,7 +96,6 @@ public class BattleManager : MonoBehaviour
 
         chessList.Clear();
         missileList.Clear();
-        heroInitSoldier.Clear();
         battleId = GameManager.Instance.SaveData.battleStatManager.OnNewBattle();
         SkillManager.isReplay = false;
 
@@ -184,8 +181,6 @@ public class BattleManager : MonoBehaviour
         var id = idCounter++;
         var action = new CreateChessAction(0, tickAdd, id, p.forceId, spawnPoint, heroConfig.Id, heroData.Level, heroData.SoldierNum);
         AddChessAction(action);
-        
-        heroInitSoldier[heroConfig.Id] = heroData.SoldierNum;
     }
 
     public static float tickTimeReal = 0.1f; //加速功能
@@ -345,16 +340,6 @@ public class BattleManager : MonoBehaviour
             var foodCost1 = playerInfoList[0].maxFood - playerInfoList[0].food;
             var foodCost2 = playerInfoList[1].maxFood - playerInfoList[1].food;
             
-            foreach (var chess in chessList.Where(x => x.isHero))
-            {
-                if (heroInitSoldier.TryGetValue(chess.heroId, out var initSoldier))
-                {
-                    var lost = initSoldier - Math.Max(0, chess.hp);
-                    if (lost > 0)
-                        BattleStatManager.AddLostSoldier(chess.forceId, chess.heroId, lost);
-                }
-            }
-            
             GameManager.Instance.SaveData.battleStatManager.SaveCurrentBattle(
                 playerInfoList[0].forceId, playerInfoList[1].forceId,
                 battleResult,
@@ -495,12 +480,6 @@ public class BattleManager : MonoBehaviour
         if (dieUnit.isHero)
         {
             BattleStatManager.SetHeroDead(dieUnit.forceId, dieUnit.heroId);
-            
-            var killerChess = GetChess(dieUnit.lastDamagedPlayerId);
-            if (killerChess != null && killerChess.isHero && killerChess.forceId != dieUnit.forceId)
-            {
-                BattleStatManager.AddKillSoldier(killerChess.forceId, killerChess.heroId, dieUnit.maxHp);
-            }
         }
 
         chessList.Remove(dieUnit);

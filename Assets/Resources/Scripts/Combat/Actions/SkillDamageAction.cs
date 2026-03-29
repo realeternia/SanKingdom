@@ -34,7 +34,10 @@ public class SkillDamageAction : ChessAction
                 EffectManager.PlaySkillEffect(targetChess, skillCfg.EffectHit);
 
             if(casterChess.isHero && Damage > 0)
-                BattleStatManager.AddBattleStat(casterChess.forceId, casterChess.heroId, Damage);
+                BattleStatManager.AddDamage(casterChess.forceId, casterChess.heroId, Damage);
+            
+            if(targetChess.isHero && Damage > 0)
+                BattleStatManager.AddBeDamaged(targetChess.forceId, targetChess.heroId, Damage);
 
             BattleManager.Instance.AddBattleText("-" + (Damage).ToString(), targetChess.position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 2);
 

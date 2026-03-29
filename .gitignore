@@ -10,5 +10,4 @@
 /Design/Log
 /obj
 .vs/SanKingdom/v17/.suo
-battle.json
-battle1.json
+*.json
