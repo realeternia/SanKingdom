@@ -50,7 +50,7 @@ public class BattleResultPanelManager : MonoBehaviour
             return;
 
         var cityCfg = WorldConfig.GetConfig(record.cityId);
-        textTitle.text = (cityCfg != null ? cityCfg.Cname : "未知") + "之战";
+        textTitle.text = (cityCfg != null ? cityCfg.Cname : "未知") + "之战 (" + record.rounds + "回合)";
 
         var force1 = GameManager.Instance.GetPlayer(record.forceId1);
         var force2 = GameManager.Instance.GetPlayer(record.forceId2);

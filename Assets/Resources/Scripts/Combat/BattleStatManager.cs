@@ -23,6 +23,7 @@ public class BattleStatManager
         public int forceId1;
         public int forceId2;
         public BattleResult result;
+        public int rounds;
         public int soldierLoss1;
         public int soldierLoss2;
         public int foodCost1;
@@ -146,7 +147,7 @@ public class BattleStatManager
         }
     }
 
-    public void SaveCurrentBattle(int cityId, int forceId1, int forceId2, BattleResult result, int soldierLoss1, int soldierLoss2, int foodCost1, int foodCost2)
+    public void SaveCurrentBattle(int cityId, int forceId1, int forceId2, BattleResult result, int rounds, int soldierLoss1, int soldierLoss2, int foodCost1, int foodCost2)
     {
         if (currentBattleStats == null || currentBattleId == 0 || isReplayMode)
             return;
@@ -158,6 +159,7 @@ public class BattleStatManager
             forceId1 = forceId1,
             forceId2 = forceId2,
             result = result,
+            rounds = rounds,
             soldierLoss1 = soldierLoss1,
             soldierLoss2 = soldierLoss2,
             foodCost1 = foodCost1,

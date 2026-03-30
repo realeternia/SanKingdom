@@ -27,6 +27,7 @@ public class PanelManager : MonoBehaviour
     private GameObject popArmySetPanel;
     private GameObject heroInfoPanel;
     private GameObject battleResultPanel;
+    private GameObject replayPanel;
 
     public List<GameObject> openPanelList;
 
@@ -363,6 +364,30 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(battleResultPanel, false);
         Destroy(battleResultPanel);
         battleResultPanel = null;
+    }
+
+    public void ShowReplayPanel()
+    {
+        if (replayPanel == null)
+        {
+            replayPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/ReplayPanel"), transform);
+        }
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        replayPanel.SetActive(true);
+        replayPanel.GetComponent<ReplayPanelManager>().OnShow();
+
+        ChangePanelCount(replayPanel, true);
+    }
+
+    public void HideReplayPanel()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        replayPanel.SetActive(false);
+        replayPanel.GetComponent<ReplayPanelManager>().OnHide();
+
+        ChangePanelCount(replayPanel, false);
+        Destroy(replayPanel);
+        replayPanel = null;
     }
 
     public void SendSignal(string name, string parm1, int parm2)

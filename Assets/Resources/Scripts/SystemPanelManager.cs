@@ -28,7 +28,7 @@ public class SystemPanelManager : MonoBehaviour
 
         replayBtn.onClick.AddListener(() =>
         {
-            PanelManager.Instance.ShowBattleResultPanel(1);
+            PanelManager.Instance.ShowReplayPanel();
         });
     }
 

@@ -347,6 +347,7 @@ public class BattleManager : MonoBehaviour
                 cityId,
                 playerInfoList[0].forceId, playerInfoList[1].forceId,
                 battleResult,
+                round,
                 soldierLoss1, soldierLoss2,
                 foodCost1, foodCost2);
             SaveToFile("battlereplayer" + battleId + ".json");

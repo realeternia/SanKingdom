@@ -120,6 +120,7 @@
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\RampGeneratorTDE.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
     <Compile Include="Assets\Resources\Scripts\CityPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\ReplayCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\EffectManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Assets\Resources\Scripts\SelectHeroControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillPlayAction.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\ReplayPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SystemTip.cs" />
     <Compile Include="Assets\Resources\Scripts\PlayerInfoControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Effect\GlowBeamController.cs" />
