@@ -14,6 +14,7 @@ public class ReplayCellControl : MonoBehaviour
     public TMP_Text force2Name;
 
     public TMP_Text battleName;
+    public TMP_Text timeText;
     public TMP_Text roundPast;
 
     public TMP_Text resultText;
@@ -48,6 +49,7 @@ public class ReplayCellControl : MonoBehaviour
         var cityCfg = WorldConfig.GetConfig(record.cityId);
         battleName.text = (cityCfg != null ? cityCfg.Cname : "未知") + "之战";
         roundPast.text = record.rounds + "回合";
+        timeText.text = GetTimeString(record.year);
 
         var force1 = GameManager.Instance.GetPlayer(record.forceId1);
         var force2 = GameManager.Instance.GetPlayer(record.forceId2);
@@ -96,5 +98,12 @@ public class ReplayCellControl : MonoBehaviour
             resultText.text = "平局";
             resultText.color = Color.yellow;
         }
+    }
+
+    private string GetTimeString(int round)
+    {
+        int year = GameManager.BASE_YEAR + round / GameManager.SEASONS_PER_YEAR;
+        int month = (round % GameManager.SEASONS_PER_YEAR) + 1;
+        return string.Format("{0}年{1}月", year, month);
     }
 }
