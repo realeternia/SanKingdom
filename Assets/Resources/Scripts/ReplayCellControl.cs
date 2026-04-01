@@ -32,7 +32,6 @@ public class ReplayCellControl : MonoBehaviour
     {
         if (currentBattleId > 0)
         {
-            PanelManager.Instance.HideReplayPanel();
             PanelManager.Instance.HideWorld();
             BattleManager.Instance.SetMode(false, true);
             BattleManager.Instance.ReplayBattle(currentBattleId);
@@ -58,6 +57,29 @@ public class ReplayCellControl : MonoBehaviour
 
         force1Name.text = forceName1;
         force2Name.text = forceName2;
+
+        var forceCfg1 = ForceConfig.GetConfig(record.forceId1);
+        var forceCfg2 = ForceConfig.GetConfig(record.forceId2);
+        if (forceCfg1 != null)
+        {
+            var heroCfg1 = HeroConfig.GetConfig(forceCfg1.HeroId);
+            var sprite1 = Resources.Load<Sprite>("Skins/" + heroCfg1.Icon);
+            if (sprite1 != null)
+                force1Icon.sprite = sprite1;
+            Color color1;
+            if (ColorUtility.TryParseHtmlString(forceCfg1.Color, out color1))
+                force1Name.color = color1;
+        }
+        if (forceCfg2 != null)
+        {
+            var heroCfg2 = HeroConfig.GetConfig(forceCfg2.HeroId);
+            var sprite2 = Resources.Load<Sprite>("Skins/" + heroCfg2.Icon);
+            if (sprite2 != null)
+                force2Icon.sprite = sprite2;
+            Color color2;
+            if (ColorUtility.TryParseHtmlString(forceCfg2.Color, out color2))
+                force2Name.color = color2;
+        }
 
         if (record.result == BattleResult.Win)
         {

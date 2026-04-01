@@ -99,6 +99,9 @@ public class BattleManager : MonoBehaviour
 
         chessList.Clear();
         missileList.Clear();
+        actions.Clear();
+        idCounter = 100;
+        lastFoodDeductionTick = 0;
         battleId = GameManager.Instance.SaveData.battleStatManager.OnNewBattle();
         SkillManager.isReplay = false;
 

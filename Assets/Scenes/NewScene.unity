@@ -6318,7 +6318,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 572cba6edbba3c049b2d7e51b123b403, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardShopPanel: {fileID: 0}
   rankPanel: {fileID: 0}
   worldPanel: {fileID: 1181113649}
   cityPanel: {fileID: 1502158686}

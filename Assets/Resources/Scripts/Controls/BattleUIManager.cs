@@ -63,7 +63,6 @@ public class BattleUIManager : MonoBehaviour
 
     public void ShowBattleBegin(Player player1, Player player2, int maxRound, int soldierNum1, int soldierNum2)
     {
-        PanelManager.Instance.HideCity();
         PanelManager.Instance.HideWorld();
 
         BattleInfoTop.Instance.Init(player1.forceId, player2.forceId, soldierNum1, soldierNum2);

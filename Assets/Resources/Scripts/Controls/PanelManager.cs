@@ -12,7 +12,6 @@ public class PanelManager : MonoBehaviour
         Instance = this;
     }
 
-    public GameObject cardShopPanel;
     public GameObject rankPanel;
     private GameObject pickPanel;
     public GameObject worldPanel;
@@ -30,13 +29,14 @@ public class PanelManager : MonoBehaviour
     private GameObject replayPanel;
 
     public List<GameObject> openPanelList;
+    private bool isShowWorld = false;
 
     // Start is called before the first frame update
     void Start()
     {
         ShowPick();
     }
- 
+  
     public void SwitchBGM()
     {
         var round = GameManager.Instance.SaveData.round;
@@ -47,8 +47,8 @@ public class PanelManager : MonoBehaviour
     public void ShowWorld()
     {
         worldPanel.SetActive(true);
-
-        ChangePanelCount(worldPanel, true);
+        gameObject.SetActive(true);
+        isShowWorld = true;
 
         SwitchBGM();
     }
@@ -56,27 +56,11 @@ public class PanelManager : MonoBehaviour
     public void HideWorld()
     {
         worldPanel.SetActive(false);
-
-        ChangePanelCount(worldPanel, false);
+        gameObject.SetActive(false);
+        isShowWorld = false;
 
         var roll = UnityEngine.Random.Range(0, 2);
         BGMPlayer.Instance.PlayBGM(roll == 0 ? "BGMs/weifeng" : "BGMs/pozhu");
-    }
-
-    public void ShowShop()
-    {
-        cardShopPanel.SetActive(true);
-      //  cardShopTxt.SetActive(true);
-
-        ChangePanelCount(cardShopPanel, true);
-    }
-
-    public void HideShop()
-    {
-        cardShopPanel.SetActive(false);
-     //   cardShopTxt.SetActive(false);
-
-        ChangePanelCount(cardShopPanel, false);
     }
 
     public void ShowCity(int cityId)
@@ -414,7 +398,7 @@ public class PanelManager : MonoBehaviour
             openPanelList.Add(panel);
         else
             openPanelList.Remove(panel);
-        if(openPanelList.Count <= 0)
+        if(openPanelList.Count <= 0 && !isShowWorld)
             this.gameObject.SetActive(false);
         else
             this.gameObject.SetActive(true);
