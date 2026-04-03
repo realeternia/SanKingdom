@@ -36,7 +36,7 @@ public class Player
     {
         var hero = GameManager.Instance.GetHero(heroId);
         var currentRound = GameManager.Instance.SaveData.round;
-        return hero.round != currentRound;
+        return hero.round < currentRound;
     }
 
     public void UpdateHeroesRound(int[] heroIds)
@@ -436,7 +436,7 @@ public class Player
         return true;
     }
 
-    public bool ExecuteCityUseHero(int cityId, int devId, int[] heroList, int targetHeroId, out List<PopResultPanelManager.AttrData> attrDatas)
+    public bool ExecuteCityUseHero(int cityId, int devId, int myHeroId, int targetHeroId, out List<PopResultPanelManager.AttrData> attrDatas)
     {
         attrDatas = new List<PopResultPanelManager.AttrData>();
         
@@ -464,9 +464,9 @@ public class Player
             baseSuccessRate = diff * diff / 22 + diff / 8;
         }
 
-        if(heroList.Length > 0)
+        if(myHeroId > 0)
         {
-            var executorHero = GameManager.Instance.GetHero(heroList[0]);
+            var executorHero = GameManager.Instance.GetHero(myHeroId);
             if(executorHero != null)
             {
                 int charm = executorHero.GetAttr("charm");
@@ -474,21 +474,15 @@ public class Player
                     baseSuccessRate = baseSuccessRate * 130 / 100;
                 else if(charm >= 80)
                     baseSuccessRate = baseSuccessRate * 115 / 100;
+                if(myHeroId == ForceConfig.GetConfig(executorHero.forceId).HeroId)
+                    baseSuccessRate = baseSuccessRate * 110 / 100;
             }
         }
 
         int randomVal = UnityEngine.Random.Range(0, 100);
         success = randomVal < baseSuccessRate;
-        
-        if(success)
-        {
-            resultMsg = string.Format("成功 ({0}%)", baseSuccessRate);
-        }
-        else
-        {
-            resultMsg = string.Format("失败 ({0}%)", baseSuccessRate);
-        }
 
+        
         if(success)
         {
             hero.state = HeroState.Normal;
@@ -496,28 +490,30 @@ public class Player
             hero.loyalty = 85;
             hero.SetRoundForRecruit();
 
+            MoveHeroToCity(hero.cityId, cityId, new int[] { targetHeroId });
+
+            resultMsg = string.Format("成功 ({0}%)", baseSuccessRate);
+
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
                 valStr = string.Format("<color=green>{0}</color>", resultMsg),
             });
-
-            cityData.AddAction(devId, heroList.Length);
-            UpdateHeroesRound(heroList);
-            return true;
         }
         else
         {
+            resultMsg = string.Format("失败 ({0}%)", baseSuccessRate);
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
                 valStr = string.Format("<color=red>{0}</color>", resultMsg),
-            });
-
-            cityData.AddAction(devId, heroList.Length);
-            UpdateHeroesRound(heroList);
-            return true;
+            });     
         }
+
+        var heroList = new int[] { myHeroId };
+        cityData.AddAction(devId, heroList.Length);
+        UpdateHeroesRound(heroList);        
+       return true;            
     }
 }
 

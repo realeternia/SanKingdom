@@ -30,12 +30,13 @@ public class CityDevUseHero : MonoBehaviour, ICityDevNode
 
         runButton.onClick.AddListener(() =>
         {
-            if(wildHeroId <= 0)
+            var heroList = heroSelect.heroIds;
+            if(heroList.Length == 0)
             {
                 SystemTip.Instance.ShowTip("请选择至少一个英雄");
                 return;
             }
-            OnRun(devId, new int[] { wildHeroId });
+            OnRun(devId, heroList);
         });
 
     }
@@ -58,7 +59,7 @@ public class CityDevUseHero : MonoBehaviour, ICityDevNode
                 wildHeroId = 0;
                 wildHeroText.text = "请选择英雄";
             }
-        });
+        }, true);
     }
 
     // Update is called once per frame
@@ -93,7 +94,7 @@ public class CityDevUseHero : MonoBehaviour, ICityDevNode
         List<PopResultPanelManager.AttrData> attrDatas;
 
         var cityData = GameManager.Instance.GetCity(cityId);
-        if(!cityData.GetPlayer().ExecuteCityUseHero(cityId, devId, heroList, wildHeroId, out attrDatas))
+        if(!cityData.GetPlayer().ExecuteCityUseHero(cityId, devId, heroList[0], wildHeroId, out attrDatas))
         {
             return;
         }

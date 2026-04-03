@@ -23,6 +23,7 @@ public class PopHeroSelectPanelManager : MonoBehaviour
     public TMP_Text textAttr2;
     private List<PopHeroSelectPanelCell> lastSelectedCells = new List<PopHeroSelectPanelCell>();
     private Action<List<int>> onSelectMethod;
+    private bool mIgnoreActionCheck;
 
 
     // Start is called before the first frame update
@@ -50,11 +51,12 @@ public class PopHeroSelectPanelManager : MonoBehaviour
 
 
     // 加载英雄排名
-    private void Init(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs)
+    private void Init(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs, bool ignoreActionCheck)
     {
         mCityId = cityId;
         mHeroList = heroList;
         mSelectCount = selectCount;
+        mIgnoreActionCheck = ignoreActionCheck;
         // 清除现有的子物体
         foreach (Transform child in rankParent.transform)
         {
@@ -85,7 +87,7 @@ public class PopHeroSelectPanelManager : MonoBehaviour
             cellInfo.popHeroSelectPanelManager = this;
 
             var heroData = GameManager.Instance.GetHero(heroId);
-            cellInfo.Init(heroData, attrs);
+            cellInfo.Init(heroData, attrs, mIgnoreActionCheck);
             itemCount++;
 
             if (checkedList != null && checkedList.Length > 0)
@@ -164,10 +166,10 @@ public class PopHeroSelectPanelManager : MonoBehaviour
         }
     }
 
-    public void OnShow(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod)
+    public void OnShow(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod, bool ignoreActionCheck = false)
     {
         this.onSelectMethod = onSelectMethod;
-        Init(cityId, selectCount, heroList, checkedList, attrs);
+        Init(cityId, selectCount, heroList, checkedList, attrs, ignoreActionCheck);
     }
 
     public void OnHide()

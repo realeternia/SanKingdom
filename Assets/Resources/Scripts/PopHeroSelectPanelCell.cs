@@ -45,7 +45,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
       //  OnSelect(false);
     }
 
-    public void Init(SaveHeroData heroData, string[] attrs)
+    public void Init(SaveHeroData heroData, string[] attrs, bool ignoreActionCheck = false)
     {
         this.heroId = heroData.heroId;
         heroYear = heroData.round;
@@ -70,7 +70,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         textLoyalty.text = heroData.loyalty.ToString();
         textLoyalty.color = heroData.loyalty < 50 ? Color.red : (heroData.loyalty < 80 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
 
-        isAvailable = heroData.round != currentYear;
+        isAvailable = ignoreActionCheck || heroData.round != currentYear;
         
         if(!isAvailable)
         {

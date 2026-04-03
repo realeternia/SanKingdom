@@ -52,7 +52,7 @@ public class SaveHeroData
 
     public void SetRoundForRecruit()
     {
-        round = GameManager.Instance.SaveData.round + 1;
+        round = GameManager.Instance.SaveData.round;
     }
 
     public static SaveHeroData CreateWildHero(int heroId, int cityId)
