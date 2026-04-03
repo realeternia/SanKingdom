@@ -11,68 +11,108 @@ public class CityDevPraiseHero : MonoBehaviour, ICityDevNode
 {
     private int cityId;
     private int devId;
+    private int methodId = 1;
 
-    public int methodId;
     public TMP_Text methodText;
     public TMP_Text attrDesText;
-
-    public SelectHeroControl heroSelect;
+    public TMP_Text costText;
+    
     public Button runButton;
     public Button switchButton;
+    public SelectHeroControl heroSelect;
 
-    // Start is called before the first frame update
     void Start()
     {
+        switchButton.onClick.AddListener(() =>
+        {
+            OnSwitchMethod();
+        });
+
         runButton.onClick.AddListener(() =>
         {
-            var heroList = heroSelect.heroIds;
-            if(heroList.Length == 0)
+            var heroIds = heroSelect.heroIds;
+            if(heroIds.Length == 0)
             {
                 SystemTip.Instance.ShowTip("请选择至少一个英雄");
                 return;
             }
-            OnRun(devId, heroList);
+            OnRun(devId, heroIds);
         });
 
+        heroSelect.OnHeroCountChange = (count) =>
+        {
+            UpdateCostText(count);
+        };
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnSwitchMethod()
     {
-        
-    } 
+        if(methodId == 1)
+        {
+            methodId = 2;
+            methodText.text = "赏赐";
+            attrDesText.text = "消耗每人100金,提升忠心度3-5";
+        }
+        else
+        {
+            methodId = 1;
+            methodText.text = "褒奖";
+            attrDesText.text = "消耗武将本回合行动力,提升忠心度1-3";
+        }
+        heroSelect.SetMode(methodId);
+        UpdateCostText(0);
+    }
+
+    private void UpdateCostText(int heroCount)
+    {
+        if(costText != null)
+        {
+             var cityData = GameManager.Instance.GetCity(cityId);
+            if(methodId == 2)
+            {
+                costText.text = string.Format("{0}/{1}", heroCount * 100, cityData.gold);
+            }
+            else
+            {
+                costText.text = string.Format("{0}/{1}", 0, cityData.gold);
+            }
+        }
+    }
 
     public void SetDev(int cityId, int devId)
     {
         this.cityId = cityId;
         this.devId = devId;
-        var devCfg = CityDevConfig.GetConfig(devId);
+        this.methodId = 1;
+        
+        methodText.text = "褒奖";
+        attrDesText.text = "消耗武将本回合行动力，提升忠心度1-3";
 
-        attrDesText.text = devCfg.Des;
- 
-        // 设置英雄选择控件，获取在野英雄
+        heroSelect.SetMode(methodId);
+        UpdateCostText(0);
+
         heroSelect.SetDevId(cityId, devId);
     }
 
     private void OnRun(int devId, int[] heroList)
     {
-        PanelManager.Instance.HideCityDev();
-        
+        var cityData = GameManager.Instance.GetCity(cityId);
         List<PopResultPanelManager.AttrData> attrDatas;
 
-        var cityData = GameManager.Instance.GetCity(cityId);
-        // if(!cityData.GetPlayer().ExecuteCityUseHero(cityId, devId, heroList[0], wildHeroId, out attrDatas))
-        // {
-        //     return;
-        // }
-        var devConfig = CityDevConfig.GetConfig(devId);
+        if(!cityData.GetPlayer().ExecuteCityPraiseHero(cityId, devId, heroList, methodId, out attrDatas))
+        {
+            return;
+        }
         
-       // PanelManager.Instance.ShowPopResultPanel(CityDevConfig.GetConfig(devId).Cname, attrDatas, null, devConfig.Mp4);
+        PanelManager.Instance.HideCityDev();
+        
+        var devConfig = CityDevConfig.GetConfig(devId);
+        string title = methodId == 1 ? "褒奖" : "赏赐";
+        PanelManager.Instance.ShowPopResultPanel(title, attrDatas, null, devConfig.Mp4);
     }
 
     public void OnShow()
     {
-
     }
 
     public void OnHide()

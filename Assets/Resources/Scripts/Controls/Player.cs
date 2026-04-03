@@ -515,5 +515,74 @@ public class Player
         UpdateHeroesRound(heroList);        
        return true;            
     }
+
+    public bool ExecuteCityPraiseHero(int cityId, int devId, int[] heroList, int methodId, out List<PopResultPanelManager.AttrData> attrDatas)
+    {
+        attrDatas = new List<PopResultPanelManager.AttrData>();
+        
+        var cityData = GameManager.Instance.GetCity(cityId);
+        
+        if(methodId == 1)
+        {
+            heroList = GetAvailableHeroesThisYear(heroList).ToArray();
+            if(heroList.Length == 0)
+            {
+                SystemTip.Instance.ShowTip("所选英雄本回合已行动");
+                return false;
+            }
+        }
+        
+        if(methodId == 2)
+        {
+            int totalCost = heroList.Length * 100;
+            if(cityData.gold < totalCost)
+            {
+                SystemTip.Instance.ShowTip("黄金不足");
+                return false;
+            }
+            cityData.gold -= totalCost;
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = "Gold",
+                valOld = cityData.gold + totalCost,
+                valAddon = -totalCost,
+                valStr = null
+            });
+        }
+
+        foreach(var heroId in heroList)
+        {
+            var hero = GameManager.Instance.GetHero(heroId);
+            int loyaltyOld = hero.loyalty;
+            int loyaltyAdd = 0;
+            
+            if(methodId == 1)
+            {
+                loyaltyAdd = UnityEngine.Random.Range(1, 4);
+            }
+            else if(methodId == 2)
+            {
+                loyaltyAdd = UnityEngine.Random.Range(3, 6);
+            }
+            
+            hero.loyalty = System.Math.Min(100, hero.loyalty + loyaltyAdd);
+            
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                valStr = HeroConfig.GetConfig(heroId).Name + "忠心",
+                valOld = loyaltyOld,
+                valAddon = hero.loyalty - loyaltyOld,
+            });
+        }
+
+        if(methodId == 1)
+        {
+            UpdateHeroesRound(heroList);
+        }
+        
+        cityData.AddAction(devId, heroList.Length);
+        
+        return true;
+    }
 }
 

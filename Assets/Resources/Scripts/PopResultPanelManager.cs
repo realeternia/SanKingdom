@@ -20,7 +20,7 @@ public class PopResultPanelManager : MonoBehaviour
     }
 
     public VideoPlayer videoPlayer;
-    public RawImage rawImage; // 用于显示视频画面的RawImage组件
+    public RawImage rawImage;
 
     public GameObject videoPanel;
     public GameObject infoPanel;
@@ -29,14 +29,13 @@ public class PopResultPanelManager : MonoBehaviour
     public Button closeBtn;
     public Button runBtn;
 
-    public TMP_Text attr1Text;
-    public TMP_Text attrVal1Text;
-    public TMP_Text attr2Text;
-    public TMP_Text attrVal2Text;
-    public TMP_Text attr3Text;
-    public TMP_Text attrVal3Text;
+    public ScrollRect scrollRectMain;
+    public GameObject resultRegionMain;    
+
+    public GameObject resultItemPrefab;
 
     private Action afterRun;
+    private List<GameObject> resultItems = new List<GameObject>();
 
     void Start()
     {
@@ -54,41 +53,32 @@ public class PopResultPanelManager : MonoBehaviour
         
         try
         {
-            // 配置视频播放器的基本属性
-            videoPlayer.playOnAwake = false; // 不要在唤醒时自动播放
-            videoPlayer.isLooping = false; // 不循环播放
+            videoPlayer.playOnAwake = false;
+            videoPlayer.isLooping = false;
             
-            // 配置音频输出
             videoPlayer.audioOutputMode = VideoAudioOutputMode.Direct;
             videoPlayer.controlledAudioTrackCount = 1;
-            videoPlayer.SetDirectAudioVolume(0, 1.0f); // 设置音量为100%
+            videoPlayer.SetDirectAudioVolume(0, 1.0f);
             
             Debug.Log("音频输出模式: " + videoPlayer.audioOutputMode);
             
-            // 配置渲染目标
             if (rawImage != null)
             {
                 Debug.Log("配置渲染目标...");
                 
-                // 尝试使用不同的渲染模式
-                // 先尝试RenderTexture模式
                 videoPlayer.renderMode = VideoRenderMode.RenderTexture;
                 
-                // 创建一个默认大小的RenderTexture (可以根据需要调整)
                 int defaultWidth = 1280;
                 int defaultHeight = 720;
                 
-                // 创建RenderTexture
                 RenderTexture renderTexture = new RenderTexture(
                     defaultWidth, 
                     defaultHeight, 
                     16, 
                     RenderTextureFormat.ARGB32);
                 
-                // 设置VideoPlayer的目标RenderTexture
                 videoPlayer.targetTexture = renderTexture;
                 
-                // 将RenderTexture设置到RawImage上
                 rawImage.texture = renderTexture;
                 
                 Debug.Log("渲染目标配置完成，使用默认分辨率: " + defaultWidth + "x" + defaultHeight);
@@ -99,12 +89,10 @@ public class PopResultPanelManager : MonoBehaviour
             {
                 Debug.LogWarning("RawImage组件未指定且不允许自动创建，视频将不会显示画面");
                 
-                // 如果没有RawImage，尝试使用CameraFarPlane渲染模式
                 videoPlayer.renderMode = VideoRenderMode.CameraFarPlane;
                 Debug.Log("使用CameraFarPlane渲染模式");
             }
             
-            // 添加事件监听器
             videoPlayer.errorReceived += OnVideoError;
             videoPlayer.prepareCompleted += OnVideoReady;
             videoPlayer.started += OnVideoStarted;
@@ -119,32 +107,26 @@ public class PopResultPanelManager : MonoBehaviour
         }
     }
     
-    // 视频错误事件
     private void OnVideoError(VideoPlayer vp, string message)
     {
         Debug.LogError("视频播放错误: " + message);
     }
     
-    // 视频准备完成事件
     private void OnVideoReady(VideoPlayer vp)
     {
         Debug.Log("视频准备完成，开始播放...");
         Debug.Log("视频实际分辨率: " + vp.width + "x" + vp.height);
         
-        // 动态调整RenderTexture大小以匹配视频实际分辨率
         if (rawImage != null && vp.targetTexture != null)
         {
-            // 销毁旧的RenderTexture
             Destroy(vp.targetTexture);
             
-            // 创建与视频分辨率匹配的新RenderTexture
             RenderTexture newRenderTexture = new RenderTexture(
                 (int)vp.width, 
                 (int)vp.height, 
                 16, 
                 RenderTextureFormat.ARGB32);
             
-            // 更新VideoPlayer和RawImage的RenderTexture
             vp.targetTexture = newRenderTexture;
             rawImage.texture = newRenderTexture;
             
@@ -154,7 +136,6 @@ public class PopResultPanelManager : MonoBehaviour
         vp.Play();
     }
     
-    // 视频开始播放事件
     private void OnVideoStarted(VideoPlayer vp)
     {
         Debug.Log("视频开始播放");
@@ -162,7 +143,6 @@ public class PopResultPanelManager : MonoBehaviour
         Debug.Log("是否有音频: " + vp.audioOutputMode);
         Debug.Log("音频轨道数: " + vp.audioTrackCount);
 
-        // 检查RawImage状态
         if (rawImage != null)
         {
             Debug.Log("RawImage存在: " + rawImage.name);
@@ -175,13 +155,11 @@ public class PopResultPanelManager : MonoBehaviour
         }
     }
     
-    // 视频播放完成事件
     private void OnVideoFinished(VideoPlayer vp)
     {
         Debug.Log("视频播放完成");
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -192,103 +170,65 @@ public class PopResultPanelManager : MonoBehaviour
         titleText.text = title;
         this.afterRun = afterRun;
         runBtn.gameObject.SetActive(false);
-        if (attrDatas.Count > 0)
+
+        ClearResultItems();
+
+        foreach (var attrData in attrDatas)
         {
-            attr1Text.gameObject.SetActive(true);
-            
-            if (!string.IsNullOrEmpty(attrDatas[0].valStr))
+            GameObject item = Instantiate(resultItemPrefab, resultRegionMain.transform);
+            PopResultCell cell = item.GetComponent<PopResultCell>();
+            if (cell != null)
             {
-                attr1Text.text = attrDatas[0].attr;
-                attrVal1Text.text = attrDatas[0].valStr;
+                cell.SetData(attrData);
             }
-            else
-            {
-                attr1Text.text = CityAttrConfig.GetConfigByname(attrDatas[0].attr.ToLower()).Cname;
-                if (attrDatas[0].valAddon > 0)
-                    attrVal1Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrDatas[0].valOld, attrDatas[0].valAddon);
-                else
-                    attrVal1Text.text = string.Format("{0}(<color=red>{1}</color>)", attrDatas[0].valOld, attrDatas[0].valAddon);
-            }
-        }
-        else
-        {
-            attr1Text.gameObject.SetActive(false);
+            resultItems.Add(item);
         }
 
-        if (attrDatas.Count > 1)
+        RectTransform regionRect = resultRegionMain.GetComponent<RectTransform>();
+        RectTransform cellRect = resultItemPrefab.GetComponent<RectTransform>();
+        if (regionRect != null && cellRect != null)
         {
-            attr2Text.gameObject.SetActive(true);
-            if (!string.IsNullOrEmpty(attrDatas[1].valStr))
-            {
-                attr2Text.text = attrDatas[1].attr;
-                attrVal2Text.text = attrDatas[1].valStr;
-            }
-            else
-            {
-                attr2Text.text = CityAttrConfig.GetConfigByname(attrDatas[1].attr.ToLower()).Cname;
-                if(attrDatas[1].valAddon > 0)
-                    attrVal2Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrDatas[1].valOld, attrDatas[1].valAddon);
-                else
-                    attrVal2Text.text = string.Format("{0}(<color=red>{1}</color>)", attrDatas[1].valOld, attrDatas[1].valAddon);
-            }
+            regionRect.sizeDelta = new Vector2(regionRect.sizeDelta.x, cellRect.sizeDelta.y * attrDatas.Count);
         }
-        else
+        if (scrollRectMain != null)
         {
-            attr2Text.gameObject.SetActive(false);
-        }
-        if (attrDatas.Count > 2)
-        {
-            attr3Text.gameObject.SetActive(true);
-            if (!string.IsNullOrEmpty(attrDatas[2].valStr))
-            {
-                attr3Text.text = attrDatas[2].attr;
-                attrVal3Text.text = attrDatas[2].valStr;
-            }
-            else
-            {
-                attr3Text.text = CityAttrConfig.GetConfigByname(attrDatas[2].attr.ToLower()).Cname;
-                if(attrDatas[2].valAddon > 0)
-                    attrVal3Text.text = string.Format("{0}(<color=green>+{1}</color>)", attrDatas[2].valOld, attrDatas[2].valAddon);
-                else
-                    attrVal3Text.text = string.Format("{0}(<color=red>{1}</color>)", attrDatas[2].valOld, attrDatas[2].valAddon);
-            }
-        }
-        else
-        {
-            attr3Text.gameObject.SetActive(false);
+            scrollRectMain.normalizedPosition = new Vector2(0, 1);
         }
 
         InitVideo(path);
 
-        // 启动协程，4.5秒后隐藏videoPanel
         StartCoroutine(HideVideoPanelAfterDelay(2.96f));
+    }
+
+    private void ClearResultItems()
+    {
+        foreach (var item in resultItems)
+        {
+            if (item != null)
+            {
+                Destroy(item);
+            }
+        }
+        resultItems.Clear();
     }
 
     private void InitVideo(string path)
     {
         try
         {
-            // 在Unity中，Resources.Load<VideoClip>无法直接加载.mp4文件
-            // 需要使用VideoPlayer的url属性加载本地视频文件
-
             string videoPath;
             string fullVideoPath;
 
-            // 根据不同平台构建正确的视频路径
 #if UNITY_ANDROID
-            // 安卓平台：直接使用Application.streamingAssetsPath（已包含jar:file:///前缀）
             videoPath = Application.streamingAssetsPath + "/Videos/" + path;
             fullVideoPath = videoPath;
 #elif UNITY_IPHONE
-                // iOS平台：使用StreamingAssets路径，需要file://前缀
                 videoPath = "file://" + Application.streamingAssetsPath + "/Videos/" + path;
                 fullVideoPath = Application.streamingAssetsPath + "/Videos/" + path;
 #elif UNITY_STANDALONE_WIN
-                // Windows平台：使用StreamingAssets路径
                 videoPath = Application.streamingAssetsPath + "/Videos/" + path;
                 fullVideoPath = videoPath;
 #else
-                // 默认平台：使用StreamingAssets路径
                 videoPath = Application.streamingAssetsPath + "/Videos/" + path;
                 fullVideoPath = videoPath;
 #endif
@@ -298,12 +238,9 @@ public class PopResultPanelManager : MonoBehaviour
             Debug.Log("完整文件路径: " + fullVideoPath);
 
             videoPlayer.clip = null;
-            // 设置视频源类型为URL
             videoPlayer.source = VideoSource.Url;
-            // 设置视频URL
             videoPlayer.url = videoPath;
 
-            // 准备视频
             Debug.Log("准备播放视频...");
             videoPlayer.Prepare();
         }
@@ -314,15 +251,12 @@ public class PopResultPanelManager : MonoBehaviour
         }
     }
 
-    // 协程：延迟后隐藏videoPanel
     private System.Collections.IEnumerator HideVideoPanelAfterDelay(float delaySeconds)
     {
         Debug.Log("开始等待隐藏videoPanel，延迟时间: " + delaySeconds + "秒");
 
-        // 等待指定的延迟时间
         yield return new WaitForSeconds(delaySeconds);
 
-        // 隐藏videoPanel
         videoPanel.SetActive(false);
 
         if (afterRun != null)
@@ -344,17 +278,17 @@ public class PopResultPanelManager : MonoBehaviour
         
         try
         {
-            // 停止视频播放
             if (videoPlayer.isPlaying)
             {
                 videoPlayer.Stop();
                 Debug.Log("视频已停止播放");
             }
             
-            // 清理视频资源
             videoPlayer.source = VideoSource.VideoClip;
             videoPlayer.clip = null;
             rawImage.texture = null;
+
+            ClearResultItems();
 
             Debug.Log("视频资源已清理");
         }
@@ -365,4 +299,3 @@ public class PopResultPanelManager : MonoBehaviour
         }
     }    
 }
-

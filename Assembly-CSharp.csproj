@@ -110,6 +110,7 @@
     <Compile Include="Assets\Resources\Scripts\BattleResultCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateMissileAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\PopResultCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateEffectAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleUIManager.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\UIColorChanger.cs" />

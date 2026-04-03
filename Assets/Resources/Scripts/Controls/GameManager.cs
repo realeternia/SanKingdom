@@ -145,6 +145,17 @@ public class GameManager : MonoBehaviour
         return SaveData.heros.FirstOrDefault(h => h.heroId == heroId);
     }
 
+    public List<int> GetPraiseableHeroList(int forceId)
+    {
+        var heroIds = new List<int>();
+        foreach (var member in SaveData.heros)
+        {
+            if(member.state == HeroState.Normal && member.forceId == forceId && member.loyalty < 100)
+                heroIds.Add(member.heroId);
+        }
+        return heroIds;
+    }
+
   //新游戏开始数据初始化
     public void NewGame(int forceId)
     {

@@ -131,6 +131,7 @@ namespace CommonConfig
             config[21301] = new CityDevConfig(21301, "army", "训练", "提升军队士气", "CityDevNormal", false, "train", 0, 3, "Power", new int[]{3,9}, "", null, "", null, new string[]{"LeadShip","Str"}, "sod", "train3.mp4");
             config[21302] = new CityDevConfig(21302, "army", "征兵", "提升士兵数量", "CityDevNormal", false, "zhengbing", 300, 3, "Soldier", new int[]{200,600}, "Secure", new int[]{-2,-5}, "ArchPeople", new int[]{-500,-1500}, new string[]{"LeadShip","Charm"}, "sod", "zhengbing2.mp4");
             config[21401] = new CityDevConfig(21401, "house", "登用", "提拔在野武将", "CityDevUseHero", false, "wild", 0, 1, "", null, "", null, "", null, new string[]{"Charm","Inte"}, "", "wild.mp4");
+            config[21402] = new CityDevConfig(21402, "house", "褒奖", "提升武将忠心度", "CityDevPraiseHero", false, "wild", 100, 10, "", null, "", null, "", null, new string[]{"Charm","Inte"}, "", "wild.mp4");
 
 
 
