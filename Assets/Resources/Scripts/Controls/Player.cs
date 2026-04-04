@@ -278,7 +278,7 @@ public class Player
 
 
     // 执行城市战斗发展
-    public void ExecuteCityBattleDev(int cityId, int devId, int[] heroList, int foodUse, int targetCityId)
+    public void ExecuteCityBattleDev(int cityId, int devId, int[] heroList, int foodUse, int targetCityId, bool isAI)
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
@@ -289,7 +289,10 @@ public class Player
         
         if (devConfig.FindEnemy)
         {
-            BattleManager.Instance.SetMode(true, true);
+            if (isAI)
+                BattleManager.Instance.SetMode(true, false);
+            else
+                BattleManager.Instance.SetMode(false, true);
 
             citySrc.food -= foodUse;
             var defenceFood = cityDest.food;
@@ -331,17 +334,34 @@ public class Player
     }
 
     // 移动英雄到目标城市
-    public void MoveHeroToCity(int srcCityId, int destCityId, int[] heroIds)
+    public void MoveHeroToCity(int srcCityId, int destCityId, int[] heroIds, bool sendSignal = true)
     {
-        var citySrc = GameManager.Instance.GetCity(srcCityId);
+        if (destCityId <= 0)
+        {
+            Debug.LogError("MoveHeroToCity: destCityId is invalid");
+            return;
+        }
+        
+        if (srcCityId > 0)
+        {
+            var citySrc = GameManager.Instance.GetCity(srcCityId);
+            if (citySrc != null)
+            {
+                citySrc.MoveHeroTo(heroIds, destCityId);
+                citySrc.RecalculateHeros();
+            }
+        }
+        
         var cityDest = GameManager.Instance.GetCity(destCityId);
+        if (cityDest != null)
+        {
+            cityDest.RecalculateHeros();
+        }
         
-        citySrc.MoveHeroTo(heroIds, destCityId);
-        citySrc.RecalculateHeros();
-        cityDest.RecalculateHeros();
-        
-        // 发送城市属性变化信号
-        PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
+        if (sendSignal)
+        {
+            PanelManager.Instance.SendSignal("CityAttrChange", "", destCityId);
+        }
     }
 
     public List<SaveCityData> GetCityList()
@@ -436,7 +456,7 @@ public class Player
         return true;
     }
 
-    public bool ExecuteCityUseHero(int cityId, int devId, int myHeroId, int targetHeroId, out List<PopResultPanelManager.AttrData> attrDatas)
+    public bool ExecuteCityUseHero(int cityId, int devId, int myHeroId, int targetHeroId, out List<PopResultPanelManager.AttrData> attrDatas, bool sendSignal = true)
     {
         attrDatas = new List<PopResultPanelManager.AttrData>();
         
@@ -490,7 +510,7 @@ public class Player
             hero.loyalty = 85;
             hero.SetRoundForRecruit();
 
-            MoveHeroToCity(hero.cityId, cityId, new int[] { targetHeroId });
+            MoveHeroToCity(hero.cityId, cityId, new int[] { targetHeroId }, sendSignal);
 
             resultMsg = string.Format("成功 ({0}%)", baseSuccessRate);
 

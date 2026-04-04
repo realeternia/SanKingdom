@@ -156,7 +156,7 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         PanelManager.Instance.HideCityDev();    
         
         // 执行城市战斗发展
-        player.ExecuteCityBattleDev(cityId, devId, heroList, foodCost, selectedCityId);
+        player.ExecuteCityBattleDev(cityId, devId, heroList, foodCost, selectedCityId, false);
     }
 
     public void OnShow()

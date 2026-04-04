@@ -1,0 +1,59 @@
+using System.Collections.Generic;
+using CommonConfig;
+
+public class AIStrategyContext
+{
+    public Player player;
+    public List<SaveCityData> cities;
+    public Dictionary<int, List<SaveHeroData>> cityHeroes;
+    
+    public AIStrategyContext(Player player)
+    {
+        this.player = player;
+        this.cities = player.GetCityList();
+        this.cityHeroes = new Dictionary<int, List<SaveHeroData>>();
+        
+        foreach (var city in cities)
+        {
+            cityHeroes[city.cityId] = new List<SaveHeroData>();
+            var heroIds = city.GetNormalHeroList();
+            foreach (var heroId in heroIds)
+            {
+                cityHeroes[city.cityId].Add(GameManager.Instance.GetHero(heroId));
+            }
+        }
+    }
+    
+    public AIStrategyContext(Player player, List<SaveCityData> cities)
+    {
+        this.player = player;
+        this.cities = cities;
+        this.cityHeroes = new Dictionary<int, List<SaveHeroData>>();
+        
+        foreach (var city in cities)
+        {
+            cityHeroes[city.cityId] = new List<SaveHeroData>();
+            var heroIds = city.GetNormalHeroList();
+            foreach (var heroId in heroIds)
+            {
+                cityHeroes[city.cityId].Add(GameManager.Instance.GetHero(heroId));
+            }
+        }
+    }
+    
+    public List<SaveHeroData> GetAvailableHeroes(int cityId)
+    {
+        var result = new List<SaveHeroData>();
+        if (cityHeroes.ContainsKey(cityId))
+        {
+            foreach (var hero in cityHeroes[cityId])
+            {
+                if (player.CheckHeroRound(hero.heroId))
+                {
+                    result.Add(hero);
+                }
+            }
+        }
+        return result;
+    }
+}

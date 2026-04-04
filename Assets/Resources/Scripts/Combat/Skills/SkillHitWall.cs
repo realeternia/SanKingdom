@@ -90,7 +90,7 @@ public class SkillHitWall : Skill
         else
         {
             var summonTime = GetSummonTime();
-            EffectManager.PlayPosSkillEffect(target, targetPosList[parm1 - 1], skillCfg.EffectSize, skillCfg.EffectArea, summonTime);
+            // EffectManager.PlayPosSkillEffect(target, targetPosList[parm1 - 1], skillCfg.EffectSize, skillCfg.EffectArea, summonTime);
         }
 
     }

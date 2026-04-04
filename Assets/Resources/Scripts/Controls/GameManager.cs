@@ -287,6 +287,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator NextRoundCoroutine()
     {
+        StrategicDecider.ClearRoundData();
+        
         foreach (var player in players)
         {
             PanelManager.Instance.SendSignal("AICheck", player.pname, player.forceId);
