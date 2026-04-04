@@ -152,6 +152,10 @@ public class BattleStatManager
     {
         if (currentBattleStats == null || currentBattleId == 0 || isReplayMode)
             return;
+        
+        var existingRecord = battleRecords.FirstOrDefault(r => r.battleId == currentBattleId);
+        if (existingRecord != null)
+            return;
             
         var record = new BattleRecord
         {

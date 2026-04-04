@@ -89,8 +89,20 @@ public class BattleManager : MonoBehaviour
         this.showUI = showUI;
     }
 
+    [NonSerialized]
+    public bool IsBattleRunning = false;
+    [NonSerialized]
+    private Coroutine currentBattleCoroutine = null;
+    
     public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, int food1, int food2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
     {
+        if (IsBattleRunning)
+        {
+            UnityEngine.Debug.LogWarning($"BattleBegin called while battle is running, skipping. cityId={cityId}");
+            return;
+        }
+        IsBattleRunning = true;
+        
         battleEndCallback = callback;
         this.cityId = cityId;
         playerInfoList.Clear();
@@ -116,7 +128,7 @@ public class BattleManager : MonoBehaviour
         this.cards1 = cards1;
         this.cards2 = cards2;    
 
-        StartCoroutine(GameUpdate());
+        currentBattleCoroutine = StartCoroutine(GameUpdate());
     }
 
     private void InitUI(Player player1, Player player2)
@@ -142,6 +154,13 @@ public class BattleManager : MonoBehaviour
 
     public void ReplayBattle(int replayBattleId)
     {
+        if (IsBattleRunning)
+        {
+            UnityEngine.Debug.LogWarning($"ReplayBattle called while battle is running, skipping. replayBattleId={replayBattleId}");
+            return;
+        }
+        IsBattleRunning = true;
+        
         LoadFromFile("battlereplayer" + replayBattleId + ".json");
         SkillManager.isReplay = true;
 
@@ -160,7 +179,7 @@ public class BattleManager : MonoBehaviour
         
         InitUI(player1, player2);
 
-        StartCoroutine(GameUpdate(true));
+        currentBattleCoroutine = StartCoroutine(GameUpdate(true));
     }
 
     private Vector3 GetSpawnPosition(int side, int indx)
@@ -195,7 +214,7 @@ public class BattleManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
-        Debug.Log($"GameUpdatett start realTime={Time.time}");
+        Debug.Log($"GameUpdatett start battleId={battleId} realTime={Time.time}");
         var speed = 1;
         if (quickMode && showUI)
             speed = 10;
@@ -317,7 +336,7 @@ public class BattleManager : MonoBehaviour
             //    sw.Stop();
             //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
         }
-        Debug.Log($"GameUpdatett end realTime={Time.time}");
+        Debug.Log($"GameUpdatett end battleId={battleId} realTime={Time.time}");
 
 
         if(showUI)
@@ -355,6 +374,9 @@ public class BattleManager : MonoBehaviour
                 foodCost1, foodCost2);
             SaveToFile("battlereplayer" + battleId + ".json");
         }
+        
+        IsBattleRunning = false;
+        currentBattleCoroutine = null;
     }
 
     private void InitSummon(int magicHelperUnitId)

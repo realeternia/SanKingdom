@@ -289,7 +289,8 @@ public class GameManager : MonoBehaviour
     {
         StrategicDecider.ClearRoundData();
         
-        foreach (var player in players)
+        var playersCopy = new List<Player>(players);
+        foreach (var player in playersCopy)
         {
             PanelManager.Instance.SendSignal("AICheck", player.pname, player.forceId);
 
@@ -299,6 +300,12 @@ public class GameManager : MonoBehaviour
             AI.ExecuteAiActions(player);
 
             yield return new WaitForSeconds(0.23f);
+            
+            // 等待AI发起的战斗结束
+            while (BattleManager.Instance.IsBattleRunning)
+            {
+                yield return new WaitForSeconds(0.1f);
+            }
         }
 
         PanelManager.Instance.SendSignal("AICheck", "", 0);
