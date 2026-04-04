@@ -23,23 +23,7 @@ public class AIStrategyContext
             }
         }
     }
-    
-    public AIStrategyContext(Player player, List<SaveCityData> cities)
-    {
-        this.player = player;
-        this.cities = cities;
-        this.cityHeroes = new Dictionary<int, List<SaveHeroData>>();
-        
-        foreach (var city in cities)
-        {
-            cityHeroes[city.cityId] = new List<SaveHeroData>();
-            var heroIds = city.GetNormalHeroList();
-            foreach (var heroId in heroIds)
-            {
-                cityHeroes[city.cityId].Add(GameManager.Instance.GetHero(heroId));
-            }
-        }
-    }
+   
     
     public List<SaveHeroData> GetAvailableHeroes(int cityId)
     {

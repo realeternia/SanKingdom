@@ -92,12 +92,6 @@ public class CityEvaluator
         return (deficit * 100) / alert;
     }
     
-    public static bool HasCriticalNeed(SaveCityData city)
-    {
-        var needs = EvaluateCity(city);
-        return needs.Count > 0 && needs[0].priority >= 50;
-    }
-    
     public static bool IsFrontlineCity(SaveCityData city)
     {
         var nearCityIds = WorldConfig.GetConfig(city.cityId)?.WorldNearIds;

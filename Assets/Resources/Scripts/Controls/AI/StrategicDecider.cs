@@ -188,17 +188,4 @@ public class StrategicDecider
         
         return candidateCities[0].cityId;
     }
-    
-    public static int CountAtkDefCities(Dictionary<int, CityStrategyState> strategies)
-    {
-        int count = 0;
-        foreach (var kvp in strategies)
-        {
-            if (kvp.Value == CityStrategyState.Atk || kvp.Value == CityStrategyState.Def)
-            {
-                count++;
-            }
-        }
-        return count;
-    }
 }

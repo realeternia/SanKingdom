@@ -55,7 +55,9 @@ public class TaskPriorityCalculator
             case "CityDevNormal":
                 return IsNormalTaskAvailable(city, config);
             case "CityDevBattle":
-                return config.FindEnemy && HasSoldier(city);
+                return HasSoldier(city);
+            case "CityDevMove":
+                return HasSoldier(city);
             case "CityDevUseHero":
                 return city.GetRecruitableHeroList().Count > 0;
             case "CityDevChange":

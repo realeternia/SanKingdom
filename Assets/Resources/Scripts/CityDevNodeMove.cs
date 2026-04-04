@@ -7,7 +7,7 @@ using CommonConfig;
 using System.Linq;
 using System;
 
-public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
+public class CityDevNodeMove : MonoBehaviour, ICityDevNode
 {
     private int cityId;
     private int devId;
@@ -27,7 +27,6 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
 
     private int selectedCityId;
 
-    // Start is called before the first frame update
     void Start()
     {
         runButton.onClick.AddListener(() =>
@@ -66,7 +65,7 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         };
         destButton.onClick.AddListener(() =>
         {
-            PanelManager.Instance.ShowPopCitySelectPanel(cityId, true, (selectedCityId) =>
+            PanelManager.Instance.ShowPopCitySelectPanel(cityId, false, (selectedCityId) =>
             {
                 this.selectedCityId = selectedCityId;
                 if(selectedCityId == 0)
@@ -80,7 +79,6 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         });
         foodButton.onClick.AddListener(() =>
         {
-            // 在10,20,30日粮间切换
             if(foodCount == 10)
             {
                 foodCount = 20;
@@ -112,7 +110,6 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         foodCostText.color = foodCost <= citySrc.food ? Color.white : Color.red;
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -143,11 +140,9 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         var soldierTotal = heroList.Sum(x => GameManager.Instance.GetHero(x).soldier);
         var foodCost = soldierTotal * foodCount / 20;
 
-        // 隐藏相关UI面板
         PanelManager.Instance.HideCityDev();    
         
-        // 执行城市战斗发展
-        player.ExecuteCityBattleDev(cityId, devId, heroList, foodCost, selectedCityId, false);
+        player.ExecuteCityMoveDev(cityId, devId, heroList, foodCost, selectedCityId);
     }
 
     public void OnShow()

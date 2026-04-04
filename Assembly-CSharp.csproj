@@ -207,6 +207,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackSpinAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAntiShield.cs" />
     <Compile Include="Assets\Resources\Scripts\SelectHeroControl.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityDevNodeMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillPlayAction.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\ReplayPanelManager.cs" />

@@ -46,13 +46,15 @@ public static class AI
             case "CityDevNormal":
                 return ExecuteNormalTask(player, city, context, task, availableHeroes);
             case "CityDevBattle":
-                return TryExecuteAttack(player, city, context);
+                return TryExecuteAttack(player, city, context, task);
+            case "CityDevMove":
+                return HandleMove(player, city, context, task);
             case "CityDevUseHero":
-                return HandleRecruitment(player, city, context);
+                return HandleRecruitment(player, city, context, task);
             case "CityDevChange":
-                return HandleFoodPurchase(player, city, context);
+                return HandleFoodPurchase(player, city, context, task);
             case "CityDevPraiseHero":
-                return HandlePraise(player, city, context);
+                return HandlePraise(player, city, context, task);
             default:
                 return false;
         }
@@ -73,7 +75,7 @@ public static class AI
         return false;
     }
     
-    private static bool TryExecuteAttack(Player player, SaveCityData city, AIStrategyContext context)
+    private static bool TryExecuteAttack(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
     {
         var attackTarget = SelectBestAttackTarget(context, city);
         if (!attackTarget.HasValue)
@@ -120,18 +122,10 @@ public static class AI
         
         var heroIds = combatHeroes.Select(h => h.heroId).ToArray();
         
-        var battleConfig = CityDevConfig.ConfigList
-            .FirstOrDefault(c => c.Prefab == "CityDevBattle" && c.FindEnemy);
-        
-        if (battleConfig != null)
-        {
-            StrategicDecider.MarkTargetAttacked(player.forceId, attackTarget.Value);
-            player.ExecuteCityBattleDev(city.cityId, battleConfig.Id, heroIds, foodNeeded, attackTarget.Value, true);
-            UnityEngine.Debug.Log($"AI攻击: 城市{city.cityId} 攻击{attackTarget.Value} 英雄{string.Join(",", heroIds)}");
-            return true;
-        }
-        
-        return false;
+        StrategicDecider.MarkTargetAttacked(player.forceId, attackTarget.Value);
+        player.ExecuteCityBattleDev(city.cityId, task.devId, heroIds, foodNeeded, attackTarget.Value, true);
+        UnityEngine.Debug.Log($"AI攻击: 城市{city.cityId} 攻击{attackTarget.Value} 英雄{string.Join(",", heroIds)}");
+        return true;
     }
     
     private static int? SelectBestAttackTarget(AIStrategyContext context, SaveCityData sourceCity)
@@ -169,7 +163,7 @@ public static class AI
         return potentialTargets[0];
     }
     
-    private static bool HandleFoodPurchase(Player player, SaveCityData city, AIStrategyContext context)
+    private static bool HandleFoodPurchase(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
     {
         int totalSoldier = city.GetNormalHeroList()
             .Select(h => GameManager.Instance.GetHero(h))
@@ -182,43 +176,37 @@ public static class AI
             if (availableHeroes.Count == 0)
                 return false;
             
-            var changeConfig = CityDevConfig.ConfigList
-                .FirstOrDefault(c => c.Prefab == "CityDevChange");
-            
-            if (changeConfig != null)
+            int[] amountOptions = { 300, 500, 1000, 2000, 3000 };
+            int amount = 0;
+            foreach (var amt in amountOptions)
             {
-                int[] amountOptions = { 300, 500, 1000, 2000, 3000 };
-                int amount = 0;
-                foreach (var amt in amountOptions)
+                if (city.gold >= amt)
                 {
-                    if (city.gold >= amt)
-                    {
-                        amount = amt;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    amount = amt;
                 }
+                else
+                {
+                    break;
+                }
+            }
+            
+            if (amount > 0)
+            {
+                var bestHero = availableHeroes
+                    .OrderByDescending(h => h.GetAttr("inte"))
+                    .First();
                 
-                if (amount > 0)
-                {
-                    var bestHero = availableHeroes
-                        .OrderByDescending(h => h.GetAttr("inte"))
-                        .First();
-                    
-                    const float EXCHANGE_RATE = 0.9f;
-                    player.ExecuteCityChange(city.cityId, changeConfig.Id, 
-                        new int[] { bestHero.heroId }, true, amount, EXCHANGE_RATE, out _);
-                    UnityEngine.Debug.Log($"AI买粮: 城市{city.cityId} 花费{amount}黄金 买入{(int)(amount * EXCHANGE_RATE)}粮食");
-                    return true;
-                }
+                const float EXCHANGE_RATE = 0.9f;
+                player.ExecuteCityChange(city.cityId, task.devId, 
+                    new int[] { bestHero.heroId }, true, amount, EXCHANGE_RATE, out _);
+                UnityEngine.Debug.Log($"AI买粮: 城市{city.cityId} 花费{amount}黄金 买入{(int)(amount * EXCHANGE_RATE)}粮食");
+                return true;
             }
         }
         return false;
     }
     
-    private static bool HandleRecruitment(Player player, SaveCityData city, AIStrategyContext context)
+    private static bool HandleRecruitment(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
     {
         var recruitableHeroes = city.GetRecruitableHeroList();
         if (recruitableHeroes.Count == 0)
@@ -239,22 +227,16 @@ public static class AI
                 (targetHero.state == HeroState.Catched) ||
                 (targetHero.state == HeroState.Normal && targetHero.loyalty < 80))
             {
-                var recruitConfig = CityDevConfig.ConfigList
-                    .FirstOrDefault(c => c.Prefab == "CityDevUseHero");
-                
-                if (recruitConfig != null)
-                {
-                    player.ExecuteCityUseHero(city.cityId, recruitConfig.Id, 
-                        bestRecruiter.heroId, targetHeroId, out _, false);
-                    UnityEngine.Debug.Log($"AI登用: 城市{city.cityId} 英雄{bestRecruiter.heroId} 登用{targetHeroId}");
-                    return true;
-                }
+                player.ExecuteCityUseHero(city.cityId, task.devId, 
+                    bestRecruiter.heroId, targetHeroId, out _, false);
+                UnityEngine.Debug.Log($"AI登用: 城市{city.cityId} 英雄{bestRecruiter.heroId} 登用{targetHeroId}");
+                return true;
             }
         }
         return false;
     }
     
-    private static bool HandlePraise(Player player, SaveCityData city, AIStrategyContext context)
+    private static bool HandlePraise(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
     {
         var availableHeroes = context.GetAvailableHeroes(city.cityId);
         if (availableHeroes.Count == 0)
@@ -273,16 +255,181 @@ public static class AI
         if (lowLoyaltyHeroes.Count == 0)
             return false;
         
-        var praiseConfig = CityDevConfig.ConfigList
-            .FirstOrDefault(c => c.Prefab == "CityDevPraiseHero");
-        
-        if (praiseConfig != null && city.gold >= 100 * lowLoyaltyHeroes.Count)
+        if (city.gold >= 100 * lowLoyaltyHeroes.Count)
         {
             var heroIds = lowLoyaltyHeroes.Select(h => h.heroId).ToArray();
-            player.ExecuteCityPraiseHero(city.cityId, praiseConfig.Id, heroIds, 2, out _);
+            player.ExecuteCityPraiseHero(city.cityId, task.devId, heroIds, 2, out _);
             UnityEngine.Debug.Log($"AI褒奖: 城市{city.cityId} 褒奖{lowLoyaltyHeroes.Count}名英雄");
             return true;
         }
         return false;
+    }
+    
+    private static bool HandleMove(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
+    {
+        var availableHeroes = context.GetAvailableHeroes(city.cityId);
+        if (availableHeroes.Count == 0)
+            return false;
+        
+        var frontlineCities = HeroDispatcher.GetFrontlineCities(player);
+        var rearCities = HeroDispatcher.GetRearCities(player);
+        
+        bool isFrontline = CityEvaluator.IsFrontlineCity(city);
+        
+        if (isFrontline && rearCities.Count > 0)
+        {
+            return MoveDomesticHeroesToRear(player, city, task, availableHeroes, rearCities);
+        }
+        else if (!isFrontline && frontlineCities.Count > 0)
+        {
+            return MoveCombatHeroesToFrontline(player, city, task, availableHeroes, frontlineCities);
+        }
+        else if (frontlineCities.Count == 0 && rearCities.Count == 0)
+        {
+            return BalanceHeroesAcrossCities(player, city, task, availableHeroes);
+        }
+        
+        return false;
+    }
+    
+    private static bool MoveDomesticHeroesToRear(Player player, SaveCityData city, TaskPriorityInfo task, 
+        List<SaveHeroData> availableHeroes, List<int> rearCities)
+    {
+        var domesticHeroes = availableHeroes
+            .Where(h => HeroDispatcher.ClassifyHero(h) == HeroType.Domestic)
+            .ToList();
+        
+        if (domesticHeroes.Count == 0)
+            return false;
+        
+        var normalHeroes = city.GetNormalHeroList()
+            .Select(h => GameManager.Instance.GetHero(h))
+            .ToList();
+        int combatCount = normalHeroes.Count(h => HeroDispatcher.ClassifyHero(h) == HeroType.Combat);
+        
+        if (combatCount < 2)
+            return false;
+        
+        var heroToMove = domesticHeroes[0];
+        var targetCityId = SelectBestRearCity(rearCities, heroToMove);
+        
+        if (targetCityId == 0)
+            return false;
+        
+        return ExecuteHeroMove(player, city, heroToMove, targetCityId, task.devId, "后方城市");
+    }
+    
+    private static bool MoveCombatHeroesToFrontline(Player player, SaveCityData city, TaskPriorityInfo task,
+        List<SaveHeroData> availableHeroes, List<int> frontlineCities)
+    {
+        var combatHeroes = availableHeroes
+            .Where(h => HeroDispatcher.ClassifyHero(h) == HeroType.Combat)
+            .ToList();
+        
+        if (combatHeroes.Count == 0)
+            return false;
+        
+        var normalHeroes = city.GetNormalHeroList()
+            .Select(h => GameManager.Instance.GetHero(h))
+            .ToList();
+        
+        if (normalHeroes.Count <= 1)
+            return false;
+        
+        var heroToMove = combatHeroes[0];
+        var targetCityId = SelectBestFrontlineCity(frontlineCities, heroToMove);
+        
+        if (targetCityId == 0)
+            return false;
+        
+        return ExecuteHeroMove(player, city, heroToMove, targetCityId, task.devId, "前线城市");
+    }
+    
+    private static bool BalanceHeroesAcrossCities(Player player, SaveCityData city, TaskPriorityInfo task,
+        List<SaveHeroData> availableHeroes)
+    {
+        var myCities = player.GetCityList();
+        if (myCities.Count <= 1)
+            return false;
+        
+        var normalHeroes = city.GetNormalHeroList();
+        if (normalHeroes.Count <= 1)
+            return false;
+        
+        int avgHeroes = myCities.Sum(c => c.GetNormalHeroList().Count) / myCities.Count;
+        
+        if (normalHeroes.Count <= avgHeroes)
+            return false;
+        
+        var heroToMove = availableHeroes[0];
+        
+        var targetCity = myCities
+            .Where(c => c.cityId != city.cityId)
+            .OrderBy(c => c.GetNormalHeroList().Count)
+            .FirstOrDefault();
+        
+        if (targetCity == null)
+            return false;
+        
+        return ExecuteHeroMove(player, city, heroToMove, targetCity.cityId, task.devId, "平均分配");
+    }
+    
+    private static int SelectBestRearCity(List<int> rearCities, SaveHeroData hero)
+    {
+        int bestCityId = 0;
+        int minHeroCount = int.MaxValue;
+        
+        foreach (var cityId in rearCities)
+        {
+            var city = GameManager.Instance.GetCity(cityId);
+            if (city == null) continue;
+            
+            int heroCount = city.GetNormalHeroList().Count;
+            if (heroCount < minHeroCount)
+            {
+                minHeroCount = heroCount;
+                bestCityId = cityId;
+            }
+        }
+        
+        return bestCityId;
+    }
+    
+    private static int SelectBestFrontlineCity(List<int> frontlineCities, SaveHeroData hero)
+    {
+        int bestCityId = 0;
+        int minCombatCount = int.MaxValue;
+        
+        foreach (var cityId in frontlineCities)
+        {
+            var city = GameManager.Instance.GetCity(cityId);
+            if (city == null) continue;
+            
+            var heroes = city.GetNormalHeroList()
+                .Select(h => GameManager.Instance.GetHero(h))
+                .ToList();
+            int combatCount = heroes.Count(h => HeroDispatcher.ClassifyHero(h) == HeroType.Combat);
+            
+            if (combatCount < minCombatCount)
+            {
+                minCombatCount = combatCount;
+                bestCityId = cityId;
+            }
+        }
+        
+        return bestCityId;
+    }
+    
+    private static bool ExecuteHeroMove(Player player, SaveCityData srcCity, SaveHeroData hero, int targetCityId, int devId, string reason)
+    {
+        int soldierTotal = hero.soldier;
+        int foodCost = soldierTotal * 20 / 20;
+        
+        if (srcCity.food < foodCost)
+            return false;
+        
+        player.ExecuteCityMoveDev(srcCity.cityId, devId, new int[] { hero.heroId }, foodCost, targetCityId);
+        UnityEngine.Debug.Log($"AI移动: 英雄{hero.heroId}从城市{srcCity.cityId}移动到{targetCityId} 原因:{reason}");
+        return true;
     }
 }

@@ -25,7 +25,7 @@ public class SelectHeroArmyControl : MonoBehaviour
             int[] heroList = GameManager.Instance.GetCity(cityId).GetNormalHeroList().ToArray();
             var devCfg = CityDevConfig.GetConfig(devId);
             string[] attrs = devCfg.Attrs;
-            PanelManager.Instance.ShowPopHeroBattleSelectPanel(cityId, devCfg.HeroCount, heroList, !devCfg.FindEnemy, heroIds, (selectedHeroIds) =>
+            PanelManager.Instance.ShowPopHeroBattleSelectPanel(cityId, devCfg.HeroCount, heroList, devCfg.Prefab == "CityDevMove", heroIds, (selectedHeroIds) =>
             {
                 heroIds = selectedHeroIds.ToArray();
                 for (int i = 0; i < heroHeads.Length; i++)

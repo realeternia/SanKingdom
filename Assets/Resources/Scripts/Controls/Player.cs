@@ -282,32 +282,20 @@ public class Player
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
-        var devConfig = CityDevConfig.GetConfig(devId);
 
-        // 过滤掉当前年份已经执行过动作的英雄
         var validHeroList = GetAvailableHeroesThisYear(heroList).ToArray();
         
-        if (devConfig.FindEnemy)
-        {
-            if (isAI)
-                BattleManager.Instance.SetMode(true, false);
-            else
-                BattleManager.Instance.SetMode(false, true);
-
-            citySrc.food -= foodUse;
-            var defenceFood = cityDest.food;
-            cityDest.food = 0;
-            // 开始战斗
-            BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, targetCityId,
-                (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, foodCount, cityId, targetCityId, validHeroList, citySrc.forceId, cityDest.forceId));
-        }
+        if (isAI)
+            BattleManager.Instance.SetMode(true, false);
         else
-        {
-            // 移动英雄到目标城市
-            MoveHeroToCity(cityId, targetCityId, validHeroList);
-        }
+            BattleManager.Instance.SetMode(false, true);
+
+        citySrc.food -= foodUse;
+        var defenceFood = cityDest.food;
+        cityDest.food = 0;
+        BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, targetCityId,
+            (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, foodCount, cityId, targetCityId, validHeroList, citySrc.forceId, cityDest.forceId));
                
-        // 更新英雄的年份
         UpdateHeroesRound(validHeroList);
     }
 
@@ -362,6 +350,22 @@ public class Player
         {
             PanelManager.Instance.SendSignal("CityAttrChange", "", destCityId);
         }
+    }
+
+    // 执行城市移动发展（带粮草）
+    public void ExecuteCityMoveDev(int cityId, int devId, int[] heroList, int foodUse, int targetCityId)
+    {
+        var citySrc = GameManager.Instance.GetCity(cityId);
+        var cityDest = GameManager.Instance.GetCity(targetCityId);
+
+        var validHeroList = GetAvailableHeroesThisYear(heroList).ToArray();
+
+        citySrc.food -= foodUse;
+        cityDest.food += foodUse;
+
+        MoveHeroToCity(cityId, targetCityId, validHeroList);
+
+        UpdateHeroesRound(validHeroList);
     }
 
     public List<SaveCityData> GetCityList()
