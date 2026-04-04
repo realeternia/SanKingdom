@@ -41,7 +41,8 @@ public class HeroInfoGroup : MonoBehaviour
 
     public HeroInfo AddHero(int forceId, int heroId, int level)
     {
-        var isSide1 = GameManager.Instance.GetPlayer(forceId).IsPlayer;
+        var attackerForceId = BattleManager.Instance.playerInfoList[0].forceId;
+        bool isSide1 = forceId == attackerForceId;
         int count = isSide1 ? countSide1 : countSide2;
         GameObject heroInfoRect = isSide1 ? heroInfoRectSide1 : heroInfoRectSide2;
         
