@@ -36,6 +36,33 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         }
     }
 
+    private void AddOverlay(GameObject parent, Color color)
+    {
+        var overlay = new GameObject("Overlay");
+        overlay.transform.SetParent(parent.transform, false);
+        
+        var rt = overlay.AddComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.sizeDelta = Vector2.zero;
+        rt.anchoredPosition = Vector2.zero;
+        
+        var img = overlay.AddComponent<Image>();
+        img.color = color;
+        img.raycastTarget = false;
+    }
+
+    private void AddBorder(GameObject parent, Color color)
+    {
+        var img = parent.GetComponent<Image>();
+        if (img != null)
+        {
+            var outline = parent.AddComponent<Outline>();
+            outline.effectColor = color;
+            outline.effectDistance = new Vector2(3, -3);
+        }
+    }
+
     public void SetCityDetail(int cityId)
     {
         if (cityId <= 0)
@@ -65,25 +92,74 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         textLeader.color = Color.gray;
         
         var heroList = city.GetNormalHeroList();
-        //todo 清理一下heroHeadRegion.transform下所有对象
+        var wildList = city.GetHeroList(false, true);
+        var catchedList = city.GetCatchedHeroList();
+        var currentRound = GameManager.Instance.SaveData.round;
         foreach (Transform child in heroHeadRegion.transform)
             Destroy(child.gameObject);
         for (int i = 0; i < heroList.Count; i++)
         {
-            var hero = heroList[i]; // 恢复这一行，定义hero变量
-            var heroCfg = HeroConfig.GetConfig(hero);
+            var heroId = heroList[i];
+            var hero = GameManager.Instance.GetHero(heroId);
+            var heroCfg = HeroConfig.GetConfig(heroId);
             if (heroCfg != null)
             {
                 var heroHead = Instantiate(Resources.Load<GameObject>("Prefabs/CityHeroHead"), heroHeadRegion.transform);
                 heroHead.name = "HeroHead_" + i;
 
                 var rt = heroHead.GetComponent<RectTransform>();
-                // 设置头像位置偏移（水平排列）
-                rt.anchoredPosition = new Vector2(70 * (i % 4), -70 * (i / 4)); // 70为每个头像的水平间距
+                rt.anchoredPosition = new Vector2(70 * (i % 4), -70 * (i / 4));
                 
-                // 新建Image组件并设置头像
                 var img = heroHead.GetComponent<Image>();
                 img.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+
+                bool hasActed = hero.round >= currentRound;
+                if (hasActed)
+                {
+                    AddOverlay(heroHead, new Color(0, 0, 0, 0.92f));
+                }
+            }
+        }
+        int baseIdx = heroList.Count;
+        for (int i = 0; i < wildList.Count; i++)
+        {
+            var heroId = wildList[i];
+            var heroCfg = HeroConfig.GetConfig(heroId);
+            if (heroCfg != null)
+            {
+                int idx = baseIdx + i;
+                var heroHead = Instantiate(Resources.Load<GameObject>("Prefabs/CityHeroHead"), heroHeadRegion.transform);
+                heroHead.name = "WildHeroHead_" + i;
+
+                var rt = heroHead.GetComponent<RectTransform>();
+                rt.anchoredPosition = new Vector2(70 * (idx % 4), -70 * (idx / 4));
+                
+                var img = heroHead.GetComponent<Image>();
+                img.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+
+                AddOverlay(heroHead, new Color(0, 0, 0, 0.92f));
+                AddBorder(heroHead, Color.yellow);
+            }
+        }
+        baseIdx += wildList.Count;
+        for (int i = 0; i < catchedList.Count; i++)
+        {
+            var heroId = catchedList[i];
+            var heroCfg = HeroConfig.GetConfig(heroId);
+            if (heroCfg != null)
+            {
+                int idx = baseIdx + i;
+                var heroHead = Instantiate(Resources.Load<GameObject>("Prefabs/CityHeroHead"), heroHeadRegion.transform);
+                heroHead.name = "CatchedHeroHead_" + i;
+
+                var rt = heroHead.GetComponent<RectTransform>();
+                rt.anchoredPosition = new Vector2(70 * (idx % 4), -70 * (idx / 4));
+                
+                var img = heroHead.GetComponent<Image>();
+                img.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+
+                AddOverlay(heroHead, new Color(0, 0, 0, 0.92f));
+                AddBorder(heroHead, Color.red);
             }
         }
 
