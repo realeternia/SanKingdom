@@ -1,3 +1,5 @@
+using Controls.Utils;
+
 [System.Serializable]
 public class SkillPlayAction : ChessAction
 {
@@ -29,7 +31,7 @@ public class SkillPlayAction : ChessAction
             }
             else
             {
-                UnityEngine.Debug.LogError(string.Format("SkillPlayAction: Hero{0} SkillId {1} not found", casterChess.heroId, SkillId));
+                GameLog.Error(string.Format("SkillPlayAction: Hero{0} SkillId {1} not found", casterChess.heroId, SkillId));
             }
         }
     }

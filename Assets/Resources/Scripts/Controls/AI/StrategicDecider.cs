@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
+using Controls.Utils;
 
 public class StrategicDecider
 {
@@ -54,7 +55,7 @@ public class StrategicDecider
                 {
                     result[attackSource.Value] = CityStrategyState.Atk;
                     hasAttacked = true;
-                    UnityEngine.Debug.Log($"AI攻击决策: 势力{player.forceId} 从城市{attackSource.Value} 攻击{attackTarget.Value}");
+                    GameLog.SetTag("AI").Info($"AI攻击决策: 势力{player.forceId} 从城市{attackSource.Value} 攻击{attackTarget.Value}");
                 }
             }
         }

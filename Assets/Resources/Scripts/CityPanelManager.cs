@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
+using Controls.Utils;
 
 public class CityPanelManager : MonoBehaviour, IPanelEvent
 {
@@ -68,7 +69,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         }
         else
         {
-            Debug.LogError("Failed to load city view prefab or cityViewParent is not assigned.");
+            GameLog.Error("Failed to load city view prefab or cityViewParent is not assigned.");
         }
     }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
 using UnityEngine;
+using Controls.Utils;
 
 public static class ConfigManager
 {
@@ -36,7 +37,7 @@ public static class ConfigManager
         
         ConfigManager.PostModify();      
 
-        UnityEngine.Debug.Log("ConfigManager Init fin");
+        GameLog.Info("ConfigManager Init fin");
     }
 
     public static void PostModify()

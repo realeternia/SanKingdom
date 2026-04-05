@@ -1,9 +1,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
+using Controls.Utils;
 
 public static class AI
 {
+    private static string GetForceName(int forceId)
+    {
+        var cfg = ForceConfig.GetConfig(forceId);
+        return cfg != null ? cfg.Cname : forceId.ToString();
+    }
+    
+    private static string GetHeroName(int heroId)
+    {
+        var cfg = HeroConfig.GetConfig(heroId);
+        return cfg != null ? cfg.Name : heroId.ToString();
+    }
+    
+    private static string GetCityName(int cityId)
+    {
+        var cfg = WorldConfig.GetConfig(cityId);
+        return cfg != null ? cfg.Cname : cityId.ToString();
+    }
+    
+    private static string GetTaskName(int devId)
+    {
+        var cfg = CityDevConfig.GetConfig(devId);
+        return cfg != null ? cfg.Cname : devId.ToString();
+    }
+    
+    private static string GetHeroNames(int[] heroIds)
+    {
+        return string.Join(",", heroIds.Select(GetHeroName));
+    }
+    
     public static void ExecuteAiActions(Player player)
     {
         var context = new AIStrategyContext(player);
@@ -34,7 +64,7 @@ public static class AI
             
             if (ExecuteTask(player, city, context, task, availableHeroes))
             {
-                UnityEngine.Debug.Log($"AI行动: 城市{city.cityId} 状态{state} 执行{task.config.Prefab} 任务{task.devId}");
+                GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 执行[{GetTaskName(task.devId)}] 状态:{state}");
             }
         }
     }
@@ -70,6 +100,7 @@ public static class AI
         if (heroIds.Length > 0)
         {
             player.ExecuteCityDev(city.cityId, task.devId, heroIds, out _);
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 内政[{GetTaskName(task.devId)}] 英雄:[{GetHeroNames(heroIds)}]");
             return true;
         }
         return false;
@@ -99,7 +130,7 @@ public static class AI
         
         if (totalSoldier < 500)
         {
-            UnityEngine.Debug.Log($"AI跳过攻击: 己方兵力{totalSoldier}不足500");
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击: 兵力{totalSoldier}不足500");
             return false;
         }
         
@@ -108,7 +139,7 @@ public static class AI
         
         if (totalSoldier < enemySoldier * 0.7f)
         {
-            UnityEngine.Debug.Log($"AI跳过攻击: 己方兵力{totalSoldier}少于敌方{enemySoldier}的70%");
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击: 己方{totalSoldier}少于敌方{enemySoldier}的70%");
             return false;
         }
         
@@ -116,7 +147,7 @@ public static class AI
         
         if (city.food < foodNeeded)
         {
-            UnityEngine.Debug.Log($"AI跳过攻击: 粮食不足 需要{foodNeeded} 现有{city.food}");
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击: 粮食不足 需要{foodNeeded} 现有{city.food}");
             return false;
         }
         
@@ -124,7 +155,7 @@ public static class AI
         
         StrategicDecider.MarkTargetAttacked(player.forceId, attackTarget.Value);
         player.ExecuteCityBattleDev(city.cityId, task.devId, heroIds, foodNeeded, attackTarget.Value, true);
-        UnityEngine.Debug.Log($"AI攻击: 城市{city.cityId} 攻击{attackTarget.Value} 英雄{string.Join(",", heroIds)}");
+        GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 攻击[{GetCityName(attackTarget.Value)}] 英雄:[{GetHeroNames(heroIds)}] 兵力:{totalSoldier}");
         return true;
     }
     
@@ -199,7 +230,7 @@ public static class AI
                 const float EXCHANGE_RATE = 0.9f;
                 player.ExecuteCityChange(city.cityId, task.devId, 
                     new int[] { bestHero.heroId }, true, amount, EXCHANGE_RATE, out _);
-                UnityEngine.Debug.Log($"AI买粮: 城市{city.cityId} 花费{amount}黄金 买入{(int)(amount * EXCHANGE_RATE)}粮食");
+                GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 买粮: 花费{amount}黄金 买入{(int)(amount * EXCHANGE_RATE)}粮食 执行者:[{GetHeroName(bestHero.heroId)}]");
                 return true;
             }
         }
@@ -229,7 +260,7 @@ public static class AI
             {
                 player.ExecuteCityUseHero(city.cityId, task.devId, 
                     bestRecruiter.heroId, targetHeroId, out _, false);
-                UnityEngine.Debug.Log($"AI登用: 城市{city.cityId} 英雄{bestRecruiter.heroId} 登用{targetHeroId}");
+                GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 登用: [{GetHeroName(bestRecruiter.heroId)}] 登用 [{GetHeroName(targetHeroId)}]");
                 return true;
             }
         }
@@ -259,7 +290,7 @@ public static class AI
         {
             var heroIds = lowLoyaltyHeroes.Select(h => h.heroId).ToArray();
             player.ExecuteCityPraiseHero(city.cityId, task.devId, heroIds, 2, out _);
-            UnityEngine.Debug.Log($"AI褒奖: 城市{city.cityId} 褒奖{lowLoyaltyHeroes.Count}名英雄");
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 褒奖: [{GetHeroNames(heroIds)}] 共{lowLoyaltyHeroes.Count}人");
             return true;
         }
         return false;
@@ -429,7 +460,7 @@ public static class AI
             return false;
         
         player.ExecuteCityMoveDev(srcCity.cityId, devId, new int[] { hero.heroId }, foodCost, targetCityId);
-        UnityEngine.Debug.Log($"AI移动: 英雄{hero.heroId}从城市{srcCity.cityId}移动到{targetCityId} 原因:{reason}");
+        GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(srcCity.cityId)}] 移动: [{GetHeroName(hero.heroId)}] -> [{GetCityName(targetCityId)}] 原因:{reason}");
         return true;
     }
 }

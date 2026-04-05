@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
 using System;
+using Controls.Utils;
 
 public class MainPanelManager : MonoBehaviour, IPanelEvent
 {
@@ -79,7 +80,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         
         var totalWidth = 141 * gameManager.SaveData.forces.Count;
         var forceList = new List<int>();
-        Debug.Log($"InitForceControls 强制数量: {gameManager.SaveData.forces.Count}");
+        GameLog.Info($"InitForceControls 强制数量: {gameManager.SaveData.forces.Count}");
         foreach(var force in gameManager.SaveData.forces)
             forceList.Add(force.forceId);
         forceList.Sort((a, b) => gameManager.GetPlayerCityCount(b) - gameManager.GetPlayerCityCount(a));
@@ -95,7 +96,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
     private void LoadMapPieces()
     {
-        UnityEngine.Debug.Log($"LoadMapPieces 地图数量: {WorldConfig.ConfigList.Count}");
+        GameLog.Info($"LoadMapPieces 地图数量: {WorldConfig.ConfigList.Count}");
         
         // // 检查地图配置是否为空
         // if (WorldConfig.ConfigList.Count == 0)
@@ -152,7 +153,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 pieceControl.InitForce();
                 worldPieces.Add(pieceControl);
                 
-                Debug.Log($"成功加载UI地图: {worldConfig.Cname} ({worldConfig.Name})");
+                GameLog.Info($"成功加载UI地图: {worldConfig.Cname} ({worldConfig.Name})");
             // }
             // catch (System.Exception e)
             // {
@@ -165,7 +166,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     {
         if (GameManager.Instance.forbidPlayerAct)
         {
-            Debug.LogWarning("当前轮次玩家已操作，不能点击地图");
+            GameLog.Warn("当前轮次玩家已操作，不能点击地图");
             return;
         }
 
@@ -201,7 +202,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
     public void SendSignal(string name, string parm1, int parm2)
     {
-        Debug.Log($"WorldManager SendSignal {name} {parm1} {parm2}");
+        GameLog.Debug($"WorldManager SendSignal {name} {parm1} {parm2}");
         cityDetail.SendSignal(name, parm1, parm2);
 
         if(name == "CityForceChange")
@@ -233,7 +234,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
                     infosCount[actionConfig.ActionName] = actionId.Value;
                 }
-                Debug.Log($"CityForceChange {cityData.forceId} {cityData.actions.Count} {infosCount.Count}");
+                GameLog.Debug($"CityForceChange {cityData.forceId} {cityData.actions.Count} {infosCount.Count}");
                 piece.OnRound(infosCount);
             }
 

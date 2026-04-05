@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using System.Linq;
 using UnityEngine;
+using Controls.Utils;
 
 public class ChessViewObj : MonoBehaviour
 {     
@@ -156,7 +157,7 @@ public class ChessViewObj : MonoBehaviour
     public void StartJump(float time)
     {
         var height = 15;
-        UnityEngine.Debug.Log("StartJump " + height + " "  + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+        GameLog.Info("StartJump " + height + " "  + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
         // 如果已经在跳跃，先打断当前跳跃
         if (jumpCoroutine != null)

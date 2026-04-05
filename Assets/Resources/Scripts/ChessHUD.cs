@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Controls.Utils;
 
 public class ChessHUD : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class ChessHUD : MonoBehaviour
     {
         if (chessUnit == null)
         {
-            Debug.LogError("ChessUnit is null in UpdateHealthDisplay");
+            GameLog.Error("ChessUnit is null in UpdateHealthDisplay");
             return;
         }
 

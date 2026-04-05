@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
+using Controls.Utils;
 
 public class SkillAidShockWave : Skill
 {
@@ -28,7 +29,7 @@ public class SkillAidShockWave : Skill
         var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
         SkillManager.AddSkillAction(owner, targetChess, id, damage);
         BattleManager.Instance.CreateSpellMissile(owner, targetPos, GetSummonTime(), skillCfg.Id, damage);
-        Debug.Log("SkillAidShockWave id=" + id.ToString() + " damage=" + damage.ToString());
+        GameLog.Debug("SkillAidShockWave id=" + id.ToString() + " damage=" + damage.ToString());
 
         return true;
     }

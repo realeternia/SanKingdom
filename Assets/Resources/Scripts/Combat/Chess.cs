@@ -5,6 +5,7 @@ using CommonConfig;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Controls.Utils;
 
 [Serializable]
 public class Chess : SceneObj
@@ -120,7 +121,7 @@ public class Chess : SceneObj
 
         if (isHero)
         {
-            Debug.Log("Init Hero" + heroId);
+            GameLog.Info("Init Hero" + heroId);
 
             var heroCfg = HeroConfig.GetConfig(heroId);
             // 初始化技能

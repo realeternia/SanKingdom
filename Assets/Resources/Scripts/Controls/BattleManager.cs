@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 using System.Linq;
+using Controls.Utils;
 
 public enum BattleResult
 {
@@ -98,7 +99,7 @@ public class BattleManager : MonoBehaviour
     {
         if (IsBattleRunning)
         {
-            UnityEngine.Debug.LogWarning($"BattleBegin called while battle is running, skipping. cityId={cityId}");
+            GameLog.Warn($"BattleBegin called while battle is running, skipping. cityId={cityId}");
             return;
         }
         IsBattleRunning = true;
@@ -144,7 +145,7 @@ public class BattleManager : MonoBehaviour
 
             mapObj = UnityEngine.Object.Instantiate(mapNode, battleUIManager.NodeUnits.transform.parent);
             var endTime = Time.realtimeSinceStartup;
-            Debug.Log("加载地图耗时：" + (endTime - startTime) + "秒");
+            GameLog.Info("加载地图耗时：" + (endTime - startTime) + "秒");
 
             battleUIManager.ShowBattleBegin(player1, player2, MaxRound, playerInfoList[0].soldierNumInit, playerInfoList[1].soldierNumInit);
             battleUIManager.CreateCastleHUD(player1, GetSpawnPosition(1, 5));
@@ -156,7 +157,7 @@ public class BattleManager : MonoBehaviour
     {
         if (IsBattleRunning)
         {
-            UnityEngine.Debug.LogWarning($"ReplayBattle called while battle is running, skipping. replayBattleId={replayBattleId}");
+            GameLog.Warn($"ReplayBattle called while battle is running, skipping. replayBattleId={replayBattleId}");
             return;
         }
         IsBattleRunning = true;
@@ -214,7 +215,7 @@ public class BattleManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
-        Debug.Log($"GameUpdatett start battleId={battleId} realTime={Time.time}");
+        GameLog.Debug($"GameUpdatett start battleId={battleId} realTime={Time.time}");
         var speed = 1;
         if (quickMode && showUI)
             speed = 10;
@@ -314,7 +315,7 @@ public class BattleManager : MonoBehaviour
                             {
                                 gameFinish = true;
                                 battleResult = BattleResult.Draw;
-                                Debug.Log($"战斗达到{MaxRound}回合，强制结束，平局");
+                                GameLog.Info($"战斗达到{MaxRound}回合，强制结束，平局");
                             }
                         }
                     }
@@ -336,7 +337,7 @@ public class BattleManager : MonoBehaviour
             //    sw.Stop();
             //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
         }
-        Debug.Log($"GameUpdatett end battleId={battleId} realTime={Time.time}");
+        GameLog.Debug($"GameUpdatett end battleId={battleId} realTime={Time.time}");
 
 
         if(showUI)
@@ -402,7 +403,7 @@ public class BattleManager : MonoBehaviour
             SpawnHerosForRegion(player1, tick + 3, GetSpawnPosition(1, i), cards1[i]);
         }
 
-        UnityEngine.Debug.Log($"InitSummon {player1.pname} {cards1.Count} {player2.pname} {cards2.Count}");
+        GameLog.Info($"InitSummon {player1.pname} {cards1.Count} {player2.pname} {cards2.Count}");
     }
 
     public int GetTickFromTime(float time)
@@ -546,7 +547,7 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        UnityEngine.Debug.Log($"id:{dieUnit.id} dieUnit.forceId:{dieUnit.forceId} 存活阵营数:{aliveSideCount}");
+        GameLog.Info($"id:{dieUnit.id} dieUnit.forceId:{dieUnit.forceId} 存活阵营数:{aliveSideCount}");
         if (aliveSideCount <= 1)
         {
             gameFinish = true;
@@ -604,7 +605,7 @@ public class BattleManager : MonoBehaviour
         if (unitsInRange.Count <= limit)
             return;
 
-        UnityEngine.Debug.Log($"RandomSelect limit:{limit} unitsInRange.Count:{unitsInRange.Count}");
+        GameLog.Info($"RandomSelect limit:{limit} unitsInRange.Count:{unitsInRange.Count}");
         
         System.Random random = new System.Random();
         while (unitsInRange.Count > limit)

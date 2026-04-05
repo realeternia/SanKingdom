@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using CommonConfig;
+using Controls.Utils;
 
 public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 {
@@ -85,7 +86,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
     public void OnSelect(bool isSelect)
     {
-        Debug.Log($"OnSelect {heroId} {isSelect}");
+        GameLog.Debug($"OnSelect {heroId} {isSelect}");
         this.isSelect = isSelect;
         checkImage.gameObject.SetActive(isSelect);
         if (backgroundImage != null)

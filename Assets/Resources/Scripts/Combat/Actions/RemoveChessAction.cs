@@ -1,4 +1,5 @@
 using UnityEngine;
+using Controls.Utils;
 
 [System.Serializable]
 public class RemoveChessAction : ChessAction
@@ -19,7 +20,7 @@ public class RemoveChessAction : ChessAction
             {
                 ownerChess.viewObj.DestroyHUD();
             }
-            Debug.Log("RemoveChessAction " + ownerChess.id);
+            GameLog.Info("RemoveChessAction " + ownerChess.id);
             if (ownerChess.viewObj != null)
             {
                 UnityEngine.Object.Destroy(ownerChess.viewObj.gameObject);

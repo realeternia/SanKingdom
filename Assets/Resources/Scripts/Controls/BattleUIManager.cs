@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using System.Linq;
+using Controls.Utils;
 
 public class BattleUIManager : MonoBehaviour
 {
@@ -137,7 +138,7 @@ public class BattleUIManager : MonoBehaviour
         int screenWidth = Screen.width;
         int screenHeight = Screen.height;
 
-        UnityEngine.Debug.Log($"screenWidth:{screenWidth} screenHeight:{screenHeight}");
+        GameLog.Info($"screenWidth:{screenWidth} screenHeight:{screenHeight}");
 
         // 假设设计分辨率为 1920x1080，可根据实际项目修改
         const float designWidth = 2048f;

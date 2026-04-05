@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using CommonConfig;
 using System.Linq;
+using Controls.Utils;
 
 [System.Serializable]
 public class SaveCityData
@@ -239,7 +240,7 @@ public class SaveCityData
 
         List<SaveCityData> loseForceCities = GameManager.Instance.GetCitiesByForce(forceLose);
 
-        UnityEngine.Debug.Log($"Occupy forceId: {forceLose} citycount: {loseForceCities.Count}");
+        GameLog.Info($"Occupy forceId: {forceLose} citycount: {loseForceCities.Count}");
         if (loseForceCities.Count > 0)
         {
             var kingHeroId = ForceConfig.GetConfig(forceLose).HeroId;
@@ -282,7 +283,7 @@ public class SaveCityData
             
             GameManager.Instance.players.RemoveAll(x => x.forceId == forceLose);
             GameManager.Instance.SaveData.forces.RemoveAll(x => x.forceId == forceLose);
-            UnityEngine.Debug.Log($"Occupy 强制数量: {GameManager.Instance.SaveData.forces.Count}");
+            GameLog.Info($"Occupy 强制数量: {GameManager.Instance.SaveData.forces.Count}");
         }
 
         foreach (var heroId in winHeroIds)
@@ -333,7 +334,7 @@ public class SaveCityData
             if (heroId == kingHeroId)
             {
                 totalScore += 9999;
-                UnityEngine.Debug.Log($"帅的分 {heroId} {totalScore}");
+                GameLog.Info($"帅的分 {heroId} {totalScore}");
             }
 
             if (totalScore > maxScore)

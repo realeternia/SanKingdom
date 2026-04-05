@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CommonConfig;
 using TMPro;
+using Controls.Utils;
 
 public class HeroInfoGroup : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class HeroInfoGroup : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        Debug.Log("Reset " + heroInfoRectSide1.transform.childCount + " " + heroInfoRectSide2.transform.childCount);
+        GameLog.Debug("Reset " + heroInfoRectSide1.transform.childCount + " " + heroInfoRectSide2.transform.childCount);
     }
 
     public HeroInfo AddHero(int forceId, int heroId, int level)

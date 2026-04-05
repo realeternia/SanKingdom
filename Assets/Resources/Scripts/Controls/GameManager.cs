@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using CommonConfig;
+using Controls.Utils;
 
 public class GameManager : MonoBehaviour
 {   
@@ -38,7 +39,7 @@ public class GameManager : MonoBehaviour
         // 注册日志事件
         Application.logMessageReceived += LogMessageReceived;
 
-        UnityEngine.Debug.Log("GameManager Start");
+        GameLog.Info("GameManager Start");
     }
 
     // 日志处理函数
@@ -223,7 +224,7 @@ public class GameManager : MonoBehaviour
 
         ProcessHeros();
 
-        Debug.Log("NextRound round=" + SaveData.round);
+        GameLog.Info("NextRound round=" + SaveData.round);
 
         forbidPlayerAct = true;
         StartCoroutine(NextRoundCoroutine());
@@ -339,11 +340,11 @@ public class GameManager : MonoBehaviour
                 players.Add(new Player(forceData.forceId));
             }
 
-            Debug.Log("游戏数据加载成功 year=" + SaveData.round);
+            GameLog.Info("游戏数据加载成功 year=" + SaveData.round);
         }
         catch (System.Exception e)
         {
-            Debug.LogError("加载游戏数据失败: " + e.Message);
+            GameLog.Error("加载游戏数据失败: " + e.Message);
             return false;
         }
         return true;
@@ -359,11 +360,11 @@ public class GameManager : MonoBehaviour
             string json = JsonUtility.ToJson(SaveData);
             File.WriteAllText(savePath, json);
             
-            Debug.Log("游戏数据保存成功: " + savePath);
+            GameLog.Info("游戏数据保存成功: " + savePath);
         }
         catch (System.Exception e)
         {
-            Debug.LogError("保存游戏数据失败: " + e.Message);
+            GameLog.Error("保存游戏数据失败: " + e.Message);
         }
     }
 

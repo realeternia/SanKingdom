@@ -1,3 +1,5 @@
+using Controls.Utils;
+
 public class BuffLock : Buff
 {
     public BuffLock(int id, int skillId, Chess caster, Chess target, int lastTime)
@@ -10,7 +12,7 @@ public class BuffLock : Buff
         var caster = BattleManager.Instance.GetChess(casterId);
         var owner = BattleManager.Instance.GetChess(ownerId);
         var unitList = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range * 3, caster.forceId, true);
-        UnityEngine.Debug.Log("Lock target count: " + unitList.Count);
+        GameLog.Info("Lock target count: " + unitList.Count);
         foreach (var unit in unitList)
         {
             if (unit.HasBuff(id) && unit != owner)

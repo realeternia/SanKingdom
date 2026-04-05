@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Controls.Utils;
 
 [RequireComponent(typeof(Renderer))]
 public class GlowBeamController : MonoBehaviour
@@ -90,7 +91,7 @@ public class GlowBeamController : MonoBehaviour
     // 动态改变发光颜色
     public void SetGlowColor(Color newColor)
     {
-        UnityEngine.Debug.Log("SetGlowColor " + newColor);
+        GameLog.Info("SetGlowColor " + newColor);
         glowColor = newColor;
         UpdateBeamProperties();
     }

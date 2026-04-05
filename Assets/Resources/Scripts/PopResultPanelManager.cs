@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
 using System;
+using Controls.Utils;
 
 
 public class PopResultPanelManager : MonoBehaviour
@@ -49,7 +50,7 @@ public class PopResultPanelManager : MonoBehaviour
         });
 
 
-        Debug.Log("初始化视频播放器...");
+        GameLog.Debug("初始化视频播放器...");
         
         try
         {
@@ -60,11 +61,11 @@ public class PopResultPanelManager : MonoBehaviour
             videoPlayer.controlledAudioTrackCount = 1;
             videoPlayer.SetDirectAudioVolume(0, 1.0f);
             
-            Debug.Log("音频输出模式: " + videoPlayer.audioOutputMode);
+            GameLog.Debug("音频输出模式: " + videoPlayer.audioOutputMode);
             
             if (rawImage != null)
             {
-                Debug.Log("配置渲染目标...");
+                GameLog.Debug("配置渲染目标...");
                 
                 videoPlayer.renderMode = VideoRenderMode.RenderTexture;
                 
@@ -81,16 +82,16 @@ public class PopResultPanelManager : MonoBehaviour
                 
                 rawImage.texture = renderTexture;
                 
-                Debug.Log("渲染目标配置完成，使用默认分辨率: " + defaultWidth + "x" + defaultHeight);
-                Debug.Log("VideoPlayer渲染模式: " + videoPlayer.renderMode);
-                Debug.Log("VideoPlayer目标纹理: " + (videoPlayer.targetTexture != null ? "已设置" : "未设置"));
+                GameLog.Debug("渲染目标配置完成，使用默认分辨率: " + defaultWidth + "x" + defaultHeight);
+                GameLog.Debug("VideoPlayer渲染模式: " + videoPlayer.renderMode);
+                GameLog.Debug("VideoPlayer目标纹理: " + (videoPlayer.targetTexture != null ? "已设置" : "未设置"));
             }
             else
             {
-                Debug.LogWarning("RawImage组件未指定且不允许自动创建，视频将不会显示画面");
+                GameLog.Warn("RawImage组件未指定且不允许自动创建，视频将不会显示画面");
                 
                 videoPlayer.renderMode = VideoRenderMode.CameraFarPlane;
-                Debug.Log("使用CameraFarPlane渲染模式");
+                GameLog.Debug("使用CameraFarPlane渲染模式");
             }
             
             videoPlayer.errorReceived += OnVideoError;
@@ -98,24 +99,24 @@ public class PopResultPanelManager : MonoBehaviour
             videoPlayer.started += OnVideoStarted;
             videoPlayer.loopPointReached += OnVideoFinished;
             
-            Debug.Log("视频播放器初始化完成");
+            GameLog.Debug("视频播放器初始化完成");
         }
         catch (System.Exception e)
         {
-            Debug.LogError("视频播放器初始化异常: " + e.ToString());
-            Debug.LogError("异常堆栈: " + e.StackTrace);
+            GameLog.Error("视频播放器初始化异常: " + e.ToString());
+            GameLog.Error("异常堆栈: " + e.StackTrace);
         }
     }
     
     private void OnVideoError(VideoPlayer vp, string message)
     {
-        Debug.LogError("视频播放错误: " + message);
+        GameLog.Error("视频播放错误: " + message);
     }
     
     private void OnVideoReady(VideoPlayer vp)
     {
-        Debug.Log("视频准备完成，开始播放...");
-        Debug.Log("视频实际分辨率: " + vp.width + "x" + vp.height);
+        GameLog.Debug("视频准备完成，开始播放...");
+        GameLog.Debug("视频实际分辨率: " + vp.width + "x" + vp.height);
         
         if (rawImage != null && vp.targetTexture != null)
         {
@@ -130,7 +131,7 @@ public class PopResultPanelManager : MonoBehaviour
             vp.targetTexture = newRenderTexture;
             rawImage.texture = newRenderTexture;
             
-            Debug.Log("RenderTexture已更新为视频实际分辨率");
+            GameLog.Debug("RenderTexture已更新为视频实际分辨率");
         }
         
         vp.Play();
@@ -138,26 +139,26 @@ public class PopResultPanelManager : MonoBehaviour
     
     private void OnVideoStarted(VideoPlayer vp)
     {
-        Debug.Log("视频开始播放");
-        Debug.Log("当前渲染模式: " + vp.renderMode);
-        Debug.Log("是否有音频: " + vp.audioOutputMode);
-        Debug.Log("音频轨道数: " + vp.audioTrackCount);
+        GameLog.Debug("视频开始播放");
+        GameLog.Debug("当前渲染模式: " + vp.renderMode);
+        GameLog.Debug("是否有音频: " + vp.audioOutputMode);
+        GameLog.Debug("音频轨道数: " + vp.audioTrackCount);
 
         if (rawImage != null)
         {
-            Debug.Log("RawImage存在: " + rawImage.name);
-            Debug.Log("RawImage是否激活: " + rawImage.gameObject.activeInHierarchy);
-            Debug.Log("RawImage纹理: " + (rawImage.texture != null ? rawImage.texture.name : "null"));
+            GameLog.Debug("RawImage存在: " + rawImage.name);
+            GameLog.Debug("RawImage是否激活: " + rawImage.gameObject.activeInHierarchy);
+            GameLog.Debug("RawImage纹理: " + (rawImage.texture != null ? rawImage.texture.name : "null"));
         }
         else
         {
-            Debug.Log("RawImage不存在");
+            GameLog.Debug("RawImage不存在");
         }
     }
     
     private void OnVideoFinished(VideoPlayer vp)
     {
-        Debug.Log("视频播放完成");
+        GameLog.Debug("视频播放完成");
     }
 
     void Update()
@@ -233,27 +234,27 @@ public class PopResultPanelManager : MonoBehaviour
                 fullVideoPath = videoPath;
 #endif
 
-            Debug.Log("当前平台: " + Application.platform);
-            Debug.Log("视频文件路径: " + videoPath);
-            Debug.Log("完整文件路径: " + fullVideoPath);
+            GameLog.Debug("当前平台: " + Application.platform);
+            GameLog.Debug("视频文件路径: " + videoPath);
+            GameLog.Debug("完整文件路径: " + fullVideoPath);
 
             videoPlayer.clip = null;
             videoPlayer.source = VideoSource.Url;
             videoPlayer.url = videoPath;
 
-            Debug.Log("准备播放视频...");
+            GameLog.Debug("准备播放视频...");
             videoPlayer.Prepare();
         }
         catch (System.Exception e)
         {
-            Debug.LogError("视频播放过程中发生异常: " + e.ToString());
-            Debug.LogError("异常堆栈: " + e.StackTrace);
+            GameLog.Error("视频播放过程中发生异常: " + e.ToString());
+            GameLog.Error("异常堆栈: " + e.StackTrace);
         }
     }
 
     private System.Collections.IEnumerator HideVideoPanelAfterDelay(float delaySeconds)
     {
-        Debug.Log("开始等待隐藏videoPanel，延迟时间: " + delaySeconds + "秒");
+        GameLog.Debug("开始等待隐藏videoPanel，延迟时间: " + delaySeconds + "秒");
 
         yield return new WaitForSeconds(delaySeconds);
 
@@ -274,14 +275,14 @@ public class PopResultPanelManager : MonoBehaviour
 
     public void OnHide()
     {
-        Debug.Log("隐藏结果面板，停止视频播放...");
+        GameLog.Debug("隐藏结果面板，停止视频播放...");
         
         try
         {
             if (videoPlayer.isPlaying)
             {
                 videoPlayer.Stop();
-                Debug.Log("视频已停止播放");
+                GameLog.Debug("视频已停止播放");
             }
             
             videoPlayer.source = VideoSource.VideoClip;
@@ -290,12 +291,12 @@ public class PopResultPanelManager : MonoBehaviour
 
             ClearResultItems();
 
-            Debug.Log("视频资源已清理");
+            GameLog.Debug("视频资源已清理");
         }
         catch (System.Exception e)
         {
-            Debug.LogError("停止视频播放时发生异常: " + e.ToString());
-            Debug.LogError("异常堆栈: " + e.StackTrace);
+            GameLog.Error("停止视频播放时发生异常: " + e.ToString());
+            GameLog.Error("异常堆栈: " + e.StackTrace);
         }
     }    
 }

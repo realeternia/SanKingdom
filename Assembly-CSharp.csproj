@@ -120,6 +120,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAidShockWave.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDumb.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\RampGeneratorTDE.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\Utils\GameLog.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
     <Compile Include="Assets\Resources\Scripts\CityPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\ReplayCellControl.cs" />

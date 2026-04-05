@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CommonConfig;
+using Controls.Utils;
 
 public static class EffectManager
 {
@@ -11,7 +12,7 @@ public static class EffectManager
         if(targetChess == null || targetChess.viewObj == null || BattleManager.Instance.quickMode)
             return;
 
-        Debug.Log($"PlayHitEffect: {effectName}");
+        GameLog.Info($"PlayHitEffect: {effectName}");
         
         // 播放粒子特效
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
@@ -29,7 +30,7 @@ public static class EffectManager
         if(sourceChess.viewObj == null || BattleManager.Instance.quickMode)
             return null;
 
-        Debug.Log("PlaySkillEffect: " + effect);
+        GameLog.Info("PlaySkillEffect: " + effect);
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
 
         GameObject hitEffect = UnityEngine.Object.Instantiate(hitPrefab, sourceChess.position, hitPrefab.transform.rotation);
@@ -47,7 +48,7 @@ public static class EffectManager
         if(sourceChess.viewObj == null || BattleManager.Instance.quickMode)
             return null;
         
-        UnityEngine.Debug.Log("PlayPosSkillEffect: " + effect);
+        GameLog.Info("PlayPosSkillEffect: " + effect);
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
 
         GameObject hitEffect = UnityEngine.Object.Instantiate(hitPrefab, sourcePos, hitPrefab.transform.rotation);
@@ -66,7 +67,7 @@ public static class EffectManager
         if(sourceChess.viewObj == null || BattleManager.Instance.quickMode)
             return null;
         
-        UnityEngine.Debug.Log("PlayBuffEffect: " + effect);
+        GameLog.Info("PlayBuffEffect: " + effect);
         var hitPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effect);
 
         GameObject hitEffect = UnityEngine.Object.Instantiate(hitPrefab, sourceChess.position, hitPrefab.transform.rotation);

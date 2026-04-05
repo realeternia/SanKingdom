@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
+using Controls.Utils;
 
 public class PickPanelControl : MonoBehaviour
 {
@@ -73,7 +74,7 @@ public class PickPanelControl : MonoBehaviour
         }
         else
         {
-            Debug.Log("No Game Save");
+            GameLog.Info("No Game Save");
             loadGamePanel.SetActive(false);
         }
 

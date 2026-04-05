@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using CommonConfig;
+using Controls.Utils;
 
 public static class SkillManager
 {
@@ -89,7 +90,7 @@ public static class SkillManager
                 return new SkillDumb(skillId, owner);
         }
 
-        UnityEngine.Debug.LogError("Skill not found " + skillCfg.ScriptName);
+        GameLog.Error("Skill not found " + skillCfg.ScriptName);
         return new SkillDumb(skillId, owner);
     }
 

@@ -1,5 +1,6 @@
 using System;
 using CommonConfig;
+using Controls.Utils;
 
 [System.Serializable]
 public class CreateChessAction : ChessAction
@@ -44,7 +45,7 @@ public class CreateChessAction : ChessAction
 
     public override void Doing()
     {
-        UnityEngine.Debug.Log($"CreateChessAction {Id} {ForceId} {SpawnPos} {IsHero} {HeroId} {Level} {SoldierNum}");
+        GameLog.Info($"CreateChessAction {Id} {ForceId} {SpawnPos} {IsHero} {HeroId} {Level} {SoldierNum}");
 
         var battleManager = BattleManager.Instance;
         var chessObj = new Chess(Id);

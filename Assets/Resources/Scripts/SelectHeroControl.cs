@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 using UnityEngine.UI;
+using Controls.Utils;
 
 public class SelectHeroControl : MonoBehaviour
 {
@@ -38,7 +39,7 @@ public class SelectHeroControl : MonoBehaviour
 
         if (mode == 1 || mode == 2)
         {
-            UnityEngine.Debug.Log("OnSelectHeroClick, cityId " + cityId);
+            GameLog.Info("OnSelectHeroClick, cityId " + cityId);
             heroList = GameManager.Instance.GetPraiseableHeroList(cityData.forceId).ToArray();
             
             if(heroList.Length == 0)

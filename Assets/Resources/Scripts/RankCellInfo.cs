@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using CommonConfig;
+using Controls.Utils;
 
 
 public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IRankDetailInfo, IRankDetailInfoHeader
@@ -187,7 +188,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log($"UI 元素被按下，位置：{eventData.position}");
+        GameLog.Debug($"UI 元素被按下，位置：{eventData.position}");
 
         // 判断点击是否在heroSkill区域内
         rankPanelManager.OnSelectHero(this);

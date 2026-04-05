@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
+using Controls.Utils;
 
 public class SkillAttackSpeedAttack : Skill
 {
@@ -14,7 +15,7 @@ public class SkillAttackSpeedAttack : Skill
         if (CheckBurst(defender))
         {
             SkillManager.AddSkillAction(owner, null, id, 0);
-            Debug.Log("SkillSpeedAttack");
+            GameLog.Debug("SkillSpeedAttack");
 
             owner.Cooldown((int)(2 * skillCfg.Strength));
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
 using UnityEngine;
+using Controls.Utils;
 
 public class Player
 {
@@ -82,7 +83,7 @@ public class Player
             int currentVal = cityData.GetAttr(mainAttr);
             if (currentVal >= attrConfig.ValMax)
             {
-                Debug.LogError($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，{mainAttr} 已达最大值");
+                GameLog.Error($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，{mainAttr} 已达最大值");
                 return false;
             }
         }
@@ -90,7 +91,7 @@ public class Player
         // 检查黄金是否足够
         if (cityData.gold < devConfig.GoldCost * heroList.Length)
         {
-            Debug.LogError($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，黄金不足");
+            GameLog.Error($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，黄金不足");
             return false;
         }
         
@@ -326,7 +327,7 @@ public class Player
     {
         if (destCityId <= 0)
         {
-            Debug.LogError("MoveHeroToCity: destCityId is invalid");
+            GameLog.Error("MoveHeroToCity: destCityId is invalid");
             return;
         }
         

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using CommonConfig;
+using Controls.Utils;
 
 public class PopArmySetManager : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class PopArmySetManager : MonoBehaviour
         });
         okBtn.onClick.AddListener(() =>
         {
-            Debug.Log($"okBtn {cityId} {heroId}");
+            GameLog.Debug($"okBtn {cityId} {heroId}");
             if (cityId > 0)
             {
                 var soldier = (int)(maxSoldier * slider1.value);

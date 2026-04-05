@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
 using System.Collections.Generic;
+using Controls.Utils;
 
 public class Tooltip : MonoBehaviour
 {
@@ -89,7 +90,7 @@ public class Tooltip : MonoBehaviour
         
         // 边界判定：确保tooltip完全在屏幕内
         // X轴边界（左右边界）
-        UnityEngine.Debug.Log("mouseScreenPos.x: " + mouseScreenPos.x + " w=" + tooltipWidth + " l=" + screenWidth);
+        GameLog.Info("mouseScreenPos.x: " + mouseScreenPos.x + " w=" + tooltipWidth + " l=" + screenWidth);
         if (mouseScreenPos.x + tooltipWidth > screenWidth -tooltipWidth/2)
         {
             // 如果超出右边界，显示在鼠标左侧

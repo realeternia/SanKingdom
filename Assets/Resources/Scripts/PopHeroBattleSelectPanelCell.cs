@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using CommonConfig;
+using Controls.Utils;
 
 public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
 {
@@ -93,7 +94,7 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
     public void OnSelect(bool isSelect)
     {
-        Debug.Log($"OnSelect {heroId} {isSelect}");
+        GameLog.Debug($"OnSelect {heroId} {isSelect}");
         this.isSelect = isSelect;
         checkImage.gameObject.SetActive(isSelect);
         if (backgroundImage != null)
@@ -113,7 +114,7 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
     // 处理点击事件
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log($"OnPointerClick {heroId} {isSelect}");
+        GameLog.Debug($"OnPointerClick {heroId} {isSelect}");
         // 只有可用的英雄才能被点击
         if (isAvailable)
         {

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Controls.Utils;
 
 public class SystemTip : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class SystemTip : MonoBehaviour
     {
         if(tipText2.text != "")
         {
-            UnityEngine.Debug.Log("ShowTip: " + tip);
+            GameLog.Info("ShowTip: " + tip);
             if(hideTipText1Coroutine != null)
             {
                 StopCoroutine(hideTipText1Coroutine);

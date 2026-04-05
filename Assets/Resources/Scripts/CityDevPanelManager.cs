@@ -6,6 +6,7 @@ using TMPro;
 using CommonConfig;
 using System.Linq;
 using System;
+using Controls.Utils;
 
 public class CityDevPanelManager : MonoBehaviour
 {
@@ -51,7 +52,7 @@ public class CityDevPanelManager : MonoBehaviour
         }
         lastSelectedCell = null;
 
-        Debug.Log("SetCityId: " + cityId + " " + buildingId);
+        GameLog.Debug("SetCityId: " + cityId + " " + buildingId);
 
         var buildingCfg = CityBuildingConfig.GetConfig(buildingId);
         buildingText.text = buildingCfg.Cname;

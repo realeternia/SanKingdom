@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 using System.Linq;
+using Controls.Utils;
 
 public class SkillModifySkillRateTime : Skill
 {
@@ -38,7 +39,7 @@ public class SkillModifySkillRateTime : Skill
         if (skillCfg.CheckAttrs != null && !skillCfg.CheckAttrs.Contains(checkSkillCfg.Attr))
             return; 
         
-        UnityEngine.Debug.Log(owner.id + " OnCheckCD " + cdTime + " skillId " + skillId);
+        GameLog.Info(owner.id + " OnCheckCD " + cdTime + " skillId " + skillId);
         cdTime = Math.Max(1, cdTime * skillCfg.Strength);
     }    
 }

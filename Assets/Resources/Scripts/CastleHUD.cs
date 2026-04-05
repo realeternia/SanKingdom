@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using CommonConfig;
+using Controls.Utils;
 
 public class CastleHUD : MonoBehaviour
 {
@@ -59,7 +60,7 @@ public class CastleHUD : MonoBehaviour
     {
         if (owner == null)
         {
-            Debug.LogError("Castle is null in UpdateHealthDisplay");
+            GameLog.Error("Castle is null in UpdateHealthDisplay");
             return;
         }
 

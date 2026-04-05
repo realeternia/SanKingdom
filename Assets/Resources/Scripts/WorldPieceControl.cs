@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
 using System;
+using Controls.Utils;
 
 public class WorldPieceControl : MonoBehaviour
 {
@@ -93,7 +94,7 @@ public class WorldPieceControl : MonoBehaviour
         // 添加空值检查，确保代码健壮性
         if (pieceImage == null)
         {
-            Debug.LogError("pieceImage is null");
+            GameLog.Error("pieceImage is null");
             return;
         }
 
@@ -101,11 +102,11 @@ public class WorldPieceControl : MonoBehaviour
         var forceConfig = ForceConfig.GetConfig(forceId);
         if (forceConfig == null)
         {
-            Debug.LogError($"找不到forceId为{forceId}的配置");
+            GameLog.Error($"找不到forceId为{forceId}的配置");
             return;
         }
 
-        Debug.Log($"设置颜色为{forceConfig.Color}");
+        GameLog.Debug($"设置颜色为{forceConfig.Color}");
         defaultColor = ColorUtility.TryParseHtmlString(forceConfig.Color, out var wColor) ? wColor : Color.white;
 
         pieceImage.color = defaultColor;

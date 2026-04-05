@@ -1,4 +1,5 @@
 using CommonConfig;
+using Controls.Utils;
 
 public static class BuffManager
 {
@@ -61,7 +62,7 @@ public static class BuffManager
 
         if (buff == null)
         {
-            UnityEngine.Debug.LogError("Buff not found");
+            GameLog.Error("Buff not found");
             return;
         }
 

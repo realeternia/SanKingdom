@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
+using Controls.Utils;
 
 [Serializable]
 public class Missile : SceneObj
@@ -97,7 +98,7 @@ public class Missile : SceneObj
                 effPrefab = Resources.Load<GameObject>("Prefabs/Effect/" + effectName);
             if (effPrefab == null)
             {
-                Debug.LogError($"Missile effect not found: {effectName}, skillId: {skillId}, using fallback");
+                GameLog.Error($"Missile effect not found: {effectName}, skillId: {skillId}, using fallback");
                 effPrefab = Resources.Load<GameObject>("Prefabs/Missile/BulletExplosionFire");
             }
             GameObject missileEffect = UnityEngine.Object.Instantiate(effPrefab, position, effPrefab.transform.rotation, viewObj.transform);

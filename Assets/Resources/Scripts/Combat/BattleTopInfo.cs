@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
+using Controls.Utils;
 
 public class BattleInfoTop : MonoBehaviour
 {
@@ -45,7 +46,7 @@ public class BattleInfoTop : MonoBehaviour
         
         //这里改成获得整个canvas的宽度
         float totalWidth = canvas.GetComponent<RectTransform>().sizeDelta.x;
-        UnityEngine.Debug.Log($"totalWidth: {totalWidth}");
+        GameLog.Info($"totalWidth: {totalWidth}");
 
         // 获取leftImg和rightImg的宽度
         float imgWidth = 80;
@@ -114,7 +115,7 @@ public class BattleInfoTop : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"无法加载图片: {imgPath}");
+            GameLog.Error($"无法加载图片: {imgPath}");
         }
     }
 

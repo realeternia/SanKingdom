@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CommonConfig;
+using Controls.Utils;
 
 public class PanelManager : MonoBehaviour
 {
@@ -376,17 +377,17 @@ public class PanelManager : MonoBehaviour
 
     public void SendSignal(string name, string parm1, int parm2)
     {
-        Debug.Log($"PanelManager SendSignal {name} {parm1} {parm2}");
+        GameLog.Debug($"PanelManager SendSignal {name} {parm1} {parm2}");
         if(worldPanel != null)
         {
             worldPanel.GetComponent<MainPanelManager>().SendSignal(name, parm1, parm2);
         }
         foreach (var panel in openPanelList)
         {
-            Debug.Log($"PanelManager SendSignal {panel.name} {name} {parm1} {parm2}");
+            GameLog.Debug($"PanelManager SendSignal {panel.name} {name} {parm1} {parm2}");
             if (panel.TryGetComponent<IPanelEvent>(out IPanelEvent p))
             {
-                Debug.Log($"PanelManager SendSignal2 {panel.name} {name} {parm1} {parm2}");
+                GameLog.Debug($"PanelManager SendSignal2 {panel.name} {name} {parm1} {parm2}");
                 p.SendSignal(name, parm1, parm2);
             }
         }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
+using Controls.Utils;
 
 public enum HeroType
 {
@@ -128,7 +129,7 @@ public class HeroDispatcher
                         player.MoveHeroToCity(srcCityId, cityId, new int[] { heroToMove.heroId }, false);
                         rearCityHeroMap[srcCityId].Remove(heroToMove);
                         
-                        UnityEngine.Debug.Log($"AI调度: 英雄{heroToMove.heroId}从后方城市{srcCityId}调往前线城市{cityId}");
+                        GameLog.SetTag("AI").Info($"AI调度: 英雄{heroToMove.heroId}从后方城市{srcCityId}调往前线城市{cityId}");
                     }
                 }
             }
