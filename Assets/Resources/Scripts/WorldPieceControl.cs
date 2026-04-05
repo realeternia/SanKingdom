@@ -106,7 +106,7 @@ public class WorldPieceControl : MonoBehaviour
             return;
         }
 
-        GameLog.Debug($"设置颜色为{forceConfig.Color}");
+       // GameLog.Debug($"设置颜色为{forceConfig.Color}");
         defaultColor = ColorUtility.TryParseHtmlString(forceConfig.Color, out var wColor) ? wColor : Color.white;
 
         pieceImage.color = defaultColor;

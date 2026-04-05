@@ -153,7 +153,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 pieceControl.InitForce();
                 worldPieces.Add(pieceControl);
                 
-                GameLog.Info($"成功加载UI地图: {worldConfig.Cname} ({worldConfig.Name})");
+               // GameLog.Info($"成功加载UI地图: {worldConfig.Cname} ({worldConfig.Name})");
             // }
             // catch (System.Exception e)
             // {

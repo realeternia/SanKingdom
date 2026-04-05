@@ -32,6 +32,18 @@ public class StrategicDecider
                attackedTargetsThisRound[forceId].Contains(targetCityId);
     }
     
+    private static string GetForceName(int forceId)
+    {
+        var cfg = ForceConfig.GetConfig(forceId);
+        return cfg != null ? cfg.Cname : forceId.ToString();
+    }
+    
+    private static string GetCityName(int cityId)
+    {
+        var cfg = WorldConfig.GetConfig(cityId);
+        return cfg != null ? cfg.Cname : cityId.ToString();
+    }
+    
     public static Dictionary<int, CityStrategyState> DetermineCityStrategies(Player player)
     {
         var result = new Dictionary<int, CityStrategyState>();
@@ -55,7 +67,9 @@ public class StrategicDecider
                 {
                     result[attackSource.Value] = CityStrategyState.Atk;
                     hasAttacked = true;
-                    GameLog.SetTag("AI").Info($"AI攻击决策: 势力{player.forceId} 从城市{attackSource.Value} 攻击{attackTarget.Value}");
+                    var targetCity = GameManager.Instance.GetCity(attackTarget.Value);
+                    string targetForceName = targetCity != null ? GetForceName(targetCity.forceId) : "未知";
+                    GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(attackSource.Value)}] 决定攻击[{GetCityName(attackTarget.Value)}] 目标势力:{targetForceName}");
                 }
             }
         }

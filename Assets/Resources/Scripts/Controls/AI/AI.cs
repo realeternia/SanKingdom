@@ -53,6 +53,9 @@ public static class AI
     
     private static void ExecuteCityActions(Player player, SaveCityData city, AIStrategyContext context, CityStrategyState state)
     {
+        int totalHeroes = city.GetNormalHeroList().Count;
+        int initialAvailable = context.GetAvailableHeroes(city.cityId).Count;
+        
         var cityNeeds = CityEvaluator.EvaluateCity(city);
         var availableTasks = TaskPriorityCalculator.GetAvailableTasks(city, state, cityNeeds);
         
@@ -60,13 +63,16 @@ public static class AI
         {
             var availableHeroes = context.GetAvailableHeroes(city.cityId);
             if (availableHeroes.Count == 0)
-                return;
+                break;
             
-            if (ExecuteTask(player, city, context, task, availableHeroes))
-            {
-                GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 执行[{GetTaskName(task.devId)}] 状态:{state}");
-            }
+            ExecuteTask(player, city, context, task, availableHeroes);
         }
+        
+        int finalAvailable = context.GetAvailableHeroes(city.cityId).Count;
+        int actedCount = initialAvailable - finalAvailable;
+        int soldier = city.GetAttr("soldier");
+        
+        GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 行动结束 已行动:{actedCount}/{totalHeroes} 黄金:{city.gold} 粮草:{city.food} 兵力:{soldier}");
     }
     
     private static bool ExecuteTask(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task, List<SaveHeroData> availableHeroes)
@@ -258,8 +264,7 @@ public static class AI
                 (targetHero.state == HeroState.Catched) ||
                 (targetHero.state == HeroState.Normal && targetHero.loyalty < 80))
             {
-                player.ExecuteCityUseHero(city.cityId, task.devId, 
-                    bestRecruiter.heroId, targetHeroId, out _, false);
+                player.ExecuteCityUseHero(city.cityId, task.devId, bestRecruiter.heroId, targetHeroId, out _);
                 GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 登用: [{GetHeroName(bestRecruiter.heroId)}] 登用 [{GetHeroName(targetHeroId)}]");
                 return true;
             }

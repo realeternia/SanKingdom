@@ -38,6 +38,11 @@ public class CityDetail : MonoBehaviour, IPanelEvent
 
     public void SetCityDetail(int cityId)
     {
+        if (cityId <= 0)
+        {
+            return;
+        }
+
         this.cityId = cityId;
         var city = GameManager.Instance.GetCity(cityId);
         var worldCfg = WorldConfig.GetConfig(cityId);

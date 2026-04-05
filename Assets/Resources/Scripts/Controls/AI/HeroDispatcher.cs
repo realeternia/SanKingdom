@@ -126,7 +126,7 @@ public class HeroDispatcher
                     if (rearCityHeroMap.ContainsKey(srcCityId) && 
                         rearCityHeroMap[srcCityId].Count > MIN_REAR_HEROES)
                     {
-                        player.MoveHeroToCity(srcCityId, cityId, new int[] { heroToMove.heroId }, false);
+                        player.MoveHeroToCity(srcCityId, cityId, new int[] { heroToMove.heroId });
                         rearCityHeroMap[srcCityId].Remove(heroToMove);
                         
                         GameLog.SetTag("AI").Info($"AI调度: 英雄{heroToMove.heroId}从后方城市{srcCityId}调往前线城市{cityId}");

@@ -323,7 +323,7 @@ public class Player
     }
 
     // 移动英雄到目标城市
-    public void MoveHeroToCity(int srcCityId, int destCityId, int[] heroIds, bool sendSignal = true)
+    public void MoveHeroToCity(int srcCityId, int destCityId, int[] heroIds)
     {
         if (destCityId <= 0)
         {
@@ -347,10 +347,7 @@ public class Player
             cityDest.RecalculateHeros();
         }
         
-        if (sendSignal)
-        {
-            PanelManager.Instance.SendSignal("CityAttrChange", "", destCityId);
-        }
+         PanelManager.Instance.SendSignal("CityAttrChange", "", destCityId);
     }
 
     // 执行城市移动发展（带粮草）
@@ -461,7 +458,7 @@ public class Player
         return true;
     }
 
-    public bool ExecuteCityUseHero(int cityId, int devId, int myHeroId, int targetHeroId, out List<PopResultPanelManager.AttrData> attrDatas, bool sendSignal = true)
+    public bool ExecuteCityUseHero(int cityId, int devId, int myHeroId, int targetHeroId, out List<PopResultPanelManager.AttrData> attrDatas)
     {
         attrDatas = new List<PopResultPanelManager.AttrData>();
         
@@ -515,7 +512,7 @@ public class Player
             hero.loyalty = 85;
             hero.SetRoundForRecruit();
 
-            MoveHeroToCity(hero.cityId, cityId, new int[] { targetHeroId }, sendSignal);
+            MoveHeroToCity(hero.cityId, cityId, new int[] { targetHeroId });
 
             resultMsg = string.Format("成功 ({0}%)", baseSuccessRate);
 

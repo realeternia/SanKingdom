@@ -19,14 +19,11 @@ namespace Controls.Utils
         private static readonly object _lock = new object();
 
         private string _logDirectory;
-        private string _currentLogFile;
         private string _currentDate;
         private LogLevel _minLogLevel = LogLevel.Debug;
         private readonly Dictionary<string, StreamWriter> _tagWriters = new Dictionary<string, StreamWriter>();
         private StreamWriter _mainWriter;
         private readonly object _fileLock = new object();
-
-        private string _currentTag = null;
 
         public static GameLog Instance
         {
@@ -72,8 +69,8 @@ namespace Controls.Utils
                     {
                         CloseAllWriters();
                         _currentDate = today;
-                        _currentLogFile = Path.Combine(_logDirectory, $"game_{today}.log");
-                        _mainWriter = new StreamWriter(_currentLogFile, true, Encoding.UTF8);
+                        string mainLogFile = Path.Combine(_logDirectory, $"game_{today}.log");
+                        _mainWriter = new StreamWriter(mainLogFile, true, Encoding.UTF8);
                         _mainWriter.AutoFlush = true;
                     }
                 }
@@ -184,14 +181,15 @@ namespace Controls.Utils
 
         private StreamWriter GetTagWriter(string tag)
         {
-            if (!_tagWriters.ContainsKey(tag))
+            string tagKey = $"{_currentDate}_{tag}";
+            if (!_tagWriters.ContainsKey(tagKey))
             {
-                string tagFile = Path.Combine(_logDirectory, $"log.{tag.ToLower()}");
+                string tagFile = Path.Combine(_logDirectory, $"game_{_currentDate}.{tag.ToLower()}.log");
                 var writer = new StreamWriter(tagFile, true, Encoding.UTF8);
                 writer.AutoFlush = true;
-                _tagWriters[tag] = writer;
+                _tagWriters[tagKey] = writer;
             }
-            return _tagWriters[tag];
+            return _tagWriters[tagKey];
         }
 
         public static void Shutdown()
