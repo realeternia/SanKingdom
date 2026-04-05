@@ -17,6 +17,8 @@ public class PopResultPanelManager : MonoBehaviour
         public string attr;
         public int valOld;
         public int valAddon;
+
+        public string attrStr;
         public string valStr;
     }
 

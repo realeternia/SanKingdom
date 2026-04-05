@@ -170,7 +170,6 @@ public class Player
             attr = devConfig.DevAttr1,
             valOld = attr1Old,
             valAddon = results[0],
-            valStr = null
         });
         
         if (!string.IsNullOrEmpty(devConfig.DevAttr2))
@@ -182,7 +181,6 @@ public class Player
                 attr = devConfig.DevAttr2,
                 valOld = attr2Old,
                 valAddon = results[1],
-                valStr = null
             });
         }
         
@@ -195,7 +193,6 @@ public class Player
                 attr = devConfig.DevAttr3,
                 valOld = attr3Old,
                 valAddon = results[2],
-                valStr = null
             });
         }
 
@@ -262,7 +259,7 @@ public class Player
 
                 attrDatas.Add(new PopResultPanelManager.AttrData()
                 {
-                    attr = "发现",
+                    attrStr = "发现",
                     valStr = string.Format("<color=green>{0}</color>", heroConfig.Name),
                 });
 
@@ -414,7 +411,6 @@ public class Player
                 attr = "Gold",
                 valOld = goldOld,
                 valAddon = - amount,
-                valStr = null
             });
 
             int foodOld = cityData.GetAttr("Food");
@@ -424,7 +420,6 @@ public class Player
                 attr = "Food",
                 valOld = foodOld,
                 valAddon = (int)(rate * amount),
-                valStr = null
             });
         }
         else
@@ -442,7 +437,6 @@ public class Player
                 attr = "Food",
                 valOld = foodOld,
                 valAddon = -amount,
-                valStr = null
             });
 
             int goldOld = cityData.GetAttr("Gold");
@@ -452,7 +446,6 @@ public class Player
                 attr = "Gold",
                 valOld = goldOld,
                 valAddon = (int)(rate * amount),
-                valStr = null
             });
         }
 
@@ -524,7 +517,7 @@ public class Player
 
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
-                attr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
+                attrStr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
                 valStr = string.Format("<color=green>{0}</color>", resultMsg),
             });
         }
@@ -533,7 +526,7 @@ public class Player
             resultMsg = string.Format("失败 ({0}%)", baseSuccessRate);
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
-                attr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
+                attrStr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
                 valStr = string.Format("<color=red>{0}</color>", resultMsg),
             });     
         }
@@ -574,7 +567,6 @@ public class Player
                 attr = "Gold",
                 valOld = cityData.gold + totalCost,
                 valAddon = -totalCost,
-                valStr = null
             });
         }
 
@@ -597,7 +589,7 @@ public class Player
             
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
-                valStr = HeroConfig.GetConfig(heroId).Name + "忠心",
+                attrStr = HeroConfig.GetConfig(heroId).Name + "忠心",
                 valOld = loyaltyOld,
                 valAddon = hero.loyalty - loyaltyOld,
             });

@@ -69,7 +69,7 @@ namespace Controls.Utils
                     {
                         CloseAllWriters();
                         _currentDate = today;
-                        string mainLogFile = Path.Combine(_logDirectory, $"game_{today}.log");
+                        string mainLogFile = Path.Combine(_logDirectory, $"game_{today}.txt");
                         _mainWriter = new StreamWriter(mainLogFile, true, Encoding.UTF8);
                         _mainWriter.AutoFlush = true;
                     }
@@ -184,7 +184,7 @@ namespace Controls.Utils
             string tagKey = $"{_currentDate}_{tag}";
             if (!_tagWriters.ContainsKey(tagKey))
             {
-                string tagFile = Path.Combine(_logDirectory, $"game_{_currentDate}.{tag.ToLower()}.log");
+                string tagFile = Path.Combine(_logDirectory, $"game_{_currentDate}.{tag.ToLower()}.txt");
                 var writer = new StreamWriter(tagFile, true, Encoding.UTF8);
                 writer.AutoFlush = true;
                 _tagWriters[tagKey] = writer;
