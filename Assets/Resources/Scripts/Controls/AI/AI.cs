@@ -84,23 +84,34 @@ public static class AI
     
     private static object ExecuteTask(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task, List<SaveHeroData> availableHeroes)
     {
-        switch (task.config.Prefab)
+        var result = true;
+        while (result)
         {
-            case "CityDevNormal":
-                return ExecuteNormalTask(player, city, context, task, availableHeroes);
-            case "CityDevBattle":
-                return TryExecuteAttack(player, city, context, task);
-            case "CityDevMove":
-                return HandleMove(player, city, context, task);
-            case "CityDevUseHero":
-                return HandleRecruitment(player, city, context, task);
-            case "CityDevChange":
-                return HandleFoodPurchase(player, city, context, task);
-            case "CityDevPraiseHero":
-                return HandlePraise(player, city, context, task);
-            default:
-                return false;
+            switch (task.config.Prefab)
+            {
+                case "CityDevNormal":
+                    result = ExecuteNormalTask(player, city, context, task, availableHeroes);
+                    break;
+                case "CityDevBattle":
+                    return TryExecuteAttack(player, city, context, task);
+                case "CityDevMove":
+                    result = HandleMove(player, city, context, task);
+                    break;
+                case "CityDevUseHero":
+                    result = HandleRecruitment(player, city, context, task);
+                    break;
+                case "CityDevChange":
+                    result = HandleFoodPurchase(player, city, context, task);
+                    break;
+                case "CityDevPraiseHero":
+                    result = HandlePraise(player, city, context, task);
+                    break;
+                default:
+                    result = false;
+                    break;
+            }
         }
+        return result;
     }
     
     private static bool ExecuteNormalTask(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task, List<SaveHeroData> availableHeroes)
@@ -112,9 +123,8 @@ public static class AI
         var heroIds = matchedHeroes.Select(m => m.hero.heroId).ToArray();
         if (heroIds.Length > 0)
         {
-            player.ExecuteCityDev(city.cityId, task.devId, heroIds, out _);
             GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 内政[{GetTaskName(task.devId)}] 英雄:[{GetHeroNames(heroIds)}]");
-            return true;
+            return player.ExecuteCityDev(city.cityId, task.devId, heroIds, out _);
         }
         return false;
     }
@@ -350,6 +360,9 @@ public static class AI
         var availableHeroes = context.GetAvailableHeroes(city.cityId);
         if (availableHeroes.Count == 0)
             return false;
+
+        if (city.GetNormalHeroList().Count <= 3)
+            return false;
         
         var frontlineCities = HeroDispatcher.GetFrontlineCities(player);
         var rearCities = HeroDispatcher.GetRearCities(player);
@@ -372,8 +385,7 @@ public static class AI
         return false;
     }
     
-    private static bool MoveDomesticHeroesToRear(Player player, SaveCityData city, TaskPriorityInfo task, 
-        List<SaveHeroData> availableHeroes, List<int> rearCities)
+    private static bool MoveDomesticHeroesToRear(Player player, SaveCityData srcCity, TaskPriorityInfo task, List<SaveHeroData> availableHeroes, List<int> rearCities)
     {
         var domesticHeroes = availableHeroes
             .Where(h => HeroDispatcher.ClassifyHero(h) == HeroType.Domestic)
@@ -381,39 +393,23 @@ public static class AI
         
         if (domesticHeroes.Count == 0)
             return false;
-        
-        var normalHeroes = city.GetNormalHeroList()
-            .Select(h => GameManager.Instance.GetHero(h))
-            .ToList();
-        int combatCount = normalHeroes.Count(h => HeroDispatcher.ClassifyHero(h) == HeroType.Combat);
-        
-        if (combatCount < 2)
-            return false;
-        
+         
         var heroToMove = domesticHeroes[0];
         var targetCityId = SelectBestRearCity(rearCities, heroToMove);
         
         if (targetCityId == 0)
             return false;
         
-        return ExecuteHeroMove(player, city, heroToMove, targetCityId, task.devId, "后方城市");
+        return ExecuteHeroMove(player, srcCity, heroToMove, targetCityId, task.devId, "后方城市");
     }
     
-    private static bool MoveCombatHeroesToFrontline(Player player, SaveCityData city, TaskPriorityInfo task,
-        List<SaveHeroData> availableHeroes, List<int> frontlineCities)
+    private static bool MoveCombatHeroesToFrontline(Player player, SaveCityData srcCity, TaskPriorityInfo task, List<SaveHeroData> availableHeroes, List<int> frontlineCities)
     {
         var combatHeroes = availableHeroes
             .Where(h => HeroDispatcher.ClassifyHero(h) == HeroType.Combat)
             .ToList();
-        
+            
         if (combatHeroes.Count == 0)
-            return false;
-        
-        var normalHeroes = city.GetNormalHeroList()
-            .Select(h => GameManager.Instance.GetHero(h))
-            .ToList();
-        
-        if (normalHeroes.Count <= 1)
             return false;
         
         var heroToMove = combatHeroes[0];
@@ -422,17 +418,16 @@ public static class AI
         if (targetCityId == 0)
             return false;
         
-        return ExecuteHeroMove(player, city, heroToMove, targetCityId, task.devId, "前线城市");
+        return ExecuteHeroMove(player, srcCity, heroToMove, targetCityId, task.devId, "前线城市");
     }
     
-    private static bool BalanceHeroesAcrossCities(Player player, SaveCityData city, TaskPriorityInfo task,
-        List<SaveHeroData> availableHeroes)
+    private static bool BalanceHeroesAcrossCities(Player player, SaveCityData srcCity, TaskPriorityInfo task, List<SaveHeroData> availableHeroes)
     {
         var myCities = player.GetCityList();
         if (myCities.Count <= 1)
             return false;
         
-        var normalHeroes = city.GetNormalHeroList();
+        var normalHeroes = srcCity.GetNormalHeroList();
         if (normalHeroes.Count <= 1)
             return false;
         
@@ -444,14 +439,14 @@ public static class AI
         var heroToMove = availableHeroes[0];
         
         var targetCity = myCities
-            .Where(c => c.cityId != city.cityId)
+            .Where(c => c.cityId != srcCity.cityId)
             .OrderBy(c => c.GetNormalHeroList().Count)
             .FirstOrDefault();
         
         if (targetCity == null)
             return false;
         
-        return ExecuteHeroMove(player, city, heroToMove, targetCity.cityId, task.devId, "平均分配");
+        return ExecuteHeroMove(player, srcCity, heroToMove, targetCity.cityId, task.devId, "平均分配");
     }
     
     private static int SelectBestRearCity(List<int> rearCities, SaveHeroData hero)

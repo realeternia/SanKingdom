@@ -63,9 +63,7 @@ public class HeroTaskMatcher
         return bestMatch;
     }
     
-    public static List<HeroTaskMatch> AssignTasksToHeroes(
-        List<SaveHeroData> heroes, 
-        List<TaskPriorityInfo> availableTasks)
+    public static List<HeroTaskMatch> AssignTasksToHeroes(List<SaveHeroData> heroes, List<TaskPriorityInfo> availableTasks)
     {
         var assignments = new List<HeroTaskMatch>();
         var usedHeroes = new HashSet<int>();
@@ -76,8 +74,7 @@ public class HeroTaskMatcher
         
         foreach (var taskInfo in sortedTasks)
         {
-            SaveHeroData bestHero = null;
-            float bestScore = -1f;
+            var heroScores = new List<HeroMatchScore>();
             
             foreach (var hero in heroes)
             {
@@ -85,17 +82,20 @@ public class HeroTaskMatcher
                     continue;
                 
                 float score = CalculateMatchScore(hero, taskInfo.config);
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestHero = hero;
-                }
+                heroScores.Add(new HeroMatchScore(hero, score));
             }
             
-            if (bestHero != null)
+            heroScores.Sort((a, b) => b.score.CompareTo(a.score));
+            
+            int maxHeroesPerTask = Mathf.Min(3, heroScores.Count);
+            if(heroScores[0].score < 70)
+                maxHeroesPerTask = 1;
+            
+            for (int i = 0; i < maxHeroesPerTask; i++)
             {
-                assignments.Add(new HeroTaskMatch(bestHero, taskInfo.devId, bestScore));
-                usedHeroes.Add(bestHero.heroId);
+                var matchedHero = heroScores[i];
+                assignments.Add(new HeroTaskMatch(matchedHero.hero, taskInfo.devId, matchedHero.score));
+                usedHeroes.Add(matchedHero.hero.heroId);
             }
         }
         

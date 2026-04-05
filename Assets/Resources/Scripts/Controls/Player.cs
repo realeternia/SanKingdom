@@ -68,6 +68,12 @@ public class Player
     public bool ExecuteCityDev(int cityId, int devId, int[] heroList, out List<PopResultPanelManager.AttrData> attrDatas)
     {
         heroList = GetAvailableHeroesThisYear(heroList).ToArray();
+        if(heroList.Length == 0)
+        {
+            GameLog.Error($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，没有可用英雄");
+            attrDatas = null;
+            return false;
+        }
 
         attrDatas = new List<PopResultPanelManager.AttrData>();
         var resultTmp = new List<float>();

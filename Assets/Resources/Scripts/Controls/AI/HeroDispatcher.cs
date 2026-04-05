@@ -24,14 +24,14 @@ public class HeroDispatcher
         int fair = hero.GetAttr("fair");
         int charm = hero.GetAttr("charm");
         
-        int combatScore = str + leadship * 2;
+        int combatScore = str + leadship + inte;
         int domesticScore = inte + fair + charm;
         
-        if (combatScore >= COMBAT_THRESHOLD && combatScore > domesticScore * 1.2f)
+        if (combatScore >= COMBAT_THRESHOLD && combatScore > domesticScore * 1.3f)
         {
             return HeroType.Combat;
         }
-        else if (domesticScore >= DOMESTIC_THRESHOLD && domesticScore > combatScore * 1.2f)
+        else if (domesticScore >= DOMESTIC_THRESHOLD && domesticScore > combatScore * 1.3f)
         {
             return HeroType.Domestic;
         }
