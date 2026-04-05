@@ -61,10 +61,10 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        // 取消注册日志事件
+        GameLog.Shutdown();
+        
         Application.logMessageReceived -= LogMessageReceived;
         
-        // 关闭日志文件
         if (logWriter != null)
         {
             logWriter.WriteLine("Game ended at: " + System.DateTime.Now);

@@ -56,6 +56,17 @@ namespace Controls.Utils
                 Directory.CreateDirectory(_logDirectory);
             }
             CheckDateRotation();
+            UnityEngine.Application.logMessageReceived += HandleUnityLog;
+        }
+
+        private void HandleUnityLog(string condition, string stackTrace, UnityEngine.LogType type)
+        {
+            if (type == UnityEngine.LogType.Exception)
+            {
+                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                string formattedMessage = $"[{timestamp}][EXCEPTION] {condition}\n{stackTrace}";
+                WriteToFile(formattedMessage, "Exception");
+            }
         }
 
         private void CheckDateRotation()
@@ -194,6 +205,7 @@ namespace Controls.Utils
 
         public static void Shutdown()
         {
+            UnityEngine.Application.logMessageReceived -= Instance.HandleUnityLog;
             Instance.CloseAllWriters();
         }
     }

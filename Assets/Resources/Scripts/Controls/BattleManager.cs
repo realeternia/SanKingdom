@@ -677,6 +677,7 @@ public class BattleManager : MonoBehaviour
     // 序列化到文件
     public void SaveToFile(string filePath)
     {
+        filePath = System.IO.Path.Combine(UnityEngine.Application.persistentDataPath, filePath + ".json");
         string json = JsonUtility.ToJson(this);
         System.IO.File.WriteAllText(filePath, json);
     }
@@ -684,6 +685,7 @@ public class BattleManager : MonoBehaviour
     // 从文件反序列化
     public void LoadFromFile(string filePath)
     {
+        filePath = System.IO.Path.Combine(UnityEngine.Application.persistentDataPath, filePath + ".json");  
         if (System.IO.File.Exists(filePath))
         {
             string json = System.IO.File.ReadAllText(filePath);
