@@ -70,7 +70,7 @@ public class Player
         heroList = GetAvailableHeroesThisYear(heroList).ToArray();
         if(heroList.Length == 0)
         {
-            GameLog.Error($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，没有可用英雄");
+            GameLog.Warn($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，没有可用英雄");
             attrDatas = null;
             return false;
         }
@@ -89,7 +89,7 @@ public class Player
             int currentVal = cityData.GetAttr(mainAttr);
             if (currentVal >= attrConfig.ValMax)
             {
-                GameLog.Error($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，{mainAttr} 已达最大值");
+                GameLog.Warn($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，{mainAttr} 已达最大值");
                 return false;
             }
         }
@@ -97,7 +97,7 @@ public class Player
         // 检查黄金是否足够
         if (cityData.gold < devConfig.GoldCost * heroList.Length)
         {
-            GameLog.Error($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，黄金不足");
+            GameLog.Warn($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，黄金不足");
             return false;
         }
         
@@ -333,7 +333,7 @@ public class Player
     {
         if (destCityId <= 0)
         {
-            GameLog.Error("MoveHeroToCity: destCityId is invalid");
+            GameLog.Warn("MoveHeroToCity: destCityId is invalid");
             return;
         }
         

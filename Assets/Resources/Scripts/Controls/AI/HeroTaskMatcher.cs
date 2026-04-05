@@ -84,6 +84,9 @@ public class HeroTaskMatcher
                 float score = CalculateMatchScore(hero, taskInfo.config);
                 heroScores.Add(new HeroMatchScore(hero, score));
             }
+
+            if (heroScores.Count == 0)
+                continue;
             
             heroScores.Sort((a, b) => b.score.CompareTo(a.score));
             

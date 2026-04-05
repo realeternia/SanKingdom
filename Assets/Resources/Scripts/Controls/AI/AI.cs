@@ -85,12 +85,13 @@ public static class AI
     private static object ExecuteTask(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task, List<SaveHeroData> availableHeroes)
     {
         var result = true;
-        while (result)
+        int count = 0;
+        while (result && count < 2)
         {
             switch (task.config.Prefab)
             {
                 case "CityDevNormal":
-                    result = ExecuteNormalTask(player, city, context, task, availableHeroes);
+                    result = ExecuteNormalTask(player, city, context, task);
                     break;
                 case "CityDevBattle":
                     return TryExecuteAttack(player, city, context, task);
@@ -110,12 +111,14 @@ public static class AI
                     result = false;
                     break;
             }
+            count++;
         }
         return result;
     }
     
-    private static bool ExecuteNormalTask(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task, List<SaveHeroData> availableHeroes)
+    private static bool ExecuteNormalTask(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
     {
+        var availableHeroes = context.GetAvailableHeroes(city.cityId);
         var matchedHeroes = HeroTaskMatcher.AssignTasksToHeroes(availableHeroes, new List<TaskPriorityInfo> { task });
         if (matchedHeroes.Count == 0)
             return false;

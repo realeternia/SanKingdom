@@ -103,7 +103,7 @@ public class ReplayCellControl : MonoBehaviour
     private string GetTimeString(int round)
     {
         int year = GameManager.BASE_YEAR + round / GameManager.SEASONS_PER_YEAR;
-        int month = (round % GameManager.SEASONS_PER_YEAR) + 1;
-        return string.Format("{0}年{1}月", year, month);
+        var seasonCfg = SeasonConfig.GetConfig(round % GameManager.SEASONS_PER_YEAR);
+        return string.Format("{0}年{1}", year, seasonCfg.Name);
     }
 }
