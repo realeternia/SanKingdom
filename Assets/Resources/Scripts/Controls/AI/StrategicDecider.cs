@@ -86,6 +86,7 @@ public class StrategicDecider
                 if (HasThreat(city))
                 {
                     result[cityId] = CityStrategyState.Def;
+                    GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(cityId)}] 决定防御");
                     defCount++;
                 }
             }

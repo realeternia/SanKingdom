@@ -298,15 +298,8 @@ public class GameManager : MonoBehaviour
             // 跳过玩家势力
             if (player.IsPlayer)
                 continue;
-            AI.ExecuteAiActions(player);
-
-            yield return new WaitForSeconds(0.23f);
             
-            // 等待AI发起的战斗结束
-            while (BattleManager.Instance.IsBattleRunning)
-            {
-                yield return new WaitForSeconds(0.1f);
-            }
+            yield return AI.ExecuteAiActions(player);
         }
 
         PanelManager.Instance.SendSignal("AICheck", "", 0);

@@ -1,7 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
 using Controls.Utils;
+using UnityEngine;
+using System;
 
 public static class AI
 {
@@ -34,7 +37,7 @@ public static class AI
         return string.Join(",", heroIds.Select(GetHeroName));
     }
     
-    public static void ExecuteAiActions(Player player)
+    public static IEnumerator ExecuteAiActions(Player player)
     {
         var context = new AIStrategyContext(player);
         
@@ -47,11 +50,11 @@ public static class AI
             var state = cityStrategies.ContainsKey(city.cityId) ? 
                 cityStrategies[city.cityId] : CityStrategyState.Dev;
             
-            ExecuteCityActions(player, city, context, state);
+            yield return ExecuteCityActions(player, city, context, state);
         }
     }
     
-    private static void ExecuteCityActions(Player player, SaveCityData city, AIStrategyContext context, CityStrategyState state)
+    private static IEnumerator ExecuteCityActions(Player player, SaveCityData city, AIStrategyContext context, CityStrategyState state)
     {
         int totalHeroes = city.GetNormalHeroList().Count;
         int initialAvailable = context.GetAvailableHeroes(city.cityId).Count;
@@ -65,7 +68,11 @@ public static class AI
             if (availableHeroes.Count == 0)
                 break;
             
-            ExecuteTask(player, city, context, task, availableHeroes);
+            var result = ExecuteTask(player, city, context, task, availableHeroes);
+            if (result is IEnumerator enumerator)
+            {
+                yield return enumerator;
+            }
         }
         
         int finalAvailable = context.GetAvailableHeroes(city.cityId).Count;
@@ -75,7 +82,7 @@ public static class AI
         GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 行动结束 已行动:{actedCount}/{totalHeroes} 黄金:{city.gold} 粮草:{city.food} 兵力:{soldier}");
     }
     
-    private static bool ExecuteTask(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task, List<SaveHeroData> availableHeroes)
+    private static object ExecuteTask(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task, List<SaveHeroData> availableHeroes)
     {
         switch (task.config.Prefab)
         {
@@ -112,15 +119,21 @@ public static class AI
         return false;
     }
     
-    private static bool TryExecuteAttack(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
+    private static IEnumerator TryExecuteAttack(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
     {
         var attackTarget = SelectBestAttackTarget(context, city);
         if (!attackTarget.HasValue)
-            return false;
+        {
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击: 没有可攻击的目标");
+            yield break;
+        }
         
         var availableHeroes = context.GetAvailableHeroes(city.cityId);
         if (availableHeroes.Count == 0)
-            return false;
+        {
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击[{GetCityName(attackTarget.Value)}]: 没有可用英雄");
+            yield break;
+        }
         
         var combatHeroes = availableHeroes
             .Where(h => HeroDispatcher.ClassifyHero(h) == HeroType.Combat)
@@ -130,14 +143,19 @@ public static class AI
             combatHeroes = availableHeroes.Take(3).ToList();
         
         if (combatHeroes.Count == 0)
-            return false;
+        {
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击[{GetCityName(attackTarget.Value)}]: 无法选择战斗英雄");
+            yield break;
+        }
+        
+        DistributeSoldierToHeroes(city, combatHeroes);
         
         int totalSoldier = combatHeroes.Sum(h => h.soldier);
         
         if (totalSoldier < 500)
         {
-            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击: 兵力{totalSoldier}不足500");
-            return false;
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击[{GetCityName(attackTarget.Value)}]: 兵力{totalSoldier}不足500");
+            yield break;
         }
         
         var targetCity = GameManager.Instance.GetCity(attackTarget.Value);
@@ -145,16 +163,16 @@ public static class AI
         
         if (totalSoldier < enemySoldier * 0.7f)
         {
-            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击: 己方{totalSoldier}少于敌方{enemySoldier}的70%");
-            return false;
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击[{GetCityName(attackTarget.Value)}]: 己方{totalSoldier}少于敌方{enemySoldier}的70%");
+            yield break;
         }
         
         int foodNeeded = totalSoldier / 2;
         
         if (city.food < foodNeeded)
         {
-            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击: 粮食不足 需要{foodNeeded} 现有{city.food}");
-            return false;
+            GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击[{GetCityName(attackTarget.Value)}]: 粮食不足 需要{foodNeeded} 现有{city.food}");
+            yield break;
         }
         
         var heroIds = combatHeroes.Select(h => h.heroId).ToArray();
@@ -162,7 +180,33 @@ public static class AI
         StrategicDecider.MarkTargetAttacked(player.forceId, attackTarget.Value);
         player.ExecuteCityBattleDev(city.cityId, task.devId, heroIds, foodNeeded, attackTarget.Value, true);
         GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 攻击[{GetCityName(attackTarget.Value)}] 英雄:[{GetHeroNames(heroIds)}] 兵力:{totalSoldier}");
-        return true;
+        
+        while (BattleManager.Instance.IsBattleRunning)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+    
+    private static void DistributeSoldierToHeroes(SaveCityData city, List<SaveHeroData> heroes)
+    {
+        const int MAX_SOLDIER_PER_HERO = 1000;
+        int citySoldier = city.soldier;
+        
+        foreach (var hero in heroes)
+        {
+            if (citySoldier <= 0)
+                break;
+            
+            int canAssign = MAX_SOLDIER_PER_HERO - hero.soldier;
+            if (canAssign <= 0)
+                continue;
+            
+            int toAssign = Math.Min(canAssign, citySoldier);
+            hero.soldier += toAssign;
+            citySoldier -= toAssign;
+        }
+        
+        city.soldier = citySoldier;
     }
     
     private static int? SelectBestAttackTarget(AIStrategyContext context, SaveCityData sourceCity)

@@ -123,10 +123,10 @@ namespace Controls.Utils
 
         internal void Log(LogLevel level, string tag, object message)
         {
-            if (level < _minLogLevel)
-            {
-                return;
-            }
+            // if (level < _minLogLevel)
+            // {
+            //     return;
+            // }
 
             CheckDateRotation();
 
