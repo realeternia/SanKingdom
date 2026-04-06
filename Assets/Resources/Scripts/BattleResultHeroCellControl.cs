@@ -13,14 +13,14 @@ public class BattleResultHeroCellControl : MonoBehaviour
     public TMP_Text playerMark2;
     public TMP_Text playerRank;
 
+    private Outline heroOutline;
 
-    // Start is called before the first frame update
+
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -41,5 +41,21 @@ public class BattleResultHeroCellControl : MonoBehaviour
             heroIcon.color = new Color(0.3f, 0.3f, 0.3f, 1f);
         else
             heroIcon.color = Color.white;
+
+        if (battleStat.isCatched)
+        {
+            if (heroOutline == null)
+            {
+                heroOutline = heroIcon.gameObject.AddComponent<Outline>();
+                heroOutline.effectDistance = new Vector2(3, -3);
+            }
+            heroOutline.effectColor = Color.red;
+            heroOutline.enabled = true;
+        }
+        else
+        {
+            if (heroOutline != null)
+                heroOutline.enabled = false;
+        }
     }
 }

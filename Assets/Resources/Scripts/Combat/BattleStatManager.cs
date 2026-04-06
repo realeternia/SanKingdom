@@ -13,6 +13,7 @@ public class BattleStatManager
         public float damage;
         public float beDamaged;
         public bool isDead;
+        public bool isCatched;
     }
 
     [Serializable]
@@ -143,6 +144,29 @@ public class BattleStatManager
                 forceId = forceId,
                 heroId = heroId,
                 isDead = true,
+            };
+            battleStats.Add(uid, battleStat1);
+        }
+    }
+
+    public static void SetHeroCatched(int forceId, int heroId)
+    {
+        if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
+            return;
+            
+        var battleStats = currentInstance.currentBattleStats;
+        var uid = forceId * 1000000 + heroId;
+        if (battleStats.TryGetValue(uid, out var battleStat))
+        {
+            battleStat.isCatched = true;
+        }
+        else
+        {
+            var battleStat1 = new BattleStat
+            {
+                forceId = forceId,
+                heroId = heroId,
+                isCatched = true,
             };
             battleStats.Add(uid, battleStat1);
         }

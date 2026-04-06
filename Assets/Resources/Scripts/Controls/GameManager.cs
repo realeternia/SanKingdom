@@ -240,7 +240,9 @@ public class GameManager : MonoBehaviour
                 if (hero.loyalty < 0)
                     hero.loyalty = 0;
 
-                if (UnityEngine.Random.Range(0, 100) < 15)
+                var city = GetCity(hero.cityId);
+                int escapeChance = 13 + (100 - city.secure) / 4;
+                if (UnityEngine.Random.Range(0, 100) < escapeChance)
                 {
                     var destCityId = GetRandomForceCityId(hero.cityId, hero.forceId);
                     if (destCityId > 0)

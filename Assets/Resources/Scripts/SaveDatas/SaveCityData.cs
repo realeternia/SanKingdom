@@ -250,14 +250,26 @@ public class SaveCityData
                 var hero = GameManager.Instance.GetHero(heroId);
                 if (hero != null)
                 {
-                    if (heroId == kingHeroId || UnityEngine.Random.Range(0, 100) >= 15)
+                    if (heroId == kingHeroId)
                     {
                         hero.cityId = GameManager.Instance.GetRandomForceCityId(cityId, forceLose);
                         destCityIds.Add(hero.cityId);
                     }
                     else
                     {
-                        hero.state = HeroState.Catched;
+                        var heroCfg = HeroConfig.GetConfig(heroId);
+                        int str = heroCfg != null ? heroCfg.Str : 50;
+                        int catchChance = 7 + (100 - str) * 8 / 100;
+                        if (UnityEngine.Random.Range(0, 100) >= catchChance)
+                        {
+                            hero.cityId = GameManager.Instance.GetRandomForceCityId(cityId, forceLose);
+                            destCityIds.Add(hero.cityId);
+                        }
+                        else
+                        {
+                            hero.state = HeroState.Catched;
+                            BattleStatManager.SetHeroCatched(hero.forceId, heroId);
+                        }
                     }
                 }
             }
