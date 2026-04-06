@@ -20,6 +20,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
     public TMP_Text textAttr1;
     public TMP_Text textAttr2;
     public TMP_Text textLoyalty;
+    public TMP_Text textState;
     public Image backgroundImage;
     public Image checkImage;
 
@@ -70,6 +71,22 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
         textLoyalty.text = heroData.loyalty.ToString();
         textLoyalty.color = heroData.loyalty < 50 ? Color.red : (heroData.loyalty < 80 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+
+        switch (heroData.state)
+        {
+            case HeroState.Normal:
+                textState.text = "正常";
+                textState.color = Color.white;
+                break;
+            case HeroState.Wild:
+                textState.text = "在野";
+                textState.color = Color.yellow;
+                break;
+            case HeroState.Catched:
+                textState.text = "俘虏";
+                textState.color = Color.red;
+                break;
+        }
 
         isAvailable = ignoreActionCheck || heroData.round != currentYear;
         
