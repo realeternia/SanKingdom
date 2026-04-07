@@ -7,7 +7,7 @@ public class CreateChessAction : ChessAction
 {
     public int Id;
     public int ForceId;
-    public int SoldierId;
+    public int BattleUnitId;
     public UnityEngine.Vector3 SpawnPos;
     public bool IsHero;
     public int HeroId;
@@ -32,12 +32,12 @@ public class CreateChessAction : ChessAction
         SoldierNum = soldierNum;
     }
 
-    public CreateChessAction(int sourceId, int tick, int id, int forceId, int soldierId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb)
+    public CreateChessAction(int sourceId, int tick, int id, int forceId, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb)
         : base(sourceId, tick)
     {
         Id = id;
         ForceId = forceId;
-        SoldierId = soldierId;
+        BattleUnitId = battleUnitId;
         SpawnPos = spawnPos;
         SummonTime = summonTime;
         CallBack = cb;
@@ -68,11 +68,11 @@ public class CreateChessAction : ChessAction
         else
         {
             chessObj.isHero = false;
-            var soldierConfig = SoldierConfig.GetConfig(SoldierId);
-            chessObj.maxHp = soldierConfig.Hp;
-            chessObj.isFakeHero = IsFakeHero || soldierConfig.Model == "UnitHero";
-            chessObj.isShadow = soldierConfig.IsShadow;
-            chessObj.soldierId = SoldierId;
+            var battleUnitCfg = BattleUnitConfig.GetConfig(BattleUnitId);
+            chessObj.maxHp = battleUnitCfg.Hp;
+            chessObj.isFakeHero = IsFakeHero || battleUnitCfg.Model == "UnitHero";
+            chessObj.isShadow = battleUnitCfg.IsShadow;
+            chessObj.battleUnitId = BattleUnitId;
         }
 
         chessObj.hp = chessObj.maxHp;

@@ -23,7 +23,7 @@ public class Chess : SceneObj
     public bool isShadow;
 
     public int heroId;
-    public int soldierId;
+    public int battleUnitId;
 
     [NonSerialized]
     public string chessName = "0";
@@ -150,15 +150,15 @@ public class Chess : SceneObj
             attackRange = heroConfig.Range;
             attackDamage = leadShip / 3;
         }
-        else if(soldierId > 0)
+        else if(battleUnitId > 0)
         {
-            var soldierConfig = SoldierConfig.GetConfig(soldierId);
+            var battleUnitConfig = BattleUnitConfig.GetConfig(battleUnitId);
             chessName = "";//HeroConfig.GetConfig(owner.heroId).Icon;
-            hitEffect = soldierConfig.HitEffect;
-            missileSpeed = soldierConfig.MissileSpeed;
-            moveSpeed = soldierConfig.MoveSpeed;
-            attackRange = soldierConfig.Range;
-            attackDamage = soldierConfig.Atk;
+            hitEffect = battleUnitConfig.HitEffect;
+            missileSpeed = battleUnitConfig.MissileSpeed;
+            moveSpeed = battleUnitConfig.MoveSpeed;
+            attackRange = battleUnitConfig.Range;
+            attackDamage = battleUnitConfig.Atk;
         }
 
         if (BattleManager.Instance.showUI)
@@ -181,8 +181,8 @@ public class Chess : SceneObj
             }
             else
             {
-                var soldierConfig = SoldierConfig.GetConfig(soldierId);
-                GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + soldierConfig.Model);
+                var battleUnitConfig = BattleUnitConfig.GetConfig(battleUnitId);
+                GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + battleUnitConfig.Model);
                 GameObject unitModel = UnityEngine.Object.Instantiate(unitPrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
                 unitModel.name = $"UnitBing_{forceId}_{id}";
                 unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);

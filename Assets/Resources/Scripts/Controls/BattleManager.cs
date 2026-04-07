@@ -191,10 +191,10 @@ public class BattleManager : MonoBehaviour
             return new Vector3(455 + (indx / 4) * 15, 7, 245 - (indx % 4) * 20);
     }
 
-    public int SpawnUnitsForRegion(Player p, int soldierId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)
+    public int SpawnUnitsForRegion(Player p, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)
     {
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickIndex, id, p.forceId, soldierId, spawnPos, summonTime, cb);
+        var action = new CreateChessAction(0, tickIndex, id, p.forceId, battleUnitId, spawnPos, summonTime, cb);
         AddChessAction(action);
 
         return id;

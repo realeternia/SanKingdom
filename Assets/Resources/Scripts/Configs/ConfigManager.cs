@@ -23,7 +23,7 @@ public static class ConfigManager
         SkillConfig.Load();
         BuffConfig.Load();
         ItemConfig.Load();
-        SoldierConfig.Load();
+        BattleUnitConfig.Load();
         ShopConfig.Load();
         PlayerConfig.Load();
         FormulaLearnAttrConfig.Load();

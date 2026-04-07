@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace CommonConfig
 {
-    public class SoldierConfig
+    public class BattleUnitConfig
     {
         /// <summary>
         ///序列
@@ -64,7 +64,7 @@ namespace CommonConfig
         public string HitEffect;
 
 
-        public SoldierConfig(int Id, string Name, int Lv, int Atk, int Hp, int MoveSpeed, int Range, int MissileSpeed, bool IsShadow, float SoldierAtkRate, float SoldierHpRate, int[] Skills, string Model, string HitEffect)
+        public BattleUnitConfig(int Id, string Name, int Lv, int Atk, int Hp, int MoveSpeed, int Range, int MissileSpeed, bool IsShadow, float SoldierAtkRate, float SoldierHpRate, int[] Skills, string Model, string HitEffect)
         {
             this.Id = Id;
             this.Name = Name;
@@ -83,15 +83,15 @@ namespace CommonConfig
 
         }
 
-        public SoldierConfig() { }
+        public BattleUnitConfig() { }
 
-        private static Dictionary<int, SoldierConfig> config = new Dictionary<int, SoldierConfig>();
-        public static Dictionary<int, SoldierConfig>.ValueCollection ConfigList
+        private static Dictionary<int, BattleUnitConfig> config = new Dictionary<int, BattleUnitConfig>();
+        public static Dictionary<int, BattleUnitConfig>.ValueCollection ConfigList
         {
             get { return config.Values; }
         }
 
-        public static void Refresh(Dictionary<int, SoldierConfig> dict)
+        public static void Refresh(Dictionary<int, BattleUnitConfig> dict)
         {
             config.Clear();
             config = dict;
@@ -100,23 +100,23 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[500001] = new SoldierConfig(500001, "小兵", 1, 24, 130, 10, 12, 0, false, 1f, 1f, null, "UnitBing", "SwordHitBlue");
-            config[500002] = new SoldierConfig(500002, "远程小兵", 1, 17, 90, 7, 35, 15, false, .8f, .65f, null, "UnitBing2", "BulletExplosionFire");
-            config[501001] = new SoldierConfig(501001, "法术场", 1, 0, 9999, 0, 0, 0, true, 0, 0, null, "UnitSpell", "");
-            config[501002] = new SoldierConfig(501002, "关羽影子", 1, 2, 2, 10, 17, 0, false, 0, 0, null, "UnitHero", "SwordHitYellowCritical");
+            config[500001] = new BattleUnitConfig(500001, "小兵", 1, 24, 130, 10, 12, 0, false, 1f, 1f, null, "UnitBing", "SwordHitBlue");
+            config[500002] = new BattleUnitConfig(500002, "远程小兵", 1, 17, 90, 7, 35, 15, false, .8f, .65f, null, "UnitBing2", "BulletExplosionFire");
+            config[501001] = new BattleUnitConfig(501001, "法术场", 1, 0, 9999, 0, 0, 0, true, 0, 0, null, "UnitSpell", "");
+            config[501002] = new BattleUnitConfig(501002, "关羽影子", 1, 2, 2, 10, 17, 0, false, 0, 0, null, "UnitHero", "SwordHitYellowCritical");
 
 
 
         }
 
-        public static SoldierConfig GetConfig(int id)
+        public static BattleUnitConfig GetConfig(int id)
         {
-            SoldierConfig data;
+            BattleUnitConfig data;
             if (config.TryGetValue(id, out data))
             {
                 return data;
             }
-            throw new NullReferenceException(string.Format("配置表SoldierConfig不存在id={0}", id));
+            throw new NullReferenceException(string.Format("配置表BattleUnitConfig不存在id={0}", id));
         }
 
 
@@ -130,12 +130,12 @@ namespace CommonConfig
             return false;
         }
 
-        public static void Assign(int id, SoldierConfig configData)
+        public static void Assign(int id, BattleUnitConfig configData)
         {
             config[id] = configData; 
         }
 
-        public static void Add(int id, SoldierConfig configData)
+        public static void Add(int id, BattleUnitConfig configData)
         {
             if (!config.ContainsKey(id))
             {
