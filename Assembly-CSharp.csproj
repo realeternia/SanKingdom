@@ -201,6 +201,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSpeedDown.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\StrategicDecider.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\ArmsConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySkillRateTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopForceBar.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoAction.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
+    
     <Compile Include="Assets\Resources\Scripts\Tooltip.cs" />
   </ItemGroup>
   <ItemGroup>
