@@ -106,6 +106,10 @@ public class HeroInfo : MonoBehaviour
 
     public void SetHpRate(int hp, int maxHp)
     {
+        if (maxHp <= 0)
+            return;
+        if(hp < 0)
+            hp = 0;
         var hpRate = (float)hp / maxHp;
         heroHpTxt.text = hp + " / " + maxHp;
         healthImg.rectTransform.sizeDelta = new Vector2((int)(hpRate * 185), healthImg.rectTransform.sizeDelta.y);
