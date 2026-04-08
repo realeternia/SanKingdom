@@ -31,10 +31,7 @@ public class Chess : SceneObj
     public int targetChessId;
     // 目标单位
     // 移动速度
-    [NonSerialized]
-    public float moveSpeed = 5f;
-    [NonSerialized]
-    public float attackRange = 10f;
+
     public int inte;
     public int str;
     public int leadShip;
@@ -49,10 +46,17 @@ public class Chess : SceneObj
     public int maxHp = 100;  // 最大生命值
     // 是否正在使用偏移路径
     public int hp = 100;
+
     public float HpRate{ get { return (float)hp / maxHp; } }    
 
     [NonSerialized]
-    public int attackDamage = 30;
+    public float moveSpeed = 5f;
+    [NonSerialized]
+    public float attackRange = 10f;
+    [NonSerialized]
+    public int atk;
+    [NonSerialized]
+    public int def;
     [NonSerialized]
     public string hitEffect;
     [NonSerialized]
@@ -148,7 +152,8 @@ public class Chess : SceneObj
             missileHeight = heroConfig.MissileHight;
             moveSpeed = heroConfig.MoveSpeed;
             attackRange = heroConfig.Range;
-            attackDamage = leadShip / 3;
+            atk = str;
+            def = leadShip;
         }
         else if(battleUnitId > 0)
         {
@@ -158,7 +163,8 @@ public class Chess : SceneObj
             missileSpeed = battleUnitConfig.MissileSpeed;
             moveSpeed = battleUnitConfig.MoveSpeed;
             attackRange = battleUnitConfig.Range;
-            attackDamage = battleUnitConfig.Atk;
+            atk = battleUnitConfig.Atk;
+            def = battleUnitConfig.Def;
         }
 
         if (BattleManager.Instance.showUI)
@@ -399,7 +405,7 @@ public class Chess : SceneObj
         {
             score += 30 * UnityEngine.Random.value;
 
-            score += CalculateDamage(this, target, out var type) / 2;
+            score += CalculateDamage(this, target) / 2;
             score += (level - target.level) * 7f;
 
             // 生命值权重（生命值越低分数越高）
@@ -544,7 +550,7 @@ public class Chess : SceneObj
             return;
 
         // 造成伤害
-        var damage = CalculateDamage(this, victim, out var damType);
+        var damage = CalculateDamage(this, victim);
         var effect = hitEffectName;
         var damageBase = damage;
         var damageMulti = 1f;
@@ -552,7 +558,7 @@ public class Chess : SceneObj
         bool isCrit = false;
         bool isDodge = false;
 
-        SkillManager.DuringAttack(this, victim, damType, ref damageBase, ref damageMulti, ref damageReal, ref effect);
+        SkillManager.DuringAttack(this, victim, "str", ref damageBase, ref damageMulti, ref damageReal, ref effect);
         // 暴击
         if (critRate > 0 && UnityEngine.Random.value < critRate)
         {
@@ -561,16 +567,15 @@ public class Chess : SceneObj
         }
 
         damage = (int)(damageBase * damageMulti);
-        var minDamage = 10 + level / 2;
-        var maxDamage = 50 + level;
+        var minDamage = 10;
+        var maxDamage = 60;
         if (isHero && victim.isHero)
         {
-            //等级压制
             var levelDiff = level - victim.level;
             if (levelDiff != 0)
             {
-                minDamage = Math.Clamp(minDamage + levelDiff, 8, minDamage * 2);
-                maxDamage = Math.Clamp(maxDamage + levelDiff * 4, 40, maxDamage * 2);
+                minDamage = Math.Clamp(minDamage + levelDiff, 8, 20);
+                maxDamage = Math.Clamp(maxDamage + levelDiff * 4, 40, 80);
             }
 
             var attackJobCfg = ConfigManager.GetJobConfig(HeroConfig.GetConfig(heroId).Job);
@@ -605,7 +610,7 @@ public class Chess : SceneObj
             damage = Math.Max(damage, damageReal);
 
             // 创建攻击Action并添加到actions列表
-            var attackAction = new AttackAction(id, tickIndex, victim.id, damage, isCrit, isDodge, hitEffectName, damType);
+            var attackAction = new AttackAction(id, tickIndex, victim.id, damage, isCrit, isDodge, hitEffectName, "str");
             BattleManager.Instance.AddChessAction(attackAction);     
         }
     }
@@ -615,15 +620,8 @@ public class Chess : SceneObj
         if(hp <= 0)
             return;
 
-        if (isHero)
-        {
-            var skillCfg = SkillConfig.GetConfig(skillId);
-            SkillManager.OnDoSkillDamage(this, caster, skillCfg, ref damage, isFeedback);
-        }
-        else
-        {
-            damage = Math.Max(damage, caster.attackDamage);//防止对士兵伤害过大
-        }            
+        var skillCfg = SkillConfig.GetConfig(skillId);
+        SkillManager.OnDoSkillDamage(this, caster, skillCfg, ref damage, isFeedback);          
 
         // 创建SkillDamageAction并添加到BattleManager
         var action = new SkillDamageAction(caster.id, BattleManager.Instance.tickIndex, id, skillId, damage);
@@ -642,37 +640,15 @@ public class Chess : SceneObj
         BattleManager.Instance.AddChessAction(action);
     }
 
-    private static int CalculateDamage(Chess attacker, Chess defender, out string type)
+    private static int CalculateDamage(Chess attacker, Chess defender)
     {
-        if (!attacker.isHero || !defender.isHero)
-        {
-            type = "leadShip";
-            return attacker.attackDamage;
-        }
+        int attackPower = attacker.atk + attacker.hp / 50;
+        int defensePower = defender.def;
 
-        // 计算攻击者三属性与防御者对应属性的差值
-        float inteDiff = attacker.inte - defender.inte;
-        float leadShipDiff = attacker.leadShip - defender.leadShip;
-        float strDiff = attacker.str - defender.str;
+        int powerDiff = attackPower - defensePower;
 
-        // 找出最大差值
-        float maxDiff = Mathf.Max(inteDiff, leadShipDiff, strDiff);
-        type = "";
-        if(maxDiff == inteDiff)
-        {
-            type = "inte";
-        }
-        else if(maxDiff == leadShipDiff)
-        {
-            type = "leadShip";
-        }
-        else
-        {
-            type = "str";
-        }
+        int damage = 30 + powerDiff / 2;
 
-        // 伤害 = 最大差值 * 6
-        int damage = Mathf.RoundToInt(maxDiff * 6);
         return damage;
     }
 

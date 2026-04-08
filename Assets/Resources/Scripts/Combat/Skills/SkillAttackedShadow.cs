@@ -21,11 +21,11 @@ public class SkillAttackedShadow : Skill
             BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501002, randomPosition, 0, (shadowUnitId) =>
             {
                 var shadowUnit = BattleManager.Instance.GetChess(shadowUnitId);
-                shadowUnit.attackDamage = (int)(owner.attackDamage * skillCfg.SkillDamageRate);
+                shadowUnit.atk = (int)(owner.atk * skillCfg.SkillDamageRate);
                 shadowUnit.maxHp = (int)(owner.maxHp * skillCfg.SkillAttrRate);
 
                 //todo 这里需要放到action里
-                shadowUnit.attackDamage = (int)(owner.attackDamage * skillCfg.SkillDamageRate);
+                shadowUnit.atk = (int)(owner.atk * skillCfg.SkillDamageRate);
                 shadowUnit.maxHp = (int)(owner.maxHp * skillCfg.SkillAttrRate);
                 shadowUnit.hp = (int)(shadowUnit.maxHp * owner.HpRate);
                 if (shadowUnit.viewObj != null)

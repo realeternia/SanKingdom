@@ -240,7 +240,6 @@
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
-    
     <Compile Include="Assets\Resources\Scripts\Tooltip.cs" />
   </ItemGroup>
   <ItemGroup>
