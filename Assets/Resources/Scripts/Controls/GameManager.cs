@@ -189,7 +189,7 @@ public class GameManager : MonoBehaviour
             if(BASE_YEAR - heroCfg.BornYear  < BORN_AGE) //15岁才能登场
                 continue;
 
-            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId };
+            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId, armsId = 601 };
             SaveData.heros.Add(hero);
         }
         foreach(var city in SaveData.cities)

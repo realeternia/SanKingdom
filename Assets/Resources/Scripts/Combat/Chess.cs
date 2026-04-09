@@ -24,6 +24,7 @@ public class Chess : SceneObj
 
     public int heroId;
     public int battleUnitId;
+    public int armsId;
 
     [NonSerialized]
     public string chessName = "0";
@@ -147,25 +148,23 @@ public class Chess : SceneObj
         {
             var heroConfig = HeroConfig.GetConfig(heroId);
             chessName = heroConfig.Icon;
-            hitEffect = heroConfig.HitEffect;
-            missileSpeed = heroConfig.MissileSpeed;
-            missileHeight = heroConfig.MissileHight;
-            moveSpeed = heroConfig.MoveSpeed;
-            attackRange = heroConfig.Range;
             atk = str;
             def = leadShip;
         }
         else if(battleUnitId > 0)
         {
             var battleUnitConfig = BattleUnitConfig.GetConfig(battleUnitId);
-            chessName = "";//HeroConfig.GetConfig(owner.heroId).Icon;
-            hitEffect = battleUnitConfig.HitEffect;
-            missileSpeed = battleUnitConfig.MissileSpeed;
-            moveSpeed = battleUnitConfig.MoveSpeed;
-            attackRange = battleUnitConfig.Range;
+            armsId = battleUnitConfig.ArmsId;
+            chessName = "";//HeroConfig.GetConfig(owner.heroId).Icon; todo
             atk = battleUnitConfig.Atk;
             def = battleUnitConfig.Def;
         }
+        var armsConfig = ArmsConfig.GetConfig(armsId);
+        hitEffect = armsConfig.HitEffect;
+        missileSpeed = armsConfig.MissileSpeed;
+        missileHeight = armsConfig.MissileHight;
+        moveSpeed = armsConfig.MoveSpeed;
+        attackRange = armsConfig.Range;        
 
         if (BattleManager.Instance.showUI)
         {
@@ -577,13 +576,6 @@ public class Chess : SceneObj
                 minDamage = Math.Clamp(minDamage + levelDiff, 8, 20);
                 maxDamage = Math.Clamp(maxDamage + levelDiff * 4, 40, 80);
             }
-
-            var attackJobCfg = ConfigManager.GetJobConfig(HeroConfig.GetConfig(heroId).Job);
-            var victimJob = ConfigManager.GetJobConfig(HeroConfig.GetConfig(victim.heroId).Job).NameS;
-            if (attackJobCfg.OvercomeStrong != null && attackJobCfg.OvercomeStrong.Contains(victimJob))
-                damage = Math.Max(damage + 15, minDamage / 2 + 7);
-            else if (attackJobCfg.OvercomeWeak != null && attackJobCfg.OvercomeWeak.Contains(victimJob))
-                damage = Math.Max(damage + 8, minDamage / 2 + 4);
         }
         if(isCrit)
         {

@@ -1,0 +1,10 @@
+- [x] SaveHeroData 类包含 armsId 字段
+- [x] SaveHeroData 初始化时 armsId 默认值为 601
+- [x] Chess 类包含 armsId 字段
+- [x] Chess.CreateChessView 中 Hero 分支从 ArmsConfig 获取战斗属性
+- [x] BattleCardData 类包含 ArmsId 字段
+- [x] SaveCityData.GetBattleHeroList() 正确传递 armsId（含默认值处理）
+- [x] CreateChessAction 包含 ArmsId 字段并正确赋值给 Chess
+- [x] BattleManager.SpawnHerosForRegion() 正确传递 armsId
+- [x] JobConfig 已删除，相关代码已清理
+- [x] ArmsConfig 中存在 id=601 的配置（刀兵）

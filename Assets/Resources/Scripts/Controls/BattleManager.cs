@@ -123,8 +123,8 @@ public class BattleManager : MonoBehaviour
 
         InitUI(player1, player2);
         //对cards1和card2都按HeroConfig的Range排序，确保远程在后面
-        cards1.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
-        cards2.Sort((a, b) => HeroConfig.GetConfig(a.CardId).Range.CompareTo(HeroConfig.GetConfig(b.CardId).Range));
+        cards1.Sort((a, b) => ArmsConfig.GetConfig(a.ArmsId).Range.CompareTo(ArmsConfig.GetConfig(b.ArmsId).Range));
+        cards2.Sort((a, b) => ArmsConfig.GetConfig(a.ArmsId).Range.CompareTo(ArmsConfig.GetConfig(b.ArmsId).Range));
 
         this.cards1 = cards1;
         this.cards2 = cards2;    
@@ -205,7 +205,7 @@ public class BattleManager : MonoBehaviour
         var heroConfig = HeroConfig.GetConfig(heroData.CardId);
 
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickAdd, id, p.forceId, spawnPoint, heroConfig.Id, heroData.Level, heroData.SoldierNum);
+        var action = new CreateChessAction(0, tickAdd, id, p.forceId, spawnPoint, heroConfig.Id, heroData.Level, heroData.SoldierNum, heroData.ArmsId);
         AddChessAction(action);
     }
 

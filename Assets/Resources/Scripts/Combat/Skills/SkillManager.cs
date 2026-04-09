@@ -109,10 +109,6 @@ public static class SkillManager
                 {
                     if (!unit.isHero)
                         continue;
-                    var targetHeroCfg = HeroConfig.GetConfig(unit.heroId);
-                    var tarJobCfg = ConfigManager.GetJobConfig(targetHeroCfg.Job);
-                    if (skill.skillCfg.HelpSkillJob != "" && !skill.skillCfg.HelpSkillJob.Contains(tarJobCfg.NameS))
-                        continue;
                     unit.AddSkill(helpSkillId, skill.skillId);
                 }
             }

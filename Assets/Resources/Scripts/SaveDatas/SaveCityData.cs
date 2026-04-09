@@ -115,7 +115,8 @@ public class SaveCityData
             var cardData = new BattleCardData();
             cardData.CardId = member;
             cardData.Level = hero.GetLevel();
-            cardData.SoldierNum = Math.Max(1, hero.soldier); //临时方案，送一个兵
+            cardData.SoldierNum = Math.Max(1, hero.soldier);
+            cardData.ArmsId = hero.armsId > 0 ? hero.armsId : 601;
             battleList.Add(cardData);
         }
         return battleList;    

@@ -19,6 +19,10 @@ namespace CommonConfig
         /// </summary>
         public int Lv;
         /// <summary>
+        ///ArmsId
+        /// </summary>
+        public int ArmsId;
+        /// <summary>
         ///生命
         /// </summary>
         public int Hp;
@@ -30,18 +34,6 @@ namespace CommonConfig
         ///防御
         /// </summary>
         public int Def;
-        /// <summary>
-        ///移动速度
-        /// </summary>
-        public int MoveSpeed;
-        /// <summary>
-        ///攻击距离
-        /// </summary>
-        public int Range;
-        /// <summary>
-        ///导弹速度
-        /// </summary>
-        public int MissileSpeed;
         /// <summary>
         ///是否隐藏
         /// </summary>
@@ -62,29 +54,22 @@ namespace CommonConfig
         ///模型
         /// </summary>
         public string Model;
-        /// <summary>
-        ///hit
-        /// </summary>
-        public string HitEffect;
 
 
-        public BattleUnitConfig(int Id, string Name, int Lv, int Hp, int Atk, int Def, int MoveSpeed, int Range, int MissileSpeed, bool IsShadow, float SoldierAtkRate, float SoldierHpRate, int[] Skills, string Model, string HitEffect)
+        public BattleUnitConfig(int Id, string Name, int Lv, int ArmsId, int Hp, int Atk, int Def, bool IsShadow, float SoldierAtkRate, float SoldierHpRate, int[] Skills, string Model)
         {
             this.Id = Id;
             this.Name = Name;
             this.Lv = Lv;
+            this.ArmsId = ArmsId;
             this.Hp = Hp;
             this.Atk = Atk;
             this.Def = Def;
-            this.MoveSpeed = MoveSpeed;
-            this.Range = Range;
-            this.MissileSpeed = MissileSpeed;
             this.IsShadow = IsShadow;
             this.SoldierAtkRate = SoldierAtkRate;
             this.SoldierHpRate = SoldierHpRate;
             this.Skills = Skills;
             this.Model = Model;
-            this.HitEffect = HitEffect;
 
         }
 
@@ -105,10 +90,10 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[500001] = new BattleUnitConfig(500001, "小兵", 1, 130, 50, 50, 10, 12, 0, false, 1f, 1f, null, "UnitBing", "SwordHitBlue");
-            config[500002] = new BattleUnitConfig(500002, "远程小兵", 1, 90, 50, 50, 7, 35, 15, false, .8f, .65f, null, "UnitBing2", "BulletExplosionFire");
-            config[501001] = new BattleUnitConfig(501001, "法术场", 1, 9999, 99, 99, 0, 0, 0, true, 0, 0, null, "UnitSpell", "");
-            config[501002] = new BattleUnitConfig(501002, "关羽影子", 1, 2, 50, 50, 10, 17, 0, false, 0, 0, null, "UnitHero", "SwordHitYellowCritical");
+            config[500001] = new BattleUnitConfig(500001, "小兵", 1, 201, 130, 50, 50, false, 1f, 1f, null, "UnitBing");
+            config[500002] = new BattleUnitConfig(500002, "远程小兵", 1, 201, 90, 50, 50, false, .8f, .65f, null, "UnitBing2");
+            config[501001] = new BattleUnitConfig(501001, "法术场", 1, 201, 9999, 99, 99, true, 0, 0, null, "UnitSpell");
+            config[501002] = new BattleUnitConfig(501002, "关羽影子", 1, 201, 2, 50, 50, false, 0, 0, null, "UnitHero");
 
 
 

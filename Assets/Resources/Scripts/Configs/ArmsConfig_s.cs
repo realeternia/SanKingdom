@@ -19,6 +19,26 @@ namespace CommonConfig
         /// </summary>
         public string NameS;
         /// <summary>
+        ///移动速度
+        /// </summary>
+        public int MoveSpeed;
+        /// <summary>
+        ///攻击距离
+        /// </summary>
+        public int Range;
+        /// <summary>
+        ///导弹速度
+        /// </summary>
+        public int MissileSpeed;
+        /// <summary>
+        ///导弹高度
+        /// </summary>
+        public float MissileHight;
+        /// <summary>
+        ///hit
+        /// </summary>
+        public string HitEffect;
+        /// <summary>
         ///强克制
         /// </summary>
         public string OvercomeStrong;
@@ -28,11 +48,16 @@ namespace CommonConfig
         public string OvercomeWeak;
 
 
-        public ArmsConfig(int Id, string Name, string NameS, string OvercomeStrong, string OvercomeWeak)
+        public ArmsConfig(int Id, string Name, string NameS, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, string HitEffect, string OvercomeStrong, string OvercomeWeak)
         {
             this.Id = Id;
             this.Name = Name;
             this.NameS = NameS;
+            this.MoveSpeed = MoveSpeed;
+            this.Range = Range;
+            this.MissileSpeed = MissileSpeed;
+            this.MissileHight = MissileHight;
+            this.HitEffect = HitEffect;
             this.OvercomeStrong = OvercomeStrong;
             this.OvercomeWeak = OvercomeWeak;
 
@@ -55,11 +80,15 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[101] = new ArmsConfig(101, "ma", "马", "戟弩炮车", "弓");
-            config[201] = new ArmsConfig(201, "gong", "弓", "枪戟", "刀");
-            config[601] = new ArmsConfig(601, "dao", "刀", "盾", "士");
-            config[602] = new ArmsConfig(602, "daoqiang", "枪", "马车", "");
-            config[603] = new ArmsConfig(603, "daoji", "戟", "枪", "");
+            config[101] = new ArmsConfig(101, "ma", "马", 10, 17, 0, 0, "SwordHitYellowCritical", "戟弩炮车", "弓");
+            config[102] = new ArmsConfig(102, "che", "车", 10, 17, 0, 0, "SwordHitGreenCritical", "", "");
+            config[201] = new ArmsConfig(201, "gong", "弓", 10, 40, 40, 5f, "BulletExplosionBlue", "枪戟", "刀");
+            config[202] = new ArmsConfig(202, "pao", "炮", 10, 17, 0, 0, "SwordHitYellowCritical", "盾", "士");
+            config[601] = new ArmsConfig(601, "dao", "刀", 10, 17, 0, 0, "SwordHitYellowCritical", "马车", "");
+            config[602] = new ArmsConfig(602, "daoqiang", "枪", 10, 17, 0, 0, "SwordHitYellowCritical", "枪", "");
+            config[603] = new ArmsConfig(603, "daoji", "戟", 10, 40, 30, 3f, "FanExplosion", "", "");
+            config[701] = new ArmsConfig(701, "shan", "扇", 10, 40, 30, 3f, "GasExplosionFire", "", "");
+            config[702] = new ArmsConfig(702, "mou", "谋", 7, 50, 26, 8f, "GasShootFire", "", "");
 
 
 

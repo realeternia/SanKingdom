@@ -21,8 +21,8 @@ public class SaveHeroData
     public HeroState state;
     public int loyalty;
     public int forceId;
+    public int armsId;
 
-    
     public int GetAttr(string attr)
     {
         var heroConfig = HeroConfig.GetConfig(heroId);
@@ -67,6 +67,7 @@ public class SaveHeroData
         newHero.state = HeroState.Wild;
         newHero.loyalty = 90;
         newHero.forceId = 0;
+        newHero.armsId = 601;
         return newHero;
     }
 
