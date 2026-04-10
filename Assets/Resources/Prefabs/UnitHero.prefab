@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1159790570984633353}
   - component: {fileID: 2758410172255111738}
   - component: {fileID: 965843959451955951}
-  - component: {fileID: 2842746484604272339}
   - component: {fileID: 6736996303604821587}
   - component: {fileID: 1090664982852681767}
   m_Layer: 0
@@ -52,7 +51,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4749144538699207148}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -87,27 +86,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2842746484604272339
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4749144538699207148}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!95 &6736996303604821587
 Animator:
   serializedVersion: 5
@@ -141,10 +119,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb68c698fdd7f5843938c025d4541e22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessUnit:
+    id: 0
+    position: {x: 0, y: 0, z: 0}
+    forceId: 0
+    isHero: 0
+    isFakeHero: 0
+    isShadow: 0
+    heroId: 0
+    battleUnitId: 0
+    armsId: 0
+    targetChessId: 0
+    inte: 0
+    str: 0
+    leadShip: 0
+    level: 0
+    dodgeRate: 0
+    critRate: 0
+    critDamageMulti: 0
+    lastDamagedPlayerId: 0
+    maxHp: 0
+    hp: 0
+    attackPoint: 0
+    attackRate: 0
+    lastAttackTime: 0
+    lastTargetUpdateTick: 0
+    skills: []
+    buffs: []
+    noMoveCount: 0
+    noActionCount: 0
+    jumpState:
+      PosStart: {x: 0, y: 0, z: 0}
+      PosTar: {x: 0, y: 0, z: 0}
+      Height: 0
+      TickTotal: 0
+      TickPast: 0
+    dotStates: []
+    dieAfterLifeTime: 0
+    lifeTickCount: 0
+    regeTickCount: 0
+    regeHp: 0
+    lackIndex: 0
   rend: {fileID: 965843959451955951}
   material: {fileID: 0}
   rendFlag: {fileID: 3405850965569777486}
   materialFlag: {fileID: 0}
+  lockTargetId: 0
 --- !u!1001 &8073804718959608855
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -17,6 +17,7 @@ public class ChessViewObj : MonoBehaviour
     private Coroutine colorEffectCoroutine; // 协程引用，用于追踪颜色效果协程
 
     public int lockTargetId;
+    private List<GameObject> soldiers = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -33,40 +34,20 @@ public class ChessViewObj : MonoBehaviour
         material = new Material(rend.sharedMaterial);
         if (!string.IsNullOrEmpty(chessName))
         {
-            if (chessName.StartsWith("PlayerPic"))
-                material.mainTexture = Resources.Load<Texture>(chessName);
-            else
-                material.mainTexture = Resources.Load<Texture>("Skins/" + chessName);
+            material.mainTexture = Resources.Load<Texture>("Skins/" + chessName);
         }
-        material.SetColor("_OutlineColor", c);
-
-        var hasSKill = false;
+        //material.SetColor("_OutlineColor", c);
 
         if (chessUnit.isHero)
         {
             var heroCfg = HeroConfig.GetConfig(chessUnit.heroId);
-            // 初始化技能
-            if (heroCfg.Skills != null)
-            {
-                foreach (var skillId in heroCfg.Skills)
-                {
-                    var skillCfg = SkillConfig.GetConfig(skillId);
-                    if (!string.IsNullOrEmpty(skillCfg.Icon) && !hasSKill)
-                    {
-                        material.SetTexture("_SecondTex", Resources.Load<Texture>("SkillPic/" + skillCfg.Icon));
-                        hasSKill = true;
-                    }
-                }
-            }
 
             materialFlag = new Material(rendFlag.sharedMaterial);
-            var playerInfo = GameManager.Instance.GetPlayer(chessUnit.forceId);
-            materialFlag.mainTexture = Resources.Load<Texture>(playerInfo.imgPath);
+            materialFlag.mainTexture = Resources.Load<Texture>("Skins/" + chessName);
+            materialFlag.SetColor("_OutlineColor", c);
             rendFlag.material = materialFlag;
         }
 
-        if (!hasSKill)
-            material.SetFloat("_SecondTexSize", 0.1f);
         rend.material = material; // 这会为这个渲染器创建一个独立的材质实例
 
         if(!BattleManager.Instance.quickMode)
@@ -204,6 +185,85 @@ public class ChessViewObj : MonoBehaviour
         // 确保最终回到原始位置
         transform.position = new Vector3(transform.position.x, 7, transform.position.z);
         jumpCoroutine = null;
+    }
+
+    public void UpdateSoldierModels()
+    {
+        GameObject soldierPrefab = Resources.Load<GameObject>("Prefabs/Arms/SodBow");
+        if (soldierPrefab == null)
+        {
+            Debug.LogWarning("SodBow prefab not found!");
+            return;
+        }
+
+        int targetCount = chessUnit.hp / 40;
+        int currentCount = soldiers.Count;
+
+        if (targetCount > currentCount)
+        {
+            int gridSize = 5;
+            float spacing = 0.2f;
+            float offsetX = -((gridSize - 1) * spacing) / 2f;
+            float offsetZ = -((gridSize - 1) * spacing) / 2f;
+
+            List<(int index, float distance)> positions = new List<(int, float)>();
+            for (int i = 0; i < 25; i++)
+            {
+                int row = i / gridSize;
+                int col = i % gridSize;
+                float x = offsetX + col * spacing;
+                float z = offsetZ + row * spacing;
+                float distance = Mathf.Sqrt(x * x + z * z);
+                positions.Add((i, distance));
+            }
+            positions.Sort((a, b) => a.distance.CompareTo(b.distance));
+
+            for (int i = currentCount; i < targetCount && i < 25; i++)
+            {
+                int index = positions[i].index;
+                int row = index / gridSize;
+                int col = index % gridSize;
+
+                Vector3 localPos = new Vector3(
+                    offsetX + col * spacing,
+                    0f,
+                    offsetZ + row * spacing
+                );
+
+                GameObject soldier = UnityEngine.Object.Instantiate(soldierPrefab, transform);
+                soldier.transform.localPosition = localPos;
+                soldier.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+                soldier.name = $"Soldier_{i}";
+                soldiers.Add(soldier);
+            }
+        }
+        else if (targetCount < currentCount)
+        {
+            int gridSize = 5;
+            float spacing = 0.2f;
+            float offsetX = -((gridSize - 1) * spacing) / 2f;
+            float offsetZ = -((gridSize - 1) * spacing) / 2f;
+
+            List<(GameObject obj, float distance)> soldierDistances = new List<(GameObject, float)>();
+            foreach (var soldier in soldiers)
+            {
+                if (soldier != null)
+                {
+                    Vector3 localPos = soldier.transform.localPosition;
+                    float distance = Mathf.Sqrt(localPos.x * localPos.x + localPos.z * localPos.z);
+                    soldierDistances.Add((soldier, distance));
+                }
+            }
+            soldierDistances.Sort((a, b) => b.distance.CompareTo(a.distance));
+
+            int removeCount = currentCount - targetCount;
+            for (int i = 0; i < removeCount && i < soldierDistances.Count; i++)
+            {
+                var soldier = soldierDistances[i].obj;
+                soldiers.Remove(soldier);
+                UnityEngine.Object.Destroy(soldier);
+            }
+        }
     }
 
     private void OnDestroy()

@@ -183,6 +183,8 @@ public class Chess : SceneObj
                 heroInfo.SetAttr(inte, str, leadShip);
                 heroInfo.SetHpRate(maxHp, maxHp);
                 this.heroInfo = heroInfo;
+
+                viewObj.UpdateSoldierModels();
             }
             else
             {
@@ -624,6 +626,9 @@ public class Chess : SceneObj
     {
         if (heroInfo != null) // 英雄
             heroInfo.SetHpRate(hp, maxHp);
+        
+        if (isHero && viewObj != null)
+            viewObj.UpdateSoldierModels();
     }
 
     public void Ondying()

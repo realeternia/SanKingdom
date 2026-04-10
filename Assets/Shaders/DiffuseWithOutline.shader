@@ -5,7 +5,7 @@ Shader "Custom/DiffuseWithOutline"
         _Color ("Main Color", Color) = (1,1,1,1)
         _MainTex ("Base (RGB)", 2D) = "white" {}
         _OutlineColor ("Outline Color", Color) = (0,0,0,1)
-        _OutlineWidth ("Outline Width", Range(0.0, 1)) = 0.01
+        _OutlineWidth ("Outline Width", Range(0.0, 5)) = 3
         _SecondTex ("Second Texture (RGB)", 2D) = "white" {}
         _SecondTexSize ("Second Texture Size", Range(0.1, 2.0)) = 0.3
         _SecondTexOffsetX ("Second Texture Offset X", Range(-1.0, 1.0)) = -0.8
