@@ -158,6 +158,7 @@
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\MoveAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Effects\DissolveEffect.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\MissileEffName.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySummonTime.cs" />
@@ -276,6 +277,7 @@
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\CenterCurve.shader" />
     <None Include="Assets\Epic Toon FX\Shaders\ETFX_PowerboxUnlit.shader" />
+    <None Include="Assets\Shaders\DissolveShader.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\Epic Toon FX\Upgrade\URP Compatibility.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />

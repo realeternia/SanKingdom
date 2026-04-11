@@ -320,7 +320,8 @@ public class ChessViewObj : MonoBehaviour
             {
                 var soldier = soldierDistances[i].obj;
                 soldiers.Remove(soldier);
-                UnityEngine.Object.Destroy(soldier);
+                var dissolveEffect = soldier.AddComponent<DissolveEffect>();
+                dissolveEffect.StartDissolve();
             }
         }
     }
