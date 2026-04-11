@@ -21,6 +21,7 @@ public class MoveAction : ChessAction
             GameLog.Error("MoveAction SourceId not found " + SourceId);
             return;
         }
+        chess?.viewObj?.FaceTo(TargetPosition);
         BattleManager.Instance.MoveTo(chess, TargetPosition, true);
         chess?.viewObj?.PlaySodAnim("sodmove");
     }

@@ -18,6 +18,7 @@ public class ChessViewObj : MonoBehaviour
 
     public int lockTargetId;
     private List<GameObject> soldiers = new List<GameObject>();
+    private Color outlineColor;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +29,7 @@ public class ChessViewObj : MonoBehaviour
     public void Init(Chess chessUnit, Color c)
     {
         this.chessUnit = chessUnit;
+        this.outlineColor = c;
 
         var chessName = chessUnit.chessName;
           // 创建材质实例
@@ -40,8 +42,6 @@ public class ChessViewObj : MonoBehaviour
 
         if (chessUnit.isHero)
         {
-            var heroCfg = HeroConfig.GetConfig(chessUnit.heroId);
-
             materialFlag = new Material(rendFlag.sharedMaterial);
             materialFlag.mainTexture = Resources.Load<Texture>("Skins/" + chessName);
             materialFlag.SetColor("_OutlineColor", c);
@@ -152,6 +152,25 @@ public class ChessViewObj : MonoBehaviour
         }
     }
 
+    public void FaceTo(Vector3 targetPosition)
+    {
+        Vector3 direction = targetPosition - transform.position;
+        direction.y = 0;
+        
+        if (direction.sqrMagnitude < 0.001f)
+            return;
+        
+        float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;       
+        foreach (var soldier in soldiers)
+        {
+            if (soldier != null)
+            {
+                Vector3 currentRotation = soldier.transform.localRotation.eulerAngles;
+                soldier.transform.localRotation = Quaternion.Euler(currentRotation.x, targetAngle, currentRotation.z);
+            }
+        }
+    }
+
     public void StartJump(float time)
     {
         var height = 15;
@@ -206,15 +225,18 @@ public class ChessViewObj : MonoBehaviour
 
     public void UpdateSoldierModels()
     {
-        var sodType = UnityEngine.Random.Range(0, 2) == 0 ? "SodBow" : "SodStick";
+        var armsConfig = ArmsConfig.GetConfig(chessUnit.armsId);
+        string sodType = armsConfig.Model;
+        int modelCountFactor = armsConfig.ModelCountFactor;
+        
         GameObject soldierPrefab = Resources.Load<GameObject>("Prefabs/Arms/" + sodType);
         if (soldierPrefab == null)
         {
-            Debug.LogWarning("SodBow prefab not found!");
+            Debug.LogWarning(sodType + " prefab not found!");
             return;
         }
 
-        int targetCount = chessUnit.hp / 40;
+        int targetCount = chessUnit.hp / modelCountFactor;
         int currentCount = soldiers.Count;
 
         if (targetCount > currentCount)
@@ -252,6 +274,25 @@ public class ChessViewObj : MonoBehaviour
                 soldier.transform.localPosition = localPos;
                 soldier.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
                 soldier.name = $"Soldier_{i}";
+                
+                var meshMgr = soldier.transform.Find("body")?.GetComponent<UnityMeshMgr>();
+                if (meshMgr != null)
+                {
+                    foreach (var mesh in meshMgr.meshes)
+                    {
+                        if (mesh != null)
+                        {
+                            var meshRenderer = mesh.GetComponent<Renderer>();
+                            if (meshRenderer != null)
+                            {
+                                var meshMaterial = new Material(meshRenderer.sharedMaterial);
+                                meshMaterial.SetColor("_OutlineColor", outlineColor);
+                                meshRenderer.material = meshMaterial;
+                            }
+                        }
+                    }
+                }
+                
                 soldiers.Add(soldier);
             }
         }

@@ -148,6 +148,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefFeedback.cs" />
     <Compile Include="Assets\Resources\Scripts\RankCellInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\PanelEvent.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\UnityMeshMgr.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ItemConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\CityStrategyState.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\SideInfo.cs" />
