@@ -76,6 +76,7 @@ public class Chess : SceneObj
     public List<Buff> buffs = new List<Buff>();
     public int noMoveCount = 0;
     public int noActionCount = 0;
+    public bool isInAttackRange = false;
 
     // 跳跃相关状态
     public JumpState jumpState;
@@ -453,6 +454,11 @@ public class Chess : SceneObj
         // 检查目标是否在攻击范围内
         if (BattleManager.CheckInRange(position, targetChess.position, attackRange))
         {
+            if (!isInAttackRange)
+            {
+                isInAttackRange = true;
+                viewObj?.PlaySodAnim("idle");
+            }
             attackPoint += attackRate;
             // 检查攻击冷却
             if (attackPoint >= 20) //集气2s
@@ -474,6 +480,12 @@ public class Chess : SceneObj
 
         if (noMoveCount > 0 || moveSpeed == 0)
             return;
+
+        if (isInAttackRange)
+        {
+            isInAttackRange = false;
+            viewObj?.PlaySodAnim("sodmove");
+        }
 
         var moveDest = GetMoveDest();
         if (moveDest != Vector3.zero)
@@ -604,7 +616,7 @@ public class Chess : SceneObj
             damage = Math.Max(damage, damageReal);
 
             // 创建攻击Action并添加到actions列表
-            var attackAction = new AttackAction(id, tickIndex, victim.id, damage, isCrit, isDodge, hitEffectName, "str");
+            var attackAction = new AttackAction(id, tickIndex, victim.id, damage, isCrit, isDodge, effect, "str");
             BattleManager.Instance.AddChessAction(attackAction);     
         }
     }
@@ -805,7 +817,7 @@ public class Chess : SceneObj
     {
         if(BattleManager.Instance.quickMode)
             return;
-        viewObj?.PlayerAnim(name);
+        viewObj?.PlayAnim(name);
     }
 
     public void StartJump(float time)

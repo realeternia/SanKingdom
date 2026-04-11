@@ -125,7 +125,7 @@ public class ChessViewObj : MonoBehaviour
 
      private Coroutine jumpCoroutine = null;
 
-    public void PlayerAnim(string name)
+    public void PlayAnim(string name)
     {
         if(string.IsNullOrEmpty(name))
             return;
@@ -133,6 +133,23 @@ public class ChessViewObj : MonoBehaviour
         if(animator == null)
             return;
         animator.Play(name);
+    }
+
+    public void PlaySodAnim(string name)
+    {
+        if(string.IsNullOrEmpty(name))
+            return;
+        if(BattleManager.Instance.quickMode)
+            return;
+        
+        foreach (var soldier in soldiers)
+        {
+            if (soldier != null)
+            {
+                var animator = soldier.transform.Find("body")?.GetComponent<Animator>();
+                animator?.Play(name);
+            }
+        }
     }
 
     public void StartJump(float time)
@@ -202,7 +219,7 @@ public class ChessViewObj : MonoBehaviour
         if (targetCount > currentCount)
         {
             int gridSize = 5;
-            float spacing = 0.2f;
+            float spacing = 2f;
             float offsetX = -((gridSize - 1) * spacing) / 2f;
             float offsetZ = -((gridSize - 1) * spacing) / 2f;
 

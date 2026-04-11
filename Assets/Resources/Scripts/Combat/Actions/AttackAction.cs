@@ -26,6 +26,8 @@ public class AttackAction : ChessAction
         var sourceChess = BattleManager.Instance.GetChess(SourceId);
         var targetChess = BattleManager.Instance.GetChess(TargetId);
 
+        sourceChess?.viewObj?.PlaySodAnim("sodattack");
+
         var actualDamage = Mathf.Min(Damage, targetChess.hp);
         targetChess.hp -= Damage;
         if (SourceId != targetChess.id)

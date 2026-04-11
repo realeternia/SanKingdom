@@ -81,6 +81,11 @@ public class Missile : SceneObj
         else
         {
             var ownerChess = BattleManager.Instance.GetChess(ownerId);
+            if (ownerChess == null)
+            {
+                GameLog.Error($"Missile owner chess not found: {ownerId}");
+                return;
+            }
             effectName = ownerChess.hitEffect;
             hitEffectName = ownerChess.hitEffect;
             missileSpeed = ownerChess.missileSpeed;
@@ -106,7 +111,8 @@ public class Missile : SceneObj
             missileEffect.transform.localScale = size * effPrefab.transform.localScale;
 
             var ownerChess = BattleManager.Instance.GetChess(ownerId);
-            viewObj.ownerName = ownerChess.viewObj.name;
+            if (ownerChess != null && ownerChess.viewObj != null)
+                viewObj.ownerName = ownerChess.viewObj.name;
 
             if (missileEffect.TryGetComponent(out MissileEffName missileViewObj))
                 hitEffectName = missileViewObj.hitEffectName;            

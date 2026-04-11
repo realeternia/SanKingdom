@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 288, y: 6.29, z: 173.1}
-  m_LocalScale: {x: 5, y: 3, z: 5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -120,6 +120,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb68c698fdd7f5843938c025d4541e22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessUnit:
+    id: 0
+    position: {x: 0, y: 0, z: 0}
+    forceId: 0
+    isHero: 0
+    isFakeHero: 0
+    isShadow: 0
+    heroId: 0
+    battleUnitId: 0
+    armsId: 0
+    targetChessId: 0
+    inte: 0
+    str: 0
+    leadShip: 0
+    level: 0
+    dodgeRate: 0
+    critRate: 0
+    critDamageMulti: 0
+    lastDamagedPlayerId: 0
+    maxHp: 0
+    hp: 0
+    attackPoint: 0
+    attackRate: 0
+    lastAttackTime: 0
+    lastTargetUpdateTick: 0
+    skills: []
+    buffs: []
+    noMoveCount: 0
+    noActionCount: 0
+    isInAttackRange: 0
+    jumpState:
+      PosStart: {x: 0, y: 0, z: 0}
+      PosTar: {x: 0, y: 0, z: 0}
+      Height: 0
+      TickTotal: 0
+      TickPast: 0
+    dotStates: []
+    dieAfterLifeTime: 0
+    lifeTickCount: 0
+    regeTickCount: 0
+    regeHp: 0
+    lackIndex: 0
   rend: {fileID: 1654120894988046011}
   material: {fileID: 0}
   rendFlag: {fileID: 0}

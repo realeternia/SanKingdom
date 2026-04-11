@@ -1,3 +1,5 @@
+using Controls.Utils;
+
 [System.Serializable]
 public class MoveAction : ChessAction
 {
@@ -14,6 +16,12 @@ public class MoveAction : ChessAction
     public override void Doing()
     {
         var chess = BattleManager.Instance.GetChess(SourceId);
+        if(chess == null)
+        {
+            GameLog.Error("MoveAction SourceId not found " + SourceId);
+            return;
+        }
         BattleManager.Instance.MoveTo(chess, TargetPosition, true);
+        chess?.viewObj?.PlaySodAnim("sodmove");
     }
 }
