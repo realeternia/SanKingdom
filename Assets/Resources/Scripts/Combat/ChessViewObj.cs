@@ -206,7 +206,8 @@ public class ChessViewObj : MonoBehaviour
 
     public void UpdateSoldierModels()
     {
-        GameObject soldierPrefab = Resources.Load<GameObject>("Prefabs/Arms/SodBow");
+        var sodType = UnityEngine.Random.Range(0, 2) == 0 ? "SodBow" : "SodStick";
+        GameObject soldierPrefab = Resources.Load<GameObject>("Prefabs/Arms/" + sodType);
         if (soldierPrefab == null)
         {
             Debug.LogWarning("SodBow prefab not found!");
