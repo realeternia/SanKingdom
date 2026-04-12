@@ -14,7 +14,9 @@ public class ChessViewObj : MonoBehaviour
     public Material material;
     public Renderer rendFlag;
     public Material materialFlag;    
-    private Coroutine colorEffectCoroutine; // 协程引用，用于追踪颜色效果协程
+    private Material originalMaterial;
+    private Texture originalTexture;
+    private string currentMaterialType = "default";
 
     public int lockTargetId;
     private List<GameObject> soldiers = new List<GameObject>();
@@ -32,13 +34,13 @@ public class ChessViewObj : MonoBehaviour
         this.outlineColor = c;
 
         var chessName = chessUnit.chessName;
-          // 创建材质实例
+        originalMaterial = rend.sharedMaterial;
         material = new Material(rend.sharedMaterial);
+        originalTexture = Resources.Load<Texture>("Skins/" + chessName);
         if (!string.IsNullOrEmpty(chessName))
         {
-            material.mainTexture = Resources.Load<Texture>("Skins/" + chessName);
+            material.mainTexture = originalTexture;
         }
-        //material.SetColor("_OutlineColor", c);
 
         if (chessUnit.isHero)
         {
@@ -81,45 +83,6 @@ public class ChessViewObj : MonoBehaviour
         {
             Destroy(hud.gameObject);
             hud = null;
-        }
-    }
-
-    public void AddColorEffect(Color start, Color end)
-    {
-        // 如果协程已经在运行，则直接返回
-        if (colorEffectCoroutine != null)
-            return;
-        
-        colorEffectCoroutine = StartCoroutine(ColorLerpCoroutine(start, end));
-    }
-
-    public void RemoveColorEffect()
-    {
-        // 停止颜色效果协程
-        if (colorEffectCoroutine != null)
-        {
-            StopCoroutine(colorEffectCoroutine);
-            colorEffectCoroutine = null;
-        }
-        
-        // 恢复默认颜色
-        material.SetColor("_Color", Color.white);
-    }
-
-    IEnumerator ColorLerpCoroutine(Color start, Color end)
-    {
-        float time = 0f;
-        while (true)
-        {
-            // 使用正弦函数实现颜色平滑过渡
-            float t = Mathf.Sin(time*20) * 0.5f + 0.5f;
-            var color = Color.Lerp(start, end, t);
-         //   UnityEngine.Debug.Log("ColorLerpCoroutine " + color + " start=" + start + " end=" + end);
-
-            material.SetColor("_Color", color);
-            time += Time.deltaTime;
-            yield return new WaitForSeconds(0.1f);
-
         }
     }
 
@@ -292,7 +255,12 @@ public class ChessViewObj : MonoBehaviour
                         }
                     }
                 }
-                
+
+                // if (UnityEngine.Random.value > 0.5f)
+                // {
+                //     SwitchMaterialByName(UnityEngine.Random.value > 0.5f ? "silver" : "gold");
+                // }
+
                 soldiers.Add(soldier);
             }
         }
@@ -322,6 +290,132 @@ public class ChessViewObj : MonoBehaviour
                 soldiers.Remove(soldier);
                 var dissolveEffect = soldier.AddComponent<DissolveEffect>();
                 dissolveEffect.StartDissolve();
+            }
+        }
+    }
+
+    public void SwitchMaterialByName(string materialName)
+    {
+        if (rend == null) return;
+
+        if (currentMaterialType == materialName) return;
+
+        currentMaterialType = materialName;
+
+        Material baseMat = null;
+        Color targetColor = Color.white;
+        Color emissionColor = Color.black;
+        Color outlineColor = Color.white;
+        Color specColor = Color.white;
+        float metallic = 1f;
+        float glossiness = 0.8f;
+        float emissionStrength = 0.5f;
+
+        switch (materialName)
+        {
+            case "gold":
+                baseMat = Resources.Load<Material>("Materials/GoldChess");
+                targetColor = new Color(1f, 0.843f, 0f, 1f);
+                emissionColor = new Color(1f, 0.7f, 0f, 1f);
+                outlineColor = new Color(0.9f, 0.7f, 0.1f, 1f);
+                specColor = new Color(1f, 0.9f, 0.5f, 1f);
+                metallic = 1f;
+                glossiness = 0.85f;
+                emissionStrength = 0.5f;
+                break;
+            case "silver":
+                baseMat = Resources.Load<Material>("Materials/SilverChess");
+                targetColor = new Color(0.753f, 0.753f, 0.753f, 1f);
+                emissionColor = new Color(0.4f, 0.4f, 0.45f, 1f);
+                outlineColor = new Color(0.6f, 0.6f, 0.65f, 1f);
+                specColor = new Color(1f, 1f, 1f, 1f);
+                metallic = 1f;
+                glossiness = 0.9f;
+                emissionStrength = 0.3f;
+                break;
+            default:
+                if (originalMaterial != null)
+                {
+                    material = new Material(originalMaterial);
+                    if (originalTexture != null)
+                    {
+                        material.mainTexture = originalTexture;
+                    }
+                    material.SetColor("_OutlineColor", this.outlineColor);
+                    rend.material = material;
+                }
+                SwitchSoldiersMaterialDefault();
+                return;
+        }
+
+        if (baseMat != null)
+        {
+            material = new Material(baseMat);
+            if (originalTexture != null)
+            {
+                material.mainTexture = originalTexture;
+            }
+            material.SetColor("_Color", targetColor);
+            material.SetColor("_EmissionColor", emissionColor);
+            material.SetColor("_OutlineColor", outlineColor);
+            material.SetColor("_SpecColor", specColor);
+            material.SetFloat("_Metallic", metallic);
+            material.SetFloat("_Glossiness", glossiness);
+            material.SetFloat("_EmissionStrength", emissionStrength);
+            rend.material = material;
+            
+            SwitchSoldiersMaterial(baseMat, targetColor, emissionColor, outlineColor, specColor, metallic, glossiness, emissionStrength);
+        }
+    }
+
+    private void SwitchSoldiersMaterial(Material baseMat, Color targetColor, Color emissionColor, Color outlineColor, Color specColor, float metallic, float glossiness, float emissionStrength)
+    {
+        foreach (var soldier in soldiers)
+        {
+            if (soldier == null) continue;
+            
+            Renderer[] soldierRenderers = soldier.GetComponentsInChildren<Renderer>();
+            foreach (var soldierRend in soldierRenderers)
+            {
+                if (soldierRend == null) continue;
+                
+                Material newMat = new Material(baseMat);
+                
+                if (soldierRend.sharedMaterial != null && soldierRend.sharedMaterial.mainTexture != null)
+                {
+                    newMat.mainTexture = soldierRend.sharedMaterial.mainTexture;
+                }
+                
+                newMat.SetColor("_Color", targetColor);
+                newMat.SetColor("_EmissionColor", emissionColor);
+                newMat.SetColor("_OutlineColor", outlineColor);
+                newMat.SetColor("_SpecColor", specColor);
+                newMat.SetFloat("_Metallic", metallic);
+                newMat.SetFloat("_Glossiness", glossiness);
+                newMat.SetFloat("_EmissionStrength", emissionStrength);
+                
+                soldierRend.material = newMat;
+            }
+        }
+    }
+
+    private void SwitchSoldiersMaterialDefault()
+    {
+        foreach (var soldier in soldiers)
+        {
+            if (soldier == null) continue;
+            
+            Renderer[] soldierRenderers = soldier.GetComponentsInChildren<Renderer>();
+            foreach (var soldierRend in soldierRenderers)
+            {
+                if (soldierRend == null) continue;
+                
+                if (soldierRend.sharedMaterial != null)
+                {
+                    Material newMat = new Material(soldierRend.sharedMaterial);
+                    newMat.SetColor("_OutlineColor", outlineColor);
+                    soldierRend.material = newMat;
+                }
             }
         }
     }

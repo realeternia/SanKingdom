@@ -751,12 +751,10 @@ public class Chess : SceneObj
 
     public void AddColorEffect(Color start, Color end)
     {
-        viewObj?.AddColorEffect(start, end);
     }
 
     public void RemoveColorEffect()
     {
-        viewObj?.RemoveColorEffect();
     }
 
     public int GetAttr(string attr)
