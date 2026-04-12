@@ -6,6 +6,7 @@ using CommonConfig;
 using TMPro;
 using System;
 using Controls.Utils;
+using System.Linq;
 
 public class MainPanelManager : MonoBehaviour, IPanelEvent
 {
@@ -29,8 +30,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         // 加载地图块
         LoadMapPieces();
         InitForceControls();
-
-        GameManager.Instance.SaveToFile();
 
         btnCity.gameObject.SetActive(false);
         var nowRound = GameManager.Instance.SaveData.round;
@@ -78,10 +77,11 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
         var gameManager = GameManager.Instance;
         
-        var totalWidth = 141 * gameManager.SaveData.forces.Count;
+        var activeForces = gameManager.SaveData.forces.Where(f => !f.isEliminated).ToList();
+        var totalWidth = 141 * activeForces.Count;
         var forceList = new List<int>();
-        GameLog.Info($"InitForceControls 强制数量: {gameManager.SaveData.forces.Count}");
-        foreach(var force in gameManager.SaveData.forces)
+        GameLog.Info($"InitForceControls 强制数量: {activeForces.Count}");
+        foreach(var force in activeForces)
             forceList.Add(force.forceId);
         forceList.Sort((a, b) => gameManager.GetPlayerCityCount(b) - gameManager.GetPlayerCityCount(a));
         foreach(var forceId in forceList)

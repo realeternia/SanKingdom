@@ -210,6 +210,8 @@ public class GameManager : MonoBehaviour
         {
             players.Add(new Player(forceData.forceId));
         }
+
+        SaveToFile();        
     }
 
     // 下轮游戏

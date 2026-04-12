@@ -102,6 +102,7 @@ public class BattleManager : MonoBehaviour
             GameLog.Warn($"BattleBegin called while battle is running, skipping. cityId={cityId}");
             return;
         }
+        GameLog.Info($"BattleBegin cityId={cityId}");
         IsBattleRunning = true;
         
         battleEndCallback = callback;
@@ -215,7 +216,7 @@ public class BattleManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
-        GameLog.Debug($"GameUpdatett start battleId={battleId} realTime={Time.time}");
+        GameLog.Debug($"GameUpdatett start battleId={battleId} realTime={Time.time} cityId={cityId}");
         var speed = 1;
         if (quickMode && showUI)
             speed = 10;
@@ -337,7 +338,7 @@ public class BattleManager : MonoBehaviour
             //    sw.Stop();
             //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
         }
-        GameLog.Debug($"GameUpdatett end battleId={battleId} realTime={Time.time}");
+        GameLog.Info($"GameUpdatett end battleId={battleId} realTime={Time.time} cityId={cityId}");
 
 
         if(showUI)

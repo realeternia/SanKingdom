@@ -297,13 +297,16 @@ public class Player
         citySrc.food -= foodUse;
         var defenceFood = cityDest.food;
         cityDest.food = 0;
-        BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), citySrc.GetBattleHeroList(validHeroList), cityDest.GetBattleHeroList(), foodUse, defenceFood, targetCityId,
-            (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, foodCount, cityId, targetCityId, validHeroList, citySrc.forceId, cityDest.forceId));
+        int srcForceId = citySrc.forceId;
+        int destForceId = cityDest.forceId;
+        var battleHeroListSrc = citySrc.GetBattleHeroList(validHeroList);
+        BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), battleHeroListSrc, cityDest.GetBattleHeroList(), foodUse, defenceFood, targetCityId,
+            (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, foodCount, cityId, targetCityId, battleHeroListSrc.Select(x => x.CardId).ToArray(), srcForceId, destForceId));
                
         UpdateHeroesRound(validHeroList);
     }
 
-    private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, Dictionary<int, int> foodCount, int cityId, int targetCityId, int[] validHeroList, int srcForceId, int destForceId)
+    private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, Dictionary<int, int> foodCount, int cityId, int targetCityId, int[] attackHeroList, int srcForceId, int destForceId)
     {
         foreach (var item in soldierCount)
             GameManager.Instance.GetHero(item.Key).soldier = item.Value;
@@ -314,8 +317,7 @@ public class Player
         {
             destCity.food += foodCount[destForceId] + foodCount[srcForceId];
 
-            destCity.Occupy(forceId, srcCity.GetBattleHeroList(validHeroList).Select(x => x.CardId).ToList(),
-                destForceId, destCity.GetBattleHeroList().Select(x => x.CardId).ToList());
+            destCity.Occupy(forceId, attackHeroList.ToList(), destForceId, destCity.GetBattleHeroList().Select(x => x.CardId).ToList());
             srcCity.RecalculateHeros();
         }
         else

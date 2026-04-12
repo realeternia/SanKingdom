@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
+using System.Linq;
 using TMPro;
 
 public class RankPanelManager : MonoBehaviour
@@ -112,13 +113,14 @@ public class RankPanelManager : MonoBehaviour
 
         if(rankRegionForce.transform.childCount == 0)
         {
-            for(int i = 0; i < GameManager.Instance.SaveData.forces.Count; i++)
+            var activeForces = GameManager.Instance.SaveData.forces.Where(f => !f.isEliminated).ToList();
+            for(int i = 0; i < activeForces.Count; i++)
             {
                 GameObject cell = Instantiate(rankCellForcePrefab, rankRegionForce.transform);
                 cell.transform.localScale = Vector3.one;
                 RankCellForce cellForce = cell.GetComponent<RankCellForce>();
                 cellForce.rankPanelManager = this;
-                var forceCfg = ForceConfig.GetConfig(GameManager.Instance.SaveData.forces[i].forceId);
+                var forceCfg = ForceConfig.GetConfig(activeForces[i].forceId);
                 cellForce.Init(forceCfg.Cname);
             }
             RectTransform rankRect2 = rankRegionForce.GetComponent<RectTransform>();
@@ -126,8 +128,7 @@ public class RankPanelManager : MonoBehaviour
 
             if (rankRect2 != null && cellRect2 != null)
             {
-                // Set the height of rankParent based on the number of cells
-                rankRect2.sizeDelta = new Vector2(rankRect2.sizeDelta.x, cellRect2.sizeDelta.y * GameManager.Instance.SaveData.forces.Count);
+                rankRect2.sizeDelta = new Vector2(rankRect2.sizeDelta.x, cellRect2.sizeDelta.y * activeForces.Count);
             }
             // 确保scrollRect不为空，然后滚动到最前面
             if (scrollRectForce != null)

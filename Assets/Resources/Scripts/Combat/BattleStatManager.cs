@@ -149,7 +149,7 @@ public class BattleStatManager
         }
     }
 
-    public static void SetHeroCatched(int forceId, int heroId)
+    public static void RecordHeroCatched(int forceId, int heroId)
     {
         if (currentInstance == null || currentInstance.currentBattleStats == null || currentInstance.isReplayMode)
             return;

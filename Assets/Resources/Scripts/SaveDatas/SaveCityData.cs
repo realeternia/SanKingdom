@@ -239,9 +239,22 @@ public class SaveCityData
     {
         forceId = forceWin;
 
+        var catchedHeroList = GetCatchedHeroList();
+        foreach (var heroId in catchedHeroList)
+        {
+            var hero = GameManager.Instance.GetHero(heroId);
+            if (hero != null && hero.forceId == forceWin)
+            {
+                hero.state = HeroState.Normal;
+                GameLog.Info($"Occupy 释放己方俘虏: heroId={heroId} forceId={hero.forceId}");
+            }
+        }
+        if(catchedHeroList.Count > 0)
+            GameManager.Instance.GetPlayer(forceWin).UpdateHeroesRound(catchedHeroList.ToArray()); //不让动了
+
         List<SaveCityData> loseForceCities = GameManager.Instance.GetCitiesByForce(forceLose);
 
-        GameLog.Info($"Occupy forceId: {forceLose} citycount: {loseForceCities.Count}");
+        GameLog.Info($"Occupy cityId={cityId} winforceId: {forceWin} loseforceId: {forceLose} citycount: {loseForceCities.Count}");
         if (loseForceCities.Count > 0)
         {
             var kingHeroId = ForceConfig.GetConfig(forceLose).HeroId;
@@ -269,7 +282,7 @@ public class SaveCityData
                         else
                         {
                             hero.state = HeroState.Catched;
-                            BattleStatManager.SetHeroCatched(hero.forceId, heroId);
+                            BattleStatManager.RecordHeroCatched(hero.forceId, heroId);
                         }
                     }
                 }
@@ -293,19 +306,20 @@ public class SaveCityData
                     hero.loyalty = 90;
                 }
             }
-            
-            GameManager.Instance.players.RemoveAll(x => x.forceId == forceLose);
-            GameManager.Instance.SaveData.forces.RemoveAll(x => x.forceId == forceLose);
-            GameLog.Info($"Occupy 强制数量: {GameManager.Instance.SaveData.forces.Count}");
+            var player = GameManager.Instance.GetPlayer(forceLose);
+            if (player != null)
+                player.mark = -1;
+            var force = GameManager.Instance.GetForce(forceLose);
+            if (force != null)
+                force.isEliminated = true;
+            GameLog.Info($"Occupy 势力 {forceLose} 已被消灭");
         }
 
         foreach (var heroId in winHeroIds)
         {
             var hero = GameManager.Instance.GetHero(heroId);
             if (hero != null)
-            {
                 hero.cityId = cityId;
-            }
         }
 
         RecalculateHeros();
