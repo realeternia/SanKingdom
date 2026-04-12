@@ -26,6 +26,9 @@ public class AttackAction : ChessAction
         var sourceChess = BattleManager.Instance.GetChess(SourceId);
         var targetChess = BattleManager.Instance.GetChess(TargetId);
 
+        if (sourceChess == null || targetChess == null)
+            return;
+
         sourceChess?.viewObj?.FaceTo(targetChess.position);
         sourceChess?.viewObj?.PlaySodAnim("sodattack");
 

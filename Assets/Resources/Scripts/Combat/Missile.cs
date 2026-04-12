@@ -34,7 +34,9 @@ public class Missile : SceneObj
     [NonSerialized]
     public float detectArea;
     [NonSerialized]
-    public int targetCount;    
+    public int targetCount;
+    [NonSerialized]
+    public int forceId;
  
     // ToDirection variables
     public Vector3 direction;
@@ -53,6 +55,7 @@ public class Missile : SceneObj
         position = startPos + new Vector3(0f, 2f, 0f);
         this.skillId = skillId;
         this.skillDamage = damage;
+        forceId = sourceChess.forceId;
 
         // Reset state
         moveState = MoveState.None;
@@ -181,8 +184,7 @@ public class Missile : SceneObj
     {
         if(targetCount > 0 && checkedIdList.Count < targetCount)
         {
-            var ownerChess = BattleManager.Instance.GetChess(ownerId);
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, ownerChess.forceId, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, forceId, true);
             unitsInRange.RemoveAll(x => checkedIdList.Contains(x.id) || x.hp <= 0); // Each unit only once
             if (unitsInRange.Count > 0)
             {

@@ -170,9 +170,8 @@ public class VideoPanelManager : MonoBehaviour
             videoPlayer.url = videoPath;
 
             GameLog.Debug("准备播放视频...");
-            videoPlayer.Prepare();
-
             videoPanel.SetActive(true);
+            videoPlayer.Prepare();
         }
         catch (System.Exception e)
         {

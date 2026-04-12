@@ -37,6 +37,8 @@ public class CreateMissileAction : ChessAction
     {
         var battleManager = BattleManager.Instance;
         var sourceChess = battleManager.GetChess(SourceId);
+        if (sourceChess == null)
+            return;
         var missile = new Missile(Id, sourceChess, StartPos, SkillId, Damage);
         missile.Init();
         battleManager.missileList.Add(missile);
