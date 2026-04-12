@@ -247,14 +247,42 @@ public static class AI
         if (potentialTargets.Count == 0)
             return null;
         
+        var connectedCountCache = new Dictionary<int, int>();
+        foreach (var targetId in potentialTargets)
+        {
+            connectedCountCache[targetId] = CountConnectedMyCities(targetId, myCityIds);
+        }
+        
         potentialTargets.Sort((a, b) => 
         {
             var cityA = GameManager.Instance.GetCity(a);
             var cityB = GameManager.Instance.GetCity(b);
-            return cityA.GetAttr("soldier").CompareTo(cityB.GetAttr("soldier"));
+            
+            int connectedMyCitiesA = connectedCountCache[a];
+            int connectedMyCitiesB = connectedCountCache[b];
+
+            var factorA = cityA.GetAttr("soldier") / connectedMyCitiesA;
+            var factorB = cityB.GetAttr("soldier") / connectedMyCitiesB;
+            
+            return factorA.CompareTo(factorB);
         });
         
         return potentialTargets[0];
+    }
+    
+    private static int CountConnectedMyCities(int targetCityId, HashSet<int> myCityIds)
+    {
+        var targetNearIds = WorldConfig.GetConfig(targetCityId)?.WorldNearIds;
+        if (targetNearIds == null)
+            return 0;
+        
+        int count = 0;
+        foreach (var nearId in targetNearIds)
+        {
+            if (myCityIds.Contains(nearId))
+                count++;
+        }
+        return count;
     }
     
     private static bool HandleFoodPurchase(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
