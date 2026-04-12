@@ -6,10 +6,6 @@ Shader "Custom/DiffuseWithOutline"
         _MainTex ("Base (RGB)", 2D) = "white" {}
         _OutlineColor ("Outline Color", Color) = (0,0,0,1)
         _OutlineWidth ("Outline Width", Range(0.0, 5)) = 3
-        _SecondTex ("Second Texture (RGB)", 2D) = "white" {}
-        _SecondTexSize ("Second Texture Size", Range(0.1, 2.0)) = 0.3
-        _SecondTexOffsetX ("Second Texture Offset X", Range(-1.0, 1.0)) = -0.8
-        _SecondTexOffsetY ("Second Texture Offset Y", Range(-1.0, 1.0)) = -0.8
     }
 
     SubShader
@@ -95,13 +91,7 @@ Shader "Custom/DiffuseWithOutline"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            sampler2D _SecondTex;
-            float4 _SecondTex_ST;
-            float4 _SecondTex_TexelSize;
             float4 _Color;
-            float _SecondTexSize;
-            float _SecondTexOffsetX;
-            float _SecondTexOffsetY;
 
             v2f vert (appdata_t v)
             {
@@ -117,24 +107,10 @@ Shader "Custom/DiffuseWithOutline"
             {
                 fixed4 col = tex2D(_MainTex, i.texcoord) * _Color;
 
-                // 计算漫反射光照
                 fixed3 worldNormal = normalize(i.worldNormal);
                 fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
                 fixed diff = max(0, dot(worldNormal, worldLightDir));
                 col.rgb *= diff * _LightColor0.rgb + unity_AmbientSky.rgb;
-
-                // 处理第二张图片（显示在左下方）
-                // 检查_SecondTex是否存在（非默认白色纹理）
-                if (_SecondTex_TexelSize.z > 0.01) // 如果纹理宽度大于0.01（表示有实际纹理）
-                {
-                    float2 secondTexCoord = (i.texcoord - float2(0.5, 0.5)) * _SecondTexSize + float2(0.5 + _SecondTexOffsetX, 0.5 + _SecondTexOffsetY);
-                    if (secondTexCoord.x >= 0 && secondTexCoord.x <= 1 && secondTexCoord.y >= 0 && secondTexCoord.y <= 1)
-                    {
-                        fixed4 secondCol = tex2D(_SecondTex, secondTexCoord);
-                        // 使用alpha混合第二张图片
-                        col = lerp(col, secondCol, secondCol.a);
-                    }
-                }
 
                 return col;
             }

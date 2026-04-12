@@ -28,11 +28,6 @@ public class SkillAttackedShadow : Skill
                 shadowUnit.atk = (int)(owner.atk * skillCfg.SkillDamageRate);
                 shadowUnit.maxHp = (int)(owner.maxHp * skillCfg.SkillAttrRate);
                 shadowUnit.hp = (int)(shadowUnit.maxHp * owner.HpRate);
-                if (shadowUnit.viewObj != null)
-                {
-                    shadowUnit.viewObj.material.SetFloat("_SecondTexSize", 2f);
-                    shadowUnit.viewObj.material.SetTexture("_SecondTex", Resources.Load<Texture>("SkillPic/" + skillCfg.Icon));
-                }
 
                 SkillManager.AddSkillAction(owner, shadowUnit, id, 0);
             });
