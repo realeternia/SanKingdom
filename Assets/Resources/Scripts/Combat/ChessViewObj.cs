@@ -199,7 +199,7 @@ public class ChessViewObj : MonoBehaviour
             return;
         }
 
-        int targetCount = chessUnit.hp / modelCountFactor;
+        int targetCount = (int)Math.Ceiling((float)chessUnit.hp / modelCountFactor);
         int currentCount = soldiers.Count;
 
         if (targetCount > currentCount)

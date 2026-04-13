@@ -261,8 +261,8 @@ public static class AI
             int connectedMyCitiesA = connectedCountCache[a];
             int connectedMyCitiesB = connectedCountCache[b];
 
-            var factorA = cityA.GetAttr("soldier") / connectedMyCitiesA;
-            var factorB = cityB.GetAttr("soldier") / connectedMyCitiesB;
+            var factorA = cityA.GetAttr("soldier") / Math.Max(0.2, connectedMyCitiesA);
+            var factorB =  cityB.GetAttr("soldier") / Math.Max(0.2, connectedMyCitiesB);
             
             return factorA.CompareTo(factorB);
         });

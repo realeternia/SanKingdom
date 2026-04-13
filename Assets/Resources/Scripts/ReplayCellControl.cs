@@ -85,18 +85,13 @@ public class ReplayCellControl : MonoBehaviour
 
         if (record.result == BattleResult.Win)
         {
-            resultText.text = forceName1 + " 胜利";
-            resultText.color = Color.red;
-        }
-        else if (record.result == BattleResult.Lose)
-        {
-            resultText.text = forceName2 + " 胜利";
+            resultText.text = "攻城成功";
             resultText.color = Color.red;
         }
         else
         {
-            resultText.text = "平局";
-            resultText.color = Color.yellow;
+            resultText.text = "攻城失败";
+            resultText.color = Color.green;
         }
     }
 

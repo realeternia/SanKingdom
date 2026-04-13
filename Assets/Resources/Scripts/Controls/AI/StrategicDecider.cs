@@ -6,9 +6,8 @@ using Controls.Utils;
 public class StrategicDecider
 {
     private const int MAX_DEF_CITIES = 1;
-    private const int MIN_CITY_FOR_EXPANSION = 2;
-    private const int MIN_RESOURCE_FOR_ATTACK = 500;
-    private const int MIN_SOLDIER_FOR_ATTACK = 1000;
+    private const int MIN_RESOURCE_FOR_ATTACK = 1500;
+    private const int MIN_SOLDIER_FOR_ATTACK = 3000;
     
     private static Dictionary<int, HashSet<int>> attackedTargetsThisRound = new Dictionary<int, HashSet<int>>();
     
@@ -62,7 +61,9 @@ public class StrategicDecider
             var attackTarget = SelectAttackTarget(player);
             if (attackTarget.HasValue)
             {
+                GameLog.SetTag("AI").Info($"选择攻击目标: {GetForceName(player.forceId)} - [{GetCityName(attackTarget.Value)}]");
                 var attackSource = SelectAttackSource(player, attackTarget.Value);
+
                 if (attackSource.HasValue)
                 {
                     result[attackSource.Value] = CityStrategyState.Atk;
@@ -118,8 +119,6 @@ public class StrategicDecider
     private static bool CanExpand(Player player)
     {
         var cities = player.GetCityList();
-        if (cities.Count < MIN_CITY_FOR_EXPANSION)
-            return false;
         
         int totalGold = 0;
         int totalFood = 0;
@@ -132,9 +131,7 @@ public class StrategicDecider
             totalSoldier += city.GetAttr("soldier");
         }
         
-        return totalGold >= MIN_RESOURCE_FOR_ATTACK && 
-               totalFood >= MIN_RESOURCE_FOR_ATTACK &&
-               totalSoldier >= MIN_SOLDIER_FOR_ATTACK;
+        return totalGold >= MIN_RESOURCE_FOR_ATTACK &&                totalFood >= MIN_RESOURCE_FOR_ATTACK &&               totalSoldier >= MIN_SOLDIER_FOR_ATTACK;
     }
     
     private static int? SelectAttackTarget(Player player)
@@ -202,6 +199,13 @@ public class StrategicDecider
         candidateCities.Sort((a, b) => 
             b.GetAttr("soldier").CompareTo(a.GetAttr("soldier")));
         
-        return candidateCities[0].cityId;
+        var bestCity = candidateCities[0];
+        int mySoldier = bestCity.GetAttr("soldier");
+        int targetSoldier = targetCity.GetAttr("soldier");
+        
+        if (mySoldier < targetSoldier * 0.7f)
+            return null;
+        
+        return bestCity.cityId;
     }
 }
