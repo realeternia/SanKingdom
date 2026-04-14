@@ -22,6 +22,18 @@ public class TaskPriorityCalculator
 {
     private const int NEED_WEIGHT = 30;
     
+    public static TaskPriorityInfo GetBattleTask(SaveCityData city)
+    {
+        foreach (var devConfig in CityDevConfig.ConfigList)
+        {
+            if (devConfig.Prefab == "CityDevBattle" && IsTaskAvailable(city, devConfig))
+            {
+                return new TaskPriorityInfo(devConfig.Id, devConfig.AiPriotyAtk, devConfig);
+            }
+        }
+        return null;
+    }
+    
     public static List<TaskPriorityInfo> GetAvailableTasks(SaveCityData city, CityStrategyState state, List<CityNeed> cityNeeds)
     {
         var result = new List<TaskPriorityInfo>();

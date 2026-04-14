@@ -58,6 +58,14 @@ public static class AI
     {
         int totalHeroes = city.GetNormalHeroList().Count;
         int initialAvailable = context.GetAvailableHeroes(city.cityId).Count;
+        int soldier = city.GetAttr("soldier");
+        
+        var nearCityIds = WorldConfig.GetConfig(city.cityId)?.WorldNearIds;
+        var nearCityNames = nearCityIds != null 
+            ? string.Join(", ", nearCityIds.Select(GetCityName)) 
+            : "无";
+        
+        GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 开始决策 武将:{totalHeroes} 士兵:{soldier} 粮食:{city.food} 金钱:{city.gold} 相邻城市:[{nearCityNames}]");
         
         var cityNeeds = CityEvaluator.EvaluateCity(city);
         var availableTasks = TaskPriorityCalculator.GetAvailableTasks(city, state, cityNeeds);
@@ -77,7 +85,7 @@ public static class AI
         
         int finalAvailable = context.GetAvailableHeroes(city.cityId).Count;
         int actedCount = initialAvailable - finalAvailable;
-        int soldier = city.GetAttr("soldier");
+        soldier = city.GetAttr("soldier");
         
         GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 行动结束 已行动:{actedCount}/{totalHeroes} 黄金:{city.gold} 粮草:{city.food} 兵力:{soldier}");
     }
@@ -134,7 +142,7 @@ public static class AI
     
     private static IEnumerator TryExecuteAttack(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
     {
-        var attackTarget = SelectBestAttackTarget(context, city);
+        var attackTarget = StrategicDecider.GetAttackTarget(city.cityId);
         if (!attackTarget.HasValue)
         {
             GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击: 没有可攻击的目标");
@@ -148,12 +156,23 @@ public static class AI
             yield break;
         }
         
+        int heroCountToUse = Math.Max(1, availableHeroes.Count - 1);
+        
         var combatHeroes = availableHeroes
             .Where(h => HeroDispatcher.ClassifyHero(h) == HeroType.Combat)
             .ToList();
         
-        if (combatHeroes.Count == 0)
-            combatHeroes = availableHeroes.Take(3).ToList();
+        if (combatHeroes.Count >= heroCountToUse)
+        {
+            combatHeroes = combatHeroes.Take(heroCountToUse).ToList();
+        }
+        else
+        {
+            var nonCombatHeroes = availableHeroes
+                .Where(h => HeroDispatcher.ClassifyHero(h) != HeroType.Combat)
+                .ToList();
+            combatHeroes = combatHeroes.Concat(nonCombatHeroes).Take(heroCountToUse).ToList();
+        }
         
         if (combatHeroes.Count == 0)
         {
@@ -408,6 +427,10 @@ public static class AI
         {
             return MoveCombatHeroesToFrontline(player, city, task, availableHeroes, frontlineCities);
         }
+        else if (frontlineCities.Count > 0 && rearCities.Count == 0)
+        {
+            return BalanceHeroesToEmptyFrontline(player, city, task, availableHeroes, frontlineCities);
+        }
         else if (frontlineCities.Count == 0 && rearCities.Count == 0)
         {
             return BalanceHeroesAcrossCities(player, city, task, availableHeroes);
@@ -478,6 +501,34 @@ public static class AI
             return false;
         
         return ExecuteHeroMove(player, srcCity, heroToMove, targetCity.cityId, task.devId, "平均分配");
+    }
+    
+    private static bool BalanceHeroesToEmptyFrontline(Player player, SaveCityData srcCity, TaskPriorityInfo task, List<SaveHeroData> availableHeroes, List<int> frontlineCities)
+    {
+        int emptyFrontlineCityId = 0;
+        int minHeroCount = int.MaxValue;
+        
+        foreach (var cityId in frontlineCities)
+        {
+            if (cityId == srcCity.cityId)
+                continue;
+                
+            var city = GameManager.Instance.GetCity(cityId);
+            if (city == null) continue;
+            
+            int heroCount = city.GetNormalHeroList().Count;
+            if (heroCount < minHeroCount)
+            {
+                minHeroCount = heroCount;
+                emptyFrontlineCityId = cityId;
+            }
+        }
+        
+        if (emptyFrontlineCityId == 0 || minHeroCount >= srcCity.GetNormalHeroList().Count - 1)
+            return false;
+        
+        var heroToMove = availableHeroes[0];
+        return ExecuteHeroMove(player, srcCity, heroToMove, emptyFrontlineCityId, task.devId, "补充空前线");
     }
     
     private static int SelectBestRearCity(List<int> rearCities, SaveHeroData hero)
