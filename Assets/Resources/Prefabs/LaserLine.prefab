@@ -1,12 +1,12 @@
 %YAML 1.1
-%TAG !u! tag:yousandi.cn,2023:
+%TAG !u! tag:unity3d.com,2011:
 --- !u!1 &6135053224585414806
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 7
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 4370718842239002460}
   - component: {fileID: 3576305114303544279}
@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 5304250268779337315}
   - component: {fileID: 202107920955558203}
   m_Layer: 0
-  m_HasEditorInfo: 1
   m_Name: Beam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,14 +60,10 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_virtualGeometry: 0
-  m_virtualGeometryShadow: 0
-  m_ShadingRate: 0
-  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 440f06951ba35ea4d94310629fad47e2, type: 2}
+  - {fileID: 2100000, guid: 5118a8f054a6d522c3f40391fa0aee0c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -120,31 +115,112 @@ MonoBehaviour:
   m_GameObject: {fileID: 6135053224585414806}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce5dbe53f6e82d242b3904e806de7ee3, type: 3}
+  m_Script: {fileID: 11500000, guid: 4304abf28709a1b8456e9382ce15c47c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   beamColor: {r: 1, g: 1, b: 1, a: 1}
-  glowColor: {r: 1, g: 0.11022415, b: 0, a: 1}
-  beamWidth: 0.68
+  glowColor: {r: 0, g: 1, b: 1, a: 1}
+  beamWidth: 1
   glowIntensity: 3
   scrollSpeed: 1
   opacity: 0.8
   beamTexture: {fileID: 0}
   noiseScale: 3
-  parentTransform: {fileID: 4653717068974505268}
-  source: {fileID: 0}
-  target: {fileID: 0}
+  parentTransform: {fileID: 0}
+  source:
+    id: 0
+    position: {x: 0, y: 0, z: 0}
+    forceId: 0
+    isHero: 0
+    isFakeHero: 0
+    isShadow: 0
+    heroId: 0
+    battleUnitId: 0
+    armsId: 0
+    targetChessId: 0
+    inte: 0
+    str: 0
+    leadShip: 0
+    level: 0
+    dodgeRate: 0
+    critRate: 0
+    critDamageMulti: 0
+    lastDamagedPlayerId: 0
+    maxHp: 0
+    hp: 0
+    attackPoint: 0
+    attackRate: 0
+    lastAttackTime: 0
+    lastTargetUpdateTick: 0
+    skills: []
+    buffs: []
+    noMoveCount: 0
+    noActionCount: 0
+    isInAttackRange: 0
+    jumpState:
+      PosStart: {x: 0, y: 0, z: 0}
+      PosTar: {x: 0, y: 0, z: 0}
+      Height: 0
+      TickTotal: 0
+      TickPast: 0
+    dotStates: []
+    dieAfterLifeTime: 0
+    lifeTickCount: 0
+    regeTickCount: 0
+    regeHp: 0
+    lackIndex: 0
+  target:
+    id: 0
+    position: {x: 0, y: 0, z: 0}
+    forceId: 0
+    isHero: 0
+    isFakeHero: 0
+    isShadow: 0
+    heroId: 0
+    battleUnitId: 0
+    armsId: 0
+    targetChessId: 0
+    inte: 0
+    str: 0
+    leadShip: 0
+    level: 0
+    dodgeRate: 0
+    critRate: 0
+    critDamageMulti: 0
+    lastDamagedPlayerId: 0
+    maxHp: 0
+    hp: 0
+    attackPoint: 0
+    attackRate: 0
+    lastAttackTime: 0
+    lastTargetUpdateTick: 0
+    skills: []
+    buffs: []
+    noMoveCount: 0
+    noActionCount: 0
+    isInAttackRange: 0
+    jumpState:
+      PosStart: {x: 0, y: 0, z: 0}
+      PosTar: {x: 0, y: 0, z: 0}
+      Height: 0
+      TickTotal: 0
+      TickPast: 0
+    dotStates: []
+    dieAfterLifeTime: 0
+    lifeTickCount: 0
+    regeTickCount: 0
+    regeHp: 0
+    lackIndex: 0
 --- !u!1 &7265022039476696281
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 7
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 4653717068974505268}
   m_Layer: 0
-  m_HasEditorInfo: 1
   m_Name: LaserLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}

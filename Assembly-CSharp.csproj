@@ -254,11 +254,9 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\Epic Toon FX\Changelog.txt" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\MaskedDoubleSidedAdvanced.shader" />
-    <None Include="Assets\Resources\Fonts\zh-cn.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\ShieldICO.shader" />
-    <None Include="Assets\Shaders\TextureColor.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\FakeTrailAndMeshFireParticle.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\Props.shader" />
@@ -267,7 +265,6 @@
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\DissolveParticleDepth.shader" />
     <None Include="Assets\Epic Toon FX\Shaders\ETFX_PowerboxLit.shader" />
     <None Include="Assets\Shaders\MetalWithOutline.shader" />
-    <None Include="Assets\Shaders\GlowBeamUsage.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\_Packages\!!!_ReadBeforeImport_!!!.txt" />
     <None Include="Assets\Epic Toon FX\Prefabs\Interactive\Interactive FX.txt" />
@@ -276,6 +273,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
+    <None Include="Assets\Shaders\WaterUV.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\CenterCurve.shader" />
     <None Include="Assets\Epic Toon FX\Shaders\ETFX_PowerboxUnlit.shader" />
     <None Include="Assets\Shaders\DissolveShader.shader" />
@@ -286,9 +284,10 @@
     <None Include="Assets\ToonTastic - Vegetation &amp; Plants\Demo\Shaders\Skybox Gradient 1.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\Shaders\GlowBeamShader.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\Shaders\DiffuseWithOutline.shader" />
+    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\DissolveParticleMV.shader" />
+    <None Include="Assets\Shaders\GlowBeamUsage.txt" />
     <None Include="Assets\ToonTastic - Vegetation &amp; Plants\Shaders\Standart(Double Sided).shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Environment\EnvShaders\PrototypeGridQuadV2TDE.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
@@ -296,9 +295,10 @@
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\DissolveParticleFlipBook.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
+    <None Include="Assets\Shaders\TextureColor.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\_Packages\DemoSceneNewControlFix\NewInputSystemPatchFix.txt" />
+    <None Include="Assets\Resources\Fonts\zh-cn.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
-    <None Include="Assets\Shaders\WaterUV.shader" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

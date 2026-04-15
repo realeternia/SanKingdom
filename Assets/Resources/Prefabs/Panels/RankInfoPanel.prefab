@@ -92,19 +92,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 268851263132520515}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41926705b196d4a47a4851a54001495b, type: 3}
+  m_Script: {fileID: 11500000, guid: 98ab451c3ae43649c65f20eb3b788017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   scrollRectMain: {fileID: 7979293216819945416}
   rankRegionMain: {fileID: 8127510769363811203}
   scrollRectMode: {fileID: 2770608539309558115}
   rankRegionMode: {fileID: 818773695012911939}
-  rankCellModePrefab: {fileID: 6220797925647248127, guid: e85d17c3a82385e419caffb05004f461, type: 3}
+  rankCellModePrefab: {fileID: 7277523543444557153}
   scrollRectForce: {fileID: 7672775183020509925}
   rankRegionForce: {fileID: 501376298176487607}
-  rankCellForcePrefab: {fileID: 6220797925647248127, guid: 1b5835481539a8147abe25fba5bd6ca3, type: 3}
+  rankCellForcePrefab: {fileID: 8450237457468388743}
   rankRegionMainHeader: {fileID: 8831810712785837262}
   closeBtn: {fileID: 2008911989125620064}
+  mHeroList: 
 --- !u!1 &501376298176487607
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,7 +377,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9e9c820e940cb1c4ab01f9cb9e8febcf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 948c9466bc374d914213cc99f4b05094, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
