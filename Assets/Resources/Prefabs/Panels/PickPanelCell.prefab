@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2387050273488769389}
   - component: {fileID: 7018804892891931760}
   - component: {fileID: 4688754541098335071}
-  - component: {fileID: 6768854798526599873}
+  - component: {fileID: 6025384351941706213}
   m_Layer: 5
   m_Name: PickPanelCell
   m_TagString: Untagged
@@ -79,7 +79,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6768854798526599873
+--- !u!114 &6025384351941706213
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -88,7 +88,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 387046929097598943}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 850e61378293bd545bae4f9124201655, type: 3}
+  m_Script: {fileID: 11500000, guid: adad57b648a257df62dd41464c1d6eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bgImg: {fileID: 4688754541098335071}
@@ -283,8 +283,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u738B\u53BB"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2cf81e00e11058e48bf63753305874df, type: 2}
-  m_sharedMaterial: {fileID: -2551621216232197282, guid: 2cf81e00e11058e48bf63753305874df, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

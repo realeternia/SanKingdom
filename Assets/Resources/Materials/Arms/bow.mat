@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: bow
-  m_Shader: {fileID: 4800000, guid: dcf5c129ddf4c2141ba1595faec56c74, type: 3}
+  m_Shader: {fileID: 4800000, guid: abcc9d0a522712e3f8f5be915a2e3263, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
