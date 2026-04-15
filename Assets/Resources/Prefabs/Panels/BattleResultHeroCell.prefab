@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1974946774803936876}
   - component: {fileID: 377188531244644205}
   m_Layer: 5
-  m_Name: TextDie
+  m_Name: TextDam2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -622,7 +622,7 @@ GameObject:
   - component: {fileID: 4151888501707806969}
   - component: {fileID: 7690238215336374426}
   - component: {fileID: 5607758147279654465}
-  - component: {fileID: 670625666857144243}
+  - component: {fileID: 356612088846220530}
   m_Layer: 5
   m_Name: BattleResultHeroCell
   m_TagString: Untagged
@@ -692,7 +692,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &670625666857144243
+--- !u!114 &356612088846220530
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -701,13 +701,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 9216014009272878505}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a893f313debae94092a3e3e8e8fbdec, type: 3}
+  m_Script: {fileID: 11500000, guid: 9eea1f42edcdad3b1d2383c824213ba5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   heroIcon: {fileID: 5601987821787261927}
   playerName: {fileID: 4852185226319998055}
   playerMark1: {fileID: 2377598524204871925}
   playerMark2: {fileID: 377188531244644205}
-  playerMark3: {fileID: 0}
   playerRank: {fileID: 4094031670595847754}
-  playerIcon: {fileID: 0}

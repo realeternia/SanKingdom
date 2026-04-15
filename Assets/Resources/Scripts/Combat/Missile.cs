@@ -52,7 +52,7 @@ public class Missile : SceneObj
 
         ownerId = sourceChess.id;
         this.startPos = startPos;
-        position = startPos + new Vector3(0f, 2f, 0f);
+        position = startPos + new Vector3(0f, 6f, 0f);
         this.skillId = skillId;
         this.skillDamage = damage;
         forceId = sourceChess.forceId;
@@ -144,7 +144,7 @@ public class Missile : SceneObj
         targetChessId = target.id;
         
         // Calculate travel time based on distance and speed
-        Vector3 targetPos = target.position + new Vector3(0f, 3f, 0f);
+        Vector3 targetPos = target.position + new Vector3(0f, 7f, 0f);
         float distance = Vector3.Distance(startPos, targetPos);
         
         // Ensure missileSpeed is not zero
@@ -233,7 +233,7 @@ public class Missile : SceneObj
         if (targetChess == null)
             return;
 
-        var targetPos = targetChess.position + new Vector3(0f, 3f, 0f); // 修正目标点
+        var targetPos = targetChess.position + new Vector3(0f, 7f, 0f); // 修正目标点
 
         // Calculate movement
         float fractionOfJourney = (tickTimeReal - startTick) / (float)tickTotal;

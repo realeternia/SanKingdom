@@ -99,10 +99,10 @@ MonoBehaviour:
   rankRegionMain: {fileID: 8127510769363811203}
   scrollRectMode: {fileID: 2770608539309558115}
   rankRegionMode: {fileID: 818773695012911939}
-  rankCellModePrefab: {fileID: 7277523543444557153}
+  rankCellModePrefab: {fileID: 6220797925647248127, guid: e85d17c3a82385e419caffb05004f461, type: 3}
   scrollRectForce: {fileID: 7672775183020509925}
   rankRegionForce: {fileID: 501376298176487607}
-  rankCellForcePrefab: {fileID: 8450237457468388743}
+  rankCellForcePrefab: {fileID: 6220797925647248127, guid: 1b5835481539a8147abe25fba5bd6ca3, type: 3}
   rankRegionMainHeader: {fileID: 8831810712785837262}
   closeBtn: {fileID: 2008911989125620064}
   mHeroList: 
