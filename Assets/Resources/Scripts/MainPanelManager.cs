@@ -10,6 +10,8 @@ using System.Linq;
 
 public class MainPanelManager : MonoBehaviour, IPanelEvent
 {
+    private const float MAP_SCALE_FACTOR = 1.25f;
+    
     public GameObject topNode;      
     public CityDetail cityDetail;
     public Button btnSystem;
@@ -21,14 +23,15 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     public TMP_Text textAiInfo;
     public GameObject bgPanel;
     public VideoPanelManager videoPanelManager;
+    private MapDragHandler mapDragHandler;
     private List<WorldPieceControl> worldPieces = new List<WorldPieceControl>();
 
     // Start is called before the first frame update
     void Start()
     {
         cityDetail.gameObject.SetActive(false);
-        // 加载地图块
         LoadMapPieces();
+        InitDragHandler();
         InitForceControls();
 
         btnCity.gameObject.SetActive(false);
@@ -58,10 +61,28 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         });
     }
 
-    // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void InitDragHandler()
+    {
+        if (bgPanel == null)
+            return;
+        
+        RectTransform bgRect = bgPanel.GetComponent<RectTransform>();
+        if (bgRect == null)
+            return;
+        
+        mapDragHandler = bgPanel.GetComponent<MapDragHandler>();
+        if (mapDragHandler == null)
+        {
+            mapDragHandler = bgPanel.AddComponent<MapDragHandler>();
+        }
+        
+        RectTransform viewportRect = bgRect.parent as RectTransform;
+        mapDragHandler.Initialize(bgRect, viewportRect);
     }
 
     public void InitForceControls()
@@ -144,10 +165,12 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 RectTransform rectTransform = mapPiece.GetComponent<RectTransform>();
                 if (rectTransform != null)
                 {
-                    rectTransform.anchoredPosition = new Vector2(worldConfig.X/2+texture.width/2/2, -worldConfig.Y/2-texture.height/2/2);
+                    rectTransform.anchoredPosition = new Vector2(
+                        worldConfig.X * MAP_SCALE_FACTOR + texture.width * MAP_SCALE_FACTOR / 2,
+                        -worldConfig.Y * MAP_SCALE_FACTOR - texture.height * MAP_SCALE_FACTOR / 2
+                    );
                     
-                    // 设置大小
-                    rectTransform.sizeDelta = new Vector2(texture.width/2, texture.height/2);
+                    rectTransform.sizeDelta = new Vector2(texture.width * MAP_SCALE_FACTOR, texture.height * MAP_SCALE_FACTOR);
                 }
 
                 pieceControl.InitForce();

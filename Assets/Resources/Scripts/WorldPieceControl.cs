@@ -9,6 +9,8 @@ using Controls.Utils;
 
 public class WorldPieceControl : MonoBehaviour
 {
+    private const float MAP_SCALE_FACTOR = 1.25f;
+    
     public int pieceId;
     public Image pieceImage;
     public MainPanelManager worldManager;
@@ -82,10 +84,11 @@ public class WorldPieceControl : MonoBehaviour
         pieceName.text = pieceCfg.Cname;
         if(pieceCfg.MiniMapOffsets != null && pieceCfg.MiniMapOffsets.Length >= 2)
         {
-            // 修改pieceName和infoNode的坐标偏移
-            pieceName.rectTransform.anchoredPosition += new Vector2(pieceCfg.MiniMapOffsets[0], pieceCfg.MiniMapOffsets[1]);
-            extraText.rectTransform.anchoredPosition += new Vector2(pieceCfg.MiniMapOffsets[0], pieceCfg.MiniMapOffsets[1]);
-            infoNode.GetComponent<RectTransform>().anchoredPosition += new Vector2(pieceCfg.MiniMapOffsets[0], pieceCfg.MiniMapOffsets[1]);
+            float offsetX = pieceCfg.MiniMapOffsets[0] * MAP_SCALE_FACTOR;
+            float offsetY = pieceCfg.MiniMapOffsets[1] * MAP_SCALE_FACTOR;
+            pieceName.rectTransform.anchoredPosition += new Vector2(offsetX, offsetY);
+            extraText.rectTransform.anchoredPosition += new Vector2(offsetX, offsetY);
+            infoNode.GetComponent<RectTransform>().anchoredPosition += new Vector2(offsetX, offsetY);
         }
     }
 
