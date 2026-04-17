@@ -54,26 +54,22 @@ public class CityDevPanelManager : MonoBehaviour
 
         GameLog.Debug("SetCityId: " + cityId + " " + buildingId);
 
-        var buildingCfg = CityBuildingConfig.GetConfig(buildingId);
-        buildingText.text = buildingCfg.Cname;
+        buildingText.text = WorldConfig.GetConfig(cityId).Cname;
         int devIndex = 0;
         foreach(var cfg in CityDevConfig.ConfigList)
         {
-            if(cfg.BuildingName == buildingCfg.Name)
+            var devNode = Instantiate(devPrefab, devNodeParent.transform);
+            var devNodeMgr = devNode.GetComponent<CityDevPanelCell>();
+            devNodeMgr.cityDevPanelManager = this;
+            devNodeMgr.Init(cfg.Id);
+
+            var rectTransform = devNode.GetComponent<RectTransform>();
+            rectTransform.anchoredPosition = new Vector2(24 + devIndex * 150, -15);
+            devIndex++;
+
+            if (lastSelectedCell == null)
             {
-                var devNode = Instantiate(devPrefab, devNodeParent.transform);
-                var devNodeMgr = devNode.GetComponent<CityDevPanelCell>();
-                devNodeMgr.cityDevPanelManager = this;
-                devNodeMgr.Init(cfg.Id);
-
-                var rectTransform = devNode.GetComponent<RectTransform>();
-                rectTransform.anchoredPosition = new Vector2(24 + devIndex * 150, -15);
-                devIndex++;
-
-                if (lastSelectedCell == null)
-                {
-                    OnSelectItem(devNodeMgr);
-                }
+                OnSelectItem(devNodeMgr);
             }
         }
     }

@@ -159,11 +159,9 @@ public class TaskPriorityCalculator
         switch (need.needType)
         {
             case CityNeedType.GoldShortage:
-                return attr1 == "archgold" || attr2 == "archgold";
+                return attr1 == "gold" || attr2 == "gold";
             case CityNeedType.FoodShortage:
-                return attr1 == "archfood" || attr2 == "archfood" || config.Prefab == "CityDevChange";
-            case CityNeedType.SecureLow:
-                return attr1 == "secure" || attr2 == "secure";
+                return attr1 == "food" || attr2 == "food" || config.Prefab == "CityDevChange";
             case CityNeedType.WallLow:
                 return attr1 == "wall" || attr2 == "wall";
             case CityNeedType.SoldierShortage:

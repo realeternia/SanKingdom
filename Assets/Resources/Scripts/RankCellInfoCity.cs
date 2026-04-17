@@ -13,18 +13,14 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
 
     public TMP_Text cityName;
 
-    public TMP_Text cityArchGold;
-    public TMP_Text cityArchFood;
-    public TMP_Text cityPeople;
+    public TMP_Text cityLevel;
+    public TMP_Text cityExp;
     public TMP_Text citySoldier;
-    public TMP_Text citySecure;
     public TMP_Text cityWall;
 
-    public Button btnArchGold;
-    public Button btnArchFood;
-    public Button btnPeople;
+    public Button btnLevel;
+    public Button btnExp;
     public Button btnSoldier;
-    public Button btnSecure;
     public Button btnWall;    
 
     public GameObject nodeHeader;
@@ -36,11 +32,9 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
     void Start()
     {
         cityName.raycastTarget = false;
-        cityArchGold.raycastTarget = false;
-        cityArchFood.raycastTarget = false;
-        cityPeople.raycastTarget = false;
+        cityLevel.raycastTarget = false;
+        cityExp.raycastTarget = false;
         citySoldier.raycastTarget = false;
-        citySecure.raycastTarget = false;
         cityWall.raycastTarget = false;
     }
 
@@ -55,25 +49,17 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
         {
             nodeHeader.SetActive(true);
             nodeRow.SetActive(false);
-            btnArchGold.onClick.AddListener(() =>
+            btnLevel.onClick.AddListener(() =>
             {
-                rankPanelManager.SortItems("ArchGold");
+                rankPanelManager.SortItems("Level");
             });
-            btnArchFood.onClick.AddListener(() =>
+            btnExp.onClick.AddListener(() =>
             {
-                rankPanelManager.SortItems("ArchFood");
-            });
-            btnPeople.onClick.AddListener(() =>
-            {
-                rankPanelManager.SortItems("People");
+                rankPanelManager.SortItems("Exp");
             });
             btnSoldier.onClick.AddListener(() =>
             {
                 rankPanelManager.SortItems("Soldier");
-            });
-            btnSecure.onClick.AddListener(() =>
-            {
-                rankPanelManager.SortItems("Secure");
             });
             btnWall.onClick.AddListener(() =>
             {
@@ -91,16 +77,12 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
     {
         switch (key)
         {
-            case "ArchGold":
-                return int.Parse(cityArchGold.text);
-            case "ArchFood":
-                return int.Parse(cityArchFood.text);
-            case "People":
-                return int.Parse(cityPeople.text);
+            case "Level":
+                return int.Parse(cityLevel.text);
+            case "Exp":
+                return int.Parse(cityExp.text);
             case "Soldier":
                 return int.Parse(citySoldier.text);
-            case "Secure":
-                return int.Parse(citySecure.text);
             case "Wall":
                 return int.Parse(cityWall.text);
             default:
@@ -113,11 +95,9 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
         this.cityId = cityId;
         var cityData = GameManager.Instance.GetCity(cityId);
         cityName.text = WorldConfig.GetConfig(cityId).Cname;
-        cityArchGold.text = cityData.archGold.ToString();
-        cityArchFood.text = cityData.archFood.ToString();
-        cityPeople.text = cityData.archPeople.ToString();
+        cityLevel.text = cityData.level.ToString();
+        cityExp.text = cityData.exp.ToString();
         citySoldier.text = cityData.soldier.ToString();
-        citySecure.text = cityData.secure.ToString();
         cityWall.text = cityData.wall.ToString();
        
     }

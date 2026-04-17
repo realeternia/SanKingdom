@@ -158,6 +158,7 @@
     <Compile Include="Assets\Resources\Scripts\PopCitySelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\MoveAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\CityLevelConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Effects\DissolveEffect.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\MissileEffName.cs" />
@@ -180,7 +181,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevUseHero.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
-    <Compile Include="Assets\Resources\Scripts\Configs\CityBuildingConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />

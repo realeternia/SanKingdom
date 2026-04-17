@@ -6,7 +6,6 @@ public enum CityNeedType
     None,
     GoldShortage,
     FoodShortage,
-    SecureLow,
     WallLow,
     SoldierShortage,
     PowerLow
@@ -34,7 +33,6 @@ public class CityEvaluator
 {
     private const int GOLD_ALERT = 500;
     private const int FOOD_ALERT = 500;
-    private const int SECURE_ALERT = 60;
     private const int WALL_ALERT = 150;
     private const int SOLDIER_ALERT = 500;
     private const int POWER_ALERT = 50;
@@ -53,12 +51,6 @@ public class CityEvaluator
         {
             int prio = CalculatePriority(city.food, FOOD_ALERT);
             needs.Add(new CityNeed(CityNeedType.FoodShortage, prio, "food", city.food, FOOD_ALERT));
-        }
-        
-        if (city.secure < SECURE_ALERT)
-        {
-            int prio = CalculatePriority(city.secure, SECURE_ALERT);
-            needs.Add(new CityNeed(CityNeedType.SecureLow, prio, "secure", city.secure, SECURE_ALERT));
         }
         
         if (city.wall < WALL_ALERT)

@@ -167,15 +167,13 @@ public class GameManager : MonoBehaviour
             var city = new SaveCityData();
             city.cityId = cityCfg.Id;
             city.forceId = cityCfg.ForceId;
+            city.level = cityCfg.Level;
+            city.exp = 0;
             city.gold = cityCfg.Gold;
             city.food = cityCfg.Food;
             city.soldier = cityCfg.Soldier;
-            city.secure = cityCfg.Secure;
             city.power = 70;
             city.wall = cityCfg.Wall;
-            city.archFood = cityCfg.ArchFood;
-            city.archGold = cityCfg.ArchGold;
-            city.archPeople = cityCfg.ArchPeople;
 
             SaveData.cities.Add(city);
         }
@@ -243,7 +241,7 @@ public class GameManager : MonoBehaviour
                     hero.loyalty = 0;
 
                 var city = GetCity(hero.cityId);
-                int escapeChance = 13 + (100 - city.secure) / 4;
+                int escapeChance = 20;
                 if (UnityEngine.Random.Range(0, 100) < escapeChance)
                 {
                     var destCityId = GetRandomForceCityId(hero.cityId, hero.forceId);

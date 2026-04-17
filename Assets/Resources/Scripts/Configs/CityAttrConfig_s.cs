@@ -60,31 +60,25 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new CityAttrConfig(1, "archgold", "商业", 999, 200, 0);
-            config[2] = new CityAttrConfig(2, "archfood", "农业", 999, 200, 0);
-            config[3] = new CityAttrConfig(3, "archpeople", "人口", 99999, 10000, 0);
-            config[4] = new CityAttrConfig(4, "gold", "金钱", 99999, 500, 250);
-            config[5] = new CityAttrConfig(5, "food", "粮食", 99999, 500, 250);
-            config[6] = new CityAttrConfig(6, "soldier", "士兵", 19999, 500, 250);
-            config[7] = new CityAttrConfig(7, "secure", "治安", 99, 60, 40);
-            config[8] = new CityAttrConfig(8, "wall", "城墙", 999, 150, 100);
+            config[1] = new CityAttrConfig(1, "level", "等级", 99, 0, 0);
+            config[2] = new CityAttrConfig(2, "exp", "经验", 999, 0, 0);
+            config[4] = new CityAttrConfig(4, "gold", "金钱", 999, 100, 25);
+            config[5] = new CityAttrConfig(5, "food", "粮食", 999, 100, 25);
+            config[6] = new CityAttrConfig(6, "soldier", "士兵", 999, 100, 25);
+            config[8] = new CityAttrConfig(8, "wall", "城墙", 999, 100, 25);
             config[9] = new CityAttrConfig(9, "power", "士气", 99, 50, 0);
 
 
-            idxname["archgold"] =  1;
-            idxCname["商业"] =  1;
-            idxname["archfood"] =  2;
-            idxCname["农业"] =  2;
-            idxname["archpeople"] =  3;
-            idxCname["人口"] =  3;
+            idxname["level"] =  1;
+            idxCname["等级"] =  1;
+            idxname["exp"] =  2;
+            idxCname["经验"] =  2;
             idxname["gold"] =  4;
             idxCname["金钱"] =  4;
             idxname["food"] =  5;
             idxCname["粮食"] =  5;
             idxname["soldier"] =  6;
             idxCname["士兵"] =  6;
-            idxname["secure"] =  7;
-            idxCname["治安"] =  7;
             idxname["wall"] =  8;
             idxCname["城墙"] =  8;
             idxname["power"] =  9;

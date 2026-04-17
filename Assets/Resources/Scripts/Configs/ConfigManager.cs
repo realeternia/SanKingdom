@@ -29,7 +29,7 @@ public static class ConfigManager
         ArmsConfig.Load();
         WorldConfig.Load();
         ForceConfig.Load();
-        CityBuildingConfig.Load();
+        CityLevelConfig.Load();
         CityDevConfig.Load();
         CityAttrConfig.Load();
         SeasonConfig.Load();

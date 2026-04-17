@@ -10,15 +10,13 @@ public class SaveCityData
 {
     public int cityId;
     public int forceId;
-    public int archGold; //商业
-    public int archFood; //农业
-    public int archPeople; //人口
-    public int gold; //现有黄金
-    public int food; //现有粮食
-    public int soldier; //士兵
-    public int secure; //安全系数
-    public int power; //士气
-    public int wall; //城防
+    public int level;
+    public int exp;
+    public int gold;
+    public int food;
+    public int soldier;
+    public int power;
+    public int wall;
 
     [NonSerialized]
     private int ownerHeroId;
@@ -28,10 +26,10 @@ public class SaveCityData
     public void OnRound()
     {
         var seasonCfg = SeasonConfig.GetConfig(GameManager.Instance.SeasonId);
-        if(seasonCfg.AddGold != 0) // 发钱
-            gold += (int)(archGold + seasonCfg.AddGold);
-        else if(seasonCfg.AddFood != 0) // 发粮食
-            food += (int)(archFood * seasonCfg.AddFood);
+        if(seasonCfg.AddGold != 0)
+            gold += (int)(level * 50 + seasonCfg.AddGold);
+        else if(seasonCfg.AddFood != 0)
+            food += (int)(level * 40 * seasonCfg.AddFood);
         actions.Clear();
     }
 
@@ -149,14 +147,11 @@ public class SaveCityData
     {
         switch (type.ToLower())
         {
-            case "archgold":
-                archGold += add;
+            case "level":
+                level += add;
                 break;
-            case "archfood":
-                archFood += add;
-                break;
-            case "archpeople":
-                archPeople += add;
+            case "exp":
+                exp += add;
                 break;
             case "gold":
                 gold += add;
@@ -166,9 +161,6 @@ public class SaveCityData
                 break;
             case "soldier":
                 soldier += add;
-                break;
-            case "secure":
-                secure += add;
                 break;
             case "wall":
                 wall += add;
@@ -185,12 +177,10 @@ public class SaveCityData
     {
         switch (type.ToLower())
         {
-            case "archgold":
-                return archGold;
-            case "archfood":
-                return archFood;
-            case "archpeople":
-                return archPeople;
+            case "level":
+                return level;
+            case "exp":
+                return exp;
             case "gold":
                 return gold;
             case "food":
@@ -204,8 +194,6 @@ public class SaveCityData
                         soldierOnHero += hero.soldier;
                 }
                 return soldier + soldierOnHero;
-            case "secure":
-                return secure;
             case "wall":
                 return wall;
             case "power":

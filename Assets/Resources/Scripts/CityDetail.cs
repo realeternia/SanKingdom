@@ -11,13 +11,11 @@ public class CityDetail : MonoBehaviour, IPanelEvent
 
     public TMP_Text textCityName;
     public TMP_Text textOwnerName;
-    public TMP_Text textArchGold;
-    public TMP_Text textArchFood;
-    public TMP_Text textArchPeople;
+    public TMP_Text textLevel;
+    public TMP_Text textExp;
     public TMP_Text textGold;
     public TMP_Text textFood;
     public TMP_Text textSoldier;
-    public TMP_Text textSecure;
     public TMP_Text textPower;
     public TMP_Text textWall;
     public TMP_Text textLeader;
@@ -75,13 +73,11 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         var worldCfg = WorldConfig.GetConfig(cityId);
         textCityName.text = worldCfg.Cname;
         textOwnerName.text = ForceConfig.GetConfig(city.forceId).Cname;
-        SetTextAndColor(textArchGold, city, "archGold");
-        SetTextAndColor(textArchFood, city, "archFood");
-        SetTextAndColor(textArchPeople, city, "archPeople");
+        SetTextAndColor(textLevel, city, "level");
+        SetTextAndColor(textExp, city, "exp");
         SetTextAndColor(textGold, city, "gold");
         SetTextAndColor(textFood, city, "food");
         SetTextAndColor(textSoldier, city, "soldier");
-        SetTextAndColor(textSecure, city, "secure");
         SetTextAndColor(textPower, city, "power");
         SetTextAndColor(textWall, city, "wall");
         var owner = city.GetOwner();
