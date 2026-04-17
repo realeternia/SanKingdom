@@ -16,7 +16,7 @@ public class PanelManager : MonoBehaviour
     public GameObject rankPanel;
     private GameObject pickPanel;
     public GameObject worldPanel;
-    public GameObject cityPanel;
+    private GameObject cityPanel;
     private GameObject cityDevPanel;
     private GameObject systemPanel;
 
@@ -67,6 +67,11 @@ public class PanelManager : MonoBehaviour
     public void ShowCity(int cityId)
     {
         BGMPlayer.Instance.PlaySound("Sounds/deck");
+        if (cityPanel == null)
+        {
+            var cityPanelPrefab = Resources.Load<GameObject>("Prefabs/Panels/CityPanel");
+            cityPanel = Instantiate(cityPanelPrefab, transform);
+        }
         cityPanel.SetActive(true);
         var cityPanelManager = cityPanel.GetComponent<CityPanelManager>();
         cityPanelManager.SetCityId(cityId);
@@ -82,6 +87,8 @@ public class PanelManager : MonoBehaviour
         cityPanel.GetComponent<CityPanelManager>().OnHide();
 
         ChangePanelCount(cityPanel, false);
+        Destroy(cityPanel);
+        cityPanel = null;
     }
     
     public void ShowCityDev(int cityId, int devId)

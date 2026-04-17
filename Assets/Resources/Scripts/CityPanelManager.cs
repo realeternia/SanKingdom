@@ -11,15 +11,13 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     public int cityId;
     public Button closeBtn;
     public TMP_Text cityName;
-    public CityDetail cityDetail;
-    private GameObject currentCityView; // 当前加载的城市视图
+    public Image cityImage;
     // Start is called before the first frame update
     void Start()
     {
         closeBtn.onClick.AddListener(() =>
         {
             PanelManager.Instance.HideCity();
-            //  CardShopManager.Instance.OnShow();
         });
     }
 
@@ -34,43 +32,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         this.cityId = cityId;
         var cityCfg = WorldConfig.GetConfig(cityId);
         cityName.text = cityCfg.Cname;
-        
-        // 加载城市视图预制件
-        LoadCityView(cityCfg.ViewPrefab);
-        cityDetail.SetCityDetail(cityId);
-    }
-
-    private void LoadCityView(string viewPrefabPath)
-    {
-        // 先销毁当前的城市视图（如果存在）
-        if (currentCityView != null)
-        {
-            Destroy(currentCityView);
-        }
-
-        // 加载chengdu预制件
-        GameObject cityViewPrefab = Resources.Load<GameObject>("Prefabs/CityView/" + viewPrefabPath);
-        if (cityViewPrefab != null)
-        {
-            // 实例化预制件并挂载到父对象下
-            currentCityView = Instantiate(cityViewPrefab, transform);
-            currentCityView.transform.localScale = Vector3.one;
-
-            foreach (var buildingCfg in CityBuildingConfig.ConfigList)
-            {
-                var node = currentCityView.transform.Find(buildingCfg.BtnName);
-                if (node == null)
-                    continue;
-                node.gameObject.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    PanelManager.Instance.ShowCityDev(cityId, buildingCfg.Id);
-                });
-            }
-        }
-        else
-        {
-            GameLog.Error("Failed to load city view prefab or cityViewParent is not assigned.");
-        }
+        cityImage.sprite = Resources.Load<Sprite>("Textures/CityView/" + cityCfg.ViewPrefab);
     }
 
     public void OnShow()
@@ -84,6 +46,5 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public void SendSignal(string name, string parm1, int parm2)
     {
-        cityDetail.SendSignal(name, parm1, parm2);
     } 
 }
