@@ -59,6 +59,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         {
             SetMode();
         });
+        
+        StartCoroutine(MoveToPlayerCapitalDelayed());
     }
 
     void Update()
@@ -75,6 +77,9 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         if (bgRect == null)
             return;
         
+        GameLog.Info($"InitDragHandler: bgPanel pivot = {bgRect.pivot}, anchorMin = {bgRect.anchorMin}, anchorMax = {bgRect.anchorMax}");
+        GameLog.Info($"InitDragHandler: bgPanel sizeDelta = {bgRect.sizeDelta}, rect.size = {bgRect.rect.size}");
+        
         mapDragHandler = bgPanel.GetComponent<MapDragHandler>();
         if (mapDragHandler == null)
         {
@@ -82,7 +87,80 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         }
         
         RectTransform viewportRect = bgRect.parent as RectTransform;
+        if (viewportRect != null)
+        {
+            GameLog.Info($"InitDragHandler: viewport pivot = {viewportRect.pivot}, sizeDelta = {viewportRect.sizeDelta}, rect.size = {viewportRect.rect.size}");
+        }
+        
         mapDragHandler.Initialize(bgRect, viewportRect);
+    }
+    
+    private IEnumerator MoveToPlayerCapitalDelayed()
+    {
+        yield return null;
+        MoveToPlayerCapital();
+    }
+
+    private void MoveToPlayerCapital()
+    {
+        GameLog.Info("MoveToPlayerCapital 开始执行");
+        
+        if (mapDragHandler == null)
+        {
+            GameLog.Warn("MoveToPlayerCapital: mapDragHandler 为空");
+            return;
+        }
+        
+        var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
+        if (playerForce == null)
+        {
+            GameLog.Warn("MoveToPlayerCapital: 未找到玩家势力");
+            return;
+        }
+        
+        var player = GameManager.Instance.GetPlayer(playerForce.forceId);
+        if (player == null)
+        {
+            GameLog.Warn("MoveToPlayerCapital: 未找到玩家对象");
+            return;
+        }
+        
+        var kingCity = player.GetKingCity();
+        if (kingCity == null)
+        {
+            GameLog.Warn("MoveToPlayerCapital: 未找到首都城市");
+            return;
+        }
+        
+        var cityConfig = WorldConfig.GetConfig(kingCity.cityId);
+        if (cityConfig == null)
+        {
+            GameLog.Warn("MoveToPlayerCapital: 未找到城市配置");
+            return;
+        }
+        GameLog.Info($"MoveToPlayerCapital: 城市名称 = {cityConfig.Cname}, X = {cityConfig.X}, Y = {cityConfig.Y}");
+        
+        string texturePath = "Textures/Maps/" + cityConfig.Name;
+        Texture2D texture = Resources.Load<Texture2D>(texturePath);
+        if (texture == null)
+        {
+            GameLog.Warn($"MoveToPlayerCapital: 未找到纹理, path = {texturePath}");
+            return;
+        }
+        GameLog.Info($"MoveToPlayerCapital: 纹理尺寸 = {texture.width} x {texture.height}");
+
+        RectTransform bgRect = bgPanel.GetComponent<RectTransform>();
+        RectTransform viewportRect = bgRect.parent as RectTransform;
+        
+        float cityPosX = cityConfig.X * MAP_SCALE_FACTOR + texture.width * MAP_SCALE_FACTOR / 2;
+        float cityPosY = -cityConfig.Y * MAP_SCALE_FACTOR - texture.height * MAP_SCALE_FACTOR / 2;
+        
+        Vector2 targetPos = new Vector2(-cityPosX, -cityPosY);
+        
+        GameLog.Info($"MoveToPlayerCapital: cityPos = ({cityPosX}, {cityPosY}), targetPos = ({targetPos.x}, {targetPos.y})");
+        
+        mapDragHandler.MoveToPositionSmooth(targetPos);
+        GameLog.Info($"MoveToPlayerCapital: 平滑移动开始, bgPanel位置 = {bgPanel.GetComponent<RectTransform>().anchoredPosition}");
     }
 
     public void InitForceControls()
@@ -101,7 +179,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         var activeForces = gameManager.SaveData.forces.Where(f => !f.isEliminated).ToList();
         var totalWidth = 141 * activeForces.Count;
         var forceList = new List<int>();
-        GameLog.Info($"InitForceControls 强制数量: {activeForces.Count}");
+
+        GameLog.Info($"InitForceControls 势力数量: {activeForces.Count}");
         foreach(var force in activeForces)
             forceList.Add(force.forceId);
         forceList.Sort((a, b) => gameManager.GetPlayerCityCount(b) - gameManager.GetPlayerCityCount(a));
@@ -118,17 +197,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     private void LoadMapPieces()
     {
         GameLog.Info($"LoadMapPieces 地图数量: {WorldConfig.ConfigList.Count}");
-        
-        // // 检查地图配置是否为空
-        // if (WorldConfig.ConfigList.Count == 0)
-        // {
-        //     Debug.LogWarning("WorldConfig配置为空，等待0.2秒后重试...");
-        //     // 等待0.2秒
-        //     yield return new WaitForSeconds(0.2f);
-        //     // 重新调用自身
-        //     StartCoroutine(LoadMapPieces());
-        //     yield break;
-        // }
 
         // 遍历所有地图配置
         foreach (var worldConfig in WorldConfig.ConfigList)
@@ -175,13 +243,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
                 pieceControl.InitForce();
                 worldPieces.Add(pieceControl);
-                
-               // GameLog.Info($"成功加载UI地图: {worldConfig.Cname} ({worldConfig.Name})");
-            // }
-            // catch (System.Exception e)
-            // {
-            //     Debug.LogError($"加载UI地图 {worldConfig.Cname} 时出错: {e.Message}");
-            // }
         }
     }
 
@@ -263,6 +324,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
             if(seasonCfg.Video != "")
                 videoPanelManager.Play(seasonCfg.Video);
+            
+            MoveToPlayerCapital();
         }
         else if(name == "AICheck")
         {
