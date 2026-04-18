@@ -55,7 +55,7 @@ public class MapDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler
         if (!isDragging || bgPanelRect == null)
             return;
         
-        GameLog.Info($"OnDrag: delta = {eventData.delta}, panelStartPos = {panelStartPos}");
+       // GameLog.Info($"OnDrag: delta = {eventData.delta}, panelStartPos = {panelStartPos}");
         
         if (!dragExceededThreshold && eventData.delta.magnitude > dragThreshold)
         {
@@ -69,7 +69,7 @@ public class MapDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler
             newPos = ClampPositionToViewport(newPos);
         }
         
-        GameLog.Info($"OnDrag: newPos = {newPos}");
+       // GameLog.Info($"OnDrag: newPos = {newPos}");
         bgPanelRect.anchoredPosition = newPos;
         panelStartPos = bgPanelRect.anchoredPosition;
     }
@@ -129,8 +129,6 @@ public class MapDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler
             return;
 
         Vector2 clampedTarget = ClampPositionToViewport(targetPos);
-        clampedTarget.y = -clampedTarget.y;
-        clampedTarget.x = -clampedTarget.x; 
         GameLog.Info($"MoveToPositionSmooth: targetPos = ({targetPos.x}, {targetPos.y}), clamped = ({clampedTarget.x}, {clampedTarget.y}), anchoredPos = ({bgPanelRect.anchoredPosition.x}, {bgPanelRect.anchoredPosition.y}), duration = {duration}");
 
         if (moveCoroutine != null)

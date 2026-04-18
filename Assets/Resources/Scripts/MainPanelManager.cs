@@ -150,14 +150,16 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         GameLog.Info($"MoveToPlayerCapital: 纹理尺寸 = {texture.width} x {texture.height}");
 
         RectTransform bgRect = bgPanel.GetComponent<RectTransform>();
-        RectTransform viewportRect = bgRect.parent as RectTransform;
         
-        float cityPosX = cityConfig.X * MAP_SCALE_FACTOR + texture.width * MAP_SCALE_FACTOR / 2;
-        float cityPosY = -cityConfig.Y * MAP_SCALE_FACTOR - texture.height * MAP_SCALE_FACTOR / 2;
+        float bgWidth = bgRect.rect.width;
+        float bgHeight = bgRect.rect.height;
         
-        Vector2 targetPos = new Vector2(-cityPosX, -cityPosY);
+        float cityLocalX = cityConfig.X * MAP_SCALE_FACTOR - bgWidth / 2;
+        float cityLocalY = bgHeight / 2 - cityConfig.Y * MAP_SCALE_FACTOR;
         
-        GameLog.Info($"MoveToPlayerCapital: cityPos = ({cityPosX}, {cityPosY}), targetPos = ({targetPos.x}, {targetPos.y})");
+        Vector2 targetPos = new Vector2(-cityLocalX, -cityLocalY);
+        
+        GameLog.Info($"MoveToPlayerCapital: bgSize = ({bgWidth}, {bgHeight}), cityLocal = ({cityLocalX}, {cityLocalY}), targetPos = ({targetPos.x}, {targetPos.y})");
         
         mapDragHandler.MoveToPositionSmooth(targetPos);
         GameLog.Info($"MoveToPlayerCapital: 平滑移动开始, bgPanel位置 = {bgPanel.GetComponent<RectTransform>().anchoredPosition}");
