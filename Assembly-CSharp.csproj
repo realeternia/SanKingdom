@@ -177,6 +177,7 @@
     <Compile Include="Assets\Resources\Scripts\CityDevNodeNormal.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffLock.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\AttrRadarChart.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityCellCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitWall.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevUseHero.cs" />
@@ -199,6 +200,7 @@
     <Compile Include="Assets\Resources\Scripts\RankCellInfoCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidHeal.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityCellHero.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSpeedDown.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\StrategicDecider.cs" />

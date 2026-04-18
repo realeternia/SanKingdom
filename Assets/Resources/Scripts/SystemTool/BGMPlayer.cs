@@ -1,4 +1,5 @@
 using UnityEngine;
+using Controls.Utils;
 
 
 public class BGMPlayer : MonoBehaviour
@@ -50,6 +51,8 @@ public class BGMPlayer : MonoBehaviour
         {
             return;
         }
+
+        GameLog.Info($"PlaySound: path={path}, prioty={prioty}, currentTime={currentTime}, lastSoundTime={lastSoundTime}");
 
         // 更新上次播放信息
         lastSoundPriority = prioty;
