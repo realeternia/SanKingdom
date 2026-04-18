@@ -258,6 +258,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\Epic Toon FX\Changelog.txt" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\MaskedDoubleSidedAdvanced.shader" />
+    <None Include="Assets\TextMesh Pro\Glyph Report.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\ShieldICO.shader" />
