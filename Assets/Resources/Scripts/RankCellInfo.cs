@@ -117,7 +117,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public void Init(HeroConfig heroConfig)
     {
         // 设置英雄信息
-        heroPic.sprite = Resources.Load<Sprite>("Skins/" + heroConfig.Icon);
+        heroPic.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroConfig.Icon);
         heroPicContainer = heroPic.gameObject;
 
         heroName.text = heroConfig.Name;

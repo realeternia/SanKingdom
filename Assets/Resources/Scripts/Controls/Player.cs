@@ -29,7 +29,7 @@ public class Player
 
         lineColor = ColorUtility.TryParseHtmlString(forceCfg.Color, out lineColor) ? lineColor : Color.white;
         pname = heroCfg.Name;
-        imgPath = "Skins/" + heroCfg.Icon;
+        imgPath = "Textures/Skins/" + heroCfg.Icon;
     }
 
     // 检查英雄是否在当前年份已经执行过动作

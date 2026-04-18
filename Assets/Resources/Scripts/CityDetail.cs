@@ -109,7 +109,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
                 rt.anchoredPosition = new Vector2(70 * (i % 4), -70 * (i / 4));
                 
                 var img = heroHead.GetComponent<Image>();
-                img.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+                img.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
 
                 bool hasActed = hero.round >= currentRound;
                 if (hasActed)
@@ -133,7 +133,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
                 rt.anchoredPosition = new Vector2(70 * (idx % 4), -70 * (idx / 4));
                 
                 var img = heroHead.GetComponent<Image>();
-                img.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+                img.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
 
                 AddOverlay(heroHead, new Color(0, 0, 0, 0.92f));
                 AddBorder(heroHead, Color.yellow);
@@ -154,7 +154,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
                 rt.anchoredPosition = new Vector2(70 * (idx % 4), -70 * (idx / 4));
                 
                 var img = heroHead.GetComponent<Image>();
-                img.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+                img.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
 
                 AddOverlay(heroHead, new Color(0, 0, 0, 0.92f));
                 AddBorder(heroHead, Color.red);

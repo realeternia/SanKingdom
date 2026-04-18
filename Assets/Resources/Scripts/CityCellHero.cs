@@ -45,7 +45,7 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
         this.heroId = heroId;
         var heroCfg = HeroConfig.GetConfig(heroId);
         heroName.text = heroCfg.Name;
-        heroIcon.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+        heroIcon.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
 
         UpdateWorkState();
     }

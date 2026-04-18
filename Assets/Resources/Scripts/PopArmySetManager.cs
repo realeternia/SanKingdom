@@ -75,7 +75,7 @@ public class PopArmySetManager : MonoBehaviour
 
         var heroCfg = HeroConfig.GetConfig(heroId);
 
-        heroPic.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+        heroPic.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
         textHeroName.text = heroCfg.Name;
 
         maxSoldier = Math.Min(1000, GameManager.Instance.GetCity(cityId).soldier + heroData.soldier);

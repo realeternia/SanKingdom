@@ -109,7 +109,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         var heroData = GameManager.Instance.GetHero(hId);
         
         heroNameText.text = heroConfig.Name;
-        string imgPath = "SkinsBig/" + heroConfig.Icon;
+        string imgPath = "Textures/SkinsBig/" + heroConfig.Icon;
         Sprite sprite = Resources.Load<Sprite>(imgPath);
         heroImage.sprite = sprite;
         

@@ -201,7 +201,7 @@ public class PickPanelControl : MonoBehaviour
             if (cellControl != null)
             {
                 // 设置英雄图片
-                cellControl.heroImg.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+                cellControl.heroImg.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
                 // 设置英雄名称
                 cellControl.heroName.text = heroCfg.Name;
 

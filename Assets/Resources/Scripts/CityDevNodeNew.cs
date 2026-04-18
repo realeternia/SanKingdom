@@ -77,7 +77,7 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
             var heroCfg = HeroConfig.GetConfig(heroId);
             if (heroCfg != null)
             {
-                heroImg.sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+                heroImg.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
                 heroImg.enabled = true;
             }
         }

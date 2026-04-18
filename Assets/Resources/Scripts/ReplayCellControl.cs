@@ -65,7 +65,7 @@ public class ReplayCellControl : MonoBehaviour
         if (forceCfg1 != null)
         {
             var heroCfg1 = HeroConfig.GetConfig(forceCfg1.HeroId);
-            var sprite1 = Resources.Load<Sprite>("Skins/" + heroCfg1.Icon);
+            var sprite1 = Resources.Load<Sprite>("Textures/Skins/" + heroCfg1.Icon);
             if (sprite1 != null)
                 force1Icon.sprite = sprite1;
             Color color1;
@@ -75,7 +75,7 @@ public class ReplayCellControl : MonoBehaviour
         if (forceCfg2 != null)
         {
             var heroCfg2 = HeroConfig.GetConfig(forceCfg2.HeroId);
-            var sprite2 = Resources.Load<Sprite>("Skins/" + heroCfg2.Icon);
+            var sprite2 = Resources.Load<Sprite>("Textures/Skins/" + heroCfg2.Icon);
             if (sprite2 != null)
                 force2Icon.sprite = sprite2;
             Color color2;

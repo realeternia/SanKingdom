@@ -51,7 +51,7 @@ public class Tooltip : MonoBehaviour
                 var skillConfig = SkillConfig.GetConfig(skillIds[i]);
                 var skillAttrStr = skillConfig.Attr == "str" ? "<color=red>[武]</color>" : skillConfig.Attr == "leadShip" ? "<color=yellow>[统]</color>" : skillConfig.Attr == "inte" ? "<color=blue>[智]</color>" : "";
                 textSkills[i].text = skillAttrStr + skillConfig.Name + "[<color=yellow>" + skillConfig.Price.ToString() + "元</color>]" + skillConfig.Descript;
-                imageSkills[i].sprite = Resources.Load<Sprite>("SkillPic/" + skillConfig.Icon);
+                imageSkills[i].sprite = Resources.Load<Sprite>("Textures/SkillPic/" + skillConfig.Icon);
             }
 
             for (int i = 0; i < skillIds.Length; i++)

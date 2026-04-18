@@ -37,7 +37,7 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
         player = GameManager.Instance.GetPlayer(forceId);
         var forceCfg = ForceConfig.GetConfig(forceId);
         var heroCfg = HeroConfig.GetConfig(forceCfg.HeroId);
-        imgPath = "Skins/" + heroCfg.Icon;
+        imgPath = "Textures/Skins/" + heroCfg.Icon;
 
         playerNameText.text = player.pname;
 

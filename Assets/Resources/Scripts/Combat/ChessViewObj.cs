@@ -36,7 +36,7 @@ public class ChessViewObj : MonoBehaviour
         var chessName = chessUnit.chessName;
         originalMaterial = rend.sharedMaterial;
         material = new Material(rend.sharedMaterial);
-        originalTexture = Resources.Load<Texture>("Skins/" + chessName);
+        originalTexture = Resources.Load<Texture>("Textures/Skins/" + chessName);
         if (!string.IsNullOrEmpty(chessName))
         {
             material.mainTexture = originalTexture;
@@ -45,7 +45,7 @@ public class ChessViewObj : MonoBehaviour
         if (chessUnit.isHero)
         {
             materialFlag = new Material(rendFlag.sharedMaterial);
-            materialFlag.mainTexture = Resources.Load<Texture>("Skins/" + chessName);
+            materialFlag.mainTexture = Resources.Load<Texture>("Textures/Skins/" + chessName);
             materialFlag.SetColor("_OutlineColor", c);
             rendFlag.material = materialFlag;
         }

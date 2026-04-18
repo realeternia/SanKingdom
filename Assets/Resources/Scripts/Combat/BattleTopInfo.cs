@@ -107,7 +107,7 @@ public class BattleInfoTop : MonoBehaviour
         var heroConfig = HeroConfig.GetConfig(forceConfig.HeroId);
         
         // 加载图片
-        string imgPath = "Skins/" + heroConfig.Icon;
+        string imgPath = "Textures/Skins/" + heroConfig.Icon;
         Sprite sprite = Resources.Load<Sprite>(imgPath);
         if (sprite != null)
         {

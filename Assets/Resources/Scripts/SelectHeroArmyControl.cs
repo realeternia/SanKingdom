@@ -34,7 +34,7 @@ public class SelectHeroArmyControl : MonoBehaviour
                     {
                         heroHeads[i].gameObject.SetActive(true);
                         var heroCfg = HeroConfig.GetConfig(selectedHeroIds[i]);
-                        heroHeads[i].sprite = Resources.Load<Sprite>("Skins/" + heroCfg.Icon);
+                        heroHeads[i].sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
 
                         var heroData = GameManager.Instance.GetHero(selectedHeroIds[i]);
                         heroHeads[i].GetComponentInChildren<TMP_Text>().text = $"{heroData.soldier}";
@@ -48,7 +48,7 @@ public class SelectHeroArmyControl : MonoBehaviour
                 if (heroIds.Length == 0)
                 {
                     heroHeads[0].gameObject.SetActive(true);
-                    heroHeads[0].sprite = Resources.Load<Sprite>("Skins/moren");
+                    heroHeads[0].sprite = Resources.Load<Sprite>("Textures/Skins/moren");
                 }
                 onClick?.Invoke();
             });
@@ -71,7 +71,7 @@ public class SelectHeroArmyControl : MonoBehaviour
             heroHeads[i].gameObject.SetActive(false);
         }
         heroHeads[0].gameObject.SetActive(true);
-        heroHeads[0].sprite = Resources.Load<Sprite>("Skins/moren");
+        heroHeads[0].sprite = Resources.Load<Sprite>("Textures/Skins/moren");
 
         heroIds = new int[0];
     }
