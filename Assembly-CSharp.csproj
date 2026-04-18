@@ -205,6 +205,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\ArmsConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySkillRateTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopForceBar.cs" />
+    <Compile Include="Assets\Resources\Scripts\CityDevNodeNew.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoAction.cs" />
     <Compile Include="Assets\Resources\Scripts\MapDragHandler.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamagedAddRate.cs" />

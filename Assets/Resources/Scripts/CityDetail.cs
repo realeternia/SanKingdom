@@ -24,6 +24,8 @@ public class CityDetail : MonoBehaviour, IPanelEvent
     private void SetTextAndColor(TMP_Text textComponent, SaveCityData city, string attrName)
     {
         var val = city.GetAttr(attrName);
+        if(textComponent == null)
+            return;
         textComponent.text = val.ToString();
         var cfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
 
