@@ -295,7 +295,7 @@ public class Player
             BattleManager.Instance.SetMode(false, true);
 
         citySrc.food -= foodUse;
-        var defenceFood = cityDest.food;
+        var defenceFood = cityDest.GetAttr("food");
         cityDest.food = 0;
         int srcForceId = citySrc.forceId;
         int destForceId = cityDest.forceId;
@@ -567,7 +567,7 @@ public class Player
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
-                valOld = cityData.gold + totalCost,
+                valOld = cityData.GetAttr("gold") + totalCost,
                 valAddon = -totalCost,
             });
         }

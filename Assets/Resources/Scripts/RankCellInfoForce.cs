@@ -134,16 +134,15 @@ public class RankCellInfoForce : MonoBehaviour, IRankDetailInfo, IRankDetailInfo
         // 统计城市的 Soldier、金钱和粮食
         foreach (var city in cities)
         {
-            totalSoldier += city.soldier;
+            totalSoldier += city.GetAttr("soldier");
         }
         
-        // 计算总金钱和粮食
         int totalGold = 0;
         int totalFood = 0;
         foreach (var city in cities)
         {
-            totalGold += city.gold;
-            totalFood += city.food;
+            totalGold += city.GetAttr("gold");
+            totalFood += city.GetAttr("food");
         }
         
         // 存储原始值用于排序

@@ -52,7 +52,7 @@ public class SelectHeroControl : MonoBehaviour
             
             if(mode == 2)
             {
-                int cityGold = cityData.gold;
+                int cityGold = cityData.GetAttr("gold");
                 maxHeroCount = System.Math.Min(maxHeroCount, cityGold / 100);
                 if(maxHeroCount == 0)
                 {
@@ -70,7 +70,7 @@ public class SelectHeroControl : MonoBehaviour
             var devCfg = CityDevConfig.GetConfig(devId);
             attrs = devCfg.Attrs;
             
-            int cityGold = cityData.gold;
+            int cityGold = cityData.GetAttr("gold");
             int singleCost = devCfg.GoldCost;
             maxHeroCount = devCfg.HeroCount;
             if (singleCost > 0)

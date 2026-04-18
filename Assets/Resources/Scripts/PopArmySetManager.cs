@@ -78,7 +78,7 @@ public class PopArmySetManager : MonoBehaviour
         heroPic.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
         textHeroName.text = heroCfg.Name;
 
-        maxSoldier = Math.Min(1000, GameManager.Instance.GetCity(cityId).soldier + heroData.soldier);
+        maxSoldier = Math.Min(1000, (int)(GameManager.Instance.GetCity(cityId).soldier) + heroData.soldier);
         slider1.value = (float)heroData.soldier / maxSoldier;
     }
 

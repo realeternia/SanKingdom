@@ -12,11 +12,11 @@ public class SaveCityData
     public int forceId;
     public int level;
     public int exp;
-    public int gold;
-    public int food;
-    public int soldier;
-    public int power;
-    public int wall;
+    public float gold;
+    public float food;
+    public float soldier;
+    public float power;
+    public float wall;
 
     [NonSerialized]
     private int ownerHeroId;
@@ -182,9 +182,9 @@ public class SaveCityData
             case "exp":
                 return exp;
             case "gold":
-                return gold;
+                return (int)Math.Floor(gold);
             case "food":
-                return food;
+                return (int)Math.Floor(food);
             case "soldier":
                 int soldierOnHero = 0;
                 foreach (var heroId in GetNormalHeroList())
@@ -193,11 +193,11 @@ public class SaveCityData
                     if (hero != null)
                         soldierOnHero += hero.soldier;
                 }
-                return soldier + soldierOnHero;
+                return (int)Math.Floor(soldier + soldierOnHero);
             case "wall":
-                return wall;
+                return (int)Math.Floor(wall);
             case "power":
-                return power;
+                return (int)Math.Floor(power);
             default:
                 return 0;
         }

@@ -326,8 +326,8 @@ public class StrategicDecider
         
         foreach (var city in cities)
         {
-            totalGold += city.gold;
-            totalFood += city.food;
+            totalGold += city.GetAttr("gold");
+            totalFood += city.GetAttr("food");
             totalSoldier += city.GetAttr("soldier");
         }
         

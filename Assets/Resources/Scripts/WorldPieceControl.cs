@@ -150,7 +150,7 @@ public class WorldPieceControl : MonoBehaviour
         }
         else if(mode == 3)
         {
-            extraText.text = $"金{GetTextByInt(city.gold)}";
+            extraText.text = $"金{GetTextByInt(city.GetAttr("gold"))}";
             extraText.color = Color.yellow;
         }
     }

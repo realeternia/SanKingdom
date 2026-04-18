@@ -222,7 +222,7 @@ public static class AI
     private static void DistributeSoldierToHeroes(SaveCityData city, List<SaveHeroData> heroes)
     {
         const int MAX_SOLDIER_PER_HERO = 1000;
-        int citySoldier = city.soldier;
+        int citySoldier = city.GetAttr("soldier");
         
         foreach (var hero in heroes)
         {

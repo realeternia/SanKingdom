@@ -41,22 +41,22 @@ public class CityEvaluator
     {
         var needs = new List<CityNeed>();
         
-        if (city.gold < GOLD_ALERT)
+        if (city.GetAttr("gold") < GOLD_ALERT)
         {
-            int prio = CalculatePriority(city.gold, GOLD_ALERT);
-            needs.Add(new CityNeed(CityNeedType.GoldShortage, prio, "gold", city.gold, GOLD_ALERT));
+            int prio = CalculatePriority(city.GetAttr("gold"), GOLD_ALERT);
+            needs.Add(new CityNeed(CityNeedType.GoldShortage, prio, "gold", city.GetAttr("gold"), GOLD_ALERT));
         }
         
-        if (city.food < FOOD_ALERT)
+        if (city.GetAttr("food") < FOOD_ALERT)
         {
-            int prio = CalculatePriority(city.food, FOOD_ALERT);
-            needs.Add(new CityNeed(CityNeedType.FoodShortage, prio, "food", city.food, FOOD_ALERT));
+            int prio = CalculatePriority(city.GetAttr("food"), FOOD_ALERT);
+            needs.Add(new CityNeed(CityNeedType.FoodShortage, prio, "food", city.GetAttr("food"), FOOD_ALERT));
         }
         
-        if (city.wall < WALL_ALERT)
+        if (city.GetAttr("wall") < WALL_ALERT)
         {
-            int prio = CalculatePriority(city.wall, WALL_ALERT);
-            needs.Add(new CityNeed(CityNeedType.WallLow, prio, "wall", city.wall, WALL_ALERT));
+            int prio = CalculatePriority(city.GetAttr("wall"), WALL_ALERT);
+            needs.Add(new CityNeed(CityNeedType.WallLow, prio, "wall", city.GetAttr("wall"), WALL_ALERT));
         }
         
         int totalSoldier = city.GetAttr("soldier");
@@ -66,10 +66,10 @@ public class CityEvaluator
             needs.Add(new CityNeed(CityNeedType.SoldierShortage, prio, "soldier", totalSoldier, SOLDIER_ALERT));
         }
         
-        if (city.power < POWER_ALERT)
+        if (city.GetAttr("power") < POWER_ALERT)
         {
-            int prio = CalculatePriority(city.power, POWER_ALERT);
-            needs.Add(new CityNeed(CityNeedType.PowerLow, prio, "power", city.power, POWER_ALERT));
+            int prio = CalculatePriority(city.GetAttr("power"), POWER_ALERT);
+            needs.Add(new CityNeed(CityNeedType.PowerLow, prio, "power", city.GetAttr("power"), POWER_ALERT));
         }
         
         needs.Sort((a, b) => b.priority.CompareTo(a.priority));
