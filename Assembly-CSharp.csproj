@@ -164,6 +164,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\MissileEffName.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySummonTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRegion.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\DevAssignmentData.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />
     <Compile Include="Assets\Resources\Scripts\MainPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />

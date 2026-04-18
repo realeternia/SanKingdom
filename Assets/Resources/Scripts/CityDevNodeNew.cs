@@ -29,10 +29,9 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
 
     void Start()
     {
-        blackMaskImg.gameObject.SetActive(false);
         if (heroImg != null)
         {
-            heroImg.enabled = false;
+            heroImg.enabled = currentHeroId > 0;
         }
         UpdateBlackMask();
         UpdateBorderColor();
@@ -82,19 +81,14 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
     public void SetHero(int heroId)
     {
         this.currentHeroId = heroId;
-        if (heroId > 0 && heroImg != null)
+        if (heroId > 0)
         {
             var heroCfg = HeroConfig.GetConfig(heroId);
-            if (heroCfg != null)
-            {
-                heroImg.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
-                heroImg.enabled = true;
-            }
+
+            heroImg.enabled = true;
+            heroImg.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
         }
-        else if (heroImg != null)
-        {
-            heroImg.enabled = false;
-        }
+
         UpdateBlackMask();
         UpdateHeroImgBG();
     }

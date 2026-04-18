@@ -56,14 +56,17 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     {
         if (stateText == null) return;
 
-        if (cityPanelManager != null && cityPanelManager.GetDevNodeByHero(heroId) != null)
+        var hero = GameManager.Instance.GetHero(heroId);
+        if (hero != null)
         {
-            stateText.text = "工作中";
+            var cityData = GameManager.Instance.GetCity(hero.cityId);
+            if (cityData != null && cityData.GetDevIdByHeroId(heroId).HasValue)
+            {
+                stateText.text = "工作中";
+                return;
+            }
         }
-        else
-        {
-            stateText.text = "";
-        }
+        stateText.text = "";
     }
 
     public void SetSelected(bool selected)

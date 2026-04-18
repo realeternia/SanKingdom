@@ -247,6 +247,10 @@ public class GameManager : MonoBehaviour
                     var destCityId = GetRandomForceCityId(hero.cityId, hero.forceId);
                     if (destCityId > 0)
                     {
+                        if (city != null)
+                        {
+                            city.RemoveDevAssignment(hero.heroId);
+                        }
                         hero.state = HeroState.Normal;
                         hero.cityId = destCityId;
                     }

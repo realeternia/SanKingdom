@@ -23,6 +23,42 @@ public class SaveCityData
     [NonSerialized]
     public Dictionary<int, int> actions = new Dictionary<int, int>();
 
+    public List<DevAssignmentData> devAssignments = new List<DevAssignmentData>();
+
+    public void SetDevAssignment(int heroId, int devId)
+    {
+        var existing = devAssignments.FirstOrDefault(d => d.heroId == heroId);
+        if (existing != null)
+        {
+            existing.devId = devId;
+        }
+        else
+        {
+            devAssignments.Add(new DevAssignmentData(heroId, devId));
+        }
+    }
+
+    public void RemoveDevAssignment(int heroId)
+    {
+        devAssignments.RemoveAll(d => d.heroId == heroId);
+    }
+
+    public void ClearDevAssignments()
+    {
+        devAssignments.Clear();
+    }
+
+    public List<DevAssignmentData> GetDevAssignments()
+    {
+        return devAssignments;
+    }
+
+    public int? GetDevIdByHeroId(int heroId)
+    {
+        var assignment = devAssignments.FirstOrDefault(d => d.heroId == heroId);
+        return assignment?.devId;
+    }
+
     public void OnRound()
     {
         var seasonCfg = SeasonConfig.GetConfig(GameManager.Instance.SeasonId);
@@ -210,6 +246,7 @@ public class SaveCityData
             SaveHeroData hero = GameManager.Instance.GetHero(heroId);
             if (hero != null)
             {
+                RemoveDevAssignment(heroId);
                 hero.cityId = destCityId;
             }
         }
@@ -226,6 +263,8 @@ public class SaveCityData
     public void Occupy(int forceWin, List<int> winHeroIds, int forceLose, List<int> failHeroIds)
     {
         forceId = forceWin;
+
+        ClearDevAssignments();
 
         var catchedHeroList = GetCatchedHeroList();
         foreach (var heroId in catchedHeroList)

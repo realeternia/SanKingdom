@@ -160,8 +160,13 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         cellCity.SetSelected(true);
         lastSelectedCity = cellCity;
+        cityId = cellCity.cityId;
 
-        ClearAllDevNodeHeroes();
+        if (allDevNodes.Count > 0)
+        {
+            ClearAllDevNodeHeroes();
+            LoadDevAssignmentsFromSave();
+        }
 
         if (!init)
             LoadHeroCells();
@@ -289,6 +294,31 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
             devIndex++;
         }
+
+        LoadDevAssignmentsFromSave();
+    }
+
+    private void LoadDevAssignmentsFromSave()
+    {
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null) return;
+
+        var assignments = cityData.GetDevAssignments();
+        foreach (var assignment in assignments)
+        {
+            var devNode = allDevNodes.FirstOrDefault(n => n.GetDevId() == assignment.devId);
+            if (devNode != null)
+            {
+                var hero = GameManager.Instance.GetHero(assignment.heroId);
+                if (hero != null && hero.cityId == cityId && hero.state == HeroState.Normal)
+                {
+                    devNode.SetHero(assignment.heroId);
+                    heroToDevNodeMap[assignment.heroId] = devNode;
+                }
+            }
+        }
+
+        UpdateAllHeroWorkState();
     }
 
     public void OnHeroDragStart(CityCellHero hero)
@@ -336,6 +366,16 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         targetNode.SetHero(heroId);
         heroToDevNodeMap[heroId] = targetNode;
 
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData != null)
+        {
+            if (oldHeroId > 0)
+            {
+                cityData.RemoveDevAssignment(oldHeroId);
+            }
+            cityData.SetDevAssignment(heroId, targetNode.GetDevId());
+        }
+
         UpdateAllHeroWorkState();
 
         GameLog.Info($"Hero {heroId} assigned to dev node {targetNode.GetDevId()}");
@@ -359,17 +399,15 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         {
             node.ClearHero();
             heroToDevNodeMap.Remove(heroId);
+
+            var cityData = GameManager.Instance.GetCity(cityId);
+            if (cityData != null)
+            {
+                cityData.RemoveDevAssignment(heroId);
+            }
         }
     }
 
-    public CityDevNodeNew GetDevNodeByHero(int heroId)
-    {
-        if (heroToDevNodeMap.TryGetValue(heroId, out CityDevNodeNew node))
-        {
-            return node;
-        }
-        return null;
-    }
 
     void Update()
     {
