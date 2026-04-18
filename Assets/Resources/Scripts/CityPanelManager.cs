@@ -31,6 +31,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     private CityCellCity lastSelectedCity;
     private CityCellHero lastSelectedHero;
+    private CityDevNodeNew lastSelectedDevNode;
 
     private Dictionary<int, CityDevNodeNew> heroToDevNodeMap = new Dictionary<int, CityDevNodeNew>();
     private List<CityDevNodeNew> allDevNodes = new List<CityDevNodeNew>();
@@ -56,6 +57,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
                 return;
             var cities = GameManager.Instance.GetCitiesByForce(player.forceId);
             int count = 0;
+            CityCellCity currentCityCell = null;
+            
             foreach (var cityData in cities)
             {
                 GameObject cell = Instantiate(rankCellCityPrefab, rankRegionCity.transform);
@@ -64,6 +67,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
                 cellCity.cityPanelManager = this;
                 var cityCfg = WorldConfig.GetConfig(cityData.cityId);
                 cellCity.Init(cityCfg.Cname);
+                
+                if (cityData.cityId == cityId)
+                {
+                    currentCityCell = cellCity;
+                }
                 count++;
             }
 
@@ -82,7 +90,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
                 scrollRectCity.normalizedPosition = new Vector2(0, 1);
             }
 
-            if (rankRegionCity.transform.childCount > 0)
+            if (currentCityCell != null)
+            {
+                OnSelectCity(currentCityCell, true);
+            }
+            else if (rankRegionCity.transform.childCount > 0)
             {
                 CityCellCity firstCity = rankRegionCity.transform.GetChild(0).GetComponent<CityCellCity>();
                 if (firstCity != null)
@@ -173,6 +185,58 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         cellHero.SetSelected(true);
         lastSelectedHero = cellHero;
+    }
+
+    public void OnSelectDevNode(CityDevNodeNew devNode)
+    {
+        if (lastSelectedDevNode != null && lastSelectedDevNode != devNode)
+        {
+            lastSelectedDevNode.SetSelected(false);
+        }
+
+        devNode.SetSelected(true);
+        lastSelectedDevNode = devNode;
+
+        UpdateAllHeroThumbIcon();
+    }
+
+    private void UpdateAllHeroThumbIcon()
+    {
+        string[] attrs = null;
+        if (lastSelectedDevNode != null)
+        {
+            var devCfg = CityDevConfig.GetConfig(lastSelectedDevNode.GetDevId());
+            if (devCfg != null)
+            {
+                attrs = devCfg.Attrs;
+            }
+        }
+
+        List<CityCellHero> heroList = new List<CityCellHero>();
+        foreach (Transform child in rankRegionHero.transform)
+        {
+            CityCellHero cellHero = child.GetComponent<CityCellHero>();
+            if (cellHero != null)
+            {
+                cellHero.UpdateThumbIcon(attrs);
+                heroList.Add(cellHero);
+            }
+        }
+
+        if (attrs != null && attrs.Length > 0)
+        {
+            heroList.Sort((a, b) => b.GetWeightedAttrValue(attrs).CompareTo(a.GetWeightedAttrValue(attrs)));
+            
+            for (int i = 0; i < heroList.Count; i++)
+            {
+                heroList[i].transform.SetSiblingIndex(i);
+            }
+        }
+
+        foreach (var devNode in allDevNodes)
+        {
+            devNode.UpdateHeroImgBG();
+        }
     }
 
     void CreateDevItems()

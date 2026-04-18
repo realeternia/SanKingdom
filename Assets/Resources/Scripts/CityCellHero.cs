@@ -15,6 +15,7 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     public TMP_Text heroName;
     public TMP_Text stateText;
     public Image heroIcon;
+    public Image thumbIcon;
     public bool isSelect = false;
     public Image backgroundImage;
     public Color normalColor = Color.black;
@@ -31,6 +32,7 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
 
     void Start()
     {
+        thumbIcon.gameObject.SetActive(false);
         heroName.raycastTarget = false;
         if (backgroundImage == null)
         {
@@ -209,5 +211,78 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     public int GetHeroId()
     {
         return heroId;
+    }
+
+    public void UpdateThumbIcon(string[] attrs)
+    {
+        if (thumbIcon == null || thumbIcon.gameObject == null)
+            return;
+
+        if (attrs == null || attrs.Length == 0)
+        {
+            thumbIcon.gameObject.SetActive(false);
+            return;
+        }
+
+        var heroData = GameManager.Instance.GetHero(heroId);
+        if (heroData == null)
+        {
+            thumbIcon.gameObject.SetActive(false);
+            return;
+        }
+
+        float weightedValue = 0f;
+        
+        if (attrs.Length == 1)
+        {
+            weightedValue = heroData.GetAttr(attrs[0]);
+        }
+        else
+        {
+            float firstAttr = heroData.GetAttr(attrs[0]);
+            float secondAttr = heroData.GetAttr(attrs[1]);
+            weightedValue = firstAttr * (2f / 3f) + secondAttr * (1f / 3f);
+        }
+
+        if (weightedValue >= 90)
+        {
+            thumbIcon.color = Color.red;
+            thumbIcon.gameObject.SetActive(true);
+        }
+        else if (weightedValue >= 80)
+        {
+            thumbIcon.color = Color.yellow;
+            thumbIcon.gameObject.SetActive(true);
+        }
+        else if (weightedValue >= 70)
+        {
+            thumbIcon.color = Color.green;
+            thumbIcon.gameObject.SetActive(true);
+        }
+        else
+        {
+            thumbIcon.gameObject.SetActive(false);
+        }
+    }
+
+    public float GetWeightedAttrValue(string[] attrs)
+    {
+        if (attrs == null || attrs.Length == 0)
+            return 0f;
+
+        var heroData = GameManager.Instance.GetHero(heroId);
+        if (heroData == null)
+            return 0f;
+
+        if (attrs.Length == 1)
+        {
+            return heroData.GetAttr(attrs[0]);
+        }
+        else
+        {
+            float firstAttr = heroData.GetAttr(attrs[0]);
+            float secondAttr = heroData.GetAttr(attrs[1]);
+            return firstAttr * (2f / 3f) + secondAttr * (1f / 3f);
+        }
     }
 }
