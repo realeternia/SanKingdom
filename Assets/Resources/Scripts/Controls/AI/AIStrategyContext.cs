@@ -32,10 +32,7 @@ public class AIStrategyContext
         {
             foreach (var hero in cityHeroes[cityId])
             {
-                if (player.CheckHeroRound(hero.heroId))
-                {
-                    result.Add(hero);
-                }
+                result.Add(hero);
             }
         }
         return result;

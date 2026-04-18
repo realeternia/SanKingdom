@@ -17,7 +17,6 @@ public class SaveHeroData
 
     public int cityId;
     public bool cityOwner;
-    public int round;
     public HeroState state;
     public int loyalty;
     public int forceId;
@@ -50,11 +49,6 @@ public class SaveHeroData
         return HeroSelectionTool.GetCardLevel(exp, true);
     }
 
-    public void SetRoundForRecruit()
-    {
-        round = GameManager.Instance.SaveData.round;
-    }
-
     public static SaveHeroData CreateWildHero(int heroId, int cityId)
     {
         SaveHeroData newHero = new SaveHeroData();
@@ -63,7 +57,6 @@ public class SaveHeroData
         newHero.exp = 0;
         newHero.cityId = cityId;
         newHero.cityOwner = false;
-        newHero.round = int.MaxValue;
         newHero.state = HeroState.Wild;
         newHero.loyalty = 90;
         newHero.forceId = 0;

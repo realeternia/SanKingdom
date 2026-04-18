@@ -10,7 +10,6 @@ using Controls.Utils;
 public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 {
     public int heroId;
-    public int heroYear;    
     public bool isSelect;
     public int attr1Val;
     private bool isAvailable; // 标记英雄是否可点击
@@ -50,9 +49,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
     public void Init(SaveHeroData heroData, string[] attrs, bool ignoreActionCheck = false)
     {
         this.heroId = heroData.heroId;
-        heroYear = heroData.round;
         var heroCfg = HeroConfig.GetConfig(heroId);
-        var currentYear = GameManager.Instance.SaveData.round;
 
         heroName.text = heroCfg.Name;
         
@@ -88,16 +85,7 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
                 break;
         }
 
-        isAvailable = ignoreActionCheck || heroData.round != currentYear;
-        
-        if(!isAvailable)
-        {
-            heroName.color = Color.gray;
-            textAttr1.color = Color.gray;
-            textAttr2.color = Color.gray;
-            if(textLoyalty != null)
-                textLoyalty.color = Color.gray;
-        }
+        isAvailable = true;
 
     }
 

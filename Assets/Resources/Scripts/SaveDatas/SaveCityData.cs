@@ -276,8 +276,6 @@ public class SaveCityData
                 GameLog.Info($"Occupy 释放己方俘虏: heroId={heroId} forceId={hero.forceId}");
             }
         }
-        if(catchedHeroList.Count > 0)
-            GameManager.Instance.GetPlayer(forceWin).UpdateHeroesRound(catchedHeroList.ToArray()); //不让动了
 
         List<SaveCityData> loseForceCities = GameManager.Instance.GetCitiesByForce(forceLose);
 

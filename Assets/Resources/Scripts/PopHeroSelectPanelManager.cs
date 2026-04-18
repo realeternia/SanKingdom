@@ -99,8 +99,6 @@ public class PopHeroSelectPanelManager : MonoBehaviour
         }
 
         sortdata.Sort((a, b) => {
-            int yearCompare = a.heroYear.CompareTo(b.heroYear);
-            if (yearCompare != 0) return yearCompare;
             return b.attr1Val.CompareTo(a.attr1Val);
         });
 

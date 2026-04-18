@@ -92,7 +92,6 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         var heroList = city.GetNormalHeroList();
         var wildList = city.GetHeroList(false, true);
         var catchedList = city.GetCatchedHeroList();
-        var currentRound = GameManager.Instance.SaveData.round;
         foreach (Transform child in heroHeadRegion.transform)
             Destroy(child.gameObject);
         for (int i = 0; i < heroList.Count; i++)
@@ -110,12 +109,6 @@ public class CityDetail : MonoBehaviour, IPanelEvent
                 
                 var img = heroHead.GetComponent<Image>();
                 img.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
-
-                bool hasActed = hero.round >= currentRound;
-                if (hasActed)
-                {
-                    AddOverlay(heroHead, new Color(0, 0, 0, 0.92f));
-                }
             }
         }
         int baseIdx = heroList.Count;

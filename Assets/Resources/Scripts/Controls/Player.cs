@@ -32,42 +32,8 @@ public class Player
         imgPath = "Textures/Skins/" + heroCfg.Icon;
     }
 
-    // 检查英雄是否在当前年份已经执行过动作
-    public bool CheckHeroRound(int heroId)
-    {
-        var hero = GameManager.Instance.GetHero(heroId);
-        var currentRound = GameManager.Instance.SaveData.round;
-        return hero.round < currentRound;
-    }
-
-    public void UpdateHeroesRound(int[] heroIds)
-    {
-        var currentRound = GameManager.Instance.SaveData.round;
-        foreach (var heroId in heroIds)
-        {
-            var hero = GameManager.Instance.GetHero(heroId);
-            hero.round = currentRound;
-        }
-    }
-
-    // 获取当前年份可用的英雄列表
-    public List<int> GetAvailableHeroesThisYear(int[] heroList)
-    {
-        var validHeroList = new List<int>();
-        foreach (var heroId in heroList)
-        {
-            if (CheckHeroRound(heroId))
-            {
-                validHeroList.Add(heroId);
-            }
-        }
-        return validHeroList;
-    }
-
-    // 执行城市发展
     public bool ExecuteCityDev(int cityId, int devId, int[] heroList, out List<PopResultPanelManager.AttrData> attrDatas)
     {
-        heroList = GetAvailableHeroesThisYear(heroList).ToArray();
         if(heroList.Length == 0)
         {
             GameLog.Warn($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，没有可用英雄");
@@ -205,8 +171,6 @@ public class Player
             CheckFindAction(cityId, cityData, attrDatas);
         }
 
-        UpdateHeroesRound(heroList);
-
         return true;
     }
 
@@ -287,8 +251,6 @@ public class Player
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
 
-        var validHeroList = GetAvailableHeroesThisYear(heroList).ToArray();
-        
         if (isAI)
             BattleManager.Instance.SetMode(true, false);
         else
@@ -299,11 +261,9 @@ public class Player
         cityDest.food = 0;
         int srcForceId = citySrc.forceId;
         int destForceId = cityDest.forceId;
-        var battleHeroListSrc = citySrc.GetBattleHeroList(validHeroList);
+        var battleHeroListSrc = citySrc.GetBattleHeroList(heroList);
         BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), battleHeroListSrc, cityDest.GetBattleHeroList(), foodUse, defenceFood, targetCityId,
             (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, foodCount, cityId, targetCityId, battleHeroListSrc.Select(x => x.CardId).ToArray(), srcForceId, destForceId));
-               
-        UpdateHeroesRound(validHeroList);
     }
 
     private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, Dictionary<int, int> foodCount, int cityId, int targetCityId, int[] attackHeroList, int srcForceId, int destForceId)
@@ -361,14 +321,10 @@ public class Player
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
 
-        var validHeroList = GetAvailableHeroesThisYear(heroList).ToArray();
-
         citySrc.food -= foodUse;
         cityDest.food += foodUse;
 
-        MoveHeroToCity(cityId, targetCityId, validHeroList);
-
-        UpdateHeroesRound(validHeroList);
+        MoveHeroToCity(cityId, targetCityId, heroList);
     }
 
     public List<SaveCityData> GetCityList()
@@ -392,8 +348,6 @@ public class Player
     // 执行城市发展
     public bool ExecuteCityChange(int cityId, int devId, int[] heroList, bool isBuying, int amount, float rate, out List<PopResultPanelManager.AttrData> attrDatas)
     {
-        heroList = GetAvailableHeroesThisYear(heroList).ToArray();
-
         attrDatas = new List<PopResultPanelManager.AttrData>();
         
         var cityData = GameManager.Instance.GetCity(cityId);
@@ -454,8 +408,6 @@ public class Player
         // 记录发展动作
         cityData.AddAction(devId, heroList.Length);
 
-        UpdateHeroesRound(heroList);
-
         return true;
     }
 
@@ -511,7 +463,6 @@ public class Player
             hero.state = HeroState.Normal;
             hero.forceId = cityData.forceId;
             hero.loyalty = 85;
-            hero.SetRoundForRecruit();
 
             MoveHeroToCity(hero.cityId, cityId, new int[] { targetHeroId });
 
@@ -535,7 +486,6 @@ public class Player
 
         var heroList = new int[] { myHeroId };
         cityData.AddAction(devId, heroList.Length);
-        UpdateHeroesRound(heroList);        
        return true;            
     }
 
@@ -544,16 +494,6 @@ public class Player
         attrDatas = new List<PopResultPanelManager.AttrData>();
         
         var cityData = GameManager.Instance.GetCity(cityId);
-        
-        if(methodId == 1)
-        {
-            heroList = GetAvailableHeroesThisYear(heroList).ToArray();
-            if(heroList.Length == 0)
-            {
-                SystemTip.Instance.ShowTip("所选英雄本回合已行动");
-                return false;
-            }
-        }
         
         if(methodId == 2)
         {
@@ -597,11 +537,6 @@ public class Player
             });
         }
 
-        if(methodId == 1)
-        {
-            UpdateHeroesRound(heroList);
-        }
-        
         cityData.AddAction(devId, heroList.Length);
         
         return true;
