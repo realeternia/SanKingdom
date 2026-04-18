@@ -923,6 +923,7 @@ MonoBehaviour:
   closeBtn: {fileID: 3177691031529068199}
   cityName: {fileID: 8704262975909171557}
   cityImage: {fileID: 5218353893281290634}
+  devList: {fileID: 7857260605627040966}
 --- !u!1 &8474515348003499210
 GameObject:
   m_ObjectHideFlags: 0
