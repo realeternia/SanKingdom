@@ -42,26 +42,6 @@ public class Tooltip : MonoBehaviour
         }
         
         float currentY = 10f; // 起始Y位置
-        float spacing = 15f;   // 控件间距
-        
-        if (hasSkill)
-        {
-            for(int i = 0; i < skillIds.Length; i++)
-            {
-                var skillConfig = SkillConfig.GetConfig(skillIds[i]);
-                var skillAttrStr = skillConfig.Attr == "str" ? "<color=red>[武]</color>" : skillConfig.Attr == "leadShip" ? "<color=yellow>[统]</color>" : skillConfig.Attr == "inte" ? "<color=blue>[智]</color>" : "";
-                textSkills[i].text = skillAttrStr + skillConfig.Name + "[<color=yellow>" + skillConfig.Price.ToString() + "元</color>]" + skillConfig.Descript;
-                imageSkills[i].sprite = Resources.Load<Sprite>("Textures/SkillPic/" + skillConfig.Icon);
-            }
-
-            for (int i = 0; i < skillIds.Length; i++)
-            {
-                textSkills[i].rectTransform.anchoredPosition = new Vector2(textSkills[i].rectTransform.anchoredPosition.x, -currentY);
-                imageSkills[i].rectTransform.anchoredPosition = new Vector2(imageSkills[i].rectTransform.anchoredPosition.x, -currentY - 27);
-                textSkills[i].rectTransform.sizeDelta = new Vector2(textSkills[i].rectTransform.sizeDelta.x, textSkills[i].preferredHeight);
-                currentY += Mathf.Max(textSkills[i].preferredHeight, 65f) + spacing;
-            }
-        }
         
         // 调整背景大小
         float height = Mathf.Max(50f, currentY + 10f);

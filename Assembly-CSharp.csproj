@@ -188,7 +188,6 @@
     <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIStrategyContext.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SeasonConfig_s.cs" />
-    <Compile Include="Assets\Resources\Scripts\SystemTool\PlayerBook.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitAround.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXLightFade.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitTeleport.cs" />
@@ -230,7 +229,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackReboundArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSuck.cs" />
-    <Compile Include="Assets\Resources\Scripts\Configs\PlayerConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\SelectHeroArmyControl.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\MapConfig.cs" />
@@ -258,7 +256,6 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\Epic Toon FX\Changelog.txt" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\MaskedDoubleSidedAdvanced.shader" />
-    <None Include="Assets\TextMesh Pro\Glyph Report.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\ShieldICO.shader" />

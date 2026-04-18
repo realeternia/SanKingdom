@@ -6,7 +6,6 @@ copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\BuffConfig_s.cs" "D:\U3dPrj\SanKi
 copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\ItemConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
 copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\BattleUnitConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
 copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\ShopConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
-copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\PlayerConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
 copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\FormulaLearnAttrConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
 copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\WorldConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"
 copy "D:\U3dPrj\SanKingdom\Design\out\Csharp_s\ForceConfig_s.cs" "D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs\"

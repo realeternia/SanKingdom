@@ -24,7 +24,6 @@ public static class ConfigManager
         ItemConfig.Load();
         BattleUnitConfig.Load();
         ShopConfig.Load();
-        PlayerConfig.Load();
         FormulaLearnAttrConfig.Load();
         ArmsConfig.Load();
         WorldConfig.Load();
