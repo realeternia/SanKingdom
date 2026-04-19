@@ -20,7 +20,7 @@ public class SkillHitWall : Skill
             // 在目标位置，以及owner和defender方向90度两侧，各创建一个effect
             var targetPos = defender.position;
 
-            BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, GetSummonTime(), (stubId) =>
+            BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), SystemConst.Battle.MAGIC_HELPER_UNIT_ID, targetPos, GetSummonTime(), (stubId) =>
             {
                 var magicStub = BattleManager.Instance.GetChess(stubId);
                 SkillManager.AddSkillAction(owner, magicStub, id, 0);
@@ -37,13 +37,13 @@ public class SkillHitWall : Skill
                 targetPosList.Add(targetPos);
                 if (skillCfg.SummonCount > 1)
                 {
-                    targetPosList.Add(targetPos + leftDirection * 10);
-                    targetPosList.Add(targetPos + rightDirection * 10);
+                    targetPosList.Add(targetPos + leftDirection * SystemConst.Battle.WALL_OFFSET_DISTANCE);
+                    targetPosList.Add(targetPos + rightDirection * SystemConst.Battle.WALL_OFFSET_DISTANCE);
                 }
                 if (skillCfg.SummonCount > 3)
                 {
-                    targetPosList.Add(targetPos + rightDirection * 20);
-                    targetPosList.Add(targetPos + leftDirection * 20);
+                    targetPosList.Add(targetPos + rightDirection * SystemConst.Battle.WALL_OFFSET_DISTANCE_FAR);
+                    targetPosList.Add(targetPos + leftDirection * SystemConst.Battle.WALL_OFFSET_DISTANCE_FAR);
                 }
 
                 for(int i = 0; i < targetPosList.Count; i++)
@@ -66,7 +66,7 @@ public class SkillHitWall : Skill
         var unitList = new List<Chess>();
         foreach (var pos in targetPosList)
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(pos, skillCfg.SummonArea * 1.5f, owner.forceId, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(pos, skillCfg.SummonArea * SystemConst.Battle.WALL_DAMAGE_AREA_EXPAND, owner.forceId, true);
             BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
             foreach (var unit in unitsInRange)

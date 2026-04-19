@@ -12,9 +12,9 @@ public enum HeroType
 
 public class HeroDispatcher
 {
-    private const int COMBAT_THRESHOLD = 150;
-    private const int DOMESTIC_THRESHOLD = 150;
-    private const int MIN_REAR_HEROES = 1;
+    private const int COMBAT_THRESHOLD = SystemConst.AIHero.COMBAT_THRESHOLD;
+    private const int DOMESTIC_THRESHOLD = SystemConst.AIHero.DOMESTIC_THRESHOLD;
+    private const int MIN_REAR_HEROES = SystemConst.AIHero.MIN_REAR_HEROES;
     
     public static HeroType ClassifyHero(SaveHeroData hero)
     {
@@ -27,11 +27,11 @@ public class HeroDispatcher
         int combatScore = str + leadship + inte;
         int domesticScore = inte + fair + charm;
         
-        if (combatScore >= COMBAT_THRESHOLD && combatScore > domesticScore * 1.3f)
+        if (combatScore >= COMBAT_THRESHOLD && combatScore > domesticScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
         {
             return HeroType.Combat;
         }
-        else if (domesticScore >= DOMESTIC_THRESHOLD && domesticScore > combatScore * 1.3f)
+        else if (domesticScore >= DOMESTIC_THRESHOLD && domesticScore > combatScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
         {
             return HeroType.Domestic;
         }
@@ -110,7 +110,7 @@ public class HeroDispatcher
                     combatCount++;
             }
             
-            int neededCombat = 3 - combatCount;
+            int neededCombat = SystemConst.AIStrategy.FRONTLINE_COMBAT_HEROES_TARGET - combatCount;
             
             for (int i = 0; i < neededCombat && rearCombatHeroes.Count > 0; i++)
             {

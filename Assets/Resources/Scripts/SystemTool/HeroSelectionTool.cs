@@ -51,9 +51,9 @@ public static class HeroSelectionTool
         {
             var heroConfig = HeroConfig.GetConfig(cardId);
 
-            attrInfo.Inte = heroConfig.Inte + System.Math.Max(8 * (lv - 1), heroConfig.Inte * (lv - 1) / 10);
-            attrInfo.Str = heroConfig.Str + System.Math.Max(8 * (lv - 1), heroConfig.Str * (lv - 1) / 10);
-            attrInfo.Lead = heroConfig.LeadShip + System.Math.Max(8 * (lv - 1), heroConfig.LeadShip * (lv - 1) / 10);
+            attrInfo.Inte = heroConfig.Inte + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), heroConfig.Inte * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
+            attrInfo.Str = heroConfig.Str + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), heroConfig.Str * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
+            attrInfo.Lead = heroConfig.LeadShip + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), heroConfig.LeadShip * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
         }
         else
         {

@@ -54,9 +54,9 @@ public class SaveHeroData
         newHero.cityId = cityId;
         newHero.cityOwner = false;
         newHero.state = HeroState.Wild;
-        newHero.loyalty = 90;
-        newHero.forceId = 0;
-        newHero.armsId = 601;
+        newHero.loyalty = SystemConst.Hero.WILD_HERO_DEFAULT_LOYALTY;
+        newHero.forceId = SystemConst.Hero.WILD_FORCE_ID;
+        newHero.armsId = SystemConst.Hero.DEFAULT_ARMS_ID;
         return newHero;
     }
 

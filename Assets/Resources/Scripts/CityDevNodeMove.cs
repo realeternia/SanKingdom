@@ -16,7 +16,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
     public TMP_Text attrDesText;
 
     public TMP_Text foodText;
-    private int foodCount = 10;
+    private int foodCount = SystemConst.Expedition.DEFAULT_FOOD_DAYS;
 
     public Button destButton;
     public SelectHeroArmyControl heroSelect;
@@ -42,7 +42,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
                 return;
             }
             var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
-            var foodCost = soldierTotal * foodCount / 20;
+            var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
             var citySrc = GameManager.Instance.GetCity(cityId);
             if(citySrc.food < foodCost)
             {
@@ -79,17 +79,17 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         });
         foodButton.onClick.AddListener(() =>
         {
-            if(foodCount == 10)
+            if(foodCount == SystemConst.Expedition.DEFAULT_FOOD_DAYS)
             {
-                foodCount = 20;
+                foodCount = SystemConst.Expedition.DEFAULT_SELECTED_FOOD_DAYS;
             }
-            else if(foodCount == 20)
+            else if(foodCount == SystemConst.Expedition.DEFAULT_SELECTED_FOOD_DAYS)
             {
                 foodCount = 30;
             }
             else if(foodCount == 30)
             {
-                foodCount = 10;
+                foodCount = SystemConst.Expedition.DEFAULT_FOOD_DAYS;
             }
 
             foodText.text = foodCount.ToString() + "日粮";
@@ -104,7 +104,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
             return;
         var heroList = heroSelect.heroIds;
         var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
-        var foodCost = soldierTotal * foodCount / 20;
+        var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
         var citySrc = GameManager.Instance.GetCity(cityId);
         foodCostText.text = string.Format("{0} / {1}", foodCost, citySrc.food);
         foodCostText.color = foodCost <= citySrc.food ? Color.white : Color.red;
@@ -120,7 +120,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         this.cityId = cityId;
         this.devId = devId;
         
-        foodCount = 20;
+        foodCount = SystemConst.Expedition.DEFAULT_SELECTED_FOOD_DAYS;
         foodText.text = foodCount.ToString() + "日粮";
         foodButton.gameObject.SetActive(true);
         foodCostText.transform.parent.parent.gameObject.SetActive(true);
@@ -138,7 +138,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         var player = citySrc.GetPlayer();
 
         var soldierTotal = citySrc.GetAttr("soldier");
-        var foodCost = soldierTotal * foodCount / 20;
+        var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
 
         PanelManager.Instance.HideCityDev();    
         

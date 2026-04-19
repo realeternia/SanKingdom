@@ -26,12 +26,12 @@ public class AttackCandidate
 
 public class StrategicDecider
 {
-    private const int MAX_ATK_CITIES = 2;
-    private const int MIN_RESOURCE_FOR_ATTACK = 1500;
-    private const int MIN_SOLDIER_FOR_ATTACK = 3000;
-    private const int MIN_CITY_SOLDIER_FOR_ATTACK = 5000;
-    private const int MIN_CITY_HEROES_FOR_ATTACK = 3;
-    private const int MAX_SOLDIER_PER_HERO = 1000;
+    private const int MAX_ATK_CITIES = SystemConst.AIStrategy.MAX_ATK_CITIES;
+    private const int MIN_RESOURCE_FOR_ATTACK = SystemConst.AIStrategy.MIN_RESOURCE_FOR_ATTACK;
+    private const int MIN_SOLDIER_FOR_ATTACK = SystemConst.AIStrategy.MIN_SOLDIER_FOR_ATTACK;
+    private const int MIN_CITY_SOLDIER_FOR_ATTACK = SystemConst.AIStrategy.MIN_CITY_SOLDIER_FOR_ATTACK;
+    private const int MIN_CITY_HEROES_FOR_ATTACK = SystemConst.AIStrategy.MIN_CITY_HEROES_FOR_ATTACK;
+    private const int MAX_SOLDIER_PER_HERO = SystemConst.AIStrategy.MAX_SOLDIER_PER_HERO;
     
     private static Dictionary<int, HashSet<int>> attackedTargetsThisRound = new Dictionary<int, HashSet<int>>();
     private static Dictionary<int, int> attackTargets = new Dictionary<int, int>();
@@ -234,7 +234,7 @@ public class StrategicDecider
         int mySoldier = CalculateEffectiveSoldier(bestCity);
         int targetSoldier = targetCity.GetAttr("soldier");
         
-        if (mySoldier < targetSoldier * 0.7f)
+        if (mySoldier < targetSoldier * SystemConst.AIStrategy.AI_ATTACK_SOURCE_ADVANTAGE_RATIO)
             return null;
         
         return bestCity.cityId;
@@ -275,7 +275,7 @@ public class StrategicDecider
                     {
                         int targetSoldier = nearCity.GetAttr("soldier");
                         
-                        if (soldier >= targetSoldier * 0.8f && city.food >= soldier / 2)
+                        if (soldier >= targetSoldier * SystemConst.AIStrategy.AI_OWN_CITY_ATTACK_ADVANTAGE_RATIO && city.food >= soldier / SystemConst.AIStrategy.AI_ATTACK_FOOD_DIVISOR)
                         {
                             if (targetSoldier < minTargetSoldier)
                             {
@@ -307,7 +307,7 @@ public class StrategicDecider
             if (nearCity != null && nearCity.forceId != city.forceId)
             {
                 int enemySoldier = nearCity.GetAttr("soldier");
-                if (enemySoldier >= 500)
+                if (enemySoldier >= SystemConst.AIStrategy.AI_THREAT_ENEMY_SOLDIER_THRESHOLD)
                 {
                     return true;
                 }

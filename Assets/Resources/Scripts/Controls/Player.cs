@@ -86,7 +86,7 @@ public class Player
                 var attrVal2 = heroData.GetAttr(devConfig.Attrs[1]);
                 if (attrVal2 > attrVal)
                 {
-                    attrVal += (attrVal2 - attrVal) / 3;
+                    attrVal += (attrVal2 - attrVal) / SystemConst.Hero.SECONDARY_ATTR_CONTRIBUTION_DIVISOR;
                 }
             }
 
@@ -198,7 +198,7 @@ public class Player
             
             // 检查英雄年龄是否达到16岁
             float currentYear = GameManager.Instance.GetCurrentYear();
-            if (currentYear - heroConfig.BornYear < GameManager.BORN_AGE)
+            if (currentYear - heroConfig.BornYear < SystemConst.Game.BORN_AGE)
                 continue;
 
             // 检查英雄是否已经在游戏中
@@ -444,13 +444,13 @@ public class Player
         
         if(hero.state == HeroState.Wild)
         {
-            baseSuccessRate = 30;
+            baseSuccessRate = SystemConst.Hero.RECRUIT_WILD_BASE_RATE;
         }
         else if(hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
         {
             int loyalty = hero.loyalty;
             int diff = 100 - loyalty;
-            baseSuccessRate = diff * diff / 22 + diff / 8;
+            baseSuccessRate = diff * diff / SystemConst.Hero.RECRUIT_CAPTURED_FORMULA_A + diff / SystemConst.Hero.RECRUIT_CAPTURED_FORMULA_B;
         }
 
         if(myHeroId > 0)
@@ -459,12 +459,12 @@ public class Player
             if(executorHero != null)
             {
                 int charm = executorHero.GetAttr("charm");
-                if(charm >= 90)
-                    baseSuccessRate = baseSuccessRate * 130 / 100;
-                else if(charm >= 80)
-                    baseSuccessRate = baseSuccessRate * 115 / 100;
+                if(charm >= SystemConst.Hero.CHARM_BONUS_TIER1)
+                    baseSuccessRate = baseSuccessRate * SystemConst.Hero.RECRUIT_TIER1_MULTIPLIER / 100;
+                else if(charm >= SystemConst.Hero.CHARM_BONUS_TIER2)
+                    baseSuccessRate = baseSuccessRate * SystemConst.Hero.RECRUIT_TIER2_MULTIPLIER / 100;
                 if(myHeroId == ForceConfig.GetConfig(executorHero.forceId).HeroId)
-                    baseSuccessRate = baseSuccessRate * 110 / 100;
+                    baseSuccessRate = baseSuccessRate * SystemConst.Hero.KING_RECRUIT_MULTIPLIER / 100;
             }
         }
 
@@ -476,7 +476,7 @@ public class Player
         {
             hero.state = HeroState.Normal;
             hero.forceId = cityData.forceId;
-            hero.loyalty = 85;
+            hero.loyalty = SystemConst.Hero.RECRUIT_SUCCESS_LOYALTY;
 
             MoveHeroToCity(hero.cityId, cityId, new int[] { targetHeroId });
 
@@ -511,7 +511,7 @@ public class Player
         
         if(methodId == 2)
         {
-            int totalCost = heroList.Length * 100;
+            int totalCost = heroList.Length * SystemConst.Hero.PRAISE_GOLD_COST_PER_HERO;
             if(cityData.gold < totalCost)
             {
                 SystemTip.Instance.ShowTip("黄金不足");
@@ -534,14 +534,14 @@ public class Player
             
             if(methodId == 1)
             {
-                loyaltyAdd = UnityEngine.Random.Range(1, 4);
+                loyaltyAdd = UnityEngine.Random.Range(SystemConst.Hero.PRAISE_LOYALTY_ADD_MIN, SystemConst.Hero.PRAISE_LOYALTY_ADD_MAX);
             }
             else if(methodId == 2)
             {
-                loyaltyAdd = UnityEngine.Random.Range(3, 6);
+                loyaltyAdd = UnityEngine.Random.Range(SystemConst.Hero.REWARD_LOYALTY_ADD_MIN, SystemConst.Hero.REWARD_LOYALTY_ADD_MAX);
             }
             
-            hero.loyalty = System.Math.Min(100, hero.loyalty + loyaltyAdd);
+            hero.loyalty = System.Math.Min(SystemConst.Hero.MAX_LOYALTY, hero.loyalty + loyaltyAdd);
             
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {

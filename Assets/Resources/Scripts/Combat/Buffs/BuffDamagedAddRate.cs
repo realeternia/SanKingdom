@@ -9,9 +9,9 @@ public class BuffDamagedAddRate : Buff
 
     public override void DuringAttacked(Chess attacker, string damType, ref int damageBase, ref float damageMulti, ref string effect)
     {
-        if (damageBase < 10)
+        if (damageBase < SystemConst.Battle.BUFF_MIN_DAMAGE_THRESHOLD)
         {
-            damageBase = 13;
+            damageBase = SystemConst.Battle.BUFF_MIN_DAMAGE_VALUE;
         }
         else
         {

@@ -11,7 +11,7 @@ public class SkillAttackedBuff : Skill
 
     public override void OnAttacked(Chess attacker, string damType, int damage)
     {
-        if(damage > 10 && CheckBurst(attacker))
+        if(damage > SystemConst.Battle.ATTACKED_BUFF_MIN_DAMAGE && CheckBurst(attacker))
         {
             SkillManager.AddSkillAction(owner, null, id, 0);
 

@@ -14,10 +14,7 @@ public class GameManager : MonoBehaviour
     private StreamWriter logWriter;  // 日志写入器
     public SaveData SaveData;
     
-    // 游戏时间常量
-    public const int BASE_YEAR = 194; // 游戏起始年份
-    public const int BORN_AGE = 16;
-    public const int SEASONS_PER_YEAR = 36; // 一年的季节数
+
 
     public List<Player> players = new List<Player>();
     public bool forbidPlayerAct = false;
@@ -151,7 +148,7 @@ public class GameManager : MonoBehaviour
         var heroIds = new List<int>();
         foreach (var member in SaveData.heros)
         {
-            if(member.state == HeroState.Normal && member.forceId == forceId && member.loyalty < 100)
+            if(member.state == HeroState.Normal && member.forceId == forceId && member.loyalty < SystemConst.Hero.MAX_LOYALTY)
                 heroIds.Add(member.heroId);
         }
         return heroIds;
@@ -172,7 +169,7 @@ public class GameManager : MonoBehaviour
             city.gold = cityCfg.Gold;
             city.food = cityCfg.Food;
             city.soldier = cityCfg.Soldier;
-            city.power = 70;
+            city.power = SystemConst.City.INITIAL_CITY_POWER;
             city.wall = cityCfg.Wall;
 
             SaveData.cities.Add(city);
@@ -184,10 +181,10 @@ public class GameManager : MonoBehaviour
             var cityCfg = WorldConfig.ConfigList.FirstOrDefault(c => c.Cname == heroCfg.City);
             if(cityCfg == null)
                 continue;
-            if(BASE_YEAR - heroCfg.BornYear  < BORN_AGE) //15岁才能登场
+            if(SystemConst.Game.BASE_YEAR - heroCfg.BornYear  < SystemConst.Game.BORN_AGE) //15岁才能登场
                 continue;
 
-            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId, armsId = 601 };
+            var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId, armsId = SystemConst.Hero.DEFAULT_ARMS_ID };
             SaveData.heros.Add(hero);
         }
         foreach(var city in SaveData.cities)
@@ -196,7 +193,7 @@ public class GameManager : MonoBehaviour
         }
         foreach(var force in ForceConfig.ConfigList)
         {
-            if(force.Id > 90)
+            if(force.Id > SystemConst.Game.MAX_FORCE_ID)
                 continue;
             var forceData = new SaveForceData { forceId = force.Id };
             if(force.Id == forceId)
@@ -235,12 +232,12 @@ public class GameManager : MonoBehaviour
         {
             if (hero.state == HeroState.Catched)
             {
-                hero.loyalty -= UnityEngine.Random.Range(1, 4);
+                hero.loyalty -= UnityEngine.Random.Range(SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MIN, SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MAX);
                 if (hero.loyalty < 0)
                     hero.loyalty = 0;
 
                 var city = GetCity(hero.cityId);
-                int escapeChance = 20;
+                int escapeChance = SystemConst.Hero.CAPTURED_ESCAPE_CHANCE;
                 if (UnityEngine.Random.Range(0, 100) < escapeChance)
                 {
                     var destCityId = GetRandomForceCityId(hero.cityId, hero.forceId);
@@ -257,7 +254,7 @@ public class GameManager : MonoBehaviour
             }
             else if (hero.state == HeroState.Wild)
             {
-                if (UnityEngine.Random.Range(0, 100) < 20)
+                if (UnityEngine.Random.Range(0, 100) < SystemConst.Hero.WILD_HERO_MOVE_CHANCE)
                 {
                     var cityCfg = WorldConfig.GetConfig(hero.cityId);
                     if (cityCfg != null && cityCfg.WorldNearIds != null && cityCfg.WorldNearIds.Length > 0)
@@ -274,7 +271,7 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            return (SaveData.round % SEASONS_PER_YEAR) + 1;
+            return (SaveData.round % SystemConst.Game.SEASONS_PER_YEAR) + 1;
         }
     }
 
@@ -284,11 +281,10 @@ public class GameManager : MonoBehaviour
     {
         // 计算当前年份和季节
         int totalSeasons = SaveData.round;
-        int years = totalSeasons / SEASONS_PER_YEAR;
-        int seasons = totalSeasons % SEASONS_PER_YEAR;
+        int years = totalSeasons / SystemConst.Game.SEASONS_PER_YEAR;
+        int seasons = totalSeasons % SystemConst.Game.SEASONS_PER_YEAR;
         
-        // 转换为浮点数表示
-        return BASE_YEAR + years + (seasons / (float)SEASONS_PER_YEAR);
+        return SystemConst.Game.BASE_YEAR + years + (seasons / (float)SystemConst.Game.SEASONS_PER_YEAR);
     }
 
     private IEnumerator NextRoundCoroutine()

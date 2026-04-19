@@ -80,9 +80,9 @@ public class Skill : IRecoverable
             if (owner.forceId != target.forceId)
             {
                 if (myAttr > defAttr)
-                    rate *= Math.Min(2, 1 + (myAttr - defAttr) * .02f);
+                    rate *= Math.Min(SystemConst.Battle.BURST_RATE_ATTR_CAP, 1 + (myAttr - defAttr) * SystemConst.Battle.BURST_RATE_ATTR_FACTOR);
                 else if (myAttr < defAttr)
-                    rate /= Math.Min(2, 1 + (defAttr - myAttr) * .02f);
+                    rate /= Math.Min(SystemConst.Battle.BURST_RATE_ATTR_CAP, 1 + (defAttr - myAttr) * SystemConst.Battle.BURST_RATE_ATTR_FACTOR);
             }
 
             SkillManager.OnCheckBurst(owner, skillCfg, ref rate);

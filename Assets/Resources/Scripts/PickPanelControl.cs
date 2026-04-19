@@ -127,7 +127,7 @@ public class PickPanelControl : MonoBehaviour
                 {
                     if(heroCfg.ForceId != targetForceId)
                         continue;
-                    if(GameManager.BASE_YEAR - heroCfg.BornYear < GameManager.BORN_AGE)
+                    if(SystemConst.Game.BASE_YEAR - heroCfg.BornYear < SystemConst.Game.BORN_AGE)
                         continue;
                     heroTotal ++;
                 }

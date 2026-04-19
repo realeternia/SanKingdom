@@ -14,7 +14,7 @@ public class SkillHelpAidHeal : Skill
     public override bool CheckAidSkill(int tickIndex)
     {
         var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range, owner.forceId, false);
-        unitsInRange = unitsInRange.FindAll(x => x.hp < x.maxHp * 4 / 5 && x != owner);
+        unitsInRange = unitsInRange.FindAll(x => x.hp < x.maxHp * SystemConst.Battle.HEAL_TARGET_HP_RATE && x != owner);
 
         if (unitsInRange.Count == 0)
             return false;

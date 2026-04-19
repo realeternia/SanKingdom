@@ -40,7 +40,7 @@ public class Chess : SceneObj
     
     public float dodgeRate; //闪避
     public float critRate; //暴击
-    public float critDamageMulti = 0.5f; //暴击伤害倍率
+    public float critDamageMulti = SystemConst.Battle.DEFAULT_CRIT_DAMAGE_MULTI; //暴击伤害倍率
 
     public int lastDamagedPlayerId = -1;
 
@@ -306,9 +306,9 @@ public class Chess : SceneObj
         if (regeHp > 0)
         {
             regeTickCount++;
-            if (regeTickCount >= 10)
+            if (regeTickCount >= SystemConst.Battle.REGE_INTERVAL_TICKS)
             {
-                regeTickCount -= 10;
+                regeTickCount -= SystemConst.Battle.REGE_INTERVAL_TICKS;
                 AddHp(regeHp);
             }
         }
@@ -332,7 +332,7 @@ public class Chess : SceneObj
 
     public void LackFood(float lackRate)
     {
-        var changeVal = -(int)((15 + lackIndex * 5) * lackRate);
+        var changeVal = -(int)((SystemConst.Battle.LACK_FOOD_BASE_DAMAGE + lackIndex * SystemConst.Battle.LACK_FOOD_DAMAGE_INCREMENT) * lackRate);
         var action = new ChessChangeHpAction(id, BattleManager.Instance.tickIndex, changeVal);
         BattleManager.Instance.AddChessAction(action);
         lackIndex++;
@@ -400,7 +400,7 @@ public class Chess : SceneObj
     // 计算目标分数
     private float CalculateTargetScore(Chess target, float distance)
     {
-        float score = target.isHero ? 10 : 30;
+        float score = target.isHero ? SystemConst.Battle.TARGET_SCORE_HERO : SystemConst.Battle.TARGET_SCORE_NONHERO;
 
         // 添加最大属性差作为积分项（权重可根据游戏平衡调整）
         if (distance < attackRange * 2)
@@ -408,12 +408,12 @@ public class Chess : SceneObj
             score += 30 * UnityEngine.Random.value;
 
             score += CalculateDamage(this, target) / 2;
-            score += (level - target.level) * 7f;
+            score += (level - target.level) * SystemConst.Battle.LEVEL_DIFF_SCORE_WEIGHT;
 
             // 生命值权重（生命值越低分数越高）
             var targetHpRate = (float)target.hp / target.maxHp;
-            if (targetHpRate < 0.5f)
-                score += (0.5f - targetHpRate) * 100f + 10;
+            if (targetHpRate < SystemConst.Battle.LOW_HP_THRESHOLD)
+                score += (SystemConst.Battle.LOW_HP_THRESHOLD - targetHpRate) * SystemConst.Battle.LOW_HP_SCORE_WEIGHT + SystemConst.Battle.LOW_HP_BONUS;
         }
         else
         {
@@ -429,7 +429,7 @@ public class Chess : SceneObj
             return;
 
         // 每3秒重新寻找目标
-        if (tickIndex - lastTargetUpdateTick >= 30)
+        if (tickIndex - lastTargetUpdateTick >= SystemConst.Battle.TARGET_UPDATE_INTERVAL_TICKS)
         {
             FindTarget();
             lastTargetUpdateTick = tickIndex;
@@ -461,11 +461,11 @@ public class Chess : SceneObj
             }
             attackPoint += attackRate;
             // 检查攻击冷却
-            if (attackPoint >= 20) //集气2s
+            if (attackPoint >= SystemConst.Battle.ATTACK_POINT_THRESHOLD)
             {
-                attackPoint -= 20;
+                attackPoint -= SystemConst.Battle.ATTACK_POINT_COST;
                 SkillManager.AimTarget(this, targetChess);
-                if (attackRange >= 20)
+                if (attackRange >= SystemConst.Battle.RANGE_ATTACK_THRESHOLD)
                 {
                     BattleManager.Instance.CreateAttackMissile(this, targetChess);
                 }
@@ -491,9 +491,9 @@ public class Chess : SceneObj
         if (moveDest != Vector3.zero)
         {
             attackPoint += attackRate;
-            if (attackPoint >= 10)
+            if (attackPoint >= SystemConst.Battle.MOVE_POINT_THRESHOLD)
             {
-                attackPoint -= 10;
+                attackPoint -= SystemConst.Battle.MOVE_POINT_COST;
 
                 // 创建移动Action并添加到actions列表
                 targetChess = BattleManager.Instance.GetChess(targetChessId);
@@ -506,7 +506,7 @@ public class Chess : SceneObj
     private Vector3 GetMoveDest()
     {
         int moveFailCount = 0;
-        var moveDis = moveSpeed * 0.5f;
+        var moveDis = moveSpeed * SystemConst.Battle.MOVE_DISTANCE_FACTOR;
 
         // 检查目标是否存在
         var targetChess = BattleManager.Instance.GetChess(targetChessId);
@@ -580,15 +580,15 @@ public class Chess : SceneObj
         }
 
         damage = (int)(damageBase * damageMulti);
-        var minDamage = 10;
-        var maxDamage = 60;
+        var minDamage = SystemConst.Battle.MIN_ATTACK_DAMAGE;
+        var maxDamage = SystemConst.Battle.MAX_ATTACK_DAMAGE;
         if (isHero && victim.isHero)
         {
             var levelDiff = level - victim.level;
             if (levelDiff != 0)
             {
-                minDamage = Math.Clamp(minDamage + levelDiff, 8, 20);
-                maxDamage = Math.Clamp(maxDamage + levelDiff * 4, 40, 80);
+                minDamage = Math.Clamp(minDamage + levelDiff, SystemConst.Battle.LEVEL_DIFF_MIN_DAMAGE_MIN, SystemConst.Battle.LEVEL_DIFF_MIN_DAMAGE_MAX);
+                maxDamage = Math.Clamp(maxDamage + levelDiff * SystemConst.Battle.LEVEL_DIFF_MAX_DAMAGE_FACTOR, SystemConst.Battle.LEVEL_DIFF_MAX_DAMAGE_MIN, SystemConst.Battle.LEVEL_DIFF_MAX_DAMAGE_MAX);
             }
         }
         if(isCrit)
@@ -651,12 +651,12 @@ public class Chess : SceneObj
 
     private static int CalculateDamage(Chess attacker, Chess defender)
     {
-        int attackPower = attacker.atk + attacker.hp / 50;
+        int attackPower = attacker.atk + attacker.hp / SystemConst.Battle.HP_TO_ATK_DIVISOR;
         int defensePower = defender.def;
 
         int powerDiff = attackPower - defensePower;
 
-        int damage = 30 + powerDiff / 2;
+        int damage = SystemConst.Battle.BASE_DAMAGE + powerDiff / SystemConst.Battle.DAMAGE_POWER_DIFF_DIVISOR;
 
         return damage;
     }
@@ -710,7 +710,7 @@ public class Chess : SceneObj
 
     public bool IsInFight(int nowTick)
     {
-        return nowTick < lastAttackTime + 3;
+        return nowTick < lastAttackTime + SystemConst.Battle.IN_FIGHT_TICK_THRESHOLD;
     }
 
     public void AddBuff(Buff buff, Chess caster, int endTick)

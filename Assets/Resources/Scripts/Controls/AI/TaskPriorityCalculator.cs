@@ -20,7 +20,7 @@ public class TaskPriorityInfo
 
 public class TaskPriorityCalculator
 {
-    private const int NEED_WEIGHT = 30;
+    private const int NEED_WEIGHT = SystemConst.AICity.NEED_WEIGHT;
     
     public static TaskPriorityInfo GetBattleTask(SaveCityData city)
     {
@@ -73,7 +73,7 @@ public class TaskPriorityCalculator
             case "CityDevUseHero":
                 return city.GetRecruitableHeroList().Count > 0;
             case "CityDevChange":
-                return city.gold >= 300;
+                return city.gold >= SystemConst.Economy.EXCHANGE_MIN_GOLD;
             case "CityDevPraiseHero":
                 return HasLowLoyaltyHero(city);
             default:
@@ -104,7 +104,7 @@ public class TaskPriorityCalculator
     {
         return city.GetNormalHeroList()
             .Select(h => GameManager.Instance.GetHero(h))
-            .Any(h => h.loyalty < 80);
+            .Any(h => h.loyalty < SystemConst.Hero.LOW_LOYALTY_THRESHOLD);
     }
     
     private static int GetBasePriority(CityDevConfig config, CityStrategyState state)

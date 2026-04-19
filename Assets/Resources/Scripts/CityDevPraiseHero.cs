@@ -70,7 +70,7 @@ public class CityDevPraiseHero : MonoBehaviour, ICityDevNode
              var cityData = GameManager.Instance.GetCity(cityId);
             if(methodId == 2)
             {
-                costText.text = string.Format("{0}/{1}", heroCount * 100, cityData.gold);
+                costText.text = string.Format("{0}/{1}", heroCount * SystemConst.Hero.PRAISE_GOLD_COST_PER_HERO, cityData.gold);
             }
             else
             {

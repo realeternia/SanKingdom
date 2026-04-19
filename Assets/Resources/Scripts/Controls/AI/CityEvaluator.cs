@@ -31,11 +31,11 @@ public class CityNeed
 
 public class CityEvaluator
 {
-    private const int GOLD_ALERT = 500;
-    private const int FOOD_ALERT = 500;
-    private const int WALL_ALERT = 150;
-    private const int SOLDIER_ALERT = 500;
-    private const int POWER_ALERT = 50;
+    private const int GOLD_ALERT = SystemConst.AICity.GOLD_ALERT;
+    private const int FOOD_ALERT = SystemConst.AICity.FOOD_ALERT;
+    private const int WALL_ALERT = SystemConst.AICity.WALL_ALERT;
+    private const int SOLDIER_ALERT = SystemConst.AICity.SOLDIER_ALERT;
+    private const int POWER_ALERT = SystemConst.AICity.POWER_ALERT;
     
     public static List<CityNeed> EvaluateCity(SaveCityData city)
     {

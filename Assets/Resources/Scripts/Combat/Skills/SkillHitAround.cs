@@ -40,7 +40,7 @@ public class SkillHitAround : Skill
                     float angle = Vector3.Angle(direction, unitDirection);
                     
                     // 检查是否在左右各60°开角内（总共120°扇形）
-                    if (angle <= 90f)
+                    if (angle <= SystemConst.Battle.AROUND_ATTACK_ANGLE_THRESHOLD)
                         filteredUnits.Add(unit);
                 }
                 

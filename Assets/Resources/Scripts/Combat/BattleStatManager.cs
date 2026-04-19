@@ -33,9 +33,9 @@ public class BattleStatManager
         public List<BattleStat> battleStats = new List<BattleStat>();
     }
 
-    private const int MaxBattleCount = 20;
+    private const int MaxBattleCount = SystemConst.Battle.MAX_BATTLE_COUNT;
     public List<BattleRecord> battleRecords = new List<BattleRecord>();
-    public int nextBattleId = 1000;
+    public int nextBattleId = SystemConst.Battle.INITIAL_BATTLE_ID;
     
     [NonSerialized]
     private static BattleStatManager currentInstance;
@@ -70,7 +70,7 @@ public class BattleStatManager
             currentBattleStats = new Dictionary<int, BattleStat>();
             foreach (var stat in record.battleStats)
             {
-                var uid = stat.forceId * 1000000 + stat.heroId;
+                var uid = stat.forceId * SystemConst.Battle.BATTLE_STAT_UID_MULTIPLIER + stat.heroId;
                 currentBattleStats[uid] = stat;
             }
         }
@@ -86,7 +86,7 @@ public class BattleStatManager
             return;
             
         var battleStats = currentInstance.currentBattleStats;
-        var uid = forceId * 1000000 + heroId;
+        var uid = forceId * SystemConst.Battle.BATTLE_STAT_UID_MULTIPLIER + heroId;
         if (battleStats.TryGetValue(uid, out var battleStat))
         {
             battleStat.damage += damage;
@@ -109,7 +109,7 @@ public class BattleStatManager
             return;
             
         var battleStats = currentInstance.currentBattleStats;
-        var uid = forceId * 1000000 + heroId;
+        var uid = forceId * SystemConst.Battle.BATTLE_STAT_UID_MULTIPLIER + heroId;
         if (battleStats.TryGetValue(uid, out var battleStat))
         {
             battleStat.beDamaged += damage;
@@ -132,7 +132,7 @@ public class BattleStatManager
             return;
             
         var battleStats = currentInstance.currentBattleStats;
-        var uid = forceId * 1000000 + heroId;
+        var uid = forceId * SystemConst.Battle.BATTLE_STAT_UID_MULTIPLIER + heroId;
         if (battleStats.TryGetValue(uid, out var battleStat))
         {
             battleStat.isDead = true;
@@ -155,7 +155,7 @@ public class BattleStatManager
             return;
             
         var battleStats = currentInstance.currentBattleStats;
-        var uid = forceId * 1000000 + heroId;
+        var uid = forceId * SystemConst.Battle.BATTLE_STAT_UID_MULTIPLIER + heroId;
         if (battleStats.TryGetValue(uid, out var battleStat))
         {
             battleStat.isCatched = true;

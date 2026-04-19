@@ -185,7 +185,7 @@ public static class AI
         
         int totalSoldier = heroSoldierDict.Values.Sum();
         
-        if (totalSoldier < 500)
+        if (totalSoldier < SystemConst.AIStrategy.AI_MIN_ATTACK_SOLDIER)
         {
             GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击[{GetCityName(attackTarget.Value)}]: 兵力{totalSoldier}不足500");
             yield break;
@@ -194,13 +194,13 @@ public static class AI
         var targetCity = GameManager.Instance.GetCity(attackTarget.Value);
         int enemySoldier = targetCity.GetAttr("soldier");
         
-        if (totalSoldier < enemySoldier * 0.7f)
+        if (totalSoldier < enemySoldier * SystemConst.AIStrategy.AI_ATTACK_ADVANTAGE_RATIO)
         {
             GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 跳过攻击[{GetCityName(attackTarget.Value)}]: 己方{totalSoldier}少于敌方{enemySoldier}的70%");
             yield break;
         }
         
-        int foodNeeded = totalSoldier / 2;
+        int foodNeeded = totalSoldier / SystemConst.AIStrategy.AI_FOOD_NEED_DIVISOR;
         
         if (city.food < foodNeeded)
         {
@@ -291,7 +291,7 @@ public static class AI
         int totalSoldier = city.GetAttr("soldier");
         
         int foodThreshold = totalSoldier / 2;
-        if (totalSoldier > 0 && city.food < foodThreshold && city.gold >= 300)
+        if (totalSoldier > 0 && city.food < foodThreshold && city.gold >= SystemConst.AIStrategy.AI_BUY_FOOD_MIN_GOLD)
         {
             var availableHeroes = context.GetAvailableHeroes(city.cityId);
             if (availableHeroes.Count == 0)
@@ -317,7 +317,7 @@ public static class AI
                     .OrderByDescending(h => h.GetAttr("inte"))
                     .First();
                 
-                const float EXCHANGE_RATE = 0.9f;
+                const float EXCHANGE_RATE = SystemConst.Economy.EXCHANGE_RATE;
                 player.ExecuteCityChange(city.cityId, task.devId, 
                     new int[] { bestHero.heroId }, true, amount, EXCHANGE_RATE, out _);
                 GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 买粮: 花费{amount}黄金 买入{(int)(amount * EXCHANGE_RATE)}粮食 执行者:[{GetHeroName(bestHero.heroId)}]");
@@ -346,7 +346,7 @@ public static class AI
             var targetHero = GameManager.Instance.GetHero(targetHeroId);
             if (targetHero.state == HeroState.Wild || 
                 (targetHero.state == HeroState.Catched) ||
-                (targetHero.state == HeroState.Normal && targetHero.loyalty < 80))
+                (targetHero.state == HeroState.Normal && targetHero.loyalty < SystemConst.AIStrategy.AI_RECRUIT_ENEMY_LOYALTY_THRESHOLD))
             {
                 player.ExecuteCityUseHero(city.cityId, task.devId, bestRecruiter.heroId, targetHeroId, out _);
                 GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 登用: [{GetHeroName(bestRecruiter.heroId)}] 登用 [{GetHeroName(targetHeroId)}]");
@@ -366,7 +366,7 @@ public static class AI
         foreach (var heroId in city.GetNormalHeroList())
         {
             var hero = GameManager.Instance.GetHero(heroId);
-            if (hero.loyalty < 80)
+            if (hero.loyalty < SystemConst.AIStrategy.AI_PRAISE_LOYALTY_THRESHOLD)
             {
                 lowLoyaltyHeroes.Add(hero);
             }
@@ -375,7 +375,7 @@ public static class AI
         if (lowLoyaltyHeroes.Count == 0)
             return false;
         
-        if (city.gold >= 100 * lowLoyaltyHeroes.Count)
+        if (city.gold >= SystemConst.Hero.PRAISE_GOLD_COST_PER_HERO * lowLoyaltyHeroes.Count)
         {
             var heroIds = lowLoyaltyHeroes.Select(h => h.heroId).ToArray();
             player.ExecuteCityPraiseHero(city.cityId, task.devId, heroIds, 2, out _);
@@ -391,7 +391,7 @@ public static class AI
         if (availableHeroes.Count == 0)
             return false;
 
-        if (city.GetNormalHeroList().Count <= 3)
+        if (city.GetNormalHeroList().Count <= SystemConst.AIStrategy.AI_MIN_STAY_HEROES)
             return false;
         
         var frontlineCities = HeroDispatcher.GetFrontlineCities(player);
@@ -560,7 +560,7 @@ public static class AI
     private static bool ExecuteHeroMove(Player player, SaveCityData srcCity, SaveHeroData hero, int targetCityId, int devId, string reason)
     {
         int soldierTotal = srcCity.GetAttr("soldier");
-        int foodCost = soldierTotal * 20 / 20;
+        int foodCost = soldierTotal * SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
         
         if (srcCity.food < foodCost)
             return false;

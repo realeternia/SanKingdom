@@ -9,7 +9,7 @@ using Controls.Utils;
 
 public class WorldPieceControl : MonoBehaviour
 {
-    private const float MAP_SCALE_FACTOR = 1.25f;
+    private const float MAP_SCALE_FACTOR = SystemConst.WorldMap.MAP_SCALE_FACTOR;
     
     public int pieceId;
     public Image pieceImage;

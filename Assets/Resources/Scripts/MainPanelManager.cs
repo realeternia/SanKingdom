@@ -40,8 +40,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         var seasonId = GameManager.Instance.SeasonId;
         var seasonCfg = SeasonConfig.GetConfig(seasonId);
         // 使用GameManager的常量计算年份
-        int years = nowRound / GameManager.SEASONS_PER_YEAR;
-        textYear.text = $"{GameManager.BASE_YEAR + years}年{seasonCfg.Name}";
+        int years = nowRound / SystemConst.Game.SEASONS_PER_YEAR;
+        textYear.text = $"{SystemConst.Game.BASE_YEAR + years}年{seasonCfg.Name}";
 
         btnSystem.onClick.AddListener(() =>
         {
@@ -304,8 +304,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             var seasonId = GameManager.Instance.SeasonId;
             var seasonCfg = SeasonConfig.GetConfig(seasonId);
             // 使用GameManager的常量计算年份
-            int years = nowRound / GameManager.SEASONS_PER_YEAR;
-            textYear.text = $"{GameManager.BASE_YEAR + years}年{seasonCfg.Name}";
+            int years = nowRound / SystemConst.Game.SEASONS_PER_YEAR;
+            textYear.text = $"{SystemConst.Game.BASE_YEAR + years}年{seasonCfg.Name}";
 
             for (int i = 0; i < worldPieces.Count; i++)
             {

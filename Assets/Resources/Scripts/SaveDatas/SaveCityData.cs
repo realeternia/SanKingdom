@@ -63,9 +63,9 @@ public class SaveCityData
     {
         var seasonCfg = SeasonConfig.GetConfig(GameManager.Instance.SeasonId);
         if(seasonCfg.AddGold != 0)
-            gold += (int)(level * 50 + seasonCfg.AddGold);
+            gold += (int)(level * SystemConst.City.GOLD_PER_LEVEL + seasonCfg.AddGold);
         else if(seasonCfg.AddFood != 0)
-            food += (int)(level * 40 * seasonCfg.AddFood);
+            food += (int)(level * SystemConst.City.FOOD_PER_LEVEL * seasonCfg.AddFood);
         actions.Clear();
     }
 
@@ -105,7 +105,7 @@ public class SaveCityData
                 else if(member.state == HeroState.Catched)
                     heroIds.Add(member.heroId);
             }
-            else if(member.state == HeroState.Normal && member.forceId != forceId && member.loyalty < 95)
+            else if(member.state == HeroState.Normal && member.forceId != forceId && member.loyalty < SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD)
             {
                 if(nearCityIds != null && System.Array.Exists(nearCityIds, id => id == member.cityId))
                     heroIds.Add(member.heroId);
@@ -153,13 +153,13 @@ public class SaveCityData
             cardData.CardId = member;
             cardData.Level = hero.GetLevel();
             cardData.SoldierNum = Math.Max(1, heroSoldierDict.ContainsKey(member) ? heroSoldierDict[member] : 0);
-            cardData.ArmsId = (heroArmsDict != null && heroArmsDict.ContainsKey(member)) ? heroArmsDict[member] : (hero.armsId > 0 ? hero.armsId : 601);
+            cardData.ArmsId = (heroArmsDict != null && heroArmsDict.ContainsKey(member)) ? heroArmsDict[member] : (hero.armsId > 0 ? hero.armsId : SystemConst.Hero.DEFAULT_ARMS_ID);
             battleList.Add(cardData);
         }
         return battleList;
     }
 
-    public Dictionary<int, int> DistributeSoldierDefault(int[] heroIds, int maxPerHero = 1000)
+    public Dictionary<int, int> DistributeSoldierDefault(int[] heroIds, int maxPerHero = SystemConst.Hero.MAX_SOLDIER_PER_HERO)
     {
         var result = new Dictionary<int, int>();
         int citySoldier = (int)Math.Floor(soldier);
@@ -316,7 +316,7 @@ public class SaveCityData
                     {
                         var heroCfg = HeroConfig.GetConfig(heroId);
                         int str = heroCfg != null ? heroCfg.Str : 50;
-                        int catchChance = 7 + (100 - str) * 8 / 100;
+                        int catchChance = SystemConst.Expedition.CATCH_BASE_CHANCE + (100 - str) * SystemConst.Expedition.CATCH_STR_FACTOR / 100;
                         if (UnityEngine.Random.Range(0, 100) >= catchChance)
                         {
                             hero.cityId = GameManager.Instance.GetRandomForceCityId(cityId, forceLose);
@@ -345,8 +345,8 @@ public class SaveCityData
                 if (hero != null)
                 {
                     hero.state = HeroState.Wild;
-                    hero.forceId = 0;
-                    hero.loyalty = 90;
+                    hero.forceId = SystemConst.Hero.WILD_FORCE_ID;
+                    hero.loyalty = SystemConst.Hero.ELIMINATED_HERO_LOYALTY;
                 }
             }
             var player = GameManager.Instance.GetPlayer(forceLose);
@@ -400,10 +400,10 @@ public class SaveCityData
             int leadship = hero.GetAttr("leadship");
             int charm = hero.GetAttr("charm");
 
-            float totalScore = str * .75f + inte + fair + (leadship * 1.5f) + (charm * 1.2f);
+            float totalScore = str * SystemConst.City.OWNER_SCORE_WEIGHT_STR + inte + fair + (leadship * SystemConst.City.OWNER_SCORE_WEIGHT_LEADSHIP) + (charm * SystemConst.City.OWNER_SCORE_WEIGHT_CHARM);
             if (heroId == kingHeroId)
             {
-                totalScore += 9999;
+                totalScore += SystemConst.City.KING_OWNER_BONUS_SCORE;
                 GameLog.Info($"帅的分 {heroId} {totalScore}");
             }
 

@@ -16,7 +16,7 @@ public class SkillHitTeleport : Skill
             SkillManager.AddSkillAction(owner, attacker, id, 0);
 
             Vector3 direction = (attacker.position - owner.position).normalized;
-            Vector3 randomPosition = attacker.position - direction * 12;
+            Vector3 randomPosition = attacker.position - direction * SystemConst.Battle.TELEPORT_DISTANCE;
 
             owner.MoveTo(randomPosition, true);
             owner.LockTarget(attacker);

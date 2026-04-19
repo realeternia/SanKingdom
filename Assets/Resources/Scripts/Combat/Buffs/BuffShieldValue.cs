@@ -12,8 +12,8 @@ public class BuffShieldValue : Buff
     {
         var strength = skillCfg.Strength;
         var owner = BattleManager.Instance.GetChess(ownerId);
-        if((float)attacker.GetAttr(skillCfg.Attr) > owner.GetAttr(skillCfg.Attr) * 1.2f)
-            strength *= .75f;
+        if((float)attacker.GetAttr(skillCfg.Attr) > owner.GetAttr(skillCfg.Attr) * SystemConst.Battle.SHIELD_ATTR_SUPPRESS_RATIO)
+            strength *= SystemConst.Battle.SHIELD_SUPPRESSED_FACTOR;
 
         damageMulti -= strength;
         BattleManager.Instance.AddBattleText("抵抗", owner.position, new UnityEngine.Vector2(0, 60), Color.green, 3);

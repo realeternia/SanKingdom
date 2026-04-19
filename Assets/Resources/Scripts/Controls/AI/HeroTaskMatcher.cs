@@ -51,7 +51,7 @@ public class HeroTaskMatcher
         foreach (var taskInfo in availableTasks)
         {
             float matchScore = CalculateMatchScore(hero, taskInfo.config);
-            float combinedScore = matchScore + taskInfo.adjustedPriority * 0.5f;
+            float combinedScore = matchScore + taskInfo.adjustedPriority * SystemConst.AIStrategy.TASK_PRIORITY_WEIGHT;
             
             if (combinedScore > bestScore)
             {
@@ -90,8 +90,8 @@ public class HeroTaskMatcher
             
             heroScores.Sort((a, b) => b.score.CompareTo(a.score));
             
-            int maxHeroesPerTask = Mathf.Min(3, heroScores.Count);
-            if(heroScores[0].score < 70)
+            int maxHeroesPerTask = Mathf.Min(SystemConst.AIStrategy.MAX_HEROES_PER_TASK, heroScores.Count);
+            if(heroScores[0].score < SystemConst.AIStrategy.LOW_MATCH_SCORE_THRESHOLD)
                 maxHeroesPerTask = 1;
             
             for (int i = 0; i < maxHeroesPerTask; i++)

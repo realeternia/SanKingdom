@@ -29,7 +29,7 @@ public class CityDevNodeChange : MonoBehaviour, ICityDevNode
     private bool isBuying = true; // true: buy grain with money, false: sell grain for money
     private int[] amountOptions = { 300, 500, 1000, 2000, 3000 };
     private int currentAmountIndex = 0;
-    private const float EXCHANGE_RATE = 0.9f;
+    private const float EXCHANGE_RATE = SystemConst.Economy.EXCHANGE_RATE;
 
     // Start is called before the first frame update
     void Start()

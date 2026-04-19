@@ -36,7 +36,6 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     public int cityId;
 
-    public const int gridCellSize = 3; // 每个格子的实际大小(米)
 
     public List<FoodInfo> playerInfoList = new List<FoodInfo>();
 
@@ -57,7 +56,7 @@ public class BattleManager : MonoBehaviour
     public int tickIndex = 1;
     public int lastFoodDeductionTick = 0;
     public int round = 0;
-    public const int MaxRound = 30;
+    public const int MaxRound = SystemConst.Battle.MAX_ROUND;
 
     [NonSerialized]
     public bool quickMode = true;
@@ -67,8 +66,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> battleEndCallback;
 
-    private const float WaitTime = 1f;
-    private const float BattleBeginTime = 3f;
+
 
     [NonSerialized]
     private List<BattleCardData> cards1;
@@ -224,12 +222,12 @@ public class BattleManager : MonoBehaviour
             speed = 400;
         tickIndex = 1;
 
-        var waitTick = GetTickFromTime(WaitTime);
-        var battleBeginTick = GetTickFromTime(BattleBeginTime);
-        var foodDeductionTick = GetTickFromTime(5);
+        var waitTick = GetTickFromTime(SystemConst.Battle.WAIT_TIME);
+        var battleBeginTick = GetTickFromTime(SystemConst.Battle.BATTLE_BEGIN_TIME);
+        var foodDeductionTick = GetTickFromTime(SystemConst.Battle.FOOD_DEDUCTION_INTERVAL);
 
         var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
-        var magicHelperUnitId = SpawnUnitsForRegion(player1, 501001, new Vector3(1, 7, 1), 10);
+        var magicHelperUnitId = SpawnUnitsForRegion(player1, SystemConst.Battle.MAGIC_HELPER_UNIT_ID, new Vector3(1, 7, 1), 10);
 
         while (!gameFinish)
         {
@@ -296,7 +294,7 @@ public class BattleManager : MonoBehaviour
                             foreach (var foodInfo in playerInfoList)
                             {
                                 var soldierNum = GetUnitsByForceId(foodInfo.forceId).Where(x => x.isHero).Sum(x => x.hp);
-                                var costAmount = soldierNum / 20; // 20回合消耗20天的粮食
+                                var costAmount = soldierNum / SystemConst.Battle.FOOD_COST_DIVISOR; // 20回合消耗20天的粮食
 
                                 var action = new FoodCostAction(0, tickIndex, foodInfo.forceId, costAmount);
                                 AddChessAction(action);
@@ -388,22 +386,22 @@ public class BattleManager : MonoBehaviour
         var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
         var player2 = GameManager.Instance.GetPlayer(playerInfoList[1].forceId);
 
-        int count = Math.Min(cards2.Count, 12);
+        int count = Math.Min(cards2.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++)
         {
-            var tick = tickIndex + (count > 6 ? (i/2) : i);
+            var tick = tickIndex + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(2, i), "SoftFireBigRed", 0.7f);
             AddChessAction(eff);
-            SpawnHerosForRegion(player2, tick + 3, GetSpawnPosition(2, i), cards2[i]);
+            SpawnHerosForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(2, i), cards2[i]);
         }
 
         count = Math.Min(cards1.Count, 12);
         for (int i = 0; i < count; i++) 
         {
-            var tick = tickIndex + 10 + (count > 6 ? (i/2) : i);
+            var tick = tickIndex + SystemConst.Battle.ATTACKER_SPAWN_DELAY_TICKS + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(1, i), "LightningExplosionBlue", 0.7f);
             AddChessAction(eff);
-            SpawnHerosForRegion(player1, tick + 3, GetSpawnPosition(1, i), cards1[i]);
+            SpawnHerosForRegion(player1, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(1, i), cards1[i]);
         }
 
         GameLog.Info($"InitSummon {player1.pname} {cards1.Count} {player2.pname} {cards2.Count}");
@@ -458,20 +456,20 @@ public class BattleManager : MonoBehaviour
         int z = 0;
         if (FloorToInt)
         {
-            x = Mathf.FloorToInt(worldPosition.x / gridCellSize) * gridCellSize;
-            z = Mathf.FloorToInt(worldPosition.z / gridCellSize) * gridCellSize;
+            x = Mathf.FloorToInt(worldPosition.x / SystemConst.Battle.GRID_CELL_SIZE) * SystemConst.Battle.GRID_CELL_SIZE;
+                z = Mathf.FloorToInt(worldPosition.z / SystemConst.Battle.GRID_CELL_SIZE) * SystemConst.Battle.GRID_CELL_SIZE;
         }
         else
         {
-            x = Mathf.CeilToInt(worldPosition.x / gridCellSize) * gridCellSize;
-            z = Mathf.CeilToInt(worldPosition.z / gridCellSize) * gridCellSize;
+            x = Mathf.CeilToInt(worldPosition.x / SystemConst.Battle.GRID_CELL_SIZE) * SystemConst.Battle.GRID_CELL_SIZE;
+            z = Mathf.CeilToInt(worldPosition.z / SystemConst.Battle.GRID_CELL_SIZE) * SystemConst.Battle.GRID_CELL_SIZE;
         }
         return new Vector2Int(x, z);
     }
 
     public bool IsPositionFree(Chess unit, Vector3 targetPosition)
     {
-        var ckSize = 7.5f;
+        var ckSize = SystemConst.Battle.CHESS_COLLISION_SIZE;
         var findInRange = false;
         foreach(var ckUnit in chessList)
         {
