@@ -13,7 +13,14 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     public int cityId;
     public Button closeBtn;
     public TMP_Text cityName;
+    public TMP_Text cityAttrText;
     public Image cityImage;
+
+    public TMP_Text textExp;
+    public TMP_Text textGold;
+    public TMP_Text textFood;
+    public TMP_Text textSoldier;
+    public TMP_Text textWall;
 
     public ScrollRect scrollRectCity;
     public GameObject rankRegionCity;
@@ -162,6 +169,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         lastSelectedCity = cellCity;
         cityId = cellCity.cityId;
 
+        UpdateCityInfo();
+
         if (allDevNodes.Count > 0)
         {
             ClearAllDevNodeHeroes();
@@ -170,6 +179,33 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         if (!init)
             LoadHeroCells();
+    }
+
+    private void UpdateCityInfo()
+    {
+        var cityCfg = WorldConfig.GetConfig(cityId);
+        var cityData = GameManager.Instance.GetCity(cityId);
+
+        if (cityCfg != null)
+        {
+            int level = cityData != null ? cityData.level : 1;
+            cityName.text = $"{cityCfg.Cname}({level}级)";
+            cityImage.sprite = Resources.Load<Sprite>("Textures/CityView/" + cityCfg.ViewPrefab);
+        }
+
+        UpdateCityAttrText();
+    }
+
+    private void UpdateCityAttrText()
+    {
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null) return;
+
+        if (textExp != null) textExp.text = $"{cityData.exp}";
+        if (textGold != null) textGold.text = $"{(int)cityData.gold}";
+        if (textFood != null) textFood.text = $"{(int)cityData.food}";
+        if (textSoldier != null) textSoldier.text = $"{(int)cityData.soldier}";
+        if (textWall != null) textWall.text = $"{(int)cityData.wall}";
     }
 
     private void ClearAllDevNodeHeroes()
@@ -331,6 +367,24 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public void AssignHeroToDevNode(int heroId, CityDevNodeNew targetNode)
     {
+        bool isHeroAlreadyAssigned = heroToDevNodeMap.ContainsKey(heroId);
+        int oldHeroId = targetNode.GetCurrentHeroId();
+        bool isTargetNodeOccupied = oldHeroId > 0;
+
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (!isHeroAlreadyAssigned && !isTargetNodeOccupied)
+        {
+            if (cityData != null)
+            {
+                var levelCfg = CityLevelConfig.GetConfig(cityData.level);
+                if (levelCfg != null && heroToDevNodeMap.Count >= levelCfg.JobCount)
+                {
+                    SystemTip.Instance.ShowTip($"该城市最多只能派遣{levelCfg.JobCount}人工作");
+                    return;
+                }
+            }
+        }
+
         if (heroToDevNodeMap.TryGetValue(heroId, out CityDevNodeNew oldNode))
         {
             if (oldNode == targetNode)
@@ -340,7 +394,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             oldNode.ClearHero();
         }
 
-        int oldHeroId = targetNode.GetCurrentHeroId();
         if (oldHeroId > 0)
         {
             heroToDevNodeMap.Remove(oldHeroId);
@@ -366,7 +419,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         targetNode.SetHero(heroId);
         heroToDevNodeMap[heroId] = targetNode;
 
-        var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData != null)
         {
             if (oldHeroId > 0)
@@ -417,9 +469,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     public void SetCityId(int cityId)
     {
         this.cityId = cityId;
-        var cityCfg = WorldConfig.GetConfig(cityId);
-        cityName.text = cityCfg.Cname;
-        cityImage.sprite = Resources.Load<Sprite>("Textures/CityView/" + cityCfg.ViewPrefab);
+        UpdateCityInfo();
     }
 
     public void OnShow()

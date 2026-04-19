@@ -19,6 +19,7 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
     public Image heroImgBG;
     public Image blackMaskImg;
     public Image borderImage;
+    public Image attrImg;
 
     private int currentHeroId = 0;
     private CityPanelManager cityPanelManager;
@@ -47,9 +48,40 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
         this.cityId = cityId;
         this.devId = devId;
         var devCfg = CityDevConfig.GetConfig(devId);
-        var cityData = GameManager.Instance.GetCity(cityId);
         nameText.text = devCfg.Cname;
         cityImg.sprite = Resources.Load<Sprite>("Textures/Buildings/" + devCfg.Icon);
+
+        UpdateAttrImg(devCfg);
+    }
+
+    private void UpdateAttrImg(CityDevConfig devCfg)
+    {
+        if (attrImg == null)
+            return;
+
+        if (string.IsNullOrEmpty(devCfg.DevAttr1))
+        {
+            attrImg.gameObject.SetActive(false);
+            return;
+        }
+
+        string attrName = devCfg.DevAttr1.ToLower();
+        try
+        {
+            var attrCfg = CityAttrConfig.GetConfigByname(attrName);
+            if (attrCfg == null || string.IsNullOrEmpty(attrCfg.Icon))
+            {
+                attrImg.gameObject.SetActive(false);
+                return;
+            }
+
+            attrImg.sprite = Resources.Load<Sprite>("Textures/Icons/" + attrCfg.Icon);
+            attrImg.gameObject.SetActive(true);
+        }
+        catch
+        {
+            attrImg.gameObject.SetActive(false);
+        }
     }
 
     public void SetCityPanelManager(CityPanelManager manager)

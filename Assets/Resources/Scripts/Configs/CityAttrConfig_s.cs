@@ -30,9 +30,13 @@ namespace CommonConfig
         ///告警值
         /// </summary>
         public int ValLow2;
+        /// <summary>
+        ///icon
+        /// </summary>
+        public string Icon;
 
 
-        public CityAttrConfig(int Id, string name, string Cname, int ValMax, int ValLow, int ValLow2)
+        public CityAttrConfig(int Id, string name, string Cname, int ValMax, int ValLow, int ValLow2, string Icon)
         {
             this.Id = Id;
             this.name = name;
@@ -40,6 +44,7 @@ namespace CommonConfig
             this.ValMax = ValMax;
             this.ValLow = ValLow;
             this.ValLow2 = ValLow2;
+            this.Icon = Icon;
 
         }
 
@@ -60,19 +65,19 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new CityAttrConfig(1, "level", "等级", 99, 0, 0);
-            config[2] = new CityAttrConfig(2, "exp", "经验", 999, 0, 0);
-            config[4] = new CityAttrConfig(4, "gold", "金钱", 999, 100, 25);
-            config[5] = new CityAttrConfig(5, "food", "粮食", 999, 100, 25);
-            config[6] = new CityAttrConfig(6, "soldier", "士兵", 999, 100, 25);
-            config[8] = new CityAttrConfig(8, "wall", "城墙", 999, 100, 25);
-            config[9] = new CityAttrConfig(9, "power", "士气", 99, 50, 0);
+            config[1] = new CityAttrConfig(1, "level", "等级", 99, 0, 0, "");
+            config[2] = new CityAttrConfig(2, "exp", "发展度", 999, 0, 0, "citydev");
+            config[4] = new CityAttrConfig(4, "gold", "金钱", 999, 100, 25, "citygold");
+            config[5] = new CityAttrConfig(5, "food", "粮食", 999, 100, 25, "cityfood");
+            config[6] = new CityAttrConfig(6, "soldier", "士兵", 999, 100, 25, "citysod");
+            config[8] = new CityAttrConfig(8, "wall", "城墙", 999, 100, 25, "citywall");
+            config[9] = new CityAttrConfig(9, "power", "士气", 99, 50, 0, "citytrain");
 
 
             idxname["level"] =  1;
             idxCname["等级"] =  1;
             idxname["exp"] =  2;
-            idxCname["经验"] =  2;
+            idxCname["发展度"] =  2;
             idxname["gold"] =  4;
             idxCname["金钱"] =  4;
             idxname["food"] =  5;
