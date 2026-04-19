@@ -37,7 +37,8 @@ public class SelectHeroArmyControl : MonoBehaviour
                         heroHeads[i].sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
 
                         var heroData = GameManager.Instance.GetHero(selectedHeroIds[i]);
-                        heroHeads[i].GetComponentInChildren<TMP_Text>().text = $"{heroData.soldier}";
+                        var cityData = GameManager.Instance.GetCity(heroData.cityId);
+                        heroHeads[i].GetComponentInChildren<TMP_Text>().text = $"{cityData.soldier}";
 
                     }
                     else

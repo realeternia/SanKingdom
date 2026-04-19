@@ -180,9 +180,10 @@ public static class AI
             yield break;
         }
         
-        DistributeSoldierToHeroes(city, combatHeroes);
+        var heroIds = combatHeroes.Select(h => h.heroId).ToArray();
+        var heroSoldierDict = DistributeSoldierToHeroes(city, heroIds);
         
-        int totalSoldier = combatHeroes.Sum(h => h.soldier);
+        int totalSoldier = heroSoldierDict.Values.Sum();
         
         if (totalSoldier < 500)
         {
@@ -207,10 +208,8 @@ public static class AI
             yield break;
         }
         
-        var heroIds = combatHeroes.Select(h => h.heroId).ToArray();
-        
         StrategicDecider.MarkTargetAttacked(player.forceId, attackTarget.Value);
-        player.ExecuteCityBattleDev(city.cityId, task.devId, heroIds, foodNeeded, attackTarget.Value, true);
+        player.ExecuteCityBattleDev(city.cityId, task.devId, heroIds, foodNeeded, attackTarget.Value, true, heroSoldierDict);
         GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 攻击[{GetCityName(attackTarget.Value)}] 英雄:[{GetHeroNames(heroIds)}] 兵力:{totalSoldier}");
         
         while (BattleManager.Instance.IsBattleRunning)
@@ -219,26 +218,9 @@ public static class AI
         }
     }
     
-    private static void DistributeSoldierToHeroes(SaveCityData city, List<SaveHeroData> heroes)
+    private static Dictionary<int, int> DistributeSoldierToHeroes(SaveCityData city, int[] heroIds)
     {
-        const int MAX_SOLDIER_PER_HERO = 1000;
-        int citySoldier = city.GetAttr("soldier");
-        
-        foreach (var hero in heroes)
-        {
-            if (citySoldier <= 0)
-                break;
-            
-            int canAssign = MAX_SOLDIER_PER_HERO - hero.soldier;
-            if (canAssign <= 0)
-                continue;
-            
-            int toAssign = Math.Min(canAssign, citySoldier);
-            hero.soldier += toAssign;
-            citySoldier -= toAssign;
-        }
-        
-        city.soldier = citySoldier;
+        return city.DistributeSoldierDefault(heroIds);
     }
     
     private static int? SelectBestAttackTarget(AIStrategyContext context, SaveCityData sourceCity)
@@ -306,9 +288,7 @@ public static class AI
     
     private static bool HandleFoodPurchase(Player player, SaveCityData city, AIStrategyContext context, TaskPriorityInfo task)
     {
-        int totalSoldier = city.GetNormalHeroList()
-            .Select(h => GameManager.Instance.GetHero(h))
-            .Sum(h => h.soldier);
+        int totalSoldier = city.GetAttr("soldier");
         
         int foodThreshold = totalSoldier / 2;
         if (totalSoldier > 0 && city.food < foodThreshold && city.gold >= 300)
@@ -579,7 +559,7 @@ public static class AI
     
     private static bool ExecuteHeroMove(Player player, SaveCityData srcCity, SaveHeroData hero, int targetCityId, int devId, string reason)
     {
-        int soldierTotal = hero.soldier;
+        int soldierTotal = srcCity.GetAttr("soldier");
         int foodCost = soldierTotal * 20 / 20;
         
         if (srcCity.food < foodCost)

@@ -125,7 +125,6 @@ public class RankCellInfoForce : MonoBehaviour, IRankDetailInfo, IRankDetailInfo
             if (heroData.state == HeroState.Normal && heroData.forceId == forceId)
             {
                 heroCount++;
-                totalSoldier += heroData.soldier;
             }
         }
         heroesValue = heroCount;

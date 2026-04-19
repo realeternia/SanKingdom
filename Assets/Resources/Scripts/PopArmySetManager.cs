@@ -11,6 +11,7 @@ public class PopArmySetManager : MonoBehaviour
 {
     private int cityId;
     private int heroId;
+    private int currentAllocated;
 
     public Button closeBtn;
     public Button okBtn;
@@ -21,7 +22,21 @@ public class PopArmySetManager : MonoBehaviour
     public TMP_Text textHeroName;
     public Image heroPic;
     private int maxSoldier;
-    // Start is called before the first frame update
+
+    private static Dictionary<int, int> heroSoldierAllocations = new Dictionary<int, int>();
+
+    public static int GetAllocatedSoldier(int heroId)
+    {
+        if (heroSoldierAllocations.ContainsKey(heroId))
+            return heroSoldierAllocations[heroId];
+        return 0;
+    }
+
+    public static void ClearAllocations()
+    {
+        heroSoldierAllocations.Clear();
+    }
+
     void Start()
     {
         closeBtn.onClick.AddListener(() =>
@@ -34,10 +49,9 @@ public class PopArmySetManager : MonoBehaviour
             if (cityId > 0)
             {
                 var soldier = (int)(maxSoldier * slider1.value);
-                var oldSoldier = GameManager.Instance.GetHero(heroId).soldier;
-                var change = soldier - oldSoldier;
-                GameManager.Instance.GetHero(heroId).soldier = soldier;
-                GameManager.Instance.GetCity(cityId).soldier -= change;
+                var change = soldier - currentAllocated;
+                heroSoldierAllocations[heroId] = soldier;
+                currentAllocated = soldier;
                 PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
                 PanelManager.Instance.HidePopArmySetPanel();
             }
@@ -52,14 +66,23 @@ public class PopArmySetManager : MonoBehaviour
             {
                 var soldier = (int)(maxSoldier * slider1.value);
                 textSoldier.text = $"{soldier}";
-                var oldSoldier = GameManager.Instance.GetHero(heroId).soldier;
-                var change = soldier - oldSoldier;
-                textSoldierCity.text = $"{GameManager.Instance.GetCity(cityId).soldier - change}";
+                var change = soldier - currentAllocated;
+                var cityData = GameManager.Instance.GetCity(cityId);
+                int otherAllocated = 0;
+                foreach (var kvp in heroSoldierAllocations)
+                {
+                    if (kvp.Key != heroId)
+                    {
+                        var h = GameManager.Instance.GetHero(kvp.Key);
+                        if (h != null && h.cityId == cityId)
+                            otherAllocated += kvp.Value;
+                    }
+                }
+                textSoldierCity.text = $"{(int)cityData.soldier - otherAllocated - soldier}";
             }
         });
     }
 
-    // Update is called once per frame
     void Update()
     {
     }
@@ -70,19 +93,21 @@ public class PopArmySetManager : MonoBehaviour
         var heroData = GameManager.Instance.GetHero(heroId);
         this.cityId = heroData.cityId;
         var cityData = GameManager.Instance.GetCity(cityId);
+
+        currentAllocated = GetAllocatedSoldier(heroId);
         textSoldierCity.text = $"{cityData.soldier}";
-        textSoldier.text = $"{heroData.soldier}";
+        textSoldier.text = $"{currentAllocated}";
 
         var heroCfg = HeroConfig.GetConfig(heroId);
 
         heroPic.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
         textHeroName.text = heroCfg.Name;
 
-        maxSoldier = Math.Min(1000, (int)(GameManager.Instance.GetCity(cityId).soldier) + heroData.soldier);
-        slider1.value = (float)heroData.soldier / maxSoldier;
+        maxSoldier = Math.Min(1000, (int)(cityData.soldier) + currentAllocated);
+        slider1.value = maxSoldier > 0 ? (float)currentAllocated / maxSoldier : 0;
     }
 
     public void OnHide()
     {
-    }    
+    }
 }

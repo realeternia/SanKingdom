@@ -41,7 +41,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
                 SystemTip.Instance.ShowTip("请选择至少一个英雄");
                 return;
             }
-            var soldierTotal = heroSelect.heroIds.Sum(x => GameManager.Instance.GetHero(x).soldier);
+            var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
             var foodCost = soldierTotal * foodCount / 20;
             var citySrc = GameManager.Instance.GetCity(cityId);
             if(citySrc.food < foodCost)
@@ -103,7 +103,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         if (heroSelect.heroIds.Length <= 0)
             return;
         var heroList = heroSelect.heroIds;
-        var soldierTotal = heroList.Sum(x => GameManager.Instance.GetHero(x).soldier);
+        var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
         var foodCost = soldierTotal * foodCount / 20;
         var citySrc = GameManager.Instance.GetCity(cityId);
         foodCostText.text = string.Format("{0} / {1}", foodCost, citySrc.food);
@@ -137,7 +137,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         var citySrc = GameManager.Instance.GetCity(cityId);
         var player = citySrc.GetPlayer();
 
-        var soldierTotal = heroList.Sum(x => GameManager.Instance.GetHero(x).soldier);
+        var soldierTotal = citySrc.GetAttr("soldier");
         var foodCost = soldierTotal * foodCount / 20;
 
         PanelManager.Instance.HideCityDev();    

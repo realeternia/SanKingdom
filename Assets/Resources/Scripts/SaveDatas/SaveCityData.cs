@@ -136,8 +136,11 @@ public class SaveCityData
         return heroIds;
     }
 
-    public List<BattleCardData> GetBattleHeroList(int[] filterHeroList = null)
+    public List<BattleCardData> GetBattleHeroList(int[] filterHeroList = null, Dictionary<int, int> heroSoldierDict = null, Dictionary<int, int> heroArmsDict = null)
     {
+        if (heroSoldierDict == null)
+            heroSoldierDict = DistributeSoldierDefault(filterHeroList ?? GetNormalHeroList().ToArray());
+
         var heroList = GetNormalHeroList();
         List<BattleCardData> battleList = new List<BattleCardData>();
         foreach (var member in heroList)
@@ -149,11 +152,33 @@ public class SaveCityData
             var cardData = new BattleCardData();
             cardData.CardId = member;
             cardData.Level = hero.GetLevel();
-            cardData.SoldierNum = Math.Max(1, hero.soldier);
-            cardData.ArmsId = hero.armsId > 0 ? hero.armsId : 601;
+            cardData.SoldierNum = Math.Max(1, heroSoldierDict.ContainsKey(member) ? heroSoldierDict[member] : 0);
+            cardData.ArmsId = (heroArmsDict != null && heroArmsDict.ContainsKey(member)) ? heroArmsDict[member] : (hero.armsId > 0 ? hero.armsId : 601);
             battleList.Add(cardData);
         }
-        return battleList;    
+        return battleList;
+    }
+
+    public Dictionary<int, int> DistributeSoldierDefault(int[] heroIds, int maxPerHero = 1000)
+    {
+        var result = new Dictionary<int, int>();
+        int citySoldier = (int)Math.Floor(soldier);
+
+        var heroList = heroIds.Select(id => GameManager.Instance.GetHero(id))
+            .Where(h => h != null)
+            .OrderByDescending(h => h.GetAttr("leadship"))
+            .ToList();
+
+        foreach (var hero in heroList)
+        {
+            if (citySoldier <= 0) break;
+            int toAssign = Math.Min(maxPerHero, citySoldier);
+            result[hero.heroId] = toAssign;
+            citySoldier -= toAssign;
+        }
+
+        soldier = citySoldier;
+        return result;
     }
 
     public Player GetPlayer()
@@ -222,14 +247,7 @@ public class SaveCityData
             case "food":
                 return (int)Math.Floor(food);
             case "soldier":
-                int soldierOnHero = 0;
-                foreach (var heroId in GetNormalHeroList())
-                {
-                    var hero = GameManager.Instance.GetHero(heroId);
-                    if (hero != null)
-                        soldierOnHero += hero.soldier;
-                }
-                return (int)Math.Floor(soldier + soldierOnHero);
+                return (int)Math.Floor(soldier);
             case "wall":
                 return (int)Math.Floor(wall);
             case "power":
@@ -406,82 +424,4 @@ public class SaveCityData
         }
     }
 
-    public void AutoSetSoldierOnInit()
-    {
-        var heroList = GetNormalHeroList();
-        if (heroList.Count == 0)
-            return;
-
-        SaveHeroData owner = GameManager.Instance.GetHero(GetOwner());
-
-        int ownerSoldier = 1000;
-        soldier -= ownerSoldier;
-        owner.soldier = ownerSoldier;
-
-        foreach (var heroId in heroList)
-        {
-            SaveHeroData hero = GameManager.Instance.GetHero(heroId);
-            if (hero != owner)
-            {
-                hero.soldier = 100;
-                soldier -= 100;
-            }
-        }
-
-        for (int idx = 0; idx < 4; idx++)
-        {
-            List<SaveHeroData> eligibleHeroes = new List<SaveHeroData>();
-            foreach (var heroId in heroList)
-            {
-                SaveHeroData hero = GameManager.Instance.GetHero(heroId);
-                if (hero.soldier > 100)
-                    continue;
-                int leadship = hero.GetAttr("leadship");
-                int str = hero.GetAttr("str");
-                int inte = hero.GetAttr("inte");
-                int x = leadship + str / 2 + inte / 2;
-
-                if (idx == 0 && (leadship >= 90 || x >= 160))
-                {
-                    eligibleHeroes.Add(hero);
-                }
-                else if (idx == 1 && (leadship >= 80 || x >= 140))
-                {
-                    eligibleHeroes.Add(hero);
-                }
-                else if (idx == 2 && (leadship >= 65 || x >= 110))
-                {
-                    eligibleHeroes.Add(hero);
-                }
-                else if (idx == 3)
-                {
-                    eligibleHeroes.Add(hero);
-                }
-            }
-
-            if (eligibleHeroes.Count > 0)
-            {
-                int elitePortion = Math.Min(900, (int)(soldier * 0.7f) / eligibleHeroes.Count);
-                foreach (var hero in eligibleHeroes)
-                {
-                    hero.soldier += elitePortion;
-                    soldier -= elitePortion;
-                }
-            }
-        }
-
-        foreach (var heroId in heroList)
-        {
-            SaveHeroData hero = GameManager.Instance.GetHero(heroId);
-            if (hero != owner)
-            {
-                var backSoldier = hero.soldier % 50;
-                if (backSoldier > 0)
-                {
-                    hero.soldier -= backSoldier;
-                    soldier += backSoldier;
-                }
-            }
-        }
-    }
 }

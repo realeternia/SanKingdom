@@ -27,7 +27,6 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
 
     private int selectedCityId;
 
-    // Start is called before the first frame update
     void Start()
     {
         runButton.onClick.AddListener(() =>
@@ -42,7 +41,7 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
                 SystemTip.Instance.ShowTip("请选择至少一个英雄");
                 return;
             }
-            var soldierTotal = heroSelect.heroIds.Sum(x => GameManager.Instance.GetHero(x).soldier);
+            var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
             var foodCost = soldierTotal * foodCount / 20;
             var citySrc = GameManager.Instance.GetCity(cityId);
             if(citySrc.food < foodCost)
@@ -80,7 +79,6 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         });
         foodButton.onClick.AddListener(() =>
         {
-            // 在10,20,30日粮间切换
             if(foodCount == 10)
             {
                 foodCount = 20;
@@ -104,15 +102,13 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
     {
         if (heroSelect.heroIds.Length <= 0)
             return;
-        var heroList = heroSelect.heroIds;
-        var soldierTotal = heroList.Sum(x => GameManager.Instance.GetHero(x).soldier);
+        var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
         var foodCost = soldierTotal * foodCount / 20;
         var citySrc = GameManager.Instance.GetCity(cityId);
         foodCostText.text = string.Format("{0} / {1}", foodCost, citySrc.food);
         foodCostText.color = foodCost <= citySrc.food ? Color.white : Color.red;
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -140,13 +136,11 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         var citySrc = GameManager.Instance.GetCity(cityId);
         var player = citySrc.GetPlayer();
 
-        var soldierTotal = heroList.Sum(x => GameManager.Instance.GetHero(x).soldier);
+        var soldierTotal = citySrc.GetAttr("soldier");
         var foodCost = soldierTotal * foodCount / 20;
 
-        // 隐藏相关UI面板
         PanelManager.Instance.HideCityDev();    
         
-        // 执行城市战斗发展
         player.ExecuteCityBattleDev(cityId, devId, heroList, foodCost, selectedCityId, false);
     }
 

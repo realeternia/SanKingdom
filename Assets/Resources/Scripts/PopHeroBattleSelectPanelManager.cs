@@ -44,11 +44,9 @@ public class PopHeroBattleSelectPanelManager : MonoBehaviour, IPanelEvent
                 }
                 if (!allowZeroSoldier)
                 {
-                    foreach (var heroId in selectedHeroIds)
-                    {
-                        if (GameManager.Instance.GetHero(heroId).soldier <= 0)
-                            return;
-                    }
+                    var cityData = GameManager.Instance.GetCity(mCityId);
+                    if (cityData == null || cityData.GetAttr("soldier") <= 0)
+                        return;
                 }
                 onSelectMethod?.Invoke(selectedHeroIds);
                 PanelManager.Instance.HidePopHeroBattleSelectPanel();

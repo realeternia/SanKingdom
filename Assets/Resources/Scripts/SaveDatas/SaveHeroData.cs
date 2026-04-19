@@ -12,7 +12,6 @@ public enum HeroState
 public class SaveHeroData
 {
     public int heroId;
-    public int soldier;
     public int exp;
 
     public int cityId;
@@ -37,8 +36,6 @@ public class SaveHeroData
                 return heroConfig.LeadShip;
             case "charm":
                 return heroConfig.Charm;
-            case "soldier":
-                return soldier;
             default:
                 return 0;
         }
@@ -53,7 +50,6 @@ public class SaveHeroData
     {
         SaveHeroData newHero = new SaveHeroData();
         newHero.heroId = heroId;
-        newHero.soldier = 100;
         newHero.exp = 0;
         newHero.cityId = cityId;
         newHero.cityOwner = false;

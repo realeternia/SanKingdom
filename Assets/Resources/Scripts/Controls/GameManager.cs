@@ -193,7 +193,6 @@ public class GameManager : MonoBehaviour
         foreach(var city in SaveData.cities)
         {
             city.SelectOwner();
-            city.AutoSetSoldierOnInit();
         }
         foreach(var force in ForceConfig.ConfigList)
         {

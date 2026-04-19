@@ -97,9 +97,7 @@ public class TaskPriorityCalculator
     
     private static bool HasSoldier(SaveCityData city)
     {
-        return city.GetNormalHeroList()
-            .Select(h => GameManager.Instance.GetHero(h))
-            .Any(h => h.soldier > 0);
+        return city.GetAttr("soldier") > 0;
     }
     
     private static bool HasLowLoyaltyHero(SaveCityData city)
@@ -130,9 +128,7 @@ public class TaskPriorityCalculator
         
         if (taskInfo.config.Prefab == "CityDevChange")
         {
-            int totalSoldier = city.GetNormalHeroList()
-                .Select(h => GameManager.Instance.GetHero(h))
-                .Sum(h => h.soldier);
+            int totalSoldier = city.GetAttr("soldier");
             int foodThreshold = totalSoldier / 2;
             if (totalSoldier > 0 && city.food < foodThreshold)
             {

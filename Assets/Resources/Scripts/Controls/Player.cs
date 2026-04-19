@@ -246,7 +246,7 @@ public class Player
 
 
     // 执行城市战斗发展
-    public void ExecuteCityBattleDev(int cityId, int devId, int[] heroList, int foodUse, int targetCityId, bool isAI)
+    public void ExecuteCityBattleDev(int cityId, int devId, int[] heroList, int foodUse, int targetCityId, bool isAI, Dictionary<int, int> heroSoldierDict = null, Dictionary<int, int> heroArmsDict = null)
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
@@ -261,18 +261,32 @@ public class Player
         cityDest.food = 0;
         int srcForceId = citySrc.forceId;
         int destForceId = cityDest.forceId;
-        var battleHeroListSrc = citySrc.GetBattleHeroList(heroList);
+        var battleHeroListSrc = citySrc.GetBattleHeroList(heroList, heroSoldierDict, heroArmsDict);
         BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), battleHeroListSrc, cityDest.GetBattleHeroList(), foodUse, defenceFood, targetCityId,
             (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, foodCount, cityId, targetCityId, battleHeroListSrc.Select(x => x.CardId).ToArray(), srcForceId, destForceId));
     }
 
     private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, Dictionary<int, int> foodCount, int cityId, int targetCityId, int[] attackHeroList, int srcForceId, int destForceId)
     {
-        foreach (var item in soldierCount)
-            GameManager.Instance.GetHero(item.Key).soldier = item.Value;
-
         var destCity = GameManager.Instance.GetCity(targetCityId);
         var srcCity = GameManager.Instance.GetCity(cityId);
+
+        int srcRemaining = 0;
+        int destRemaining = 0;
+        foreach (var item in soldierCount)
+        {
+            var hero = GameManager.Instance.GetHero(item.Key);
+            if (hero != null)
+            {
+                if (hero.forceId == srcForceId)
+                    srcRemaining += item.Value;
+                else if (hero.forceId == destForceId)
+                    destRemaining += item.Value;
+            }
+        }
+        srcCity.soldier += srcRemaining;
+        destCity.soldier += destRemaining;
+
         if (result == BattleResult.Win)
         {
             destCity.food += foodCount[destForceId] + foodCount[srcForceId];

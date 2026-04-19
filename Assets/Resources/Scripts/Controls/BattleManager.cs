@@ -524,8 +524,6 @@ public class BattleManager : MonoBehaviour
         int aliveSideCount = 0;
 
         var unit = GameManager.Instance.GetHero(dieUnit.heroId);
-        if(unit != null)
-            unit.soldier = 0;
         foreach (var chessComponent in chessList)
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
