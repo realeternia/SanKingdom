@@ -94,7 +94,7 @@ public static class AI
         if (totalSoldier < SystemConst.AIStrategy.AI_MIN_ATTACK_SOLDIER)
             return;
         
-        int foodNeeded = totalSoldier / SystemConst.AIStrategy.AI_FOOD_NEED_DIVISOR;
+        int foodNeeded = SysFormula.AIStrategy.CalculateFoodNeeded(totalSoldier);
         
         if (city.food < foodNeeded)
             return;

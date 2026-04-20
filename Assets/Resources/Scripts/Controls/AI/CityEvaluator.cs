@@ -79,9 +79,7 @@ public class CityEvaluator
     
     private static int CalculatePriority(int current, int alert)
     {
-        if (current <= 0) return 100;
-        int deficit = alert - current;
-        return (deficit * 100) / alert;
+        return SysFormula.AIStrategy.CalculatePriority(current, alert);
     }
     
     public static bool IsFrontlineCity(SaveCityData city)

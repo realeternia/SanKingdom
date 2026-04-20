@@ -61,9 +61,9 @@ public class SaveCityData
     {
         var seasonCfg = SeasonConfig.GetConfig(GameManager.Instance.SeasonId);
         if(seasonCfg.AddGold != 0)
-            gold += (int)(level * SystemConst.City.GOLD_PER_LEVEL + seasonCfg.AddGold);
+            gold += SysFormula.City.CalculateGoldProduction(level, seasonCfg.AddGold);
         else if(seasonCfg.AddFood != 0)
-            food += (int)(level * SystemConst.City.FOOD_PER_LEVEL * seasonCfg.AddFood);
+            food += SysFormula.City.CalculateFoodProduction(level, seasonCfg.AddFood);
         actions.Clear();
     }
 
@@ -257,10 +257,9 @@ public class SaveCityData
 
     public int CalculateDistanceTo(int destCityId)
     {
-        //通过WorldConfig的x,y算距离
         var curCity = WorldConfig.GetConfig(cityId);
         var destCity = WorldConfig.GetConfig(destCityId);
-        return Math.Abs(curCity.X - destCity.X) + Math.Abs(curCity.Y - destCity.Y);
+        return SysFormula.City.CalculateDistance(curCity.X, curCity.Y, destCity.X, destCity.Y);
     }
 
     public void Occupy(int forceWin, List<int> winHeroIds, int forceLose, List<int> failHeroIds)
@@ -299,8 +298,7 @@ public class SaveCityData
                     }
                     else
                     {
-                        int str = hero.str > 0 ? hero.str : 50;
-                        int catchChance = SystemConst.Expedition.CATCH_BASE_CHANCE + (100 - str) * SystemConst.Expedition.CATCH_STR_FACTOR / 100;
+                        int catchChance = SysFormula.Hero.CalculateCaptureChance(hero.str);
                         if (UnityEngine.Random.Range(0, 100) >= catchChance)
                         {
                             hero.cityId = GameManager.Instance.GetRandomForceCityId(cityId, forceLose);
@@ -384,12 +382,7 @@ public class SaveCityData
             int leadship = hero.GetAttr("leadship");
             int charm = hero.GetAttr("charm");
 
-            float totalScore = str * SystemConst.City.OWNER_SCORE_WEIGHT_STR + inte + fair + (leadship * SystemConst.City.OWNER_SCORE_WEIGHT_LEADSHIP) + (charm * SystemConst.City.OWNER_SCORE_WEIGHT_CHARM);
-            if (heroId == kingHeroId)
-            {
-                totalScore += SystemConst.City.KING_OWNER_BONUS_SCORE;
-                GameLog.Info($"帅的分 {heroId} {totalScore}");
-            }
+            float totalScore = SysFormula.City.CalculateOwnerScore(str, inte, fair, leadship, charm, heroId == kingHeroId);
 
             if (totalScore > maxScore)
             {

@@ -19,7 +19,7 @@ public class AttackCandidate
         targetCityId = targetId;
         mySoldier = mySold;
         targetSoldier = targetSold;
-        advantage = mySoldier > 0 ? (float)mySoldier / Mathf.Max(1, targetSoldier) : 0;
+        advantage = SysFormula.AIStrategy.CalculateAdvantageRatio(mySold, targetSold);
         sourceType = type;
     }
 }
@@ -80,8 +80,7 @@ public class StrategicDecider
     {
         int citySoldier = city.GetAttr("soldier");
         int heroCount = city.GetNormalHeroList().Count;
-        int maxSoldierByHeroes = (heroCount - 1) * MAX_SOLDIER_PER_HERO;
-        return Mathf.Min(citySoldier, maxSoldierByHeroes);
+        return SysFormula.AIStrategy.CalculateEffectiveSoldier(citySoldier, heroCount);
     }
     
     public static Dictionary<int, CityStrategyState> DetermineCityStrategies(Player player)
@@ -236,7 +235,7 @@ public class StrategicDecider
         
         if (mySoldier < targetSoldier * SystemConst.AIStrategy.AI_ATTACK_SOURCE_ADVANTAGE_RATIO)
             return null;
-        
+
         return bestCity.cityId;
     }
     
@@ -275,7 +274,7 @@ public class StrategicDecider
                     {
                         int targetSoldier = nearCity.GetAttr("soldier");
                         
-                        if (soldier >= targetSoldier * SystemConst.AIStrategy.AI_OWN_CITY_ATTACK_ADVANTAGE_RATIO && city.food >= soldier / SystemConst.AIStrategy.AI_ATTACK_FOOD_DIVISOR)
+                        if (SysFormula.AIStrategy.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && SysFormula.AIStrategy.CheckAttackFoodSufficient(soldier, (int)city.food))
                         {
                             if (targetSoldier < minTargetSoldier)
                             {
@@ -307,7 +306,7 @@ public class StrategicDecider
             if (nearCity != null && nearCity.forceId != city.forceId)
             {
                 int enemySoldier = nearCity.GetAttr("soldier");
-                if (enemySoldier >= SystemConst.AIStrategy.AI_THREAT_ENEMY_SOLDIER_THRESHOLD)
+                if (SysFormula.AIStrategy.HasThreat(enemySoldier))
                 {
                     return true;
                 }
@@ -331,6 +330,6 @@ public class StrategicDecider
             totalSoldier += city.GetAttr("soldier");
         }
         
-        return totalGold >= MIN_RESOURCE_FOR_ATTACK && totalFood >= MIN_RESOURCE_FOR_ATTACK && totalSoldier >= MIN_SOLDIER_FOR_ATTACK;
+        return SysFormula.AIStrategy.CanExpand(totalGold, totalFood, totalSoldier);
     }
 }

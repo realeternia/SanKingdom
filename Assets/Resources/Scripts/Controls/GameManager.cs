@@ -388,13 +388,12 @@ public class GameManager : MonoBehaviour
         {
             if (hero.state == HeroState.Catched)
             {
-                hero.loyalty -= UnityEngine.Random.Range(SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MIN, SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MAX);
+                hero.loyalty -= SysFormula.Hero.CalculateCapturedLoyaltyDecay();
                 if (hero.loyalty < 0)
                     hero.loyalty = 0;
 
                 var city = GetCity(hero.cityId);
-                int escapeChance = SystemConst.Hero.CAPTURED_ESCAPE_CHANCE;
-                if (UnityEngine.Random.Range(0, 100) < escapeChance)
+                if (SysFormula.Hero.CheckEscape())
                 {
                     var destCityId = GetRandomForceCityId(hero.cityId, hero.forceId);
                     if (destCityId > 0)
@@ -410,7 +409,7 @@ public class GameManager : MonoBehaviour
             }
             else if (hero.state == HeroState.Wild)
             {
-                if (UnityEngine.Random.Range(0, 100) < SystemConst.Hero.WILD_HERO_MOVE_CHANCE)
+                if (SysFormula.Hero.CheckWildHeroMove())
                 {
                     var cityCfg = WorldConfig.GetConfig(hero.cityId);
                     if (cityCfg != null && cityCfg.WorldNearIds != null && cityCfg.WorldNearIds.Length > 0)
@@ -427,7 +426,7 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            return (SaveData.round % SystemConst.Game.SEASONS_PER_YEAR) + 1;
+            return SysFormula.Game.CalculateSeasonId(SaveData.round);
         }
     }
 
@@ -435,12 +434,7 @@ public class GameManager : MonoBehaviour
     // 例如：195年第18个季节 = 195.5
     public float GetCurrentYear()
     {
-        // 计算当前年份和季节
-        int totalSeasons = SaveData.round;
-        int years = totalSeasons / SystemConst.Game.SEASONS_PER_YEAR;
-        int seasons = totalSeasons % SystemConst.Game.SEASONS_PER_YEAR;
-        
-        return SystemConst.Game.BASE_YEAR + years + (seasons / (float)SystemConst.Game.SEASONS_PER_YEAR);
+        return SysFormula.Game.CalculateCurrentYear(SaveData.round);
     }
 
     public bool IsGameSaveExist()

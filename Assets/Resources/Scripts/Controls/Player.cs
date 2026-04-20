@@ -123,9 +123,9 @@ public class Player
             {
                 var attrVal2 = heroData.GetAttr(devConfig.Attrs[1]);
                 if (attrVal2 > attrVal)
-                {
-                    attrVal += (attrVal2 - attrVal) / SystemConst.Hero.SECONDARY_ATTR_CONTRIBUTION_DIVISOR;
-                }
+            {
+                attrVal += SysFormula.City.CalculateSecondaryAttrContribution(attrVal, attrVal2);
+            }
             }
 
             resultTmp.Add(0);
@@ -254,8 +254,7 @@ public class Player
     private static float GetVal(string resName, int min, int max, int nowVal, int addon)
     {
         var cityAttrConfig = CityAttrConfig.GetConfigByname(resName.ToLower());
-        var val = Math.Max(min, (float)addon / 100 * max);
-        val = Math.Min(val, cityAttrConfig.ValMax - nowVal);
+        var val = SysFormula.City.CalculateDevValue(min, max, addon, nowVal, cityAttrConfig.ValMax);
         return val;
     }
 
@@ -399,12 +398,12 @@ public class Player
             });
 
             int foodOld = cityData.GetAttr("Food");
-            cityData.AddAttr("Food", (int)(rate * amount));
+            cityData.AddAttr("Food", SysFormula.Economy.CalculateExchangeResult(amount, true));
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Food",
                 valOld = foodOld,
-                valAddon = (int)(rate * amount),
+                valAddon = SysFormula.Economy.CalculateExchangeResult(amount, true),
             });
         }
         else
@@ -425,12 +424,12 @@ public class Player
             });
 
             int goldOld = cityData.GetAttr("Gold");
-            cityData.AddAttr("Gold", (int)(rate * amount));
+            cityData.AddAttr("Gold", SysFormula.Economy.CalculateExchangeResult(amount, false));
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
                 valOld = goldOld,
-                valAddon = (int)(rate * amount),
+                valAddon = SysFormula.Economy.CalculateExchangeResult(amount, false),
             });
         }
 
@@ -459,13 +458,11 @@ public class Player
         
         if(hero.state == HeroState.Wild)
         {
-            baseSuccessRate = SystemConst.Hero.RECRUIT_WILD_BASE_RATE;
+            baseSuccessRate = SysFormula.Hero.CalculateRecruitWildRate();
         }
         else if(hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
         {
-            int loyalty = hero.loyalty;
-            int diff = 100 - loyalty;
-            baseSuccessRate = diff * diff / SystemConst.Hero.RECRUIT_CAPTURED_FORMULA_A + diff / SystemConst.Hero.RECRUIT_CAPTURED_FORMULA_B;
+            baseSuccessRate = SysFormula.Hero.CalculateRecruitCapturedRate(hero.loyalty);
         }
 
         if(myHeroId > 0)
@@ -474,12 +471,8 @@ public class Player
             if(executorHero != null)
             {
                 int charm = executorHero.GetAttr("charm");
-                if(charm >= SystemConst.Hero.CHARM_BONUS_TIER1)
-                    baseSuccessRate = baseSuccessRate * SystemConst.Hero.RECRUIT_TIER1_MULTIPLIER / 100;
-                else if(charm >= SystemConst.Hero.CHARM_BONUS_TIER2)
-                    baseSuccessRate = baseSuccessRate * SystemConst.Hero.RECRUIT_TIER2_MULTIPLIER / 100;
-                if(myHeroId == ForceConfig.GetConfig(executorHero.forceId).HeroId)
-                    baseSuccessRate = baseSuccessRate * SystemConst.Hero.KING_RECRUIT_MULTIPLIER / 100;
+                bool isKing = myHeroId == ForceConfig.GetConfig(executorHero.forceId).HeroId;
+                baseSuccessRate = SysFormula.Hero.ApplyCharmBonus(baseSuccessRate, charm, isKing);
             }
         }
 
@@ -549,11 +542,11 @@ public class Player
             
             if(methodId == 1)
             {
-                loyaltyAdd = UnityEngine.Random.Range(SystemConst.Hero.PRAISE_LOYALTY_ADD_MIN, SystemConst.Hero.PRAISE_LOYALTY_ADD_MAX);
+                loyaltyAdd = SysFormula.Hero.CalculatePraiseLoyaltyAdd();
             }
             else if(methodId == 2)
             {
-                loyaltyAdd = UnityEngine.Random.Range(SystemConst.Hero.REWARD_LOYALTY_ADD_MIN, SystemConst.Hero.REWARD_LOYALTY_ADD_MAX);
+                loyaltyAdd = SysFormula.Hero.CalculateRewardLoyaltyAdd();
             }
             
             hero.loyalty = System.Math.Min(SystemConst.Hero.MAX_LOYALTY, hero.loyalty + loyaltyAdd);

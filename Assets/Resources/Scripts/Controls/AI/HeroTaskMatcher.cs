@@ -27,20 +27,12 @@ public class HeroTaskMatcher
     {
         if (config.Attrs == null || config.Attrs.Length == 0)
             return 50f;
-        
-        float totalScore = 0f;
-        int attrCount = config.Attrs.Length;
-        
-        foreach (var attr in config.Attrs)
-        {
-            string normalizedAttr = NormalizeAttrName(attr);
-            int attrValue = hero.GetAttr(normalizedAttr);
-            totalScore += attrValue;
-        }
-        
-        float avgScore = totalScore / attrCount;
-        
-        return avgScore;
+
+        int[] attrValues = new int[config.Attrs.Length];
+        for (int i = 0; i < config.Attrs.Length; i++)
+            attrValues[i] = hero.GetAttr(NormalizeAttrName(config.Attrs[i]));
+
+        return SysFormula.AIStrategy.CalculateMatchScore(attrValues);
     }
     
     public static HeroTaskMatch FindBestTask(SaveHeroData hero, List<TaskPriorityInfo> availableTasks)
@@ -51,7 +43,7 @@ public class HeroTaskMatcher
         foreach (var taskInfo in availableTasks)
         {
             float matchScore = CalculateMatchScore(hero, taskInfo.config);
-            float combinedScore = matchScore + taskInfo.adjustedPriority * SystemConst.AIStrategy.TASK_PRIORITY_WEIGHT;
+            float combinedScore = SysFormula.AIStrategy.CalculateCombinedScore(matchScore, taskInfo.adjustedPriority);
             
             if (combinedScore > bestScore)
             {

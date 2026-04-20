@@ -332,7 +332,7 @@ public class Chess : SceneObj
 
     public void LackFood(float lackRate)
     {
-        var changeVal = -(int)((SystemConst.Battle.LACK_FOOD_BASE_DAMAGE + lackIndex * SystemConst.Battle.LACK_FOOD_DAMAGE_INCREMENT) * lackRate);
+        var changeVal = -SysFormula.Battle.CalculateLackFoodDamage(lackIndex, lackRate);
         var action = new ChessChangeHpAction(id, BattleManager.Instance.tickIndex, changeVal);
         BattleManager.Instance.AddChessAction(action);
         lackIndex++;
@@ -400,26 +400,9 @@ public class Chess : SceneObj
     // 计算目标分数
     private float CalculateTargetScore(Chess target, float distance)
     {
-        float score = target.isHero ? SystemConst.Battle.TARGET_SCORE_HERO : SystemConst.Battle.TARGET_SCORE_NONHERO;
-
-        // 添加最大属性差作为积分项（权重可根据游戏平衡调整）
-        if (distance < attackRange * 2)
-        {
-            score += 30 * UnityEngine.Random.value;
-
-            score += CalculateDamage(this, target) / 2;
-            score += (level - target.level) * SystemConst.Battle.LEVEL_DIFF_SCORE_WEIGHT;
-
-            // 生命值权重（生命值越低分数越高）
-            var targetHpRate = (float)target.hp / target.maxHp;
-            if (targetHpRate < SystemConst.Battle.LOW_HP_THRESHOLD)
-                score += (SystemConst.Battle.LOW_HP_THRESHOLD - targetHpRate) * SystemConst.Battle.LOW_HP_SCORE_WEIGHT + SystemConst.Battle.LOW_HP_BONUS;
-        }
-        else
-        {
-             score += 100f / (distance + 1f);  // 避免除以0
-        }
-
+        float score = SysFormula.Battle.CalculateTargetScore(
+            target.isHero, distance, attackRange,
+            CalculateDamage(this, target), level, target.level, (float)target.hp / target.maxHp);
         return score;
     }
 
@@ -580,22 +563,8 @@ public class Chess : SceneObj
         }
 
         damage = (int)(damageBase * damageMulti);
-        var minDamage = SystemConst.Battle.MIN_ATTACK_DAMAGE;
-        var maxDamage = SystemConst.Battle.MAX_ATTACK_DAMAGE;
-        if (isHero && victim.isHero)
-        {
-            var levelDiff = level - victim.level;
-            if (levelDiff != 0)
-            {
-                minDamage = Math.Clamp(minDamage + levelDiff, SystemConst.Battle.LEVEL_DIFF_MIN_DAMAGE_MIN, SystemConst.Battle.LEVEL_DIFF_MIN_DAMAGE_MAX);
-                maxDamage = Math.Clamp(maxDamage + levelDiff * SystemConst.Battle.LEVEL_DIFF_MAX_DAMAGE_FACTOR, SystemConst.Battle.LEVEL_DIFF_MAX_DAMAGE_MIN, SystemConst.Battle.LEVEL_DIFF_MAX_DAMAGE_MAX);
-            }
-        }
-        if(isCrit)
-        {
-            minDamage = (int)(minDamage * (1 + critDamageMulti));
-            maxDamage = (int)(maxDamage * (1 + critDamageMulti));
-        }
+        var levelDiff = (isHero && victim.isHero) ? level - victim.level : 0;
+        var (minDamage, maxDamage) = SysFormula.Battle.GetDamageRange(levelDiff, isCrit, critDamageMulti);
         damage = Mathf.Clamp(damage, minDamage, maxDamage);
         if (damage > 0)
         {
@@ -651,14 +620,7 @@ public class Chess : SceneObj
 
     private static int CalculateDamage(Chess attacker, Chess defender)
     {
-        int attackPower = attacker.atk + attacker.hp / SystemConst.Battle.HP_TO_ATK_DIVISOR;
-        int defensePower = defender.def;
-
-        int powerDiff = attackPower - defensePower;
-
-        int damage = SystemConst.Battle.BASE_DAMAGE + powerDiff / SystemConst.Battle.DAMAGE_POWER_DIFF_DIVISOR;
-
-        return damage;
+        return SysFormula.Battle.CalculateDamage(attacker.atk, attacker.hp, defender.def);
     }
 
     public void JumpToPosition(Vector3 targetPos, float jumpHeight = 10f, float moveDuration = 0.5f)

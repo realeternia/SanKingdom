@@ -75,14 +75,11 @@ public class Skill : IRecoverable
         var rate = skillCfg.Rate;
         if (rate > 0 && rate < 1 && target != null && target != owner)
         {
-            var myAttr = owner.GetAttr(skillCfg.Attr);
-            var defAttr = target.GetAttr(skillCfg.Attr);
             if (owner.forceId != target.forceId)
             {
-                if (myAttr > defAttr)
-                    rate *= Math.Min(SystemConst.Battle.BURST_RATE_ATTR_CAP, 1 + (myAttr - defAttr) * SystemConst.Battle.BURST_RATE_ATTR_FACTOR);
-                else if (myAttr < defAttr)
-                    rate /= Math.Min(SystemConst.Battle.BURST_RATE_ATTR_CAP, 1 + (defAttr - myAttr) * SystemConst.Battle.BURST_RATE_ATTR_FACTOR);
+                var myAttr = owner.GetAttr(skillCfg.Attr);
+                var defAttr = target.GetAttr(skillCfg.Attr);
+                rate = SysFormula.Battle.AdjustBurstRateByAttr(rate, myAttr, defAttr, true);
             }
 
             SkillManager.OnCheckBurst(owner, skillCfg, ref rate);

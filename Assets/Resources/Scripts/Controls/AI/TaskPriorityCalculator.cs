@@ -140,7 +140,7 @@ public class TaskPriorityCalculator
         {
             if (TaskMatchesNeed(taskInfo.config, need))
             {
-                adjusted += NEED_WEIGHT * need.priority / 100;
+                adjusted = SysFormula.AIStrategy.AdjustPriorityByNeeds(adjusted, need.priority);
             }
         }
         

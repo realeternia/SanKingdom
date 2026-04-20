@@ -55,9 +55,9 @@ public static class HeroSelectionTool
             int baseInte = heroData != null && heroData.inte > 0 ? heroData.inte : heroConfig.Inte;
             int baseLead = heroData != null && heroData.leadShip > 0 ? heroData.leadShip : heroConfig.LeadShip;
 
-            attrInfo.Inte = baseInte + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), baseInte * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
-            attrInfo.Str = baseStr + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), baseStr * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
-            attrInfo.Lead = baseLead + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), baseLead * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
+            attrInfo.Inte = baseInte + SysFormula.Hero.CalculateAttrGrowth(baseInte, lv);
+            attrInfo.Str = baseStr + SysFormula.Hero.CalculateAttrGrowth(baseStr, lv);
+            attrInfo.Lead = baseLead + SysFormula.Hero.CalculateAttrGrowth(baseLead, lv);
         }
         else
         {

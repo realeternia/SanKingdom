@@ -294,7 +294,7 @@ public class BattleManager : MonoBehaviour
                             foreach (var foodInfo in playerInfoList)
                             {
                                 var soldierNum = GetUnitsByForceId(foodInfo.forceId).Where(x => x.isHero).Sum(x => x.hp);
-                                var costAmount = soldierNum / SystemConst.Battle.FOOD_COST_DIVISOR; // 20回合消耗20天的粮食
+                                var costAmount = SysFormula.Battle.CalculateFoodCost(soldierNum);
 
                                 var action = new FoodCostAction(0, tickIndex, foodInfo.forceId, costAmount);
                                 AddChessAction(action);

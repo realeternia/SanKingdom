@@ -18,24 +18,9 @@ public class HeroDispatcher
     
     public static HeroType ClassifyHero(SaveHeroData hero)
     {
-        int str = hero.GetAttr("str");
-        int leadship = hero.GetAttr("leadship");
-        int inte = hero.GetAttr("inte");
-        int fair = hero.GetAttr("fair");
-        int charm = hero.GetAttr("charm");
-        
-        int combatScore = str + leadship + inte;
-        int domesticScore = inte + fair + charm;
-        
-        if (combatScore >= COMBAT_THRESHOLD && combatScore > domesticScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
-        {
-            return HeroType.Combat;
-        }
-        else if (domesticScore >= DOMESTIC_THRESHOLD && domesticScore > combatScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
-        {
-            return HeroType.Domestic;
-        }
-        return HeroType.Balanced;
+        return SysFormula.Hero.ClassifyHero(
+            hero.GetAttr("str"), hero.GetAttr("leadship"), hero.GetAttr("inte"),
+            hero.GetAttr("fair"), hero.GetAttr("charm"));
     }
     
     public static List<int> GetFrontlineCities(Player player)
