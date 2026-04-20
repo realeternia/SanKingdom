@@ -20,6 +20,44 @@ public class Player
 
     public bool IsPlayer{ get { return GameManager.Instance.GetForce(forceId).isPlayer; } }
 
+    public TurnPhase Phase { get; private set; } = TurnPhase.None;
+
+    public List<WarPlanData> warPlans = new List<WarPlanData>();
+    public bool planConfirmed = false;
+
+    public void SetPhase(TurnPhase phase)
+    {
+        Phase = phase;
+    }
+
+    public void AddWarPlan(WarPlanData warPlan)
+    {
+        warPlans.Add(warPlan);
+        GameLog.Info($"AddWarPlan forceId={warPlan.forceId} source={warPlan.sourceCityId} target={warPlan.targetCityId}");
+    }
+
+    public void ResetRoundState()
+    {
+        warPlans = new List<WarPlanData>();
+        planConfirmed = false;
+    }
+
+    public void StartPlanningPhase()
+    {
+        Phase = TurnPhase.Planning;
+
+        if (IsPlayer)
+        {
+            PanelManager.Instance.SendSignal("PhaseChange", "Planning", forceId);
+            PanelManager.Instance.SendSignal("AICheck", "", 0);
+        }
+        else
+        {
+            PanelManager.Instance.SendSignal("AICheck", pname, forceId);
+            GameManager.Instance.StartCoroutine(GameManager.Instance.AIPlayerTurnCoroutine(this));
+        }
+    }
+
     public Player(int id)
     {
         forceId = id;
@@ -107,18 +145,6 @@ public class Player
                 }
             }
 
-            if (devConfig.DevAttr3Value != null && devConfig.DevAttr3Value[1] != 0)
-            {
-                resultTmp.Add(0);
-                if (devConfig.DevAttr3Value[1] > 0)
-                {
-                    resultTmp[2] += GetVal(devConfig.DevAttr3, devConfig.DevAttr3Value[0], devConfig.DevAttr3Value[1], cityData.GetAttr(devConfig.DevAttr3), attrVal);
-                }
-                else
-                {
-                    resultTmp[2] += GetVal(devConfig.DevAttr3, devConfig.DevAttr3Value[0], devConfig.DevAttr3Value[1], cityData.GetAttr(devConfig.DevAttr3), attrVal);
-                }
-            }
         }
 
         // 转换结果为整数并创建 AttrData
@@ -149,18 +175,7 @@ public class Player
                 valAddon = results[1],
             });
         }
-        
-        if (!string.IsNullOrEmpty(devConfig.DevAttr3))
-        {
-            int attr3Old = cityData.GetAttr(devConfig.DevAttr3);
-            cityData.AddAttr(devConfig.DevAttr3, results[2]);
-            attrDatas.Add(new PopResultPanelManager.AttrData()
-            {
-                attr = devConfig.DevAttr3,
-                valOld = attr3Old,
-                valAddon = results[2],
-            });
-        }
+
 
         // 记录发展动作
         cityData.AddAction(devId, heroList.Length);

@@ -367,6 +367,19 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public void AssignHeroToDevNode(int heroId, CityDevNodeNew targetNode)
     {
+        var currentPlayer = GameManager.Instance.currentPlayer;
+        if (currentPlayer == null || !currentPlayer.IsPlayer)
+        {
+            SystemTip.Instance.ShowTip("当前不是你的回合");
+            return;
+        }
+        
+        if (currentPlayer.Phase != TurnPhase.Planning)
+        {
+            SystemTip.Instance.ShowTip("当前阶段无法派遣英雄");
+            return;
+        }
+        
         bool isHeroAlreadyAssigned = heroToDevNodeMap.ContainsKey(heroId);
         int oldHeroId = targetNode.GetCurrentHeroId();
         bool isTargetNodeOccupied = oldHeroId > 0;

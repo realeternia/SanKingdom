@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
@@ -9,4 +8,5 @@ public class SaveData
     public List<SaveHeroData> heros = new List<SaveHeroData>();
     public BattleStatManager battleStatManager = new BattleStatManager();
     public int round;
+    public int currentPlayerIndex;
 }

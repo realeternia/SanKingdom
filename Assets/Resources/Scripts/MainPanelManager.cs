@@ -18,6 +18,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     public Button btnCity;
     public Button btnRoundNext;
     public Button btnMode;
+    public TMP_Text textRoundNext;
 
     public TMP_Text textYear;
     public TMP_Text textAiInfo;
@@ -53,7 +54,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         });
         btnRoundNext.onClick.AddListener(() =>
         {
-            GameManager.Instance.NextRound();
+            OnRoundNextClick();
         });
         btnMode.onClick.AddListener(() =>
         {
@@ -66,6 +67,67 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     void Update()
     {
         
+    }
+    
+    private void OnRoundNextClick()
+    {
+        var currentPlayer = GameManager.Instance.currentPlayer;
+        var phase = currentPlayer != null ? currentPlayer.Phase : TurnPhase.None;
+        
+        if (phase == TurnPhase.None)
+        {
+            GameManager.Instance.NextRound();
+        }
+        else if (phase == TurnPhase.Planning)
+        {
+            if (currentPlayer != null && currentPlayer.IsPlayer)
+            {
+                GameManager.Instance.ConfirmPlan(currentPlayer.forceId);
+            }
+        }
+    }
+    
+    private void UpdateRoundNextButton()
+    {
+        var currentPlayer = GameManager.Instance.currentPlayer;
+        var phase = currentPlayer != null ? currentPlayer.Phase : TurnPhase.None;
+        bool isPlayerTurn = currentPlayer != null && currentPlayer.IsPlayer;
+        
+        if (textRoundNext != null)
+        {
+            if (phase == TurnPhase.None)
+            {
+                textRoundNext.text = "下一回合";
+            }
+            else if (isPlayerTurn)
+            {
+                switch (phase)
+                {
+                    case TurnPhase.Planning:
+                        textRoundNext.text = "确认计划";
+                        break;
+                    case TurnPhase.Execution:
+                        textRoundNext.text = "执行中...";
+                        break;
+                    case TurnPhase.Battle:
+                        textRoundNext.text = "战斗中...";
+                        break;
+                }
+            }
+            else
+            {
+                if (currentPlayer != null)
+                {
+                    textRoundNext.text = $"{currentPlayer.pname} 行动中...";
+                }
+                else
+                {
+                    textRoundNext.text = "等待中...";
+                }
+            }
+        }
+        
+        btnRoundNext.interactable = (phase == TurnPhase.None) || (phase == TurnPhase.Planning && isPlayerTurn);
     }
 
     private void InitDragHandler()
@@ -250,9 +312,9 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
     public void OnPieceClick(int pieceId)
     {
-        if (GameManager.Instance.forbidPlayerAct)
+        var currentPlayer = GameManager.Instance.currentPlayer;
+        if (currentPlayer != null && !currentPlayer.IsPlayer)
         {
-            GameLog.Warn("当前轮次玩家已操作，不能点击地图");
             return;
         }
 
@@ -291,7 +353,11 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         GameLog.Debug($"WorldManager SendSignal {name} {parm1} {parm2}");
         cityDetail.SendSignal(name, parm1, parm2);
 
-        if(name == "CityForceChange")
+        if(name == "PhaseChange")
+        {
+            UpdateRoundNextButton();
+        }
+        else if(name == "CityForceChange")
         {
             var cityId = parm2;
             worldPieces.Find(x => x.pieceId == cityId).SetColor(GameManager.Instance.GetCity(cityId).forceId);

@@ -137,7 +137,6 @@
     <Compile Include="Assets\Resources\Scripts\SystemTool\HeroSelectionTool.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackMultiArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RoundUpdateAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\CityDevNodeChange.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
     <Compile Include="Assets\Resources\Scripts\PopHeroSelectPanelManager.cs" />
@@ -176,13 +175,11 @@
     <Compile Include="Assets\Resources\Scripts\PopHeroSelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuff.cs" />
-    <Compile Include="Assets\Resources\Scripts\CityDevNodeNormal.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffLock.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\AttrRadarChart.cs" />
     <Compile Include="Assets\Resources\Scripts\CityCellCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitWall.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\CityDevUseHero.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelCell.cs" />
@@ -212,7 +209,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoAction.cs" />
     <Compile Include="Assets\Resources\Scripts\MapDragHandler.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamagedAddRate.cs" />
-    <Compile Include="Assets\Resources\Scripts\CityDevPraiseHero.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackSpinAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAntiShield.cs" />
     <Compile Include="Assets\Resources\Scripts\SelectHeroControl.cs" />
@@ -243,6 +239,7 @@
     <Compile Include="Assets\Resources\Scripts\BattleResultHeroCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\VideoPanelManager.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\TurnPhaseData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
     <Compile Include="Assets\Resources\Scripts\Tooltip.cs" />

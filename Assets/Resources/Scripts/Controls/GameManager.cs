@@ -10,14 +10,12 @@ using Controls.Utils;
 public class GameManager : MonoBehaviour
 {   
     public static GameManager Instance;
-    // todo 这里还有一个city数据列表
-    private StreamWriter logWriter;  // 日志写入器
+    private StreamWriter logWriter;
     public SaveData SaveData;
-    
-
 
     public List<Player> players = new List<Player>();
-    public bool forbidPlayerAct = false;
+    
+    public Player currentPlayer = null;
 
     private void Awake()
     {
@@ -80,6 +78,16 @@ public class GameManager : MonoBehaviour
     public Player GetPlayer(int forceId)
     {
         return players.Find(p => p.forceId == forceId);
+    }
+
+    private void SortPlayers()
+    {
+        players.Sort((a, b) =>
+        {
+            if (a.IsPlayer != b.IsPlayer)
+                return a.IsPlayer ? -1 : 1;
+            return a.forceId - b.forceId;
+        });
     }
 
     public SaveForceData GetForce(int forceId)
@@ -205,13 +213,21 @@ public class GameManager : MonoBehaviour
             players.Add(new Player(forceData.forceId));
         }
 
-        SaveToFile();        
+        SortPlayers();
+
+        SaveToFile();
+
+        foreach (var p in players)
+            p.ResetRoundState();
+        SaveData.currentPlayerIndex = 0;
+        StartNextPlayerTurn();
     }
 
-    // 下轮游戏
     public void NextRound()
     {
         SaveData.round++;
+        
+        PanelManager.Instance.SendSignal("RoundChange", "", SaveData.round);
 
         foreach(var city in SaveData.cities)
         {
@@ -219,13 +235,152 @@ public class GameManager : MonoBehaviour
         }
 
         ProcessHeros();
+        
+        foreach (var p in players)
+            p.ResetRoundState();
+        SaveData.currentPlayerIndex = 0;
+        SortPlayers();
+        
+        StartNextPlayerTurn();
 
         GameLog.Info("NextRound round=" + SaveData.round);
-
-        forbidPlayerAct = true;
-        StartCoroutine(NextRoundCoroutine());
     }
-
+    
+    private void StartNextPlayerTurn()
+    {
+        if (SaveData.currentPlayerIndex >= players.Count)
+        {
+            EndRound();
+            return;
+        }
+        
+        currentPlayer = players[SaveData.currentPlayerIndex];
+        SaveData.currentPlayerIndex++;
+        
+        StartPlayerPlanningPhase(currentPlayer);
+    }
+    
+    private void StartPlayerPlanningPhase(Player player)
+    {
+        player.StartPlanningPhase();
+        if (player.IsPlayer)
+        {
+            SaveToFile();
+        }
+        GameLog.Info($"StartPlayerPlanningPhase {player.pname} 计划阶段");
+    }
+    
+    public IEnumerator AIPlayerTurnCoroutine(Player player)
+    {
+        yield return new WaitForSeconds(0.3f);
+        GameLog.Info($"AI {player.pname} idle 回合完成");
+        StartNextPlayerTurn();
+    }
+    
+    public void ConfirmPlan(int forceId)
+    {
+        if (currentPlayer == null || currentPlayer.forceId != forceId)
+            return;
+        
+        GameLog.Info($"ConfirmPlan forceId={forceId}");
+        
+        StartCoroutine(PlayerTurnCoroutine(currentPlayer));
+    }
+    
+    private IEnumerator PlayerTurnCoroutine(Player player)
+    {
+        player.SetPhase(TurnPhase.Execution);
+        PanelManager.Instance.SendSignal("PhaseChange", "Execution", player.forceId);
+        
+        yield return ExecutePlayerDevActions(player);
+        
+        if (player.warPlans.Count > 0)
+        {
+            player.SetPhase(TurnPhase.Battle);
+            PanelManager.Instance.SendSignal("PhaseChange", "Battle", player.forceId);
+            
+            foreach (var warPlan in player.warPlans)
+            {
+                player.ExecuteCityBattleDev(
+                    warPlan.sourceCityId,
+                    CityDevConfig.ConfigList.FirstOrDefault(c => c.Prefab == "CityDevBattle")?.Id ?? 0,
+                    warPlan.heroIds,
+                    warPlan.foodCost,
+                    warPlan.targetCityId,
+                    true,
+                    warPlan.heroSoldierDict,
+                    warPlan.heroArmsDict
+                );
+                
+                while (BattleManager.Instance.IsBattleRunning)
+                {
+                    yield return new WaitForSeconds(0.1f);
+                }
+            }
+        }
+        
+        GameLog.Info($"玩家 {player.pname} 回合完成");
+        StartNextPlayerTurn();
+    }
+    
+    private IEnumerator ExecutePlayerDevActions(Player player)
+    {
+        var cities = GetCitiesByForce(player.forceId);
+        foreach (var city in cities)
+        {
+            var assignments = city.GetDevAssignments();
+            foreach (var assignment in assignments)
+            {
+                var heroIds = new int[] { assignment.heroId };
+                var devCfg = CityDevConfig.GetConfig(assignment.devId);
+                
+                if (devCfg == null) continue;
+                
+                if (devCfg.Prefab == "CityDevNormal")
+                {
+                    player.ExecuteCityDev(city.cityId, assignment.devId, heroIds, out _);
+                }
+                else if (devCfg.Prefab == "CityDevChange")
+                {
+                    player.ExecuteCityChange(city.cityId, assignment.devId, heroIds, true, 300, SystemConst.Economy.EXCHANGE_RATE, out _);
+                }
+                else if (devCfg.Prefab == "CityDevUseHero")
+                {
+                    var recruitableHeroes = city.GetRecruitableHeroList();
+                    if (recruitableHeroes.Count > 0)
+                    {
+                        player.ExecuteCityUseHero(city.cityId, assignment.devId, assignment.heroId, recruitableHeroes[0], out _);
+                    }
+                }
+                else if (devCfg.Prefab == "CityDevPraiseHero")
+                {
+                    var praiseableHeroes = GetPraiseableHeroList(player.forceId);
+                    if (praiseableHeroes.Count > 0)
+                    {
+                        player.ExecuteCityPraiseHero(city.cityId, assignment.devId, praiseableHeroes.ToArray(), 1, out _);
+                    }
+                }
+                
+                yield return null;
+            }
+        }
+    }
+    
+    public void EndRound()
+    {
+        if (currentPlayer != null)
+            currentPlayer.SetPhase(TurnPhase.None);
+        currentPlayer = null;
+        SaveData.currentPlayerIndex = 0;
+        
+        PanelManager.Instance.SendSignal("AICheck", "", 0);
+        PanelManager.Instance.SwitchBGM();
+        
+        GameLog.Info("EndRound");
+        
+        NextRound();
+    }
+    
     private void ProcessHeros()
     {
         foreach (var hero in SaveData.heros)
@@ -287,29 +442,6 @@ public class GameManager : MonoBehaviour
         return SystemConst.Game.BASE_YEAR + years + (seasons / (float)SystemConst.Game.SEASONS_PER_YEAR);
     }
 
-    private IEnumerator NextRoundCoroutine()
-    {
-        StrategicDecider.ClearRoundData();
-        
-        var playersCopy = new List<Player>(players);
-        foreach (var player in playersCopy)
-        {
-            PanelManager.Instance.SendSignal("AICheck", player.pname, player.forceId);
-
-            // 跳过玩家势力
-            if (player.IsPlayer)
-                continue;
-            
-            yield return AI.ExecuteAiActions(player);
-        }
-
-        PanelManager.Instance.SendSignal("AICheck", "", 0);
-        PanelManager.Instance.SendSignal("RoundChange", "", SaveData.round);
-        SaveToFile();
-        forbidPlayerAct = false;
-        PanelManager.Instance.SwitchBGM();
-    }
-
     public bool IsGameSaveExist()
     {
         string savePath = Application.persistentDataPath + "/game_save.json";
@@ -333,6 +465,11 @@ public class GameManager : MonoBehaviour
             {
                 players.Add(new Player(forceData.forceId));
             }
+            SortPlayers();
+
+            foreach (var p in players)
+                p.ResetRoundState();
+            StartNextPlayerTurn();
 
             GameLog.Info("游戏数据加载成功 year=" + SaveData.round);
         }
