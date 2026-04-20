@@ -114,56 +114,57 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         }
     }
 
-    public void Init(HeroConfig heroConfig)
+    public void Init(SaveHeroData heroData)
     {
-        // 设置英雄信息
+        heroData.InitAttrsFromConfig();
+        var heroConfig = HeroConfig.GetConfig(heroData.heroId);
         heroPic.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroConfig.Icon);
         heroPicContainer = heroPic.gameObject;
 
         heroName.text = heroConfig.Name;
-        heroId = heroConfig.Id;
-        str = heroConfig.Str;
-        inte = heroConfig.Inte;
-        leadShip = heroConfig.LeadShip;
-        fair = heroConfig.Fair;
-        charm = heroConfig.Charm;
+        heroId = heroData.heroId;
+        str = heroData.str;
+        inte = heroData.inte;
+        leadShip = heroData.leadShip;
+        fair = heroData.fair;
+        charm = heroData.charm;
 
         var bg = GetComponent<Image>();
-        bg.color = HeroSelectionTool.GetForceColor(heroConfig.ForceId);
+        var forceCfg = ForceConfig.GetConfig(heroData.forceId);
+        bg.color = ColorUtility.TryParseHtmlString(forceCfg.Color, out var wColor) ? wColor : Color.white;
 
-        heroStr.text = heroConfig.Str.ToString();
-        if (heroConfig.Str >= 95)
-            heroStr.text = "<color=red>" + heroConfig.Str.ToString() + "</color>";
-        else if (heroConfig.Str >= 90)
-            heroStr.text = "<color=yellow>" + heroConfig.Str.ToString() + "</color>";
+        heroStr.text = heroData.str.ToString();
+        if (heroData.str >= 95)
+            heroStr.text = "<color=red>" + heroData.str.ToString() + "</color>";
+        else if (heroData.str >= 90)
+            heroStr.text = "<color=yellow>" + heroData.str.ToString() + "</color>";
 
-        heroInte.text = heroConfig.Inte.ToString();
-        if (heroConfig.Inte >= 95)
-            heroInte.text = "<color=red>" + heroConfig.Inte.ToString() + "</color>";
-        else if (heroConfig.Inte >= 90)
-            heroInte.text = "<color=yellow>" + heroConfig.Inte.ToString() + "</color>";
+        heroInte.text = heroData.inte.ToString();
+        if (heroData.inte >= 95)
+            heroInte.text = "<color=red>" + heroData.inte.ToString() + "</color>";
+        else if (heroData.inte >= 90)
+            heroInte.text = "<color=yellow>" + heroData.inte.ToString() + "</color>";
 
-        heroLeadShip.text = heroConfig.LeadShip.ToString();
-        if (heroConfig.LeadShip >= 95)
-            heroLeadShip.text = "<color=red>" + heroConfig.LeadShip.ToString() + "</color>";
-        else if (heroConfig.LeadShip >= 90)
-            heroLeadShip.text = "<color=yellow>" + heroConfig.LeadShip.ToString() + "</color>";
+        heroLeadShip.text = heroData.leadShip.ToString();
+        if (heroData.leadShip >= 95)
+            heroLeadShip.text = "<color=red>" + heroData.leadShip.ToString() + "</color>";
+        else if (heroData.leadShip >= 90)
+            heroLeadShip.text = "<color=yellow>" + heroData.leadShip.ToString() + "</color>";
 
-        heroFair.text = heroConfig.Fair.ToString();
-        if (heroConfig.Fair >= 95)
-            heroFair.text = "<color=red>" + heroConfig.Fair.ToString() + "</color>";
-        else if (heroConfig.Fair >= 90)
-            heroFair.text = "<color=yellow>" + heroConfig.Fair.ToString() + "</color>";
+        heroFair.text = heroData.fair.ToString();
+        if (heroData.fair >= 95)
+            heroFair.text = "<color=red>" + heroData.fair.ToString() + "</color>";
+        else if (heroData.fair >= 90)
+            heroFair.text = "<color=yellow>" + heroData.fair.ToString() + "</color>";
 
-        heroCharm.text = heroConfig.Charm.ToString();
-        if (heroConfig.Charm >= 95)
-            heroCharm.text = "<color=red>" + heroConfig.Charm.ToString() + "</color>";
-        else if (heroConfig.Charm >= 90)
-            heroCharm.text = "<color=yellow>" + heroConfig.Charm.ToString() + "</color>";      
+        heroCharm.text = heroData.charm.ToString();
+        if (heroData.charm >= 95)
+            heroCharm.text = "<color=red>" + heroData.charm.ToString() + "</color>";
+        else if (heroData.charm >= 90)
+            heroCharm.text = "<color=yellow>" + heroData.charm.ToString() + "</color>";      
         heroPic.gameObject.SetActive(false);
 
-        var heroData = GameManager.Instance.GetHero(heroId);
-        if (heroData != null && heroData.cityId > 0)
+        if (heroData.cityId > 0)
         {
             var cityData = GameManager.Instance.GetCity(heroData.cityId);
             var cityCfg = WorldConfig.GetConfig(heroData.cityId);

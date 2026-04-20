@@ -21,21 +21,39 @@ public class SaveHeroData
     public int forceId;
     public int armsId;
 
-    public int GetAttr(string attr)
+    public int str;
+    public int inte;
+    public int fair;
+    public int charm;
+    public int leadShip;
+
+    public void InitAttrsFromConfig()
     {
         var heroConfig = HeroConfig.GetConfig(heroId);
+        if (heroConfig == null) 
+            return;
+        if (str == 0) str = heroConfig.Str;
+        if (inte == 0) inte = heroConfig.Inte;
+        if (fair == 0) fair = heroConfig.Fair;
+        if (charm == 0) charm = heroConfig.Charm;
+        if (leadShip == 0) leadShip = heroConfig.LeadShip;
+    }
+
+    public int GetAttr(string attr)
+    {
+        InitAttrsFromConfig();
         switch (attr.ToLower())
         {
             case "str":
-                return heroConfig.Str;
+                return str;
             case "inte":
-                return heroConfig.Inte;
+                return inte;
             case "fair":
-                return heroConfig.Fair;
+                return fair;
             case "leadship":
-                return heroConfig.LeadShip;
+                return leadShip;
             case "charm":
-                return heroConfig.Charm;
+                return charm;
             default:
                 return 0;
         }
@@ -57,6 +75,7 @@ public class SaveHeroData
         newHero.loyalty = SystemConst.Hero.WILD_HERO_DEFAULT_LOYALTY;
         newHero.forceId = SystemConst.Hero.WILD_FORCE_ID;
         newHero.armsId = SystemConst.Hero.DEFAULT_ARMS_ID;
+        newHero.InitAttrsFromConfig();
         return newHero;
     }
 

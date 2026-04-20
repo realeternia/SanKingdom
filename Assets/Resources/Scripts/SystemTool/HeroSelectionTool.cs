@@ -50,10 +50,14 @@ public static class HeroSelectionTool
         if (ConfigManager.IsHeroCard(cardId))
         {
             var heroConfig = HeroConfig.GetConfig(cardId);
+            var heroData = GameManager.Instance?.GetHero(cardId);
+            int baseStr = heroData != null && heroData.str > 0 ? heroData.str : heroConfig.Str;
+            int baseInte = heroData != null && heroData.inte > 0 ? heroData.inte : heroConfig.Inte;
+            int baseLead = heroData != null && heroData.leadShip > 0 ? heroData.leadShip : heroConfig.LeadShip;
 
-            attrInfo.Inte = heroConfig.Inte + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), heroConfig.Inte * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
-            attrInfo.Str = heroConfig.Str + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), heroConfig.Str * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
-            attrInfo.Lead = heroConfig.LeadShip + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), heroConfig.LeadShip * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
+            attrInfo.Inte = baseInte + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), baseInte * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
+            attrInfo.Str = baseStr + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), baseStr * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
+            attrInfo.Lead = baseLead + System.Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (lv - 1), baseLead * (lv - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
         }
         else
         {
@@ -91,15 +95,6 @@ public static class HeroSelectionTool
 
         return attrInfo;
 
-    }
-
-    public static Color GetForceColor(int forceId)
-    {
-        var forceCfg = ForceConfig.GetConfig(forceId);
-        if (forceCfg == null)
-            return new Color(50 / 255f, 50 / 255f, 50 / 255f, 255 / 255f);
-        ColorUtility.TryParseHtmlString(forceCfg.Color, out var wColor);
-        return wColor;
     }
  
 }

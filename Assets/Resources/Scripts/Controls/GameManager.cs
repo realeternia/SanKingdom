@@ -193,6 +193,7 @@ public class GameManager : MonoBehaviour
                 continue;
 
             var hero = new SaveHeroData { heroId = heroCfg.Id, cityOwner = false, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId, armsId = SystemConst.Hero.DEFAULT_ARMS_ID };
+            hero.InitAttrsFromConfig();
             SaveData.heros.Add(hero);
         }
         foreach(var city in SaveData.cities)

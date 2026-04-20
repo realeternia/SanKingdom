@@ -204,7 +204,7 @@ public class RankPanelManager : MonoBehaviour
                 cellInfo.rankPanelManager = this;
                 cellInfo.SetMode(false);
                 if (cellInfo != null)
-                    cellInfo.Init(heroConfig);
+                    cellInfo.Init(heroData);
                 count++;
                 heroList.Add(heroConfig.Id);
             }

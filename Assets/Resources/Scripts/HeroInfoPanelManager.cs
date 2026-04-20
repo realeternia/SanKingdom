@@ -107,6 +107,7 @@ public class HeroInfoPanelManager : MonoBehaviour
     {
         var heroConfig = HeroConfig.GetConfig(hId);
         var heroData = GameManager.Instance.GetHero(hId);
+        if (heroData != null) heroData.InitAttrsFromConfig();
         
         heroNameText.text = heroConfig.Name;
         string imgPath = "Textures/SkinsBig/" + heroConfig.Icon;
@@ -145,11 +146,11 @@ public class HeroInfoPanelManager : MonoBehaviour
         if (attrRadarChart != null)
         {
             attrRadarChart.SetAttrValues(
-                heroConfig.LeadShip,
-                heroConfig.Str,
-                heroConfig.Inte,
-                heroConfig.Fair,
-                heroConfig.Charm
+                heroData.leadShip,
+                heroData.str,
+                heroData.inte,
+                heroData.fair,
+                heroData.charm
             );
         }
 

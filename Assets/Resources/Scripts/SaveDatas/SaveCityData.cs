@@ -17,13 +17,12 @@ public class SaveCityData
     public float soldier;
     public float power;
     public float wall;
+    public List<DevAssignmentData> devAssignments = new List<DevAssignmentData>();    
 
     [NonSerialized]
     private int ownerHeroId;
     [NonSerialized]
     public Dictionary<int, int> actions = new Dictionary<int, int>();
-
-    public List<DevAssignmentData> devAssignments = new List<DevAssignmentData>();
 
     public void SetDevAssignment(int heroId, int devId)
     {
@@ -314,8 +313,7 @@ public class SaveCityData
                     }
                     else
                     {
-                        var heroCfg = HeroConfig.GetConfig(heroId);
-                        int str = heroCfg != null ? heroCfg.Str : 50;
+                        int str = hero.str > 0 ? hero.str : 50;
                         int catchChance = SystemConst.Expedition.CATCH_BASE_CHANCE + (100 - str) * SystemConst.Expedition.CATCH_STR_FACTOR / 100;
                         if (UnityEngine.Random.Range(0, 100) >= catchChance)
                         {
