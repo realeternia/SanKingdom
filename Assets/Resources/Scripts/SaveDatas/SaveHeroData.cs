@@ -15,7 +15,6 @@ public class SaveHeroData
     public int exp;
 
     public int cityId;
-    public bool cityOwner;
     public HeroState state;
     public int loyalty;
     public int forceId;
@@ -70,7 +69,6 @@ public class SaveHeroData
         newHero.heroId = heroId;
         newHero.exp = 0;
         newHero.cityId = cityId;
-        newHero.cityOwner = false;
         newHero.state = HeroState.Wild;
         newHero.loyalty = SystemConst.Hero.WILD_HERO_DEFAULT_LOYALTY;
         newHero.forceId = SystemConst.Hero.WILD_FORCE_ID;

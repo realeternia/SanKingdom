@@ -19,8 +19,7 @@ public class SaveCityData
     public float wall;
     public List<DevAssignmentData> devAssignments = new List<DevAssignmentData>();    
 
-    [NonSerialized]
-    private int ownerHeroId;
+    public int ownerHeroId;
     [NonSerialized]
     public Dictionary<int, int> actions = new Dictionary<int, int>();
 
@@ -187,20 +186,7 @@ public class SaveCityData
 
     public int GetOwner()
     {
-        if(ownerHeroId > 0)
-            return ownerHeroId;
-        foreach (var memberId in GetNormalHeroList())
-        {
-            var hero = GameManager.Instance.GetHero(memberId);
-            if (hero == null)
-                continue;
-            if (hero.cityId == cityId && hero.cityOwner)
-            {
-                ownerHeroId = memberId;
-                return memberId;
-            }
-        }
-        return 0;
+        return ownerHeroId;
     }
 
     public void AddAttr(string type, int add)
@@ -414,11 +400,7 @@ public class SaveCityData
 
         if (bestHero != null)
         {
-            foreach (var heroId in heroList)
-            {
-                SaveHeroData hero = GameManager.Instance.GetHero(heroId);
-                hero.cityOwner = (heroId == bestHero.heroId);
-            }
+            ownerHeroId = bestHero.heroId;
         }
     }
 
