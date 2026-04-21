@@ -16,7 +16,7 @@ public class SkillAttackedShadow : Skill
     {
         if (count > 0 && CheckBurst(attacker))
         {
-            Vector2 randomDir = UnityEngine.Random.insideUnitCircle.normalized;
+            Vector2 randomDir = BattleRandom.InsideUnitCircle.normalized;
             Vector3 randomPosition = owner.position + new Vector3(randomDir.x, 0, randomDir.y) * skillCfg.Range;
             BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501002, randomPosition, 0, (shadowUnitId) =>
             {

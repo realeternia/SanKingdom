@@ -438,6 +438,50 @@ public static class SystemConst
         /// 低血量加成
         /// </summary>
         public const float LOW_HP_BONUS = 10f;
+        /// <summary>
+        /// 初始攻击点最小值
+        /// </summary>
+        public const int INIT_ATTACK_POINT_MIN = 1;
+        /// <summary>
+        /// 初始攻击点最大值
+        /// </summary>
+        public const int INIT_ATTACK_POINT_MAX = 10;
+        /// <summary>
+        /// 目标搜索额外距离
+        /// </summary>
+        public const float TARGET_SEARCH_EXTRA_RANGE = 10f;
+        /// <summary>
+        /// 目标评分选取数量
+        /// </summary>
+        public const int TARGET_SCORE_SELECT_COUNT = 3;
+        /// <summary>
+        /// 移动短距离尝试次数
+        /// </summary>
+        public const int MOVE_SHORT_ATTEMPT_COUNT = 4;
+        /// <summary>
+        /// 移动长距离尝试次数
+        /// </summary>
+        public const int MOVE_LONG_ATTEMPT_COUNT = 10;
+        /// <summary>
+        /// 寻路偏移角度-低
+        /// </summary>
+        public const float PATHFIND_ANGLE_OFFSET_LOW = 45f;
+        /// <summary>
+        /// 寻路偏移角度-中
+        /// </summary>
+        public const float PATHFIND_ANGLE_OFFSET_MID = 70f;
+        /// <summary>
+        /// 寻路偏移角度-高
+        /// </summary>
+        public const float PATHFIND_ANGLE_OFFSET_HIGH = 90f;
+        /// <summary>
+        /// 寻路失败次数-低角度阈值
+        /// </summary>
+        public const int PATHFIND_FAIL_COUNT_LOW = 3;
+        /// <summary>
+        /// 寻路失败次数-中角度阈值
+        /// </summary>
+        public const int PATHFIND_FAIL_COUNT_MID = 5;
     }
 
     public static class WorldMap

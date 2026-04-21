@@ -122,7 +122,7 @@ public class Chess : SceneObj
 
         hp = maxHp;
         
-        attackPoint = UnityEngine.Random.Range(1, 10); // 随机获得初始气力
+        attackPoint = BattleRandom.Range(SystemConst.Battle.INIT_ATTACK_POINT_MIN, SystemConst.Battle.INIT_ATTACK_POINT_MAX);
         attackRate = 1;
 
         if (isHero)
@@ -374,10 +374,10 @@ public class Chess : SceneObj
         if(nearestDistance <= attackRange)
             filteredTargets = validTargets.Where(t => t.distance <= attackRange).ToList(); //如果有射程内的，就继续找一个射程内的
         else
-            filteredTargets = validTargets.Where(t => t.distance <= nearestDistance + 10f).ToList();
+            filteredTargets = validTargets.Where(t => t.distance <= nearestDistance + SystemConst.Battle.TARGET_SEARCH_EXTRA_RANGE).ToList();
 
         // 如果筛选后不足3个，则取全部
-        int takeCount = Mathf.Min(3, filteredTargets.Count);
+        int takeCount = Mathf.Min(SystemConst.Battle.TARGET_SCORE_SELECT_COUNT, filteredTargets.Count);
         List<(Chess chess, float distance)> topTargets = filteredTargets.Take(takeCount).ToList();
 
         // 对目标进行打分
@@ -493,16 +493,16 @@ public class Chess : SceneObj
 
         // 检查目标是否存在
         var targetChess = BattleManager.Instance.GetChess(targetChessId);
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < SystemConst.Battle.MOVE_SHORT_ATTEMPT_COUNT; i++)
         {
-            Vector3 nextPosition = Vector3.MoveTowards(position, targetChess.position, moveDis * (4 - i) / 4); //尝试短距离移动
+            Vector3 nextPosition = Vector3.MoveTowards(position, targetChess.position, moveDis * (SystemConst.Battle.MOVE_SHORT_ATTEMPT_COUNT - i) / SystemConst.Battle.MOVE_SHORT_ATTEMPT_COUNT);
             if (BattleManager.Instance.IsPositionFree(this, nextPosition))
                 return nextPosition;
         }
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < SystemConst.Battle.MOVE_LONG_ATTEMPT_COUNT; i++)
         {
-            Vector3 nextPosition = Vector3.MoveTowards(position, targetChess.position, moveDis * (i + 1) / 4); //尝试长距离移动
+            Vector3 nextPosition = Vector3.MoveTowards(position, targetChess.position, moveDis * (i + 1) / SystemConst.Battle.MOVE_SHORT_ATTEMPT_COUNT);
             if (BattleManager.Instance.IsPositionFree(this, nextPosition))
                 return nextPosition;
         }
@@ -515,15 +515,14 @@ public class Chess : SceneObj
             float angleOffset;
 
             // 根据失败次数确定偏移角度
-            if (moveFailCount <= 3)
-                angleOffset = 45f;
-            else if (moveFailCount <= 5)
-                angleOffset = 70f;
+            if (moveFailCount <= SystemConst.Battle.PATHFIND_FAIL_COUNT_LOW)
+                angleOffset = SystemConst.Battle.PATHFIND_ANGLE_OFFSET_LOW;
+            else if (moveFailCount <= SystemConst.Battle.PATHFIND_FAIL_COUNT_MID)
+                angleOffset = SystemConst.Battle.PATHFIND_ANGLE_OFFSET_MID;
             else
-                angleOffset = 90f;
+                angleOffset = SystemConst.Battle.PATHFIND_ANGLE_OFFSET_HIGH;
 
-            // 随机选择向上或向下偏移
-            angleOffset *= UnityEngine.Random.value > 0.5f ? 1 : -1;
+            angleOffset *= BattleRandom.Value > 0.5f ? 1 : -1;
 
             // 计算旋转后的方向
             Quaternion rotation = Quaternion.Euler(0, angleOffset, 0);
@@ -556,7 +555,7 @@ public class Chess : SceneObj
 
         SkillManager.DuringAttack(this, victim, "str", ref damageBase, ref damageMulti, ref damageReal, ref effect);
         // 暴击
-        if (critRate > 0 && UnityEngine.Random.value < critRate)
+        if (critRate > 0 && BattleRandom.Value < critRate)
         {
             damageMulti += critDamageMulti;
             isCrit = true;
@@ -568,7 +567,7 @@ public class Chess : SceneObj
         damage = Mathf.Clamp(damage, minDamage, maxDamage);
         if (damage > 0)
         {
-            if (victim.dodgeRate > 0 && UnityEngine.Random.value < victim.dodgeRate)
+            if (victim.dodgeRate > 0 && BattleRandom.Value < victim.dodgeRate)
             {
                 damage = 0;
                 isDodge = true;

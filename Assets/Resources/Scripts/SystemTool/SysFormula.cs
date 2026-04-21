@@ -2,6 +2,7 @@ using System;
 
 public static class SysFormula
 {
+    private static readonly System.Random _random = new System.Random();
     public static class Battle
     {
         public static int CalculateDamage(int atk, int hp, int def)
@@ -115,27 +116,27 @@ public static class SysFormula
 
         public static int CalculatePraiseLoyaltyAdd()
         {
-            return UnityEngine.Random.Range(SystemConst.Hero.PRAISE_LOYALTY_ADD_MIN, SystemConst.Hero.PRAISE_LOYALTY_ADD_MAX);
+            return _random.Next(SystemConst.Hero.PRAISE_LOYALTY_ADD_MIN, SystemConst.Hero.PRAISE_LOYALTY_ADD_MAX);
         }
 
         public static int CalculateRewardLoyaltyAdd()
         {
-            return UnityEngine.Random.Range(SystemConst.Hero.REWARD_LOYALTY_ADD_MIN, SystemConst.Hero.REWARD_LOYALTY_ADD_MAX);
+            return _random.Next(SystemConst.Hero.REWARD_LOYALTY_ADD_MIN, SystemConst.Hero.REWARD_LOYALTY_ADD_MAX);
         }
 
         public static int CalculateCapturedLoyaltyDecay()
         {
-            return UnityEngine.Random.Range(SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MIN, SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MAX);
+            return _random.Next(SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MIN, SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MAX);
         }
 
         public static bool CheckEscape()
         {
-            return UnityEngine.Random.Range(0, 100) < SystemConst.Hero.CAPTURED_ESCAPE_CHANCE;
+            return _random.Next(0, 100) < SystemConst.Hero.CAPTURED_ESCAPE_CHANCE;
         }
 
         public static bool CheckWildHeroMove()
         {
-            return UnityEngine.Random.Range(0, 100) < SystemConst.Hero.WILD_HERO_MOVE_CHANCE;
+            return _random.Next(0, 100) < SystemConst.Hero.WILD_HERO_MOVE_CHANCE;
         }
 
         public static HeroType ClassifyHero(int str, int leadship, int inte, int fair, int charm)
@@ -242,7 +243,7 @@ public static class SysFormula
         public static int CalculateEffectiveSoldier(int citySoldier, int heroCount)
         {
             int maxSoldierByHeroes = (heroCount - 1) * SystemConst.AIStrategy.MAX_SOLDIER_PER_HERO;
-            return UnityEngine.Mathf.Min(citySoldier, maxSoldierByHeroes);
+            return Math.Min(citySoldier, maxSoldierByHeroes);
         }
 
         public static bool CheckAttackSourceAdvantage(int mySoldier, int targetSoldier)

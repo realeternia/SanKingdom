@@ -395,7 +395,7 @@ public class BattleManager : MonoBehaviour
             SpawnHerosForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(2, i), cards2[i]);
         }
 
-        count = Math.Min(cards1.Count, 12);
+        count = Math.Min(cards1.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++) 
         {
             var tick = tickIndex + SystemConst.Battle.ATTACKER_SPAWN_DELAY_TICKS + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
@@ -606,10 +606,9 @@ public class BattleManager : MonoBehaviour
 
         GameLog.Info($"RandomSelect limit:{limit} unitsInRange.Count:{unitsInRange.Count}");
         
-        System.Random random = new System.Random();
         while (unitsInRange.Count > limit)
         {
-            int indexToRemove = random.Next(0, unitsInRange.Count);
+            int indexToRemove = BattleRandom.Range(0, unitsInRange.Count);
             unitsInRange.RemoveAt(indexToRemove);
         }
     }

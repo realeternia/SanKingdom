@@ -143,6 +143,7 @@
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysFormula.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAidSuddenArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleResultPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\SysRandom.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefSkillDamageReduce.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\FoodCostAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefFeedback.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIStrategyContext.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SeasonConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\BattleRandom.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitAround.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXLightFade.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitTeleport.cs" />

@@ -128,7 +128,7 @@ public class GameManager : MonoBehaviour
         var nearbyCityIds = GetNearbyForceCityIds(fromCityId, forceId);
         if (nearbyCityIds.Count > 0)
         {
-            return nearbyCityIds[UnityEngine.Random.Range(0, nearbyCityIds.Count)];
+            return nearbyCityIds[SysRandom.Range(0, nearbyCityIds.Count)];
         }
 
         var kingCity = GetPlayer(forceId)?.GetKingCity();
@@ -140,7 +140,7 @@ public class GameManager : MonoBehaviour
         var forceCities = GetCitiesByForce(forceId);
         if (forceCities.Count > 0)
         {
-            return forceCities[UnityEngine.Random.Range(0, forceCities.Count)].cityId;
+            return forceCities[SysRandom.Range(0, forceCities.Count)].cityId;
         }
 
         return 0;
@@ -414,7 +414,7 @@ public class GameManager : MonoBehaviour
                     var cityCfg = WorldConfig.GetConfig(hero.cityId);
                     if (cityCfg != null && cityCfg.WorldNearIds != null && cityCfg.WorldNearIds.Length > 0)
                     {
-                        int randomIndex = UnityEngine.Random.Range(0, cityCfg.WorldNearIds.Length);
+                        int randomIndex = SysRandom.Range(0, cityCfg.WorldNearIds.Length);
                         hero.cityId = cityCfg.WorldNearIds[randomIndex];
                     }
                 }

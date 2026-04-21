@@ -50,6 +50,12 @@ Assets/Resources/Scripts/
 │   ├── SaveCityData.cs        # 城市存档
 │   ├── SaveHeroData.cs        # 英雄存档
 ├── SystemTool/                # 工具类方法
+│   ├── SysFormula.cs          # 公式计算（核心）
+│   ├── SystemConst.cs         # 常量定义（核心）
+│   ├── BattleRandom.cs        # 战斗层随机数工具
+│   ├── SysRandom.cs           # 战略层随机数工具
+│   ├── GameLog.cs             # 日志系统
+│   └── BGMPlayer.cs           # 背景音乐播放
 └── UIScripts/                 # UI脚本
 ```
 
@@ -86,6 +92,25 @@ Assets/Resources/Scripts/
 - 日志级别：`GameLog.Debug()`, `GameLog.Info()`, `GameLog.Warn()`, `GameLog.Error()`
 - AI 相关日志使用标签：`GameLog.SetTag("AI").Info(...)`
 - 日志消息使用中文描述，关键参数用 `$"..."` 内插
+
+### 随机数规范
+
+项目提供两个随机数工具类，封装 `System.Random` 以保证帧同步一致性：
+
+- **`BattleRandom`** — 战斗层专用随机数工具
+  - 用于战斗逻辑（暴击、闪避、技能触发、寻路等）
+  - 支持 `Seed(int)` 设置种子，用于战斗回放
+  - 支持 `Reset()` 重置为随机种子
+  - 方法：`Range(int min, int max)`、`Value`（0-1浮点）、`InsideUnitCircle`（单位圆内随机点）
+
+- **`SysRandom`** — 战略层随机数工具
+  - 用于非战斗的游戏逻辑（登用判定、俘虏判定、英雄移动、城市选择等）
+  - 方法：`Range(int min, int max)`、`Value`（0-1浮点）、`Next(int max)`
+
+使用规则：
+- 战斗代码（`Combat/` 目录下）必须使用 `BattleRandom`
+- 战略层代码（英雄登用、俘虏、城市发展等）使用 `SysRandom`
+- 禁止在游戏逻辑中使用 `UnityEngine.Random`
 
 ## 核心架构模式
 
@@ -184,7 +209,7 @@ AI 系统采用分层架构：
 
 ## 禁止事项
 
-- 不要在战斗逻辑中使用 `UnityEngine.Random`，应使用 `System.Random` 以保证帧同步一致性（当前部分代码已使用 `UnityEngine.Random`，新增代码应尽量使用 `System.Random`）
+- 不要在战斗逻辑中使用 `UnityEngine.Random`，必须使用 `BattleRandom`（战斗层）或 `SysRandom`（战略层）
 - 不要在 `SaveData` 及其子类中存储 Unity 对象引用
 - 不要在配置类中使用属性（Property），使用公共字段（Field）
 - 不要在业务代码中硬编码数值，必须提取到 `SystemConst`

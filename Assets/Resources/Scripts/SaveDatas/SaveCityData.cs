@@ -299,7 +299,7 @@ public class SaveCityData
                     else
                     {
                         int catchChance = SysFormula.Hero.CalculateCaptureChance(hero.str);
-                        if (UnityEngine.Random.Range(0, 100) >= catchChance)
+                        if (SysRandom.Range(0, 100) >= catchChance)
                         {
                             hero.cityId = GameManager.Instance.GetRandomForceCityId(cityId, forceLose);
                             destCityIds.Add(hero.cityId);

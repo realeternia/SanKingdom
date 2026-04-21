@@ -195,7 +195,7 @@ public class ChessViewObj : MonoBehaviour
         GameObject soldierPrefab = Resources.Load<GameObject>("Prefabs/Arms/" + sodType);
         if (soldierPrefab == null)
         {
-            Debug.LogWarning(sodType + " prefab not found!");
+            GameLog.Warn(sodType + " prefab not found!");
             return;
         }
 

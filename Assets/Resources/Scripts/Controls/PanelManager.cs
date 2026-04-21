@@ -60,7 +60,7 @@ public class PanelManager : MonoBehaviour
         gameObject.SetActive(false);
         isShowWorld = false;
 
-        var roll = UnityEngine.Random.Range(0, 2);
+        var roll = SysRandom.Range(0, 2);
         BGMPlayer.Instance.PlayBGM(roll == 0 ? "BGMs/weifeng" : "BGMs/pozhu");
     }
 

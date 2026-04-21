@@ -476,7 +476,7 @@ public class Player
             }
         }
 
-        int randomVal = UnityEngine.Random.Range(0, 100);
+        int randomVal = SysRandom.Range(0, 100);
         success = randomVal < baseSuccessRate;
 
         

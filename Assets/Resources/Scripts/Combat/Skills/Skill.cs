@@ -85,7 +85,7 @@ public class Skill : IRecoverable
             SkillManager.OnCheckBurst(owner, skillCfg, ref rate);
         }
 
-        isBurst = !IsInCD() && (skillCfg.Rate <= 0 || UnityEngine.Random.value < rate);
+        isBurst = !IsInCD() && (skillCfg.Rate <= 0 || BattleRandom.Value < rate);
       //  UnityEngine.Debug.Log("CheckBurst isBurst=" + isBurst.ToString() + " skillId=" + id.ToString());
         if(isBurst)
             UpdateCD();
