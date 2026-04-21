@@ -64,18 +64,6 @@ public class StrategicDecider
                attackedTargetsThisRound[forceId].Contains(targetCityId);
     }
     
-    private static string GetForceName(int forceId)
-    {
-        var cfg = ForceConfig.GetConfig(forceId);
-        return cfg != null ? cfg.Cname : forceId.ToString();
-    }
-    
-    private static string GetCityName(int cityId)
-    {
-        var cfg = WorldConfig.GetConfig(cityId);
-        return cfg != null ? cfg.Cname : cityId.ToString();
-    }
-    
     private static int CalculateEffectiveSoldier(SaveCityData city)
     {
         int citySoldier = city.GetAttr("soldier");
@@ -128,8 +116,8 @@ public class StrategicDecider
                 atkCount++;
                 
                 var targetCity = GameManager.Instance.GetCity(candidate.targetCityId);
-                string targetForceName = targetCity != null ? GetForceName(targetCity.forceId) : "未知";
-                GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(candidate.sourceCityId)}] 决定攻击[{GetCityName(candidate.targetCityId)}] 目标势力:{targetForceName} 优势比:{candidate.advantage:F2} 来源:{candidate.sourceType}");
+                string targetForceName = targetCity != null ? ConfigNameHelper.GetForceName(targetCity.forceId) : "未知";
+                GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(player.forceId)} - [{ConfigNameHelper.GetCityName(candidate.sourceCityId)}] 决定攻击[{ConfigNameHelper.GetCityName(candidate.targetCityId)}] 目标势力:{targetForceName} 优势比:{candidate.advantage:F2} 来源:{candidate.sourceType}");
             }
         }
         
@@ -141,7 +129,7 @@ public class StrategicDecider
                 if (HasThreat(city))
                 {
                     result[cityId] = CityStrategyState.Def;
-                    GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(cityId)}] 决定防御");
+                    GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(player.forceId)} - [{ConfigNameHelper.GetCityName(cityId)}] 决定防御");
                 }
             }
         }

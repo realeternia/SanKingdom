@@ -698,24 +698,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private string GetForceName(int forceId)
-    {
-        var cfg = ForceConfig.GetConfig(forceId);
-        return cfg != null ? cfg.Cname : forceId.ToString();
-    }
-
-    private string GetHeroName(int heroId)
-    {
-        var cfg = HeroConfig.GetConfig(heroId);
-        return cfg != null ? cfg.Name : heroId.ToString();
-    }
-
-    private string GetCityName(int cityId)
-    {
-        var cfg = WorldConfig.GetConfig(cityId);
-        return cfg != null ? cfg.Cname : cityId.ToString();
-    }
-
     private void LogBattleResult()
     {
         if (cards1 == null || cards2 == null) return;
@@ -723,8 +705,8 @@ public class BattleManager : MonoBehaviour
         var attackerForceId = playerInfoList[0].forceId;
         var defenderForceId = playerInfoList[1].forceId;
         
-        var attackerHeroNames = string.Join(",", cards1.Select(c => GetHeroName(c.CardId)));
-        var defenderHeroNames = string.Join(",", cards2.Select(c => GetHeroName(c.CardId)));
+        var attackerHeroNames = string.Join(",", cards1.Select(c => ConfigNameHelper.GetHeroName(c.CardId)));
+        var defenderHeroNames = string.Join(",", cards2.Select(c => ConfigNameHelper.GetHeroName(c.CardId)));
         
         string resultStr = battleResult switch
         {
@@ -737,7 +719,7 @@ public class BattleManager : MonoBehaviour
         var attackerRemaining = chessList.Where(x => x.forceId == attackerForceId && x.isHero).Sum(x => Math.Max(0, x.hp));
         var defenderRemaining = chessList.Where(x => x.forceId == defenderForceId && x.isHero).Sum(x => Math.Max(0, x.hp));
         
-        GameLog.SetTag("AI").Info($"{GetForceName(attackerForceId)} vs {GetForceName(defenderForceId)} [{GetCityName(cityId)}] " +
+        GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(attackerForceId)} vs {ConfigNameHelper.GetForceName(defenderForceId)} [{ConfigNameHelper.GetCityName(cityId)}] " +
             $"攻击方:[{attackerHeroNames}] 防守方:[{defenderHeroNames}] " +
             $"结果:{resultStr} 回合:{round} " +
             $"剩余兵力 攻:{attackerRemaining} 守:{defenderRemaining}");

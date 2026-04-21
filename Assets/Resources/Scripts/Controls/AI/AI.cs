@@ -5,29 +5,6 @@ using Controls.Utils;
 
 public static class AI
 {
-    private static string GetForceName(int forceId)
-    {
-        var cfg = ForceConfig.GetConfig(forceId);
-        return cfg != null ? cfg.Cname : forceId.ToString();
-    }
-    
-    private static string GetHeroName(int heroId)
-    {
-        var cfg = HeroConfig.GetConfig(heroId);
-        return cfg != null ? cfg.Name : heroId.ToString();
-    }
-    
-    private static string GetCityName(int cityId)
-    {
-        var cfg = WorldConfig.GetConfig(cityId);
-        return cfg != null ? cfg.Cname : cityId.ToString();
-    }
-    
-    private static string GetHeroNames(int[] heroIds)
-    {
-        return string.Join(",", heroIds.Select(GetHeroName));
-    }
-    
     public static void ExecutePlanningPhase(Player player)
     {
         StrategicDecider.ClearRoundData();
@@ -42,7 +19,7 @@ public static class AI
         
         GameManager.Instance.ConfirmPlan(player.forceId);
         
-        GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} 计划阶段完成");
+        GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(player.forceId)} 计划阶段完成");
     }
     
     private static void GenerateWarPlans(Player player, AIStrategyContext context, Dictionary<int, CityStrategyState> cityStrategies)
@@ -114,6 +91,6 @@ public static class AI
         
         StrategicDecider.MarkTargetAttacked(player.forceId, targetCityId);
         
-        GameLog.SetTag("AI").Info($"{GetForceName(player.forceId)} - [{GetCityName(city.cityId)}] 计划攻击[{GetCityName(targetCityId)}] 英雄:[{GetHeroNames(heroIds)}] 兵力:{totalSoldier}");
+        GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(player.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 计划攻击[{ConfigNameHelper.GetCityName(targetCityId)}] 英雄:[{ConfigNameHelper.GetHeroNames(heroIds)}] 兵力:{totalSoldier}");
     }
 }

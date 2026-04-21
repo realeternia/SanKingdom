@@ -126,6 +126,7 @@
     <Compile Include="Assets\Resources\Scripts\ReplayCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\EffectManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\ConfigNameHelper.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\Player.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\BuffConfig_s.cs" />
