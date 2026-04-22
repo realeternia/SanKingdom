@@ -84,8 +84,8 @@ public class Player
         
         var devConfig = CityDevConfig.GetConfig(devId);
         var cityData = GameManager.Instance.GetCity(cityId);
+        var forceData = GameManager.Instance.GetForce(forceId);
         
-        // 检查发展任务的主要属性是否已达到最大值
         if (devConfig.Attrs.Length > 0)
         {
             string mainAttr = devConfig.DevAttr1.ToLower();
@@ -98,17 +98,15 @@ public class Player
             }
         }
         
-        // 检查黄金是否足够
-        if (cityData.gold < devConfig.GoldCost * heroList.Length)
+        if (forceData.gold < devConfig.GoldCost * heroList.Length)
         {
             GameLog.Warn($"玩家 {pname} 城市 {cityId} 发展任务 {devId} 失败，黄金不足");
             return false;
         }
         
-        // 扣除发展成本
         if (devConfig.GoldCost > 0)
         {
-            cityData.gold -= devConfig.GoldCost * heroList.Length;
+            forceData.gold -= devConfig.GoldCost * heroList.Length;
         }
         
         // 计算发展结果
@@ -270,17 +268,19 @@ public class Player
         else
             BattleManager.Instance.SetMode(false, true);
 
-        citySrc.food -= foodUse;
-        var defenceFood = cityDest.GetAttr("food");
-        cityDest.food = 0;
+        var srcForceData = GameManager.Instance.GetForce(citySrc.forceId);
+        var destForceData = GameManager.Instance.GetForce(cityDest.forceId);
+        srcForceData.food -= foodUse;
+        int defenceFood = (int)destForceData.food;
+        destForceData.food = 0;
         int srcForceId = citySrc.forceId;
         int destForceId = cityDest.forceId;
         var battleHeroListSrc = citySrc.GetBattleHeroList(heroList, heroSoldierDict, heroArmsDict);
         BattleManager.Instance.BattleBegin(citySrc.GetPlayer(), cityDest.GetPlayer(), battleHeroListSrc, cityDest.GetBattleHeroList(), foodUse, defenceFood, targetCityId,
-            (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, foodCount, cityId, targetCityId, battleHeroListSrc.Select(x => x.CardId).ToArray(), srcForceId, destForceId));
+            (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, cityId, targetCityId, battleHeroListSrc.Select(x => x.CardId).ToArray(), srcForceId, destForceId));
     }
 
-    private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, Dictionary<int, int> foodCount, int cityId, int targetCityId, int[] attackHeroList, int srcForceId, int destForceId)
+    private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, int cityId, int targetCityId, int[] attackHeroList, int srcForceId, int destForceId)
     {
         var destCity = GameManager.Instance.GetCity(targetCityId);
         var srcCity = GameManager.Instance.GetCity(cityId);
@@ -303,15 +303,8 @@ public class Player
 
         if (result == BattleResult.Win)
         {
-            destCity.food += foodCount[destForceId] + foodCount[srcForceId];
-
             destCity.Occupy(forceId, attackHeroList.ToList(), destForceId, destCity.GetBattleHeroList().Select(x => x.CardId).ToList());
             srcCity.RecalculateHeros();
-        }
-        else
-        {
-            srcCity.food += foodCount[srcForceId];
-            destCity.food += foodCount[destForceId];
         }
     }
 
@@ -349,8 +342,8 @@ public class Player
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
 
-        citySrc.food -= foodUse;
-        cityDest.food += foodUse;
+        var srcForceData = GameManager.Instance.GetForce(citySrc.forceId);
+        srcForceData.food -= foodUse;
 
         MoveHeroToCity(cityId, targetCityId, heroList);
     }
@@ -379,17 +372,18 @@ public class Player
         attrDatas = new List<PopResultPanelManager.AttrData>();
         
         var cityData = GameManager.Instance.GetCity(cityId);
+        var forceData = GameManager.Instance.GetForce(forceId);
 
         if(isBuying)
         {
-            if(cityData.gold < amount)
+            if(forceData.gold < amount)
             {
                 SystemTip.Instance.ShowTip("黄金不足");
                 return false;
             }
 
-            int goldOld = cityData.GetAttr("Gold");
-            cityData.AddAttr("Gold", - amount);
+            int goldOld = (int)forceData.gold;
+            forceData.gold -= amount;
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
@@ -397,25 +391,26 @@ public class Player
                 valAddon = - amount,
             });
 
-            int foodOld = cityData.GetAttr("Food");
-            cityData.AddAttr("Food", SysFormula.Economy.CalculateExchangeResult(amount, true));
+            int foodOld = (int)forceData.food;
+            int foodAdd = SysFormula.Economy.CalculateExchangeResult(amount, true);
+            forceData.food += foodAdd;
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Food",
                 valOld = foodOld,
-                valAddon = SysFormula.Economy.CalculateExchangeResult(amount, true),
+                valAddon = foodAdd,
             });
         }
         else
         {
-            if(cityData.food < amount)
+            if(forceData.food < amount)
             {
                 SystemTip.Instance.ShowTip("粮食不足");
                 return false;
             }
 
-            int foodOld = cityData.GetAttr("Food");
-            cityData.AddAttr("Food", -amount);
+            int foodOld = (int)forceData.food;
+            forceData.food -= amount;
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Food",
@@ -423,17 +418,17 @@ public class Player
                 valAddon = -amount,
             });
 
-            int goldOld = cityData.GetAttr("Gold");
-            cityData.AddAttr("Gold", SysFormula.Economy.CalculateExchangeResult(amount, false));
+            int goldOld = (int)forceData.gold;
+            int goldAdd = SysFormula.Economy.CalculateExchangeResult(amount, false);
+            forceData.gold += goldAdd;
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
                 valOld = goldOld,
-                valAddon = SysFormula.Economy.CalculateExchangeResult(amount, false),
+                valAddon = goldAdd,
             });
         }
 
-        // 记录发展动作
         cityData.AddAction(devId, heroList.Length);
 
         return true;
@@ -516,20 +511,21 @@ public class Player
         attrDatas = new List<PopResultPanelManager.AttrData>();
         
         var cityData = GameManager.Instance.GetCity(cityId);
+        var forceData = GameManager.Instance.GetForce(forceId);
         
         if(methodId == 2)
         {
             int totalCost = heroList.Length * SystemConst.Hero.PRAISE_GOLD_COST_PER_HERO;
-            if(cityData.gold < totalCost)
+            if(forceData.gold < totalCost)
             {
                 SystemTip.Instance.ShowTip("黄金不足");
                 return false;
             }
-            cityData.gold -= totalCost;
+            forceData.gold -= totalCost;
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
-                valOld = cityData.GetAttr("gold") + totalCost,
+                valOld = (int)forceData.gold + totalCost,
                 valAddon = -totalCost,
             });
         }

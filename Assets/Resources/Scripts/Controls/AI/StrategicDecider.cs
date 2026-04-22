@@ -262,7 +262,7 @@ public class StrategicDecider
                     {
                         int targetSoldier = nearCity.GetAttr("soldier");
                         
-                        if (SysFormula.AIStrategy.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && SysFormula.AIStrategy.CheckAttackFoodSufficient(soldier, (int)city.food))
+                        if (SysFormula.AIStrategy.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && SysFormula.AIStrategy.CheckAttackFoodSufficient(soldier, (int)GameManager.Instance.GetForce(city.forceId).food))
                         {
                             if (targetSoldier < minTargetSoldier)
                             {
@@ -306,15 +306,14 @@ public class StrategicDecider
     private static bool CanExpand(Player player)
     {
         var cities = player.GetCityList();
+        var forceData = GameManager.Instance.GetForce(player.forceId);
         
-        int totalGold = 0;
-        int totalFood = 0;
+        int totalGold = (int)forceData.gold;
+        int totalFood = (int)forceData.food;
         int totalSoldier = 0;
         
         foreach (var city in cities)
         {
-            totalGold += city.GetAttr("gold");
-            totalFood += city.GetAttr("food");
             totalSoldier += city.GetAttr("soldier");
         }
         

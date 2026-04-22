@@ -147,9 +147,9 @@ public static class SystemConst
     public static class City
     {
         /// <summary>
-        /// 城市初始势力值
+        /// 城市初始民心值
         /// </summary>
-        public const int INITIAL_CITY_POWER = 70;
+        public const int INITIAL_CITY_HAPPY = 70;
         /// <summary>
         /// 每级金币产出
         /// </summary>
@@ -615,9 +615,9 @@ public static class SystemConst
         /// </summary>
         public const int SOLDIER_ALERT = 500;
         /// <summary>
-        /// 势力警戒值
+        /// 民心警戒值
         /// </summary>
-        public const int POWER_ALERT = 50;
+        public const int HAPPY_ALERT = 50;
         /// <summary>
         /// 需求权重
         /// </summary>

@@ -174,10 +174,8 @@ public class GameManager : MonoBehaviour
             city.forceId = cityCfg.ForceId;
             city.level = cityCfg.Level;
             city.exp = 0;
-            city.gold = cityCfg.Gold;
-            city.food = cityCfg.Food;
             city.soldier = cityCfg.Soldier;
-            city.power = SystemConst.City.INITIAL_CITY_POWER;
+            city.happy = SystemConst.City.INITIAL_CITY_HAPPY;
             city.wall = cityCfg.Wall;
 
             SaveData.cities.Add(city);
@@ -204,7 +202,7 @@ public class GameManager : MonoBehaviour
         {
             if(force.Id > SystemConst.Game.MAX_FORCE_ID)
                 continue;
-            var forceData = new SaveForceData { forceId = force.Id };
+            var forceData = new SaveForceData { forceId = force.Id, gold = force.InitGold, food = force.InitFood };
             if(force.Id == forceId)
                 forceData.isPlayer = true;
             SaveData.forces.Add(forceData); 

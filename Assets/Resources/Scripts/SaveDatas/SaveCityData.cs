@@ -12,10 +12,8 @@ public class SaveCityData
     public int forceId;
     public int level;
     public int exp;
-    public float gold;
-    public float food;
     public float soldier;
-    public float power;
+    public float happy;
     public float wall;
     public List<DevAssignmentData> devAssignments = new List<DevAssignmentData>();    
 
@@ -60,10 +58,14 @@ public class SaveCityData
     public void OnRound()
     {
         var seasonCfg = SeasonConfig.GetConfig(GameManager.Instance.SeasonId);
-        if(seasonCfg.AddGold != 0)
-            gold += SysFormula.City.CalculateGoldProduction(level, seasonCfg.AddGold);
-        else if(seasonCfg.AddFood != 0)
-            food += SysFormula.City.CalculateFoodProduction(level, seasonCfg.AddFood);
+        var forceData = GameManager.Instance.GetForce(forceId);
+        if(forceData != null)
+        {
+            if(seasonCfg.AddGold != 0)
+                forceData.gold += SysFormula.City.CalculateGoldProduction(level, seasonCfg.AddGold);
+            else if(seasonCfg.AddFood != 0)
+                forceData.food += SysFormula.City.CalculateFoodProduction(level, seasonCfg.AddFood);
+        }
         actions.Clear();
     }
 
@@ -199,20 +201,14 @@ public class SaveCityData
             case "exp":
                 exp += add;
                 break;
-            case "gold":
-                gold += add;
-                break;
-            case "food":
-                food += add;
-                break;
             case "soldier":
                 soldier += add;
                 break;
+            case "happy":
+                happy += add;
+                break;
             case "wall":
                 wall += add;
-                break;
-            case "power":
-                power += add;
                 break;
             default:
                 break;
@@ -227,16 +223,12 @@ public class SaveCityData
                 return level;
             case "exp":
                 return exp;
-            case "gold":
-                return (int)Math.Floor(gold);
-            case "food":
-                return (int)Math.Floor(food);
             case "soldier":
                 return (int)Math.Floor(soldier);
+            case "happy":
+                return (int)Math.Floor(happy);
             case "wall":
                 return (int)Math.Floor(wall);
-            case "power":
-                return (int)Math.Floor(power);
             default:
                 return 0;
         }

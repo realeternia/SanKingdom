@@ -8,7 +8,7 @@ public enum CityNeedType
     FoodShortage,
     WallLow,
     SoldierShortage,
-    PowerLow
+    HappyLow
 }
 
 public class CityNeed
@@ -35,7 +35,7 @@ public class CityEvaluator
     private const int FOOD_ALERT = SystemConst.AICity.FOOD_ALERT;
     private const int WALL_ALERT = SystemConst.AICity.WALL_ALERT;
     private const int SOLDIER_ALERT = SystemConst.AICity.SOLDIER_ALERT;
-    private const int POWER_ALERT = SystemConst.AICity.POWER_ALERT;
+    private const int HAPPY_ALERT = SystemConst.AICity.HAPPY_ALERT;
     
     public static List<CityNeed> EvaluateCity(SaveCityData city)
     {
@@ -66,10 +66,10 @@ public class CityEvaluator
             needs.Add(new CityNeed(CityNeedType.SoldierShortage, prio, "soldier", totalSoldier, SOLDIER_ALERT));
         }
         
-        if (city.GetAttr("power") < POWER_ALERT)
+        if (city.GetAttr("happy") < HAPPY_ALERT)
         {
-            int prio = CalculatePriority(city.GetAttr("power"), POWER_ALERT);
-            needs.Add(new CityNeed(CityNeedType.PowerLow, prio, "power", city.GetAttr("power"), POWER_ALERT));
+            int prio = CalculatePriority(city.GetAttr("happy"), HAPPY_ALERT);
+            needs.Add(new CityNeed(CityNeedType.HappyLow, prio, "happy", city.GetAttr("happy"), HAPPY_ALERT));
         }
         
         needs.Sort((a, b) => b.priority.CompareTo(a.priority));

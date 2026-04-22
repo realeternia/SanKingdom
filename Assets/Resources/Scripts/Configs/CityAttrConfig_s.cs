@@ -70,8 +70,8 @@ namespace CommonConfig
             config[4] = new CityAttrConfig(4, "gold", "金钱", 999, 100, 25, "citygold");
             config[5] = new CityAttrConfig(5, "food", "粮食", 999, 100, 25, "cityfood");
             config[6] = new CityAttrConfig(6, "soldier", "士兵", 999, 100, 25, "citysod");
+            config[7] = new CityAttrConfig(7, "happy", "民心", 999, 100, 25, "citysod");
             config[8] = new CityAttrConfig(8, "wall", "城墙", 999, 100, 25, "citywall");
-            config[9] = new CityAttrConfig(9, "power", "士气", 99, 50, 0, "citytrain");
 
 
             idxname["level"] =  1;
@@ -84,10 +84,10 @@ namespace CommonConfig
             idxCname["粮食"] =  5;
             idxname["soldier"] =  6;
             idxCname["士兵"] =  6;
+            idxname["happy"] =  7;
+            idxCname["民心"] =  7;
             idxname["wall"] =  8;
             idxCname["城墙"] =  8;
-            idxname["power"] =  9;
-            idxCname["士气"] =  9;
 
         }
 

@@ -106,8 +106,8 @@ public class PickPanelControl : MonoBehaviour
             {
                 targetForceId = exceptCell.forceId;
                 var forceCfg = ForceConfig.GetConfig(targetForceId);
-                int foodTotal = 0;
-                int goldTotal = 0;
+                int foodTotal = forceCfg.InitFood;
+                int goldTotal = forceCfg.InitGold;
                 int soldierTotal = 0;
                 int cityTotal = 0;
                 
@@ -116,8 +116,6 @@ public class PickPanelControl : MonoBehaviour
                     if(worldConfig.ForceId != targetForceId)
                         continue;
 
-                    foodTotal += worldConfig.Food;
-                    goldTotal += worldConfig.Gold;
                     soldierTotal += worldConfig.Soldier;
                     cityTotal ++;
                 }

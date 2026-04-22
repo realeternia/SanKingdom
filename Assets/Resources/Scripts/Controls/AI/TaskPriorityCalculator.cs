@@ -59,7 +59,8 @@ public class TaskPriorityCalculator
     
     private static bool IsTaskAvailable(SaveCityData city, CityDevConfig config)
     {
-        if (city.gold < config.GoldCost)
+        var forceData = GameManager.Instance.GetForce(city.forceId);
+        if (forceData.gold < config.GoldCost)
             return false;
         
         switch (config.Prefab)
@@ -73,7 +74,7 @@ public class TaskPriorityCalculator
             case "CityDevUseHero":
                 return city.GetRecruitableHeroList().Count > 0;
             case "CityDevChange":
-                return city.gold >= SystemConst.Economy.EXCHANGE_MIN_GOLD;
+                return forceData.gold >= SystemConst.Economy.EXCHANGE_MIN_GOLD;
             case "CityDevPraiseHero":
                 return HasLowLoyaltyHero(city);
             default:
@@ -130,7 +131,8 @@ public class TaskPriorityCalculator
         {
             int totalSoldier = city.GetAttr("soldier");
             int foodThreshold = totalSoldier / 2;
-            if (totalSoldier > 0 && city.food < foodThreshold)
+            var forceData = GameManager.Instance.GetForce(city.forceId);
+            if (totalSoldier > 0 && forceData.food < foodThreshold)
             {
                 adjusted += NEED_WEIGHT;
             }
@@ -162,8 +164,8 @@ public class TaskPriorityCalculator
                 return attr1 == "wall" || attr2 == "wall";
             case CityNeedType.SoldierShortage:
                 return attr1 == "soldier" || attr2 == "soldier";
-            case CityNeedType.PowerLow:
-                return attr1 == "power" || attr2 == "power";
+            case CityNeedType.HappyLow:
+                return attr1 == "happy" || attr2 == "happy";
             default:
                 return false;
         }

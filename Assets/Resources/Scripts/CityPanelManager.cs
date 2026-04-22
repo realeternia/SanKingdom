@@ -200,10 +200,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     {
         var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData == null) return;
+        var forceData = GameManager.Instance.GetForce(cityData.forceId);
 
         if (textExp != null) textExp.text = $"{cityData.exp}";
-        if (textGold != null) textGold.text = $"{(int)cityData.gold}";
-        if (textFood != null) textFood.text = $"{(int)cityData.food}";
+        if (textGold != null) textGold.text = $"{(int)forceData.gold}";
+        if (textFood != null) textFood.text = $"{(int)forceData.food}";
         if (textSoldier != null) textSoldier.text = $"{(int)cityData.soldier}";
         if (textWall != null) textWall.text = $"{(int)cityData.wall}";
     }

@@ -140,8 +140,8 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RoundUpdateAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
-    <Compile Include="Assets\Resources\Scripts\PopHeroSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysFormula.cs" />
+    <Compile Include="Assets\Resources\Scripts\PopHeroSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAidSuddenArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleResultPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysRandom.cs" />

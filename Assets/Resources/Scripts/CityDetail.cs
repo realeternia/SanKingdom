@@ -36,6 +36,30 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         }
     }
 
+    private void SetTextAndColor(TMP_Text textComponent, SaveForceData force, string attrName)
+    {
+        int val = 0;
+        switch (attrName.ToLower())
+        {
+            case "gold":
+                val = (int)force.gold;
+                break;
+            case "food":
+                val = (int)force.food;
+                break;
+        }
+        if(textComponent == null)
+            return;
+        textComponent.text = val.ToString();
+        var cfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
+
+        textComponent.color = Color.gray;
+        if (cfg.ValLow != 0 && val < cfg.ValLow)
+        {
+            textComponent.color = Color.red;
+        }
+    }
+
     private void AddOverlay(GameObject parent, Color color)
     {
         var overlay = new GameObject("Overlay");
@@ -73,14 +97,15 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         this.cityId = cityId;
         var city = GameManager.Instance.GetCity(cityId);
         var worldCfg = WorldConfig.GetConfig(cityId);
+        var forceData = GameManager.Instance.GetForce(city.forceId);
         textCityName.text = worldCfg.Cname;
         textOwnerName.text = ForceConfig.GetConfig(city.forceId).Cname;
         SetTextAndColor(textLevel, city, "level");
         SetTextAndColor(textExp, city, "exp");
-        SetTextAndColor(textGold, city, "gold");
-        SetTextAndColor(textFood, city, "food");
+        SetTextAndColor(textGold, forceData, "gold");
+        SetTextAndColor(textFood, forceData, "food");
         SetTextAndColor(textSoldier, city, "soldier");
-        SetTextAndColor(textPower, city, "power");
+        SetTextAndColor(textPower, city, "happy");
         SetTextAndColor(textWall, city, "wall");
         var owner = city.GetOwner();
         if(owner > 0)
