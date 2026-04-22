@@ -71,11 +71,11 @@ public class StrategicDecider
         return SysFormula.AIStrategy.CalculateEffectiveSoldier(citySoldier, heroCount);
     }
     
-    public static Dictionary<int, CityStrategyState> DetermineCityStrategies(Player player)
+    public static Dictionary<int, CityStrategyState> DetermineCityStrategies(SaveForceData force)
     {
         var result = new Dictionary<int, CityStrategyState>();
-        var cities = player.GetCityList();
-        var frontlineCities = HeroDispatcher.GetFrontlineCities(player);
+        var cities = force.GetCityList();
+        var frontlineCities = HeroDispatcher.GetFrontlineCities(force);
         
         foreach (var city in cities)
         {
@@ -83,13 +83,13 @@ public class StrategicDecider
         }
         
         int atkCount = 0;
-        if (CanExpand(player))
+        if (CanExpand(force))
         {
             var allCandidates = new List<AttackCandidate>();
-            var targetBasedCandidates = SelectAttackTargetsByEnemy(player, 2);
+            var targetBasedCandidates = SelectAttackTargetsByEnemy(force, 2);
             allCandidates.AddRange(targetBasedCandidates);
 
-            var ownCityCandidates = SelectAttackTargetsByOwnCity(player, 2);
+            var ownCityCandidates = SelectAttackTargetsByOwnCity(force, 2);
             allCandidates.AddRange(ownCityCandidates);    
             
             var usedSources = new HashSet<int>();
@@ -117,7 +117,7 @@ public class StrategicDecider
                 
                 var targetCity = GameManager.Instance.GetCity(candidate.targetCityId);
                 string targetForceName = targetCity != null ? ConfigNameHelper.GetForceName(targetCity.forceId) : "未知";
-                GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(player.forceId)} - [{ConfigNameHelper.GetCityName(candidate.sourceCityId)}] 决定攻击[{ConfigNameHelper.GetCityName(candidate.targetCityId)}] 目标势力:{targetForceName} 优势比:{candidate.advantage:F2} 来源:{candidate.sourceType}");
+                GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(candidate.sourceCityId)}] 决定攻击[{ConfigNameHelper.GetCityName(candidate.targetCityId)}] 目标势力:{targetForceName} 优势比:{candidate.advantage:F2} 来源:{candidate.sourceType}");
             }
         }
         
@@ -129,7 +129,7 @@ public class StrategicDecider
                 if (HasThreat(city))
                 {
                     result[cityId] = CityStrategyState.Def;
-                    GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(player.forceId)} - [{ConfigNameHelper.GetCityName(cityId)}] 决定防御");
+                    GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(cityId)}] 决定防御");
                 }
             }
         }
@@ -137,10 +137,10 @@ public class StrategicDecider
         return result;
     }
     
-    private static List<AttackCandidate> SelectAttackTargetsByEnemy(Player player, int maxCount)
+    private static List<AttackCandidate> SelectAttackTargetsByEnemy(SaveForceData force, int maxCount)
     {
         var result = new List<AttackCandidate>();
-        var cities = player.GetCityList();
+        var cities = force.GetCityList();
         var myCityIds = new HashSet<int>(cities.Select(c => c.cityId));
         
         var potentialTargets = new List<int>();
@@ -155,11 +155,11 @@ public class StrategicDecider
                 if (myCityIds.Contains(nearId))
                     continue;
                 
-                if (HasAttackedTarget(player.forceId, nearId))
+                if (HasAttackedTarget(force.forceId, nearId))
                     continue;
                 
                 var nearCity = GameManager.Instance.GetCity(nearId);
-                if (nearCity != null && nearCity.forceId != player.forceId)
+                if (nearCity != null && nearCity.forceId != force.forceId)
                 {
                     potentialTargets.Add(nearId);
                 }
@@ -178,7 +178,7 @@ public class StrategicDecider
             if (result.Count >= maxCount)
                 break;
             
-            var sourceId = SelectAttackSourceForTarget(player, targetId);
+            var sourceId = SelectAttackSourceForTarget(force, targetId);
             if (sourceId.HasValue)
             {
                 var sourceCity = GameManager.Instance.GetCity(sourceId.Value);
@@ -193,9 +193,9 @@ public class StrategicDecider
         return result;
     }
     
-    private static int? SelectAttackSourceForTarget(Player player, int targetCityId)
+    private static int? SelectAttackSourceForTarget(SaveForceData force, int targetCityId)
     {
-        var cities = player.GetCityList();
+        var cities = force.GetCityList();
         var targetCity = GameManager.Instance.GetCity(targetCityId);
         
         var nearCityIds = WorldConfig.GetConfig(targetCityId)?.WorldNearIds;
@@ -227,10 +227,10 @@ public class StrategicDecider
         return bestCity.cityId;
     }
     
-    private static List<AttackCandidate> SelectAttackTargetsByOwnCity(Player player, int maxCount)
+    private static List<AttackCandidate> SelectAttackTargetsByOwnCity(SaveForceData force, int maxCount)
     {
         var result = new List<AttackCandidate>();
-        var cities = player.GetCityList();
+        var cities = force.GetCityList();
         var myCityIds = new HashSet<int>(cities.Select(c => c.cityId));
         
         foreach (var city in cities)
@@ -254,11 +254,11 @@ public class StrategicDecider
                     if (myCityIds.Contains(nearId))
                         continue;
                     
-                    if (HasAttackedTarget(player.forceId, nearId))
+                    if (HasAttackedTarget(force.forceId, nearId))
                         continue;
                     
                     var nearCity = GameManager.Instance.GetCity(nearId);
-                    if (nearCity != null && nearCity.forceId != player.forceId)
+                    if (nearCity != null && nearCity.forceId != force.forceId)
                     {
                         int targetSoldier = nearCity.GetAttr("soldier");
                         
@@ -303,10 +303,10 @@ public class StrategicDecider
         return false;
     }
     
-    private static bool CanExpand(Player player)
+    private static bool CanExpand(SaveForceData force)
     {
-        var cities = player.GetCityList();
-        var forceData = GameManager.Instance.GetForce(player.forceId);
+        var cities = force.GetCityList();
+        var forceData = GameManager.Instance.GetForce(force.forceId);
         
         int totalGold = (int)forceData.gold;
         int totalFood = (int)forceData.food;

@@ -52,11 +52,11 @@ public class BattleResultPanelManager : MonoBehaviour
         var cityCfg = WorldConfig.GetConfig(record.cityId);
         textTitle.text = (cityCfg != null ? cityCfg.Cname : "未知") + "之战 (" + record.rounds + "回合)";
 
-        var force1 = GameManager.Instance.GetPlayer(record.forceId1);
-        var force2 = GameManager.Instance.GetPlayer(record.forceId2);
+        var force1 = GameManager.Instance.GetForce(record.forceId1);
+        var force2 = GameManager.Instance.GetForce(record.forceId2);
         
-        string forceName1 = force1 != null ? force1.pname : "势力" + record.forceId1;
-        string forceName2 = force2 != null ? force2.pname : "势力" + record.forceId2;
+        string forceName1 = force1 != null ? force1.Name : "势力" + record.forceId1;
+        string forceName2 = force2 != null ? force2.Name : "势力" + record.forceId2;
         
         if (record.result == BattleResult.Win)
         {

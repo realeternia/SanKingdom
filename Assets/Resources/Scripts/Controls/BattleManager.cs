@@ -93,7 +93,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private Coroutine currentBattleCoroutine = null;
     
-    public void BattleBegin(Player player1, Player player2, List<BattleCardData> cards1, List<BattleCardData> cards2, int food1, int food2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
+    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<BattleCardData> cards1, List<BattleCardData> cards2, int food1, int food2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
     {
         if (IsBattleRunning)
         {
@@ -106,8 +106,8 @@ public class BattleManager : MonoBehaviour
         battleEndCallback = callback;
         this.cityId = cityId;
         playerInfoList.Clear();
-        playerInfoList.Add(new FoodInfo() { forceId = player1.forceId, food = food1, maxFood = food1, soldierNumInit = cards1.Sum(x => x.SoldierNum) });
-        playerInfoList.Add(new FoodInfo() { forceId = player2.forceId, food = food2, maxFood = food2, soldierNumInit = cards2.Sum(x => x.SoldierNum) });
+        playerInfoList.Add(new FoodInfo() { forceId = force1.forceId, food = food1, maxFood = food1, soldierNumInit = cards1.Sum(x => x.SoldierNum) });
+        playerInfoList.Add(new FoodInfo() { forceId = force2.forceId, food = food2, maxFood = food2, soldierNumInit = cards2.Sum(x => x.SoldierNum) });
 
         chessList.Clear();
         missileList.Clear();
@@ -120,7 +120,7 @@ public class BattleManager : MonoBehaviour
         gameFinish = false;
         round = 0;
 
-        InitUI(player1, player2);
+        InitUI(force1, force2);
         //对cards1和card2都按HeroConfig的Range排序，确保远程在后面
         cards1.Sort((a, b) => ArmsConfig.GetConfig(a.ArmsId).Range.CompareTo(ArmsConfig.GetConfig(b.ArmsId).Range));
         cards2.Sort((a, b) => ArmsConfig.GetConfig(a.ArmsId).Range.CompareTo(ArmsConfig.GetConfig(b.ArmsId).Range));
@@ -131,11 +131,10 @@ public class BattleManager : MonoBehaviour
         currentBattleCoroutine = StartCoroutine(GameUpdate());
     }
 
-    private void InitUI(Player player1, Player player2)
+    private void InitUI(SaveForceData force1, SaveForceData force2)
     {
         if (showUI)
         {
-            // 打印加载耗时
             var startTime = Time.realtimeSinceStartup;
             var newMapId = 1;
             var mapNode = Resources.Load<GameObject>("Prefabs/BattleMaps/Map" + newMapId);
@@ -146,9 +145,9 @@ public class BattleManager : MonoBehaviour
             var endTime = Time.realtimeSinceStartup;
             GameLog.Info("加载地图耗时：" + (endTime - startTime) + "秒");
 
-            battleUIManager.ShowBattleBegin(player1, player2, MaxRound, playerInfoList[0].soldierNumInit, playerInfoList[1].soldierNumInit);
-            battleUIManager.CreateCastleHUD(player1, GetSpawnPosition(1, 5));
-            battleUIManager.CreateCastleHUD(player2, GetSpawnPosition(2, 5));
+            battleUIManager.ShowBattleBegin(force1, force2, MaxRound, playerInfoList[0].soldierNumInit, playerInfoList[1].soldierNumInit);
+            battleUIManager.CreateCastleHUD(force1, GetSpawnPosition(1, 5));
+            battleUIManager.CreateCastleHUD(force2, GetSpawnPosition(2, 5));
         }
     }
 
@@ -174,8 +173,8 @@ public class BattleManager : MonoBehaviour
         GameManager.Instance.SaveData.battleStatManager.LoadBattleForReplay(battleId);
 
         gameFinish = false;
-        var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
-        var player2 = GameManager.Instance.GetPlayer(playerInfoList[1].forceId);
+        var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
+        var player2 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
         
         InitUI(player1, player2);
 
@@ -190,21 +189,21 @@ public class BattleManager : MonoBehaviour
             return new Vector3(430 + (indx / 4) * 15, 7, 245 - (indx % 4) * 20);
     }
 
-    public int SpawnUnitsForRegion(Player p, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)
+    public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)
     {
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickIndex, id, p.forceId, battleUnitId, spawnPos, summonTime, cb);
+        var action = new CreateChessAction(0, tickIndex, id, force.forceId, battleUnitId, spawnPos, summonTime, cb);
         AddChessAction(action);
 
         return id;
     }
 
-    private void SpawnHerosForRegion(Player p, int tickAdd, UnityEngine.Vector3 spawnPoint, BattleCardData heroData)
+    private void SpawnHerosForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, BattleCardData heroData)
     {
         var heroConfig = HeroConfig.GetConfig(heroData.CardId);
 
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickAdd, id, p.forceId, spawnPoint, heroConfig.Id, heroData.Level, heroData.SoldierNum, heroData.ArmsId);
+        var action = new CreateChessAction(0, tickAdd, id, force.forceId, spawnPoint, heroConfig.Id, heroData.Level, heroData.SoldierNum, heroData.ArmsId);
         AddChessAction(action);
     }
 
@@ -226,7 +225,7 @@ public class BattleManager : MonoBehaviour
         var battleBeginTick = GetTickFromTime(SystemConst.Battle.BATTLE_BEGIN_TIME);
         var foodDeductionTick = GetTickFromTime(SystemConst.Battle.FOOD_DEDUCTION_INTERVAL);
 
-        var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
+        var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var magicHelperUnitId = SpawnUnitsForRegion(player1, SystemConst.Battle.MAGIC_HELPER_UNIT_ID, new Vector3(1, 7, 1), 10);
 
         while (!gameFinish)
@@ -383,8 +382,8 @@ public class BattleManager : MonoBehaviour
 
     private void InitSummon(int magicHelperUnitId)
     {
-        var player1 = GameManager.Instance.GetPlayer(playerInfoList[0].forceId);
-        var player2 = GameManager.Instance.GetPlayer(playerInfoList[1].forceId);
+        var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
+        var player2 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
 
         int count = Math.Min(cards2.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++)
@@ -404,7 +403,7 @@ public class BattleManager : MonoBehaviour
             SpawnHerosForRegion(player1, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(1, i), cards1[i]);
         }
 
-        GameLog.Info($"InitSummon {player1.pname} {cards1.Count} {player2.pname} {cards2.Count}");
+        GameLog.Info($"InitSummon {player1.Name} {cards1.Count} {player2.Name} {cards2.Count}");
     }
 
     public int GetTickFromTime(float time)

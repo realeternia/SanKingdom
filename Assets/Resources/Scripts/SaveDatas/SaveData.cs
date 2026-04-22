@@ -8,5 +8,5 @@ public class SaveData
     public List<SaveHeroData> heros = new List<SaveHeroData>();
     public BattleStatManager battleStatManager = new BattleStatManager();
     public int round;
-    public int currentPlayerIndex;
+    public int currentForceIndex;
 }

@@ -134,14 +134,14 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
     private void OnRun(int devId, int[] heroList)
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
-        var player = citySrc.GetPlayer();
+        var force = citySrc.GetForce();
 
         var soldierTotal = citySrc.GetAttr("soldier");
         var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
 
         PanelManager.Instance.HideCityDev();    
         
-        player.ExecuteCityBattleDev(cityId, devId, heroList, foodCost, selectedCityId, false);
+        force.ExecuteCityBattleDev(cityId, devId, heroList, foodCost, selectedCityId, false);
     }
 
     public void OnShow()

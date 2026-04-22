@@ -23,10 +23,10 @@ public class HeroDispatcher
             hero.GetAttr("fair"), hero.GetAttr("charm"));
     }
     
-    public static List<int> GetFrontlineCities(Player player)
+    public static List<int> GetFrontlineCities(SaveForceData force)
     {
         var result = new List<int>();
-        var cities = player.GetCityList();
+        var cities = force.GetCityList();
         
         foreach (var city in cities)
         {
@@ -38,10 +38,10 @@ public class HeroDispatcher
         return result;
     }
     
-    public static List<int> GetRearCities(Player player)
+    public static List<int> GetRearCities(SaveForceData force)
     {
         var result = new List<int>();
-        var cities = player.GetCityList();
+        var cities = force.GetCityList();
         
         foreach (var city in cities)
         {
@@ -53,10 +53,10 @@ public class HeroDispatcher
         return result;
     }
     
-    public static void DispatchHeroes(Player player)
+    public static void DispatchHeroes(SaveForceData force)
     {
-        var frontlineCities = GetFrontlineCities(player);
-        var rearCities = GetRearCities(player);
+        var frontlineCities = GetFrontlineCities(force);
+        var rearCities = GetRearCities(force);
         
         if (frontlineCities.Count == 0 || rearCities.Count == 0)
             return;
@@ -108,7 +108,7 @@ public class HeroDispatcher
                 if (rearCityHeroMap.ContainsKey(srcCityId) && 
                     rearCityHeroMap[srcCityId].Count > MIN_REAR_HEROES)
                 {
-                    player.MoveHeroToCity(srcCityId, cityId, new int[] { heroToMove.heroId });
+                    force.MoveHeroToCity(srcCityId, cityId, new int[] { heroToMove.heroId });
                     rearCityHeroMap[srcCityId].Remove(heroToMove);
 
                     GameLog.SetTag("AI").Info($"AI调度: 英雄{heroToMove.heroId}从后方城市{srcCityId}调往前线城市{cityId}");

@@ -13,7 +13,7 @@ public class CastleHUD : MonoBehaviour
     public TMP_Text textHp;
     public Image healthImg;
     public Image foodImg;
-    private Player owner;
+    private SaveForceData owner;
     private int lastFood;
     private bool isFlashing = false;
 
@@ -32,10 +32,10 @@ public class CastleHUD : MonoBehaviour
         UpdateFoodDisplay();
     }
 
-    public void Init(Player p, Vector3 castleSpawn)
+    public void Init(SaveForceData force, Vector3 castleSpawn)
     {
-         owner = p;
-        castleName.text = p.pname;
+         owner = force;
+        castleName.text = force.Name;
 
         var castleUnitCfg = BattleUnitConfig.GetConfig(500001);
         baseAtk = castleUnitCfg.Atk;
@@ -43,7 +43,6 @@ public class CastleHUD : MonoBehaviour
         textAtk.text = baseAtk.ToString();
         textHp.text = baseHp.ToString();
 
-        // 更新血条位置，使其跟随单位
         UpdatePosition(castleSpawn);
     }
 

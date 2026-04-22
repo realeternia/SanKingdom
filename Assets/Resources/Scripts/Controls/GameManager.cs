@@ -13,31 +13,30 @@ public class GameManager : MonoBehaviour
     private StreamWriter logWriter;
     public SaveData SaveData;
 
-    public List<Player> players = new List<Player>();
-    
-    public Player currentPlayer = null;
+    private int currentForceId = 0;
+
+    public SaveForceData CurrentForce 
+    { 
+        get { return GetForce(currentForceId); } 
+    }
 
     private void Awake()
     {
         Instance = this;
     }
-    // Start is called before the first frame update
     void Start()
     {
-        // 初始化日志文件
         string logPath = Application.persistentDataPath + "/game_log.txt";
         logWriter = new StreamWriter(logPath, false, System.Text.Encoding.UTF8); 
         logWriter.WriteLine("Game started at: " + System.DateTime.Now);
 
         ConfigManager.Init();
         
-        // 注册日志事件
         Application.logMessageReceived += LogMessageReceived;
 
         GameLog.Info("GameManager Start");
     }
 
-    // 日志处理函数
     private void LogMessageReceived(string logString, string stackTrace, LogType type)
     {
         if (logWriter != null)
@@ -50,7 +49,7 @@ public class GameManager : MonoBehaviour
             {
                 logWriter.WriteLine($"Stack Trace: {stackTrace}");
             }
-            logWriter.Flush();  // 立即写入文件
+            logWriter.Flush();
         }
     }
 
@@ -69,23 +68,17 @@ public class GameManager : MonoBehaviour
     }
   
 
-    // Update is called once per frame
     void Update()
     {
         
     }
     
-    public Player GetPlayer(int forceId)
+    private void SortForces()
     {
-        return players.Find(p => p.forceId == forceId);
-    }
-
-    private void SortPlayers()
-    {
-        players.Sort((a, b) =>
+        SaveData.forces.Sort((a, b) =>
         {
-            if (a.IsPlayer != b.IsPlayer)
-                return a.IsPlayer ? -1 : 1;
+            if (a.isPlayer != b.isPlayer)
+                return a.isPlayer ? -1 : 1;
             return a.forceId - b.forceId;
         });
     }
@@ -131,7 +124,8 @@ public class GameManager : MonoBehaviour
             return nearbyCityIds[SysRandom.Range(0, nearbyCityIds.Count)];
         }
 
-        var kingCity = GetPlayer(forceId)?.GetKingCity();
+        var force = GetForce(forceId);
+        var kingCity = force?.GetKingCity();
         if (kingCity != null && fromCityId != kingCity.cityId)
         {
             return kingCity.cityId;
@@ -162,7 +156,6 @@ public class GameManager : MonoBehaviour
         return heroIds;
     }
 
-  //新游戏开始数据初始化
     public void NewGame(int forceId)
     {
         SaveData = new SaveData();
@@ -187,7 +180,7 @@ public class GameManager : MonoBehaviour
             var cityCfg = WorldConfig.ConfigList.FirstOrDefault(c => c.Cname == heroCfg.City);
             if(cityCfg == null)
                 continue;
-            if(SystemConst.Game.BASE_YEAR - heroCfg.BornYear  < SystemConst.Game.BORN_AGE) //15岁才能登场
+            if(SystemConst.Game.BASE_YEAR - heroCfg.BornYear  < SystemConst.Game.BORN_AGE)
                 continue;
 
             var hero = new SaveHeroData { heroId = heroCfg.Id, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId, armsId = SystemConst.Hero.DEFAULT_ARMS_ID };
@@ -205,21 +198,18 @@ public class GameManager : MonoBehaviour
             var forceData = new SaveForceData { forceId = force.Id, gold = force.InitGold, food = force.InitFood };
             if(force.Id == forceId)
                 forceData.isPlayer = true;
+            forceData.InitRuntimeState();
             SaveData.forces.Add(forceData); 
         }
-        foreach (var forceData in SaveData.forces)
-        {
-            players.Add(new Player(forceData.forceId));
-        }
 
-        SortPlayers();
+        SortForces();
 
         SaveToFile();
 
-        foreach (var p in players)
-            p.ResetRoundState();
-        SaveData.currentPlayerIndex = 0;
-        StartNextPlayerTurn();
+        foreach (var forceData in SaveData.forces)
+            forceData.ResetRoundState();
+        SaveData.currentForceIndex = 0;
+        StartNextForceTurn();
     }
 
     public void NextRound()
@@ -235,72 +225,73 @@ public class GameManager : MonoBehaviour
 
         ProcessHeros();
         
-        foreach (var p in players)
-            p.ResetRoundState();
-        SaveData.currentPlayerIndex = 0;
-        SortPlayers();
+        foreach (var forceData in SaveData.forces)
+            forceData.ResetRoundState();
+        SaveData.currentForceIndex = 0;
+        SortForces();
         
-        StartNextPlayerTurn();
+        StartNextForceTurn();
 
         GameLog.Info("NextRound round=" + SaveData.round);
     }
     
-    private void StartNextPlayerTurn()
+    private void StartNextForceTurn()
     {
-        if (SaveData.currentPlayerIndex >= players.Count)
+        if (SaveData.currentForceIndex >= SaveData.forces.Count)
         {
             EndRound();
             return;
         }
         
-        currentPlayer = players[SaveData.currentPlayerIndex];
-        SaveData.currentPlayerIndex++;
+        var force = SaveData.forces[SaveData.currentForceIndex];
+        SaveData.currentForceIndex++;
         
-        StartPlayerPlanningPhase(currentPlayer);
+        StartForcePlanningPhase(force);
     }
     
-    private void StartPlayerPlanningPhase(Player player)
+    private void StartForcePlanningPhase(SaveForceData force)
     {
-        player.StartPlanningPhase();
-        if (player.IsPlayer)
+        currentForceId = force.forceId;
+        force.StartPlanningPhase();
+        if (force.isPlayer)
         {
             SaveToFile();
         }
-        GameLog.Info($"StartPlayerPlanningPhase {player.pname} 计划阶段");
+        GameLog.Info($"StartForcePlanningPhase {force.Name} 计划阶段");
     }
     
-    public IEnumerator AIPlayerTurnCoroutine(Player player)
+    public IEnumerator AIForceTurnCoroutine(SaveForceData force)
     {
         yield return new WaitForSeconds(0.3f);
-        GameLog.Info($"AI {player.pname} idle 回合完成");
-        StartNextPlayerTurn();
+        AI.ExecutePlanningPhase(force);
     }
     
     public void ConfirmPlan(int forceId)
     {
-        if (currentPlayer == null || currentPlayer.forceId != forceId)
+        var force = GetForce(forceId);
+        if (force == null || currentForceId != forceId)
             return;
         
         GameLog.Info($"ConfirmPlan forceId={forceId}");
         
-        StartCoroutine(PlayerTurnCoroutine(currentPlayer));
+        StartCoroutine(ForceTurnCoroutine(force));
     }
     
-    private IEnumerator PlayerTurnCoroutine(Player player)
+    private IEnumerator ForceTurnCoroutine(SaveForceData force)
     {
-        player.SetPhase(TurnPhase.Execution);
-        PanelManager.Instance.SendSignal("PhaseChange", "Execution", player.forceId);
+        force.SetPhase(TurnPhase.Execution);
+        PanelManager.Instance.SendSignal("PhaseChange", "Execution", force.forceId);
         
-        yield return ExecutePlayerDevActions(player);
+        yield return ExecuteForceDevActions(force);
         
-        if (player.warPlans.Count > 0)
+        if (force.warPlans.Count > 0)
         {
-            player.SetPhase(TurnPhase.Battle);
-            PanelManager.Instance.SendSignal("PhaseChange", "Battle", player.forceId);
+            force.SetPhase(TurnPhase.Battle);
+            PanelManager.Instance.SendSignal("PhaseChange", "Battle", force.forceId);
             
-            foreach (var warPlan in player.warPlans)
+            foreach (var warPlan in force.warPlans)
             {
-                player.ExecuteCityBattleDev(
+                force.ExecuteCityBattleDev(
                     warPlan.sourceCityId,
                     CityDevConfig.ConfigList.FirstOrDefault(c => c.Prefab == "CityDevBattle")?.Id ?? 0,
                     warPlan.heroIds,
@@ -318,13 +309,13 @@ public class GameManager : MonoBehaviour
             }
         }
         
-        GameLog.Info($"玩家 {player.pname} 回合完成");
-        StartNextPlayerTurn();
+        GameLog.Info($"势力 {force.Name} 回合完成");
+        StartNextForceTurn();
     }
     
-    private IEnumerator ExecutePlayerDevActions(Player player)
+    private IEnumerator ExecuteForceDevActions(SaveForceData force)
     {
-        var cities = GetCitiesByForce(player.forceId);
+        var cities = GetCitiesByForce(force.forceId);
         foreach (var city in cities)
         {
             var assignments = city.GetDevAssignments();
@@ -337,26 +328,26 @@ public class GameManager : MonoBehaviour
                 
                 if (devCfg.Prefab == "CityDevNormal")
                 {
-                    player.ExecuteCityDev(city.cityId, assignment.devId, heroIds, out _);
+                    force.ExecuteCityDev(city.cityId, assignment.devId, heroIds, out _);
                 }
                 else if (devCfg.Prefab == "CityDevChange")
                 {
-                    player.ExecuteCityChange(city.cityId, assignment.devId, heroIds, true, 300, SystemConst.Economy.EXCHANGE_RATE, out _);
+                    force.ExecuteCityChange(city.cityId, assignment.devId, heroIds, true, 300, SystemConst.Economy.EXCHANGE_RATE, out _);
                 }
                 else if (devCfg.Prefab == "CityDevUseHero")
                 {
                     var recruitableHeroes = city.GetRecruitableHeroList();
                     if (recruitableHeroes.Count > 0)
                     {
-                        player.ExecuteCityUseHero(city.cityId, assignment.devId, assignment.heroId, recruitableHeroes[0], out _);
+                        force.ExecuteCityUseHero(city.cityId, assignment.devId, assignment.heroId, recruitableHeroes[0], out _);
                     }
                 }
                 else if (devCfg.Prefab == "CityDevPraiseHero")
                 {
-                    var praiseableHeroes = GetPraiseableHeroList(player.forceId);
+                    var praiseableHeroes = GetPraiseableHeroList(force.forceId);
                     if (praiseableHeroes.Count > 0)
                     {
-                        player.ExecuteCityPraiseHero(city.cityId, assignment.devId, praiseableHeroes.ToArray(), 1, out _);
+                        force.ExecuteCityPraiseHero(city.cityId, assignment.devId, praiseableHeroes.ToArray(), 1, out _);
                     }
                 }
                 
@@ -367,10 +358,10 @@ public class GameManager : MonoBehaviour
     
     public void EndRound()
     {
-        if (currentPlayer != null)
-            currentPlayer.SetPhase(TurnPhase.None);
-        currentPlayer = null;
-        SaveData.currentPlayerIndex = 0;
+        if (CurrentForce != null)
+            CurrentForce.SetPhase(TurnPhase.None);
+        currentForceId = 0;
+        SaveData.currentForceIndex = 0;
         
         PanelManager.Instance.SendSignal("AICheck", "", 0);
         PanelManager.Instance.SwitchBGM();
@@ -428,8 +419,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 获取当前年份（包含季节的浮点数表示）
-    // 例如：195年第18个季节 = 195.5
     public float GetCurrentYear()
     {
         return SysFormula.Game.CalculateCurrentYear(SaveData.round);
@@ -456,13 +445,13 @@ public class GameManager : MonoBehaviour
             SaveData = saveData;
             foreach (var forceData in SaveData.forces)
             {
-                players.Add(new Player(forceData.forceId));
+                forceData.InitRuntimeState();
             }
-            SortPlayers();
+            SortForces();
 
-            foreach (var p in players)
-                p.ResetRoundState();
-            StartNextPlayerTurn();
+            foreach (var forceData in SaveData.forces)
+                forceData.ResetRoundState();
+            StartNextForceTurn();
 
             GameLog.Info("游戏数据加载成功 year=" + SaveData.round);
         }
@@ -479,8 +468,6 @@ public class GameManager : MonoBehaviour
         string savePath = Application.persistentDataPath + "/game_save.json";
         try
         {
-            
-            // 使用JsonUtility序列化数据
             string json = JsonUtility.ToJson(SaveData);
             File.WriteAllText(savePath, json);
             

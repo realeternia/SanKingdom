@@ -11,11 +11,9 @@ using UnityEngine.EventSystems;
 
 public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    private Image targetImage;
     public float blinkDuration = 1f;
     public Color startColor = Color.white;
     public Color endColor = new Color(0.1f, 0.1f, 0.1f, 0.8f);
-    private float timer = 0f;
     
     public bool isOnTurn;
     public TMP_Text playerNameText;
@@ -24,26 +22,24 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public TMP_Text cityText;
     public Image playerBgImg;
 
-    public Player player;
+    public SaveForceData force;
 
-    // Start is called before the first frame update
     void Start()
     {
-  		targetImage = GetComponent<Image>();
     }
 
     public void Init(int forceId)
     {
-        player = GameManager.Instance.GetPlayer(forceId);
+        force = GameManager.Instance.GetForce(forceId);
         var forceCfg = ForceConfig.GetConfig(forceId);
         var heroCfg = HeroConfig.GetConfig(forceCfg.HeroId);
         imgPath = "Textures/Skins/" + heroCfg.Icon;
 
-        playerNameText.text = player.pname;
+        playerNameText.text = force.Name;
 
-        playerImage.sprite = Resources.Load<Sprite>(player.imgPath);
+        playerImage.sprite = Resources.Load<Sprite>(force.IconPath);
         cityText.text = GameManager.Instance.GetPlayerCityCount(forceId).ToString();
-        playerBgImg.color = player.lineColor;
+        playerBgImg.color = force.LineColor;
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -53,35 +49,11 @@ public class PlayerInfoControl : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        PanelManager.Instance.SendSignal("SelectPlayer", "", player.forceId);
+        PanelManager.Instance.SendSignal("SelectPlayer", "", force.forceId);
     }
     
-    // Update is called once per frame
     void Update()
     {
-        // 现有的闪烁逻辑
-        if (isOnTurn)
-        {
-            if (targetImage != null)
-            {
-                timer += Time.deltaTime;
-                // 使用正弦函数计算插值因子，范围在 0 到 1 之间
-                float t = (Mathf.Sin((timer / blinkDuration) * Mathf.PI * 2f) + 1f) / 2f;
-                // 根据插值因子在 startColor 和 endColor 之间做差值
-                targetImage.color = Color.Lerp(startColor, endColor, t);
-                // 重置计时器，让其循环
-                timer %= blinkDuration;
-            }
-        }
-        else
-        {
-            if(targetImage != null)
-            {
-                if(targetImage.color != new Color(0.1f, 0.1f, 0.1f, 0.8f))
-                {
-                    targetImage.color = new Color(0.1f, 0.1f, 0.1f, 0.8f);
-                }
-            }
-        }
+
     }
 }

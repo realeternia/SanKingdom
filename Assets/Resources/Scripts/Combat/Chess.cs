@@ -169,7 +169,7 @@ public class Chess : SceneObj
 
         if (BattleManager.Instance.showUI)
         {
-            Player player = GameManager.Instance.GetPlayer(forceId);
+            SaveForceData force = GameManager.Instance.GetForce(forceId);
             if (isHero)
             {
                 GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
@@ -178,7 +178,7 @@ public class Chess : SceneObj
                 unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
                 viewObj = unitModel.GetComponent<ChessViewObj>();
-                viewObj.Init(this, player.lineColor);
+                viewObj.Init(this, force.LineColor);
 
                 var heroInfo = BattleManager.Instance.battleUIManager.heroInfoGroup.AddHero(forceId, heroId, level);
                 heroInfo.SetAttr(inte, str, leadShip);
@@ -196,7 +196,7 @@ public class Chess : SceneObj
                 unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
                 viewObj = unitModel.GetComponent<ChessViewObj>();
-                viewObj.Init(this, player.lineColor);
+                viewObj.Init(this, force.LineColor);
             }
         }
 
@@ -664,9 +664,9 @@ public class Chess : SceneObj
         lifeTickCount = BattleManager.Instance.GetTickFromTime(time);
     }
 
-    public Player GetPlayerInfo()
+    public SaveForceData GetForceInfo()
     {
-        return GameManager.Instance.GetPlayer(forceId);
+        return GameManager.Instance.GetForce(forceId);
     }
 
     public bool IsInFight(int nowTick)

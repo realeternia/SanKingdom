@@ -18,7 +18,7 @@ public class SkillAttackedShadow : Skill
         {
             Vector2 randomDir = BattleRandom.InsideUnitCircle.normalized;
             Vector3 randomPosition = owner.position + new Vector3(randomDir.x, 0, randomDir.y) * skillCfg.Range;
-            BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501002, randomPosition, 0, (shadowUnitId) =>
+            BattleManager.Instance.SpawnUnitsForRegion(owner.GetForceInfo(), 501002, randomPosition, 0, (shadowUnitId) =>
             {
                 var shadowUnit = BattleManager.Instance.GetChess(shadowUnitId);
                 shadowUnit.atk = (int)(owner.atk * skillCfg.SkillDamageRate);

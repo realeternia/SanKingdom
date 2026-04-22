@@ -59,10 +59,10 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     {
         if (rankRegionCity.transform.childCount == 0)
         {
-            var player = GameManager.Instance.players.Find(p => p.IsPlayer);
-            if (player == null) 
+            var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
+            if (playerForce == null) 
                 return;
-            var cities = GameManager.Instance.GetCitiesByForce(player.forceId);
+            var cities = GameManager.Instance.GetCitiesByForce(playerForce.forceId);
             int count = 0;
             CityCellCity currentCityCell = null;
             
@@ -368,14 +368,14 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public void AssignHeroToDevNode(int heroId, CityDevNodeNew targetNode)
     {
-        var currentPlayer = GameManager.Instance.currentPlayer;
-        if (currentPlayer == null || !currentPlayer.IsPlayer)
+        var currentForce = GameManager.Instance.CurrentForce;
+        if (currentForce == null || !currentForce.isPlayer)
         {
             SystemTip.Instance.ShowTip("当前不是你的回合");
             return;
         }
         
-        if (currentPlayer.Phase != TurnPhase.Planning)
+        if (currentForce.phase != TurnPhase.Planning)
         {
             SystemTip.Instance.ShowTip("当前阶段无法派遣英雄");
             return;

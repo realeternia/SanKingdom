@@ -71,8 +71,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     
     private void OnRoundNextClick()
     {
-        var currentPlayer = GameManager.Instance.currentPlayer;
-        var phase = currentPlayer != null ? currentPlayer.Phase : TurnPhase.None;
+        var currentForce = GameManager.Instance.CurrentForce;
+        var phase = currentForce != null ? currentForce.phase : TurnPhase.None;
         
         if (phase == TurnPhase.None)
         {
@@ -80,18 +80,18 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         }
         else if (phase == TurnPhase.Planning)
         {
-            if (currentPlayer != null && currentPlayer.IsPlayer)
+            if (currentForce != null && currentForce.isPlayer)
             {
-                GameManager.Instance.ConfirmPlan(currentPlayer.forceId);
+                GameManager.Instance.ConfirmPlan(currentForce.forceId);
             }
         }
     }
     
     private void UpdateRoundNextButton()
     {
-        var currentPlayer = GameManager.Instance.currentPlayer;
-        var phase = currentPlayer != null ? currentPlayer.Phase : TurnPhase.None;
-        bool isPlayerTurn = currentPlayer != null && currentPlayer.IsPlayer;
+        var currentForce = GameManager.Instance.CurrentForce;
+        var phase = currentForce != null ? currentForce.phase : TurnPhase.None;
+        bool isPlayerTurn = currentForce != null && currentForce.isPlayer;
         
         if (textRoundNext != null)
         {
@@ -116,9 +116,9 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             }
             else
             {
-                if (currentPlayer != null)
+                if (currentForce != null)
                 {
-                    textRoundNext.text = $"{currentPlayer.pname} 行动中...";
+                    textRoundNext.text = $"{currentForce.Name} 行动中...";
                 }
                 else
                 {
@@ -180,14 +180,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             return;
         }
         
-        var player = GameManager.Instance.GetPlayer(playerForce.forceId);
-        if (player == null)
-        {
-            GameLog.Warn("MoveToPlayerCapital: 未找到玩家对象");
-            return;
-        }
-        
-        var kingCity = player.GetKingCity();
+        var kingCity = playerForce.GetKingCity();
         if (kingCity == null)
         {
             GameLog.Warn("MoveToPlayerCapital: 未找到首都城市");
@@ -312,14 +305,14 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
     public void OnPieceClick(int pieceId)
     {
-        var currentPlayer = GameManager.Instance.currentPlayer;
-        if (currentPlayer != null && !currentPlayer.IsPlayer)
+        var currentForce = GameManager.Instance.CurrentForce;
+        if (currentForce != null && !currentForce.isPlayer)
         {
             return;
         }
 
         cityDetail.gameObject.SetActive(true);
-        cityDetail.SetCityDetail(pieceId); //可以看信息
+        cityDetail.SetCityDetail(pieceId);
 
         var cityData = GameManager.Instance.GetCity(pieceId);
         if (!GameManager.Instance.GetForce(cityData.forceId).isPlayer)
@@ -328,12 +321,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             return;
         }
 
-        // 高亮显示点击的地块
         var cityCfg = WorldConfig.GetConfig(pieceId);
-        // foreach (var piece in worldPieces)
-        // {
-        //     piece.Shine(cityCfg.WorldNearIds != null && Array.Exists(cityCfg.WorldNearIds, x => x == piece.pieceId));
-        // }
         btnCity.gameObject.GetComponentInChildren<TMP_Text>().text = "进入" + cityCfg.Cname;
         btnCity.gameObject.SetActive(true);
     }

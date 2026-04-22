@@ -17,7 +17,7 @@ public class SkillHitRegion : Skill
         {
             targetPos = defender.position;
 
-            BattleManager.Instance.SpawnUnitsForRegion(owner.GetPlayerInfo(), 501001, targetPos, GetSummonTime(), (id) =>
+            BattleManager.Instance.SpawnUnitsForRegion(owner.GetForceInfo(), 501001, targetPos, GetSummonTime(), (id) =>
             {
                 var magicStubUnit = BattleManager.Instance.GetChess(id);
                 SkillManager.AddSkillAction(owner, magicStubUnit, id, 0);

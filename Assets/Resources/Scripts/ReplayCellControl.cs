@@ -51,11 +51,11 @@ public class ReplayCellControl : MonoBehaviour
         roundPast.text = record.rounds + "回合";
         timeText.text = GetTimeString(record.year);
 
-        var force1 = GameManager.Instance.GetPlayer(record.forceId1);
-        var force2 = GameManager.Instance.GetPlayer(record.forceId2);
+        var force1 = GameManager.Instance.GetForce(record.forceId1);
+        var force2 = GameManager.Instance.GetForce(record.forceId2);
 
-        string forceName1 = force1 != null ? force1.pname : ForceConfig.GetConfig(record.forceId1)?.Cname ?? "势力" + record.forceId1;
-        string forceName2 = force2 != null ? force2.pname : ForceConfig.GetConfig(record.forceId2)?.Cname ?? "势力" + record.forceId2;
+        string forceName1 = force1 != null ? force1.Name : ForceConfig.GetConfig(record.forceId1)?.Cname ?? "势力" + record.forceId1;
+        string forceName2 = force2 != null ? force2.Name : ForceConfig.GetConfig(record.forceId2)?.Cname ?? "势力" + record.forceId2;
 
         force1Name.text = forceName1;
         force2Name.text = forceName2;

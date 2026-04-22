@@ -44,29 +44,23 @@ public class BattleUIManager : MonoBehaviour
         }
     }
 
-    // 创建血条HUD
-    public void CreateCastleHUD(Player p, Vector3 castleSpawn)
+    public void CreateCastleHUD(SaveForceData force, Vector3 castleSpawn)
     {
-        // 加载Hud预制体
         GameObject hudPrefab = Resources.Load<GameObject>("Prefabs/HudCastle");
 
-        // 实例化HUD对象
         GameObject hudObj = Instantiate(hudPrefab, HudNode.transform);
         hudObj.name = "CastleHUD";
 
-        // 获取ChessHUD组件
         var hud = hudObj.GetComponent<CastleHUD>();
 
-        // 初始化血条显示
-        hud.Init(p, castleSpawn);
-        p.castleHUD = hud;
+        hud.Init(force, castleSpawn);
     }
 
-    public void ShowBattleBegin(Player player1, Player player2, int maxRound, int soldierNum1, int soldierNum2)
+    public void ShowBattleBegin(SaveForceData force1, SaveForceData force2, int maxRound, int soldierNum1, int soldierNum2)
     {
         PanelManager.Instance.HideWorld();
 
-        BattleInfoTop.Instance.Init(player1.forceId, player2.forceId, soldierNum1, soldierNum2);
+        BattleInfoTop.Instance.Init(force1.forceId, force2.forceId, soldierNum1, soldierNum2);
         BattleResultPanel.gameObject.SetActive(false);
         foreach (Transform child in NodeUnits.transform)
             UnityEngine.Object.Destroy(child.gameObject);

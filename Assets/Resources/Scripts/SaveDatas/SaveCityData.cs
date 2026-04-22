@@ -181,9 +181,9 @@ public class SaveCityData
         return result;
     }
 
-    public Player GetPlayer()
+    public SaveForceData GetForce()
     {
-        return GameManager.Instance.GetPlayer(forceId);
+        return GameManager.Instance.GetForce(forceId);
     }
 
     public int GetOwner()
@@ -323,12 +323,12 @@ public class SaveCityData
                     hero.loyalty = SystemConst.Hero.ELIMINATED_HERO_LOYALTY;
                 }
             }
-            var player = GameManager.Instance.GetPlayer(forceLose);
-            if (player != null)
-                player.mark = -1;
             var force = GameManager.Instance.GetForce(forceLose);
             if (force != null)
+            {
+                force.mark = -1;
                 force.isEliminated = true;
+            }
             GameLog.Info($"Occupy 势力 {forceLose} 已被消灭");
         }
 

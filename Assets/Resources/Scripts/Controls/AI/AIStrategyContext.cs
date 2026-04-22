@@ -3,14 +3,14 @@ using CommonConfig;
 
 public class AIStrategyContext
 {
-    public Player player;
+    public SaveForceData force;
     public List<SaveCityData> cities;
     public Dictionary<int, List<SaveHeroData>> cityHeroes;
     
-    public AIStrategyContext(Player player)
+    public AIStrategyContext(SaveForceData force)
     {
-        this.player = player;
-        this.cities = player.GetCityList();
+        this.force = force;
+        this.cities = force.GetCityList();
         this.cityHeroes = new Dictionary<int, List<SaveHeroData>>();
         
         foreach (var city in cities)

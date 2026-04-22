@@ -5,24 +5,24 @@ using Controls.Utils;
 
 public static class AI
 {
-    public static void ExecutePlanningPhase(Player player)
+    public static void ExecutePlanningPhase(SaveForceData force)
     {
         StrategicDecider.ClearRoundData();
         
-        var context = new AIStrategyContext(player);
+        var context = new AIStrategyContext(force);
         
-        HeroDispatcher.DispatchHeroes(player);
+        HeroDispatcher.DispatchHeroes(force);
         
-        var cityStrategies = StrategicDecider.DetermineCityStrategies(player);
+        var cityStrategies = StrategicDecider.DetermineCityStrategies(force);
         
-        GenerateWarPlans(player, context, cityStrategies);
+        GenerateWarPlans(force, context, cityStrategies);
         
-        GameManager.Instance.ConfirmPlan(player.forceId);
+        GameManager.Instance.ConfirmPlan(force.forceId);
         
-        GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(player.forceId)} 计划阶段完成");
+        GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} 计划阶段完成");
     }
     
-    private static void GenerateWarPlans(Player player, AIStrategyContext context, Dictionary<int, CityStrategyState> cityStrategies)
+    private static void GenerateWarPlans(SaveForceData force, AIStrategyContext context, Dictionary<int, CityStrategyState> cityStrategies)
     {
         foreach (var city in context.cities)
         {
@@ -34,13 +34,13 @@ public static class AI
                 var attackTarget = StrategicDecider.GetAttackTarget(city.cityId);
                 if (attackTarget.HasValue)
                 {
-                    TryCreateWarPlan(player, city, attackTarget.Value);
+                    TryCreateWarPlan(force, city, attackTarget.Value);
                 }
             }
         }
     }
     
-    private static void TryCreateWarPlan(Player player, SaveCityData city, int targetCityId)
+    private static void TryCreateWarPlan(SaveForceData force, SaveCityData city, int targetCityId)
     {
         var normalHeroes = city.GetNormalHeroList();
         if (normalHeroes.Count == 0)
@@ -78,7 +78,7 @@ public static class AI
         
         var warPlan = new WarPlanData
         {
-            forceId = player.forceId,
+            forceId = force.forceId,
             sourceCityId = city.cityId,
             targetCityId = targetCityId,
             heroIds = heroIds,
@@ -87,10 +87,10 @@ public static class AI
             heroArmsDict = new Dictionary<int, int>()
         };
         
-        player.AddWarPlan(warPlan);
+        force.AddWarPlan(warPlan);
         
-        StrategicDecider.MarkTargetAttacked(player.forceId, targetCityId);
+        StrategicDecider.MarkTargetAttacked(force.forceId, targetCityId);
         
-        GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(player.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 计划攻击[{ConfigNameHelper.GetCityName(targetCityId)}] 英雄:[{ConfigNameHelper.GetHeroNames(heroIds)}] 兵力:{totalSoldier}");
+        GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 计划攻击[{ConfigNameHelper.GetCityName(targetCityId)}] 英雄:[{ConfigNameHelper.GetHeroNames(heroIds)}] 兵力:{totalSoldier}");
     }
 }

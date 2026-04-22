@@ -13,26 +13,24 @@ public class BattleResultCellControl : MonoBehaviour
     public Image playerIcon;
 
 
-    // Start is called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
     }
 
-    public void SetData(Player player, int rank, int killMark)
+    public void SetData(SaveForceData force, int rank, int killMark)
     {
-        playerName.text = player.pname;
+        playerName.text = force.Name;
 
-        playerRank.text = rank.ToString(); // 假设按match顺序排列
-        playerMark.text = $"<color=white>{player.mark}</color> (<color=green>+{killMark}</color>)";
+        playerRank.text = rank.ToString();
+        playerMark.text = $"<color=white>{force.mark}</color> (<color=green>+{killMark}</color>)";
 
 
-        playerIcon.sprite = Resources.Load<Sprite>(player.imgPath);
+        playerIcon.sprite = Resources.Load<Sprite>(force.IconPath);
     }
 }
