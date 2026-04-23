@@ -44,9 +44,6 @@ public class CityDetail : MonoBehaviour, IPanelEvent
             case "gold":
                 val = (int)force.gold;
                 break;
-            case "food":
-                val = (int)force.food;
-                break;
         }
         if(textComponent == null)
             return;
@@ -103,7 +100,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         SetTextAndColor(textLevel, city, "level");
         SetTextAndColor(textExp, city, "exp");
         SetTextAndColor(textGold, forceData, "gold");
-        SetTextAndColor(textFood, forceData, "food");
+        SetTextAndColor(textFood, city, "food");
         SetTextAndColor(textSoldier, city, "soldier");
         SetTextAndColor(textPower, city, "happy");
         SetTextAndColor(textWall, city, "wall");

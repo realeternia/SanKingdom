@@ -13,7 +13,9 @@ public class SaveForceData
     public bool isPlayer;
     public bool isEliminated;
     public float gold;
-    public float food;
+    public float wood;
+    public float horse;
+    public float steel;
 
     [NonSerialized]
     public TurnPhase phase = TurnPhase.None;
@@ -272,9 +274,9 @@ public class SaveForceData
             BattleManager.Instance.SetMode(false, true);
 
         var destForceData = GameManager.Instance.GetForce(cityDest.forceId);
-        food -= foodUse;
-        int defenceFood = (int)destForceData.food;
-        destForceData.food = 0;
+        citySrc.food -= foodUse;
+        int defenceFood = (int)cityDest.food;
+        cityDest.food = 0;
         int srcForceId = citySrc.forceId;
         int destForceId = cityDest.forceId;
         var battleHeroListSrc = citySrc.GetBattleHeroList(heroList, heroSoldierDict, heroArmsDict);
@@ -341,7 +343,12 @@ public class SaveForceData
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
 
-        food -= foodUse;
+        citySrc.food -= foodUse;
+        var cityDest = GameManager.Instance.GetCity(targetCityId);
+        if (cityDest != null && cityDest.forceId == citySrc.forceId)
+        {
+            cityDest.food += foodUse;
+        }
 
         MoveHeroToCity(cityId, targetCityId, heroList);
     }
@@ -385,9 +392,9 @@ public class SaveForceData
                 valAddon = - amount,
             });
 
-            int foodOld = (int)food;
+            int foodOld = (int)cityData.food;
             int foodAdd = SysFormula.Economy.CalculateExchangeResult(amount, true);
-            food += foodAdd;
+            cityData.food += foodAdd;
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Food",
@@ -397,14 +404,14 @@ public class SaveForceData
         }
         else
         {
-            if(food < amount)
+            if(cityData.food < amount)
             {
                 SystemTip.Instance.ShowTip("粮食不足");
                 return false;
             }
 
-            int foodOld = (int)food;
-            food -= amount;
+            int foodOld = (int)cityData.food;
+            cityData.food -= amount;
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Food",

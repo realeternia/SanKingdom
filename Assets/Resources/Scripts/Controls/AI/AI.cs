@@ -73,7 +73,7 @@ public static class AI
         
         int foodNeeded = SysFormula.AIStrategy.CalculateFoodNeeded(totalSoldier);
         
-        if (GameManager.Instance.GetForce(city.forceId).food < foodNeeded)
+        if (city.food < foodNeeded)
             return;
         
         var warPlan = new WarPlanData

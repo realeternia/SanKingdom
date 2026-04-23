@@ -14,6 +14,7 @@ public class SaveCityData
     public int exp;
     public float soldier;
     public float happy;
+    public float food;
     public float wall;
     public List<DevAssignmentData> devAssignments = new List<DevAssignmentData>();    
 
@@ -63,9 +64,9 @@ public class SaveCityData
         {
             if(seasonCfg.AddGold != 0)
                 forceData.gold += SysFormula.City.CalculateGoldProduction(level, seasonCfg.AddGold);
-            else if(seasonCfg.AddFood != 0)
-                forceData.food += SysFormula.City.CalculateFoodProduction(level, seasonCfg.AddFood);
         }
+        if(seasonCfg.AddFood != 0)
+            food += SysFormula.City.CalculateFoodProduction(level, seasonCfg.AddFood);
         actions.Clear();
     }
 
@@ -207,6 +208,9 @@ public class SaveCityData
             case "happy":
                 happy += add;
                 break;
+            case "food":
+                food += add;
+                break;
             case "wall":
                 wall += add;
                 break;
@@ -227,6 +231,8 @@ public class SaveCityData
                 return (int)Math.Floor(soldier);
             case "happy":
                 return (int)Math.Floor(happy);
+            case "food":
+                return (int)Math.Floor(food);
             case "wall":
                 return (int)Math.Floor(wall);
             default:

@@ -44,7 +44,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
             var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
             var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
             var citySrc = GameManager.Instance.GetCity(cityId);
-            if(GameManager.Instance.GetForce(citySrc.forceId).food < foodCost)
+            if(citySrc.food < foodCost)
             {
                 SystemTip.Instance.ShowTip("粮食不足");
                 return;
@@ -106,8 +106,8 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
         var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
         var citySrc = GameManager.Instance.GetCity(cityId);
-        foodCostText.text = string.Format("{0} / {1}", foodCost, (int)GameManager.Instance.GetForce(citySrc.forceId).food);
-        foodCostText.color = foodCost <= GameManager.Instance.GetForce(citySrc.forceId).food ? Color.white : Color.red;
+        foodCostText.text = string.Format("{0} / {1}", foodCost, (int)citySrc.food);
+        foodCostText.color = foodCost <= citySrc.food ? Color.white : Color.red;
     }
 
     void Update()

@@ -131,8 +131,7 @@ public class TaskPriorityCalculator
         {
             int totalSoldier = city.GetAttr("soldier");
             int foodThreshold = totalSoldier / 2;
-            var forceData = GameManager.Instance.GetForce(city.forceId);
-            if (totalSoldier > 0 && forceData.food < foodThreshold)
+            if (totalSoldier > 0 && city.food < foodThreshold)
             {
                 adjusted += NEED_WEIGHT;
             }

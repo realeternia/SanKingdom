@@ -262,7 +262,7 @@ public class StrategicDecider
                     {
                         int targetSoldier = nearCity.GetAttr("soldier");
                         
-                        if (SysFormula.AIStrategy.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && SysFormula.AIStrategy.CheckAttackFoodSufficient(soldier, (int)GameManager.Instance.GetForce(city.forceId).food))
+                        if (SysFormula.AIStrategy.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && SysFormula.AIStrategy.CheckAttackFoodSufficient(soldier, (int)city.food))
                         {
                             if (targetSoldier < minTargetSoldier)
                             {
@@ -309,11 +309,12 @@ public class StrategicDecider
         var forceData = GameManager.Instance.GetForce(force.forceId);
         
         int totalGold = (int)forceData.gold;
-        int totalFood = (int)forceData.food;
+        int totalFood = 0;
         int totalSoldier = 0;
         
         foreach (var city in cities)
         {
+            totalFood += (int)city.food;
             totalSoldier += city.GetAttr("soldier");
         }
         
