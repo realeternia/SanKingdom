@@ -12,7 +12,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 {
     private const float MAP_SCALE_FACTOR = 1.25f;
     
-    public GameObject topNode;      
     public CityDetail cityDetail;
     public Button btnSystem;
     public Button btnCity;
@@ -33,7 +32,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         cityDetail.gameObject.SetActive(false);
         LoadMapPieces();
         InitDragHandler();
-        InitForceControls();
 
         btnCity.gameObject.SetActive(false);
         var nowRound = GameManager.Instance.SaveData.round;
@@ -220,36 +218,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         GameLog.Info($"MoveToPlayerCapital: 平滑移动开始, bgPanel位置 = {bgPanel.GetComponent<RectTransform>().anchoredPosition}");
     }
 
-    public void InitForceControls()
-    {
-        // 移除topNode下所有子对象
-        foreach (Transform child in topNode.transform)
-        {
-            Destroy(child.gameObject);
-        }
-
-        var playerForceControl = Resources.Load<GameObject>("Prefabs/Panels/PlayerInfoCell");
-        int idx = 0;
-
-        var gameManager = GameManager.Instance;
-        
-        var activeForces = gameManager.SaveData.forces.Where(f => !f.isEliminated).ToList();
-        var totalWidth = 141 * activeForces.Count;
-        var forceList = new List<int>();
-
-        GameLog.Info($"InitForceControls 势力数量: {activeForces.Count}");
-        foreach(var force in activeForces)
-            forceList.Add(force.forceId);
-        forceList.Sort((a, b) => gameManager.GetPlayerCityCount(b) - gameManager.GetPlayerCityCount(a));
-        foreach(var forceId in forceList)
-        {
-            var forceControl = Instantiate(playerForceControl, topNode.transform);
-            var playerInfoControl = forceControl.GetComponent<PlayerInfoControl>();
-            playerInfoControl.Init(forceId);
-            forceControl.GetComponent<RectTransform>().anchoredPosition = new Vector2(-totalWidth / 2 + 141 * idx, 412);
-            idx++;
-        }
-    }      
 
     private void LoadMapPieces()
     {
@@ -349,8 +317,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         {
             var cityId = parm2;
             worldPieces.Find(x => x.pieceId == cityId).SetColor(GameManager.Instance.GetCity(cityId).forceId);
-
-            InitForceControls();
         }
         else if(name == "RoundChange")
         {

@@ -143,6 +143,7 @@
     <Compile Include="Assets\Resources\Scripts\PopHeroSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAidSuddenArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleResultPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\ResItem.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysRandom.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefSkillDamageReduce.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\FoodCostAction.cs" />
@@ -220,7 +221,6 @@
     <Compile Include="Assets\Resources\Scripts\PopHeroBattleSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\ReplayPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SystemTip.cs" />
-    <Compile Include="Assets\Resources\Scripts\PlayerInfoControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Effect\GlowBeamController.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveCityData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddDodge.cs" />

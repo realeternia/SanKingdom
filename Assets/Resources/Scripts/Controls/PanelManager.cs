@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using CommonConfig;
 using Controls.Utils;
@@ -29,6 +30,8 @@ public class PanelManager : MonoBehaviour
     private GameObject battleResultPanel;
     private GameObject replayPanel;
 
+    public GameObject topNode;
+
     public List<GameObject> openPanelList;
     private bool isShowWorld = false;
 
@@ -52,6 +55,7 @@ public class PanelManager : MonoBehaviour
         isShowWorld = true;
 
         SwitchBGM();
+        InitTopNodeResItems();
     }
 
     public void HideWorld()
@@ -62,6 +66,40 @@ public class PanelManager : MonoBehaviour
 
         var roll = SysRandom.Range(0, 2);
         BGMPlayer.Instance.PlayBGM(roll == 0 ? "BGMs/weifeng" : "BGMs/pozhu");
+    }
+
+    public void InitTopNodeResItems()
+    {
+        foreach (Transform child in topNode.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
+        if (playerForce == null) return;
+        int index = 0;
+        foreach (var attrConfig in CityAttrConfig.ConfigList)
+        {
+            if (!attrConfig.IsForceAttr) continue;
+            var resBasePrefab = Resources.Load<GameObject>("Prefabs/ResBase");
+            var resObj = Instantiate(resBasePrefab, topNode.transform);
+            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(180 * index, 0);
+            resObj.GetComponent<ResItem>().SetItem(attrConfig.name, playerForce.GetAttr(attrConfig.name));
+            index++;
+        }
+    }
+
+    private void RefreshTopNodeResItem(string attrName, int value)
+    {
+        if (topNode == null) return;
+        foreach (Transform child in topNode.transform)
+        {
+            var resItem = child.GetComponent<ResItem>();
+            if (resItem != null && resItem.attrName == attrName)
+            {
+                resItem.SetItem(attrName, value);
+                return;
+            }
+        }
     }
 
     public void ShowCity(int cityId)
@@ -385,6 +423,12 @@ public class PanelManager : MonoBehaviour
     public void SendSignal(string name, string parm1, int parm2)
     {
         GameLog.Debug($"PanelManager SendSignal {name} {parm1} {parm2}");
+
+        if (name == "ForceResChange")
+        {
+            RefreshTopNodeResItem(parm1, parm2);
+        }
+
         if(worldPanel != null)
         {
             worldPanel.GetComponent<MainPanelManager>().SendSignal(name, parm1, parm2);

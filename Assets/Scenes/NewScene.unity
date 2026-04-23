@@ -1444,6 +1444,7 @@ RectTransform:
   m_Children:
   - {fileID: 1267846767}
   - {fileID: 1835018305}
+  - {fileID: 1083717913}
   - {fileID: 1947805577}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3304,13 +3305,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1835018305}
+  m_Father: {fileID: 566742079}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -490}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 90, y: -30}
   m_SizeDelta: {x: 1, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!1 &1090962203
 GameObject:
   m_ObjectHideFlags: 0
@@ -3775,12 +3776,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aea733f04dda3744909aecc06301a03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topNode: {fileID: 1083717912}
   cityDetail: {fileID: 683616325}
   btnSystem: {fileID: 1090962205}
   btnCity: {fileID: 656844184}
   btnRoundNext: {fileID: 2084598303}
   btnMode: {fileID: 141083486}
+  textRoundNext: {fileID: 0}
   textYear: {fileID: 782731928}
   textAiInfo: {fileID: 429747025}
   bgPanel: {fileID: 1233966844}
@@ -4621,7 +4622,7 @@ MonoBehaviour:
       battleRecords: []
       nextBattleId: 1000
     round: 0
-  forbidPlayerAct: 0
+    currentForceIndex: 0
 --- !u!114 &1788356934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4746,7 +4747,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1181113650}
-  - {fileID: 1083717913}
   m_Father: {fileID: 566742079}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4806,6 +4806,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rankPanel: {fileID: 0}
   worldPanel: {fileID: 1181113649}
+  topNode: {fileID: 1083717912}
   openPanelList: []
 --- !u!1 &1947805576
 GameObject:

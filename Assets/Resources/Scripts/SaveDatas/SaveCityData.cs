@@ -195,9 +195,9 @@ public class SaveCityData
     public void AddAttr(string type, int add)
     {
         var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
-        if (!attrConfig.IsForceAttr)
+        if (attrConfig.IsForceAttr)
         {
-            GameLog.Error($"AddAttr: {type} is not force attr");
+            GameLog.Error($"AddAttr: {type} is force attr, not city attr");
             return;
         }
         
@@ -223,6 +223,11 @@ public class SaveCityData
                 break;
             default:
                 break;
+        }
+
+        if (PanelManager.Instance != null)
+        {
+            PanelManager.Instance.SendSignal("CityResChange", type.ToLower(), GetAttr(type.ToLower()));
         }
     }
 

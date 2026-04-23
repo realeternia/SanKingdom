@@ -69,13 +69,13 @@ namespace CommonConfig
             config[2] = new CityAttrConfig(2, "exp", "发展度", false, 999, 0, "citydev");
             config[5] = new CityAttrConfig(5, "food", "粮食", false, 999, 0, "cityfood");
             config[6] = new CityAttrConfig(6, "soldier", "士兵", false, 999, 0, "citysod");
-            config[7] = new CityAttrConfig(7, "happy", "民心", false, 999, 0, "citysod");
+            config[7] = new CityAttrConfig(7, "happy", "民心", false, 999, 0, "cityheart");
             config[8] = new CityAttrConfig(8, "wall", "城墙", false, 999, 0, "citywall");
             config[12] = new CityAttrConfig(12, "gold", "金钱", true, 0, 999, "citygold");
-            config[12] = new CityAttrConfig(12, "steel", "铁", true, 0, 999, "citysteel");
-            config[12] = new CityAttrConfig(12, "horse", "马", true, 0, 999, "cityhorse");
-            config[12] = new CityAttrConfig(12, "wood", "木材", true, 0, 999, "citywood");
-            config[12] = new CityAttrConfig(12, "stone", "石料", true, 0, 999, "citystone");
+            config[13] = new CityAttrConfig(13, "steel", "铁", true, 0, 999, "citysteel");
+            config[14] = new CityAttrConfig(14, "horse", "马", true, 0, 999, "cityhorse");
+            config[15] = new CityAttrConfig(15, "wood", "木材", true, 0, 999, "citywood");
+            config[16] = new CityAttrConfig(16, "stone", "石料", true, 0, 999, "citystone");
 
 
             idxname["level"] =  1;
@@ -92,14 +92,14 @@ namespace CommonConfig
             idxCname["城墙"] =  8;
             idxname["gold"] =  12;
             idxCname["金钱"] =  12;
-            idxname["steel"] =  12;
-            idxCname["铁"] =  12;
-            idxname["horse"] =  12;
-            idxCname["马"] =  12;
-            idxname["wood"] =  12;
-            idxCname["木材"] =  12;
-            idxname["stone"] =  12;
-            idxCname["石料"] =  12;
+            idxname["steel"] =  13;
+            idxCname["铁"] =  13;
+            idxname["horse"] =  14;
+            idxCname["马"] =  14;
+            idxname["wood"] =  15;
+            idxCname["木材"] =  15;
+            idxname["stone"] =  16;
+            idxCname["石料"] =  16;
 
         }
 

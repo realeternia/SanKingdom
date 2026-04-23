@@ -56,6 +56,10 @@ public class SaveForceData
             default:
                 break;
         }
+        if (isPlayer && PanelManager.Instance != null)
+        {
+            PanelManager.Instance.SendSignal("ForceResChange", type.ToLower(), GetAttr(type.ToLower()));
+        }
     }
 
     public int GetAttr(string type)

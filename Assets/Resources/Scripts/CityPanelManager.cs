@@ -30,6 +30,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     public GameObject rankRegionHero;
     public GameObject rankCellHeroPrefab;
 
+    public RectTransform topNode;
+
     public RectTransform devList;
 
     private float devItemWidth = 300f;
@@ -483,11 +485,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     {
         this.cityId = cityId;
         UpdateCityInfo();
+        InitTopNodeResItems();
     }
 
     public void OnShow()
     {
-
     }
 
     public void OnHide()
@@ -496,5 +498,45 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public void SendSignal(string name, string parm1, int parm2)
     {
+        if (name == "CityResChange")
+        {
+            RefreshTopNodeResItem(parm1, parm2);
+        }
+    }
+
+    public void InitTopNodeResItems()
+    {
+        if (topNode == null) return;
+        foreach (Transform child in topNode.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null) return;
+        int index = 0;
+        foreach (var attrConfig in CityAttrConfig.ConfigList)
+        {
+            if (attrConfig.IsForceAttr) continue;
+            if (string.IsNullOrEmpty(attrConfig.Icon)) continue;
+            var resBasePrefab = Resources.Load<GameObject>("Prefabs/ResBase");
+            var resObj = Instantiate(resBasePrefab, topNode.transform);
+            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(180 * index, 0);
+            resObj.GetComponent<ResItem>().SetItem(attrConfig.name, cityData.GetAttr(attrConfig.name));
+            index++;
+        }
+    }
+
+    private void RefreshTopNodeResItem(string attrName, int value)
+    {
+        if (topNode == null) return;
+        foreach (Transform child in topNode.transform)
+        {
+            var resItem = child.GetComponent<ResItem>();
+            if (resItem != null && resItem.attrName == attrName)
+            {
+                resItem.SetItem(attrName, value);
+                return;
+            }
+        }
     } 
 }
