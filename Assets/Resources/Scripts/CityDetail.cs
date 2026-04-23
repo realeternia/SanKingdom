@@ -30,10 +30,6 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         var cfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
 
         textComponent.color = Color.gray;
-        if (cfg.ValLow != 0 && val < cfg.ValLow)
-        {
-            textComponent.color = Color.red;
-        }
     }
 
     private void SetTextAndColor(TMP_Text textComponent, SaveForceData force, string attrName)
@@ -51,10 +47,6 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         var cfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
 
         textComponent.color = Color.gray;
-        if (cfg.ValLow != 0 && val < cfg.ValLow)
-        {
-            textComponent.color = Color.red;
-        }
     }
 
     private void AddOverlay(GameObject parent, Color color)

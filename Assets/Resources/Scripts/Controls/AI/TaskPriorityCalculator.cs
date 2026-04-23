@@ -92,8 +92,11 @@ public class TaskPriorityCalculator
         if (attrConfig == null)
             return false;
         
-        int currentVal = city.GetAttr(mainAttr);
-        return currentVal < attrConfig.ValMax;
+        int currentVal = attrConfig.IsForceAttr 
+            ? GameManager.Instance.GetForce(city.forceId).GetAttr(mainAttr) 
+            : city.GetAttr(mainAttr);
+        int valMax = attrConfig.IsForceAttr ? attrConfig.ValMaxForce : attrConfig.ValMaxCity;
+        return currentVal < valMax;
     }
     
     private static bool HasSoldier(SaveCityData city)

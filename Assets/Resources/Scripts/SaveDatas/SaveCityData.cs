@@ -63,10 +63,10 @@ public class SaveCityData
         if(forceData != null)
         {
             if(seasonCfg.AddGold != 0)
-                forceData.gold += SysFormula.City.CalculateGoldProduction(level, seasonCfg.AddGold);
+                forceData.AddAttr("gold", (int)SysFormula.City.CalculateGoldProduction(level, seasonCfg.AddGold));
         }
         if(seasonCfg.AddFood != 0)
-            food += SysFormula.City.CalculateFoodProduction(level, seasonCfg.AddFood);
+            AddAttr("food", (int)SysFormula.City.CalculateFoodProduction(level, seasonCfg.AddFood));
         actions.Clear();
     }
 
@@ -194,6 +194,13 @@ public class SaveCityData
 
     public void AddAttr(string type, int add)
     {
+        var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
+        if (!attrConfig.IsForceAttr)
+        {
+            GameLog.Error($"AddAttr: {type} is not force attr");
+            return;
+        }
+        
         switch (type.ToLower())
         {
             case "level":
