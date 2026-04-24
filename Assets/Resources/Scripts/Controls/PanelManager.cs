@@ -82,7 +82,7 @@ public class PanelManager : MonoBehaviour
             if (!attrConfig.IsForceAttr) continue;
             var resBasePrefab = Resources.Load<GameObject>("Prefabs/ResBase");
             var resObj = Instantiate(resBasePrefab, topNode.transform);
-            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(180 * index, 0);
+            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(240 * index, 0);
             resObj.GetComponent<ResItem>().SetItem(attrConfig.name, playerForce.GetAttr(attrConfig.name));
             index++;
         }
@@ -420,26 +420,27 @@ public class PanelManager : MonoBehaviour
         replayPanel = null;
     }
 
-    public void SendSignal(string name, string parm1, int parm2)
+    public void SendSignal(SignalData data)
     {
-        GameLog.Debug($"PanelManager SendSignal {name} {parm1} {parm2}");
+        GameLog.Debug($"PanelManager SendSignal {data.Name}");
 
-        if (name == "ForceResChange")
+        if (data.Name == "ForceResChange")
         {
-            RefreshTopNodeResItem(parm1, parm2);
+            var signal = data as ForceResChangeSignal;
+            RefreshTopNodeResItem(signal.ResType, signal.Value);
         }
 
         if(worldPanel != null)
         {
-            worldPanel.GetComponent<MainPanelManager>().SendSignal(name, parm1, parm2);
+            worldPanel.GetComponent<MainPanelManager>().SendSignal(data);
         }
         foreach (var panel in openPanelList)
         {
-            GameLog.Debug($"PanelManager SendSignal {panel.name} {name} {parm1} {parm2}");
+            GameLog.Debug($"PanelManager SendSignal {panel.name} {data.Name}");
             if (panel.TryGetComponent<IPanelEvent>(out IPanelEvent p))
             {
-                GameLog.Debug($"PanelManager SendSignal2 {panel.name} {name} {parm1} {parm2}");
-                p.SendSignal(name, parm1, parm2);
+                GameLog.Debug($"PanelManager SendSignal2 {panel.name} {data.Name}");
+                p.SendSignal(data);
             }
         }
     }

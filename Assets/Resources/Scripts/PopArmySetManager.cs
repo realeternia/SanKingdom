@@ -52,7 +52,7 @@ public class PopArmySetManager : MonoBehaviour
                 var change = soldier - currentAllocated;
                 heroSoldierAllocations[heroId] = soldier;
                 currentAllocated = soldier;
-                PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
+                PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = 0 });
                 PanelManager.Instance.HidePopArmySetPanel();
             }
         });

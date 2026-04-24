@@ -496,11 +496,15 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     {
     }
 
-    public void SendSignal(string name, string parm1, int parm2)
+    public void SendSignal(SignalData data)
     {
-        if (name == "CityResChange")
+        if (data.Name == "CityResChange")
         {
-            RefreshTopNodeResItem(parm1, parm2);
+            var signal = data as CityResChangeSignal;
+            if (signal.CityId == cityId)
+            {
+                RefreshTopNodeResItem(signal.ResType, signal.Value);
+            }
         }
     }
 
@@ -520,7 +524,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             if (string.IsNullOrEmpty(attrConfig.Icon)) continue;
             var resBasePrefab = Resources.Load<GameObject>("Prefabs/ResBase");
             var resObj = Instantiate(resBasePrefab, topNode.transform);
-            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(180 * index, 0);
+            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(240 * index, 0);
             resObj.GetComponent<ResItem>().SetItem(attrConfig.name, cityData.GetAttr(attrConfig.name));
             index++;
         }

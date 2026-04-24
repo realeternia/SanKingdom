@@ -58,7 +58,7 @@ public class SaveForceData
         }
         if (isPlayer && PanelManager.Instance != null)
         {
-            PanelManager.Instance.SendSignal("ForceResChange", type.ToLower(), GetAttr(type.ToLower()));
+            PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = type.ToLower(), Value = GetAttr(type.ToLower()) });
         }
     }
 
@@ -146,12 +146,12 @@ public class SaveForceData
 
         if (isPlayer)
         {
-            PanelManager.Instance.SendSignal("PhaseChange", "Planning", forceId);
-            PanelManager.Instance.SendSignal("AICheck", "", 0);
+            PanelManager.Instance.SendSignal(new PhaseChangeSignal { PhaseName = "Planning", ForceId = forceId });
+            PanelManager.Instance.SendSignal(new AICheckSignal { ForceId = 0 });
         }
         else
         {
-            PanelManager.Instance.SendSignal("AICheck", Name, forceId);
+            PanelManager.Instance.SendSignal(new AICheckSignal { AIName = Name, ForceId = forceId });
             GameManager.Instance.StartCoroutine(GameManager.Instance.AIForceTurnCoroutine(this));
         }
     }
@@ -405,7 +405,7 @@ public class SaveForceData
             cityDest.RecalculateHeros();
         }
         
-         PanelManager.Instance.SendSignal("CityAttrChange", "", destCityId);
+         PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = destCityId });
     }
 
     public void ExecuteCityMoveDev(int cityId, int devId, int[] heroList, int foodUse, int targetCityId)

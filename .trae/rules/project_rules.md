@@ -45,6 +45,8 @@ Assets/Resources/Scripts/
 ├── PO/                        # 数据对象，建议可以把简单的数据结构放到这里
 │   ├── AttrInfo.cs            # 属性信息
 │   ├── BattleCardData.cs      # 战斗卡牌数据
+│   ├── PanelEvent.cs          # IPanelEvent 接口
+│   └── SignalData.cs          # 信号数据基类及派生类
 ├── SaveDatas/                 # 存档数据，持久化的数据
 │   ├── SaveData.cs            # 总存档
 │   ├── SaveCityData.cs        # 城市存档
@@ -168,15 +170,46 @@ AI 系统采用分层架构：
 - 回合阶段：`TurnPhase.None` → `Planning` → `Execution` → `Battle` → 回合结束
 - 玩家确认计划后进入执行阶段：`GameManager.ConfirmPlan()`
 - AI 自动执行计划阶段：`AI.ExecutePlanningPhase()`
-- 面板信号系统：`PanelManager.Instance.SendSignal(signalName, data, id)`
+- 面板信号系统：`PanelManager.Instance.SendSignal(SignalData data)`
 
-### 7. IRecoverable 接口
+### 7. 面板信号系统 - SignalData 继承体系
+
+信号采用基类 + 派生类的方式传递数据，基类 `SignalData` 持有 `Name` 字段标识信号类型，派生类持有各自专属字段：
+
+```
+SignalData (基类, Name 字段)
+├── CityResChangeSignal      — CityId, ResType, Value
+├── CityForceChangeSignal    — CityId
+├── ForceResChangeSignal     — ResType, Value
+├── PhaseChangeSignal        — PhaseName, ForceId
+├── AICheckSignal            — AIName, ForceId
+├── RoundChangeSignal        — Round
+└── CityAttrChangeSignal     — CityId
+```
+
+- 接口：`IPanelEvent.SendSignal(SignalData data)`
+- 信号分发中心：`PanelManager.SendSignal(SignalData data)` 转发给 `MainPanelManager` 和 `openPanelList` 中实现了 `IPanelEvent` 的面板
+- 接收方通过 `data.Name` 判断是否处理，需要字段时用 `as` 转换为具体派生类
+- 发送方直接 `new` 具体派生类并设置字段
+
+新增信号时：
+1. 在 `PO/SignalData.cs` 中新增派生类，继承 `SignalData`，在无参构造函数中设置 `Name`
+2. 在发送方构造新派生类实例
+3. 在接收方通过 `data.Name` 判断并 `as` 转换后使用
+
+### 8. IRecoverable 接口
 
 - 战斗对象（`Chess`, `Missile`, `Skill`, `Buff`）实现 `IRecoverable` 接口
 - `OnRecover()` 在反序列化后调用，用于重建运行时引用
 - 反序列化后必须遍历所有对象调用 `OnRecover()`
 
 ## 修改代码时的注意事项
+
+### 新增文件
+
+- 新增 `.cs` 文件后，必须在 `Assembly-CSharp.csproj` 中添加对应的 `<Compile Include="..." />` 条目
+- csproj 路径：项目根目录下 `Assembly-CSharp.csproj`
+- 条目格式：`<Compile Include="Assets\Resources\Scripts\PO\SignalData.cs" />`（使用相对路径，反斜杠分隔）
 
 ### 战斗系统修改
 
@@ -215,3 +248,4 @@ AI 系统采用分层架构：
 - 不要在业务代码中硬编码数值，必须提取到 `SystemConst`
 - 不要在业务代码中内联计算逻辑，必须提取到 `SysFormula`
 - 不要使用 `UnityEngine.Debug.Log`，统一使用 `GameLog`
+- 不要新增 `.cs` 文件后忘记在 `Assembly-CSharp.csproj` 中添加 `<Compile Include>` 条目

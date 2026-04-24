@@ -142,9 +142,9 @@ public class PopHeroBattleSelectPanelManager : MonoBehaviour, IPanelEvent
         }
     }
 
-    public void SendSignal(string name, string parm1, int parm2)
+    public void SendSignal(SignalData data)
     {
-        if(name == "CityAttrChange")
+        if(data.Name == "CityAttrChange")
         {
             foreach (var cellInfo in cacheHeroList)
             {

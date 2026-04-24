@@ -227,7 +227,7 @@ public class SaveCityData
 
         if (PanelManager.Instance != null)
         {
-            PanelManager.Instance.SendSignal("CityResChange", type.ToLower(), GetAttr(type.ToLower()));
+            PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = type.ToLower(), Value = GetAttr(type.ToLower()) });
         }
     }
 
@@ -358,7 +358,7 @@ public class SaveCityData
         }
 
         RecalculateHeros();
-        PanelManager.Instance.SendSignal("CityForceChange", "", cityId);
+        PanelManager.Instance.SendSignal(new CityForceChangeSignal { CityId = cityId });
 
         GameManager.Instance.SaveToFile();
     }

@@ -217,7 +217,7 @@ public class GameManager : MonoBehaviour
     {
         SaveData.round++;
         
-        PanelManager.Instance.SendSignal("RoundChange", "", SaveData.round);
+        PanelManager.Instance.SendSignal(new RoundChangeSignal { Round = SaveData.round });
 
         foreach(var city in SaveData.cities)
         {
@@ -281,14 +281,14 @@ public class GameManager : MonoBehaviour
     private IEnumerator ForceTurnCoroutine(SaveForceData force)
     {
         force.SetPhase(TurnPhase.Execution);
-        PanelManager.Instance.SendSignal("PhaseChange", "Execution", force.forceId);
+        PanelManager.Instance.SendSignal(new PhaseChangeSignal { PhaseName = "Execution", ForceId = force.forceId });
         
         yield return ExecuteForceDevActions(force);
         
         if (force.warPlans.Count > 0)
         {
             force.SetPhase(TurnPhase.Battle);
-            PanelManager.Instance.SendSignal("PhaseChange", "Battle", force.forceId);
+            PanelManager.Instance.SendSignal(new PhaseChangeSignal { PhaseName = "Battle", ForceId = force.forceId });
             
             foreach (var warPlan in force.warPlans)
             {
@@ -364,7 +364,7 @@ public class GameManager : MonoBehaviour
         currentForceId = 0;
         SaveData.currentForceIndex = 0;
         
-        PanelManager.Instance.SendSignal("AICheck", "", 0);
+        PanelManager.Instance.SendSignal(new AICheckSignal { ForceId = 0 });
         PanelManager.Instance.SwitchBGM();
         
         GameLog.Info("EndRound");

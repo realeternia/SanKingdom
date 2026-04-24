@@ -271,7 +271,7 @@ public class PopResultPanelManager : MonoBehaviour
         {
             infoPanel.SetActive(true);
             runBtn.gameObject.SetActive(true);
-            PanelManager.Instance.SendSignal("CityAttrChange", "", 0);
+            PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = 0 });
         }
     }
 

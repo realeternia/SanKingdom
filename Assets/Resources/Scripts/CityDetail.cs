@@ -170,11 +170,11 @@ public class CityDetail : MonoBehaviour, IPanelEvent
 
     }
 
-    public void SendSignal(string name, string parm1, int parm2)
+    public void SendSignal(SignalData data)
     {
-        if(name == "CityAttrChange")
+        if(data.Name == "CityAttrChange")
         {
-            SetCityDetail(cityId); //刷新数据
+            SetCityDetail(cityId);
         }
     }
 

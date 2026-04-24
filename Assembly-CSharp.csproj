@@ -128,6 +128,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\EffectManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\ConfigNameHelper.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\PO\SignalData.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\BuffConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\CityEvaluator.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\Skill.cs" />

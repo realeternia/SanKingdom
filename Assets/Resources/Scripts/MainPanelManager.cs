@@ -304,27 +304,26 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         }
     }
 
-    public void SendSignal(string name, string parm1, int parm2)
+    public void SendSignal(SignalData data)
     {
-        GameLog.Debug($"WorldManager SendSignal {name} {parm1} {parm2}");
-        cityDetail.SendSignal(name, parm1, parm2);
+        GameLog.Debug($"WorldManager SendSignal {data.Name}");
+        cityDetail.SendSignal(data);
 
-        if(name == "PhaseChange")
+        if(data.Name == "PhaseChange")
         {
             UpdateRoundNextButton();
         }
-        else if(name == "CityForceChange")
+        else if(data.Name == "CityForceChange")
         {
-            var cityId = parm2;
-            worldPieces.Find(x => x.pieceId == cityId).SetColor(GameManager.Instance.GetCity(cityId).forceId);
+            var signal = data as CityForceChangeSignal;
+            worldPieces.Find(x => x.pieceId == signal.CityId).SetColor(GameManager.Instance.GetCity(signal.CityId).forceId);
         }
-        else if(name == "RoundChange")
+        else if(data.Name == "RoundChange")
         {
-            var nowRound = parm2;
+            var signal = data as RoundChangeSignal;
             var seasonId = GameManager.Instance.SeasonId;
             var seasonCfg = SeasonConfig.GetConfig(seasonId);
-            // 使用GameManager的常量计算年份
-            int years = nowRound / SystemConst.Game.SEASONS_PER_YEAR;
+            int years = signal.Round / SystemConst.Game.SEASONS_PER_YEAR;
             textYear.text = $"{SystemConst.Game.BASE_YEAR + years}年{seasonCfg.Name}";
 
             for (int i = 0; i < worldPieces.Count; i++)
@@ -349,20 +348,18 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             
             MoveToPlayerCapital();
         }
-        else if(name == "AICheck")
+        else if(data.Name == "AICheck")
         {
-            var playerName = parm1;
-            var forceId = parm2;
-            if (playerName == "")
+            var signal = data as AICheckSignal;
+            if (string.IsNullOrEmpty(signal.AIName))
             {
                 textAiInfo.transform.parent.gameObject.SetActive(false);
             }
             else
             {
                 textAiInfo.transform.parent.gameObject.SetActive(true);
-                var color = ForceConfig.GetConfig(forceId).Color;
-                //把color加入富文本中
-                textAiInfo.text = $"<color={color}>{playerName}</color> 进行中";
+                var color = ForceConfig.GetConfig(signal.ForceId).Color;
+                textAiInfo.text = $"<color={color}>{signal.AIName}</color> 进行中";
             }
         }
     }    

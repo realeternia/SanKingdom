@@ -82,7 +82,7 @@ public class BattleUIManager : MonoBehaviour
         BattleResultPanel.gameObject.SetActive(true);
 
         if(!replay)
-            PanelManager.Instance.SendSignal("CityAttrChange", "", 0); //士兵数变了
+            PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = 0 });
     }
 
     public void OnEndButtonClick()
