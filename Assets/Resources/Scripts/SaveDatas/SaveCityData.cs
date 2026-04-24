@@ -33,16 +33,19 @@ public class SaveCityData
         {
             devAssignments.Add(new DevAssignmentData(heroId, devId));
         }
+        GameManager.Instance.GetForce(forceId).RecalculatePosRes();
     }
 
     public void RemoveDevAssignment(int heroId)
     {
         devAssignments.RemoveAll(d => d.heroId == heroId);
+        GameManager.Instance.GetForce(forceId).RecalculatePosRes();
     }
 
     public void ClearDevAssignments()
     {
         devAssignments.Clear();
+        GameManager.Instance.GetForce(forceId).RecalculatePosRes();
     }
 
     public List<DevAssignmentData> GetDevAssignments()

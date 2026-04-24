@@ -141,10 +141,10 @@ namespace CommonConfig
             config[21203] = new CityDevConfig(21203, "交易", "交易钱粮", "", "CityDevChange", "change", 0, 1, "", null, "", null, "", null, new string[]{"Inte"}, "", 1, 3, 1, "change.mp4");
             config[21401] = new CityDevConfig(21401, "登用", "提拔在野武将", "", "CityDevUseHero", "wild", 0, 1, "", null, "", null, "", null, new string[]{"Charm","Inte"}, "", 2, 0, 0, "wild.mp4");
             config[21402] = new CityDevConfig(21402, "褒奖", "提升武将忠心度", "normal", "CityDevPraiseHero", "praise", 10, 5, "", null, "", null, "praise", new int[]{1,5}, new string[]{"Charm","Inte"}, "", 3, 12, 0, "wild.mp4");
-            config[21403] = new CityDevConfig(21403, "采石场", "提升石料", "normal", "", "stone", 0, 1, "", null, "", null, "", null, new string[]{"Charm","Inte"}, "", 0, 0, 0, "wild.mp4");
-            config[21404] = new CityDevConfig(21404, "马场", "提升马场", "normal", "", "horse", 0, 1, "", null, "", null, "", null, new string[]{"Charm","Inte"}, "", 0, 0, 0, "wild.mp4");
-            config[21405] = new CityDevConfig(21405, "木材场", "提升木材", "normal", "", "wood", 0, 1, "", null, "", null, "", null, new string[]{"Charm","Inte"}, "", 0, 0, 0, "wild.mp4");
-            config[21406] = new CityDevConfig(21406, "铁匠铺", "提升铁", "normal", "", "steel", 0, 1, "", null, "", null, "", null, new string[]{"Charm","Inte"}, "", 0, 0, 0, "wild.mp4");
+            config[21403] = new CityDevConfig(21403, "采石场", "提升石料", "normal", "", "stone", 0, 1, "stone", new int[]{3,3}, "", null, "", null, new string[]{"Charm","Inte"}, "", 0, 0, 0, "wild.mp4");
+            config[21404] = new CityDevConfig(21404, "马场", "提升马场", "normal", "", "horse", 0, 1, "horse", new int[]{3,3}, "", null, "", null, new string[]{"Charm","Inte"}, "", 0, 0, 0, "wild.mp4");
+            config[21405] = new CityDevConfig(21405, "木材场", "提升木材", "normal", "", "wood", 0, 1, "wood", new int[]{3,3}, "", null, "", null, new string[]{"Charm","Inte"}, "", 0, 0, 0, "wild.mp4");
+            config[21406] = new CityDevConfig(21406, "铁匠铺", "提升铁", "normal", "", "steel", 0, 1, "steel", new int[]{3,3}, "", null, "", null, new string[]{"Charm","Inte"}, "", 0, 0, 0, "wild.mp4");
 
 
 

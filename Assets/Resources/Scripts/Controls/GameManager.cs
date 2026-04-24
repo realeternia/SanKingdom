@@ -196,7 +196,7 @@ public class GameManager : MonoBehaviour
         {
             if(force.Id > SystemConst.Game.MAX_FORCE_ID)
                 continue;
-            var forceData = new SaveForceData { forceId = force.Id, gold = force.InitGold, wood = force.InitWood, horse = force.InitHorse, steel = force.InitSteel, stone = force.InitStone };
+            var forceData = new SaveForceData { forceId = force.Id, gold = force.InitGold };
             if(force.Id == forceId)
                 forceData.isPlayer = true;
             forceData.InitRuntimeState();

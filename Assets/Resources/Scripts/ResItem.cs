@@ -10,26 +10,55 @@ public class ResItem : MonoBehaviour
     public Image itemImg;
     public TMP_Text itemNum;
     public string attrName;
-    
-    // Start is called before the first frame update
+
+    private int num;
+    private int used;
+    private CityAttrConfig config;
+
     void Start()
     {
-        
+
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    public void SetItem(string name, int num)
+    public void Init(string name)
     {
         var item = CityAttrConfig.GetConfigByname(name);
         if (item == null)
             return;
         this.attrName = name;
+        this.config = item;
         this.itemImg.sprite = Resources.Load<Sprite>("Textures/Icons/" + item.Icon);
-        this.itemNum.text = num.ToString();
     }
+
+    public void UpdateNum(int num)
+    {
+        this.num = num;
+        RefreshDisplay();
+    }
+
+    public void UpdateUsed(int used)
+    {
+        if (config == null || !config.IsPosRes)
+            return;
+        this.used = used;
+        RefreshDisplay();
+    }
+
+    private void RefreshDisplay()
+    {
+        if (used > 0)
+        {
+            itemNum.text = $"{num}(<color=red>{used}</color>)";
+        }
+        else
+        {
+            itemNum.text = num.ToString();
+        }
+    }
+
 }

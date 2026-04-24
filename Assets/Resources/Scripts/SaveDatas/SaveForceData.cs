@@ -13,10 +13,6 @@ public class SaveForceData
     public bool isPlayer;
     public bool isEliminated;
     public float gold;
-    public float wood;
-    public float horse;
-    public float steel;
-    public float stone;
 
     [NonSerialized]
     public TurnPhase phase = TurnPhase.None;
@@ -26,6 +22,8 @@ public class SaveForceData
     public bool planConfirmed = false;
     [NonSerialized]
     public int mark;
+    [NonSerialized]
+    private Dictionary<string, int> posResCache = new Dictionary<string, int>();
 
     public void AddAttr(string type, int add)
     {
@@ -36,22 +34,16 @@ public class SaveForceData
             return;
         }
         
+        if (attrConfig.IsPosRes)
+        {
+            GameLog.Error($"AddAttr: {type} is IsPosRes, use SetAttrVal instead");
+            return;
+        }
+        
         switch (type.ToLower())
         {
             case "gold":
                 gold = Math.Min(gold + add, attrConfig.ValMaxForce);
-                break;
-            case "wood":
-                wood = Math.Min(wood + add, attrConfig.ValMaxForce);
-                break;
-            case "horse":
-                horse = Math.Min(horse + add, attrConfig.ValMaxForce);
-                break;
-            case "steel":
-                steel = Math.Min(steel + add, attrConfig.ValMaxForce);
-                break;
-            case "stone":
-                stone = Math.Min(stone + add, attrConfig.ValMaxForce);
                 break;
             default:
                 break;
@@ -62,26 +54,87 @@ public class SaveForceData
         }
     }
 
+    public void SetAttrVal(string type, int val, int used)
+    {
+        var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
+        if (!attrConfig.IsForceAttr)
+        {
+            GameLog.Error($"SetAttrVal: {type} is not force attr");
+            return;
+        }
+        
+        if (!attrConfig.IsPosRes)
+        {
+            GameLog.Error($"SetAttrVal: {type} is not IsPosRes, use AddAttr instead");
+            return;
+        }
+        
+        posResCache[type.ToLower()] = val;
+        
+        if (isPlayer && PanelManager.Instance != null)
+        {
+            PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = type.ToLower(), Value = val });
+        }
+    }
+
     public int GetAttr(string type)
     {
         var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
         if (!attrConfig.IsForceAttr)
             return 0;
         
+        if (attrConfig.IsPosRes)
+        {
+            return GetPosResFromCache(type.ToLower());
+        }
+        
         switch (type.ToLower())
         {
             case "gold":
                 return (int)Math.Floor(gold);
-            case "wood":
-                return (int)Math.Floor(wood);
-            case "horse":
-                return (int)Math.Floor(horse);
-            case "steel":
-                return (int)Math.Floor(steel);
-            case "stone":
-                return (int)Math.Floor(stone);
             default:
                 return 0;
+        }
+    }
+
+    private int GetPosResFromCache(string type)
+    {
+        if (posResCache.ContainsKey(type))
+            return posResCache[type];
+        return 0;
+    }
+
+    public void RecalculatePosRes()
+    {
+        posResCache.Clear();
+        
+        var cities = GetCityList();
+        foreach (var city in cities)
+        {
+            var assignments = city.GetDevAssignments();
+            foreach (var assignment in assignments)
+            {
+                var devConfig = CityDevConfig.GetConfig(assignment.devId);
+                if (devConfig == null || string.IsNullOrEmpty(devConfig.DevAttr1))
+                    continue;
+                
+                var attrConfig = CityAttrConfig.GetConfigByname(devConfig.DevAttr1.ToLower());
+                if (attrConfig == null || !attrConfig.IsPosRes)
+                    continue;
+                
+                string resType = devConfig.DevAttr1.ToLower();
+                if (!posResCache.ContainsKey(resType))
+                    posResCache[resType] = 0;
+                posResCache[resType]+=devConfig.DevAttr1Value[0];
+            }
+        }
+        
+        if (isPlayer && PanelManager.Instance != null)
+        {
+            foreach (var kvp in posResCache)
+            {
+                PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = kvp.Key, Value = kvp.Value });
+            }
         }
     }
 
@@ -121,6 +174,8 @@ public class SaveForceData
         warPlans = new List<WarPlanData>();
         planConfirmed = false;
         mark = 0;
+        posResCache = new Dictionary<string, int>();
+        RecalculatePosRes();
     }
 
     public void SetPhase(TurnPhase newPhase)
@@ -404,7 +459,7 @@ public class SaveForceData
         {
             cityDest.RecalculateHeros();
         }
-        
+         
          PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = destCityId });
     }
 

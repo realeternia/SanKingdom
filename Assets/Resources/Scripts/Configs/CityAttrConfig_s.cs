@@ -23,6 +23,10 @@ namespace CommonConfig
         /// </summary>
         public bool IsForceAttr;
         /// <summary>
+        ///占用类资源
+        /// </summary>
+        public bool IsPosRes;
+        /// <summary>
         ///最大值
         /// </summary>
         public int ValMaxCity;
@@ -36,12 +40,13 @@ namespace CommonConfig
         public string Icon;
 
 
-        public CityAttrConfig(int Id, string name, string Cname, bool IsForceAttr, int ValMaxCity, int ValMaxForce, string Icon)
+        public CityAttrConfig(int Id, string name, string Cname, bool IsForceAttr, bool IsPosRes, int ValMaxCity, int ValMaxForce, string Icon)
         {
             this.Id = Id;
             this.name = name;
             this.Cname = Cname;
             this.IsForceAttr = IsForceAttr;
+            this.IsPosRes = IsPosRes;
             this.ValMaxCity = ValMaxCity;
             this.ValMaxForce = ValMaxForce;
             this.Icon = Icon;
@@ -65,17 +70,17 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new CityAttrConfig(1, "level", "等级", false, 99, 0, "");
-            config[2] = new CityAttrConfig(2, "exp", "发展度", false, 999, 0, "citydev");
-            config[5] = new CityAttrConfig(5, "food", "粮食", false, 999, 0, "cityfood");
-            config[6] = new CityAttrConfig(6, "soldier", "士兵", false, 999, 0, "citysod");
-            config[7] = new CityAttrConfig(7, "happy", "民心", false, 999, 0, "cityheart");
-            config[8] = new CityAttrConfig(8, "wall", "城墙", false, 999, 0, "citywall");
-            config[12] = new CityAttrConfig(12, "gold", "金钱", true, 0, 999, "citygold");
-            config[13] = new CityAttrConfig(13, "steel", "铁", true, 0, 999, "citysteel");
-            config[14] = new CityAttrConfig(14, "horse", "马", true, 0, 999, "cityhorse");
-            config[15] = new CityAttrConfig(15, "wood", "木材", true, 0, 999, "citywood");
-            config[16] = new CityAttrConfig(16, "stone", "石料", true, 0, 999, "citystone");
+            config[1] = new CityAttrConfig(1, "level", "等级", false, false, 99, 0, "");
+            config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, 999, 0, "citydev");
+            config[5] = new CityAttrConfig(5, "food", "粮食", false, false, 999, 0, "cityfood");
+            config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, 999, 0, "citysod");
+            config[7] = new CityAttrConfig(7, "happy", "民心", false, false, 999, 0, "cityheart");
+            config[8] = new CityAttrConfig(8, "wall", "城墙", false, false, 999, 0, "citywall");
+            config[12] = new CityAttrConfig(12, "gold", "金钱", true, false, 0, 999, "citygold");
+            config[13] = new CityAttrConfig(13, "steel", "铁", true, true, 0, 999, "citysteel");
+            config[14] = new CityAttrConfig(14, "horse", "马", true, true, 0, 999, "cityhorse");
+            config[15] = new CityAttrConfig(15, "wood", "木材", true, true, 0, 999, "citywood");
+            config[16] = new CityAttrConfig(16, "stone", "石料", true, true, 0, 999, "citystone");
 
 
             idxname["level"] =  1;

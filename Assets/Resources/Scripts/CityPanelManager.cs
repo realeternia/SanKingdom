@@ -525,7 +525,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             var resBasePrefab = Resources.Load<GameObject>("Prefabs/ResBase");
             var resObj = Instantiate(resBasePrefab, topNode.transform);
             resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(240 * index, 0);
-            resObj.GetComponent<ResItem>().SetItem(attrConfig.name, cityData.GetAttr(attrConfig.name));
+            resObj.GetComponent<ResItem>().Init(attrConfig.name);
+            resObj.GetComponent<ResItem>().UpdateNum(cityData.GetAttr(attrConfig.name));
             index++;
         }
     }
@@ -538,7 +539,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             var resItem = child.GetComponent<ResItem>();
             if (resItem != null && resItem.attrName == attrName)
             {
-                resItem.SetItem(attrName, value);
+                resItem.UpdateNum(value);
                 return;
             }
         }
