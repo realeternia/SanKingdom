@@ -205,20 +205,18 @@ public class GameManager : MonoBehaviour
 
         SortForces();
 
-        SaveToFile();
-
         foreach (var forceData in SaveData.forces)
             forceData.ResetRoundState();
         SaveData.currentForceIndex = 0;
         StartNextForceTurn();
+
+        SaveToFile();        
     }
 
     public void NextRound()
     {
         SaveData.round++;
         
-        PanelManager.Instance.SendSignal(new RoundChangeSignal { Round = SaveData.round });
-
         foreach(var city in SaveData.cities)
         {
             city.OnRound();
@@ -230,14 +228,16 @@ public class GameManager : MonoBehaviour
             forceData.ResetRoundState();
         SaveData.currentForceIndex = 0;
         SortForces();
-        
         StartNextForceTurn();
+        
+        PanelManager.Instance.SendSignal(new RoundChangeSignal { Round = SaveData.round });
+        SaveToFile();
 
         GameLog.Info("NextRound round=" + SaveData.round);
     }
     
     private void StartNextForceTurn()
-    {
+    {       
         if (SaveData.currentForceIndex >= SaveData.forces.Count)
         {
             EndRound();
@@ -245,8 +245,7 @@ public class GameManager : MonoBehaviour
         }
         
         var force = SaveData.forces[SaveData.currentForceIndex];
-        SaveData.currentForceIndex++;
-        
+
         StartForcePlanningPhase(force);
     }
     
@@ -254,10 +253,6 @@ public class GameManager : MonoBehaviour
     {
         currentForceId = force.forceId;
         force.StartPlanningPhase();
-        if (force.isPlayer)
-        {
-            SaveToFile();
-        }
         GameLog.Info($"StartForcePlanningPhase {force.Name} 计划阶段");
     }
     
@@ -311,6 +306,8 @@ public class GameManager : MonoBehaviour
         }
         
         GameLog.Info($"势力 {force.Name} 回合完成");
+
+        SaveData.currentForceIndex++; 
         StartNextForceTurn();
     }
     
@@ -444,17 +441,14 @@ public class GameManager : MonoBehaviour
             string json = File.ReadAllText(savePath);
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
             SaveData = saveData;
-            foreach (var forceData in SaveData.forces)
-            {
-                forceData.InitRuntimeState();
-            }
+
             SortForces();
-
             foreach (var forceData in SaveData.forces)
-                forceData.ResetRoundState();
-            StartNextForceTurn();
+                forceData.InitRuntimeState();
 
-            GameLog.Info("游戏数据加载成功 year=" + SaveData.round);
+            StartNextForceTurn();            
+
+            GameLog.Info("游戏数据加载成功 year=" + SaveData.round + ", currentForceId=" + SaveData.forces[SaveData.currentForceIndex].forceId);
         }
         catch (System.Exception e)
         {

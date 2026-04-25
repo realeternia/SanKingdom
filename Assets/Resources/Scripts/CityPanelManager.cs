@@ -389,14 +389,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         var cityData = GameManager.Instance.GetCity(cityId);
         if (!isHeroAlreadyAssigned && !isTargetNodeOccupied)
         {
-            if (cityData != null)
+            var levelCfg = CityLevelConfig.GetConfig(cityData.level);
+            if (levelCfg != null && heroToDevNodeMap.Count >= levelCfg.JobCount)
             {
-                var levelCfg = CityLevelConfig.GetConfig(cityData.level);
-                if (levelCfg != null && heroToDevNodeMap.Count >= levelCfg.JobCount)
-                {
-                    SystemTip.Instance.ShowTip($"该城市最多只能派遣{levelCfg.JobCount}人工作");
-                    return;
-                }
+                SystemTip.Instance.ShowTip($"该城市最多只能派遣{levelCfg.JobCount}人工作");
+                return;
             }
         }
 
@@ -434,14 +431,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         targetNode.SetHero(heroId);
         heroToDevNodeMap[heroId] = targetNode;
 
-        if (cityData != null)
+        if (oldHeroId > 0)
         {
-            if (oldHeroId > 0)
-            {
-                cityData.RemoveDevAssignment(oldHeroId);
-            }
-            cityData.SetDevAssignment(heroId, targetNode.GetDevId());
+            cityData.RemoveDevAssignment(oldHeroId);
         }
+        cityData.SetDevAssignment(heroId, targetNode.GetDevId());
 
         UpdateAllHeroWorkState();
 

@@ -54,29 +54,6 @@ public class SaveForceData
         }
     }
 
-    public void SetAttrVal(string type, int val, int used)
-    {
-        var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
-        if (!attrConfig.IsForceAttr)
-        {
-            GameLog.Error($"SetAttrVal: {type} is not force attr");
-            return;
-        }
-        
-        if (!attrConfig.IsPosRes)
-        {
-            GameLog.Error($"SetAttrVal: {type} is not IsPosRes, use AddAttr instead");
-            return;
-        }
-        
-        posResCache[type.ToLower()] = val;
-        
-        if (isPlayer && PanelManager.Instance != null)
-        {
-            PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = type.ToLower(), Value = val });
-        }
-    }
-
     public int GetAttr(string type)
     {
         var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
@@ -107,6 +84,12 @@ public class SaveForceData
     public void RecalculatePosRes()
     {
         posResCache.Clear();
+        foreach (var attr in CityAttrConfig.ConfigList)
+        {
+            if (!attr.IsPosRes || !attr.IsForceAttr)
+                continue;
+            posResCache[attr.name] = 0;
+        }
         
         var cities = GetCityList();
         foreach (var city in cities)
@@ -115,21 +98,19 @@ public class SaveForceData
             foreach (var assignment in assignments)
             {
                 var devConfig = CityDevConfig.GetConfig(assignment.devId);
-                if (devConfig == null || string.IsNullOrEmpty(devConfig.DevAttr1))
+                if (string.IsNullOrEmpty(devConfig.DevAttr1))
                     continue;
                 
                 var attrConfig = CityAttrConfig.GetConfigByname(devConfig.DevAttr1.ToLower());
-                if (attrConfig == null || !attrConfig.IsPosRes)
+                if (!attrConfig.IsPosRes || !attrConfig.IsForceAttr)
                     continue;
                 
                 string resType = devConfig.DevAttr1.ToLower();
-                if (!posResCache.ContainsKey(resType))
-                    posResCache[resType] = 0;
-                posResCache[resType]+=devConfig.DevAttr1Value[0];
+                posResCache[resType] += devConfig.DevAttr1Value[0];
             }
         }
         
-        if (isPlayer && PanelManager.Instance != null)
+        if (isPlayer)
         {
             foreach (var kvp in posResCache)
             {

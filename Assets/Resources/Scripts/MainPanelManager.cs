@@ -345,7 +345,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
             if(seasonCfg.Video != "")
                 videoPanelManager.Play(seasonCfg.Video);
-            
+
             MoveToPlayerCapital();
         }
         else if(data.Name == "AICheck")
