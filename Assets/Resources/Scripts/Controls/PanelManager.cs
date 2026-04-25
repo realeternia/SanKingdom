@@ -122,9 +122,9 @@ public class PanelManager : MonoBehaviour
             if (attrConfig.IsPosRes)
                 continue;
             
-            int addon = 0;
-            attrAddons.TryGetValue(attrName.ToLower(), out addon);
-            resItem.UpdateAddon(addon);
+            float addonFloat = 0;
+            attrAddons.TryGetValue(attrName.ToLower(), out addonFloat);
+            resItem.UpdateAddon((int)Math.Floor(addonFloat));
         }
     }
 
@@ -144,8 +144,9 @@ public class PanelManager : MonoBehaviour
             if (attrConfig.IsPosRes)
                 continue;
             
-            int addon = 0;
-            attrAddons.TryGetValue(attrName.ToLower(), out addon);
+            float addonFloat = 0;
+            attrAddons.TryGetValue(attrName.ToLower(), out addonFloat);
+            int addon = (int)Math.Floor(addonFloat);
             GameLog.Debug($"UpdateForceResItemAddons attrName={attrName} addon={addon}");
             resItem.UpdateAddon(addon);
         }

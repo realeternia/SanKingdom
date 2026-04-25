@@ -154,7 +154,6 @@
     <Compile Include="Assets\Resources\Scripts\Configs\ItemConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\CityStrategyState.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SystemConst.cs" />
-    <Compile Include="Assets\Resources\Scripts\PO\SideInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveForceData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffCoolDown.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAddDamage.cs" />

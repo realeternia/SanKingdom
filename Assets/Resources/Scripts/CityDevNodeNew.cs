@@ -235,16 +235,17 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
             }
         }
         float avgWeightedValue = totalWeightedValue / currentHeroIds.Count;
+        int tier = SysFormula.City.GetHeroTier(avgWeightedValue);
 
-        if (avgWeightedValue >= 90)
+        if (tier == 0)
         {
             heroImgBG.color = Color.red;
         }
-        else if (avgWeightedValue >= 80)
+        else if (tier == 1)
         {
             heroImgBG.color = Color.yellow;
         }
-        else if (avgWeightedValue >= 70)
+        else if (tier == 2)
         {
             heroImgBG.color = Color.green;
         }

@@ -416,9 +416,9 @@ public class SaveCityData
         }
     }
 
-    public Dictionary<string, int> CalculateDevAttrAddons()
+    public Dictionary<string, float> CalculateDevAttrAddons()
     {
-        Dictionary<string, int> attrAddons = new Dictionary<string, int>();
+        Dictionary<string, float> attrAddons = new Dictionary<string, float>();
         var forceData = GetForce();
         
         GameLog.Debug($"CalculateDevAttrAddons cityId={cityId} devAssignments={devAssignments.Count}");
@@ -439,16 +439,18 @@ public class SaveCityData
         return attrAddons;
     }
 
-    private void CalculateDevAttrAddonsForAssignment(CityDevConfig devCfg, SaveHeroData heroData, SaveForceData forceData, Dictionary<string, int> attrAddons)
+    private void CalculateDevAttrAddonsForAssignment(CityDevConfig devCfg, SaveHeroData heroData, SaveForceData forceData, Dictionary<string, float> attrAddons)
     {
+        float avgWeightedValue = SysFormula.City.GetHeroWeightedAttrValue(heroData, devCfg.Attrs);
+        int tier = SysFormula.City.GetHeroTier(avgWeightedValue);
+
         if (!string.IsNullOrEmpty(devCfg.DevAttr1))
         {
             var attrConfig = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower());
             if (!attrConfig.IsForceAttr)
             {
-                int attrVal = GetHeroAttrValueForDev(heroData, devCfg.Attrs);
-                GameLog.Debug($"CalculateDevAttrAddonsForAssignment DevAttr1={devCfg.DevAttr1} attrs={string.Join(",", devCfg.Attrs)} attrVal={attrVal}");
-                int addon = CalculateDevAddon(devCfg.DevAttr1, devCfg.DevAttr1Value[0], devCfg.DevAttr1Value[1], forceData, attrVal);
+                GameLog.Debug($"CalculateDevAttrAddonsForAssignment DevAttr1={devCfg.DevAttr1} attrs={string.Join(",", devCfg.Attrs)} avgWeightedValue={avgWeightedValue} tier={tier}");
+                float addon = CalculateDevAddonByTier(devCfg.DevAttr1, devCfg.DevAttr1Value[tier]);
                 if (addon > 0)
                 {
                     string attrName = devCfg.DevAttr1.ToLower();
@@ -459,14 +461,13 @@ public class SaveCityData
             }
         }
         
-        if (!string.IsNullOrEmpty(devCfg.DevAttr2) && devCfg.DevAttr2Value != null && devCfg.DevAttr2Value.Length >= 2)
+        if (!string.IsNullOrEmpty(devCfg.DevAttr2) && devCfg.DevAttr2Value != null && devCfg.DevAttr2Value.Length >= 4)
         {
             var attrConfig = CityAttrConfig.GetConfigByname(devCfg.DevAttr2.ToLower());
             if (!attrConfig.IsForceAttr)
             {
-                int attrVal = GetHeroAttrValueForDev(heroData, devCfg.Attrs);
-                GameLog.Debug($"CalculateDevAttrAddonsForAssignment DevAttr2={devCfg.DevAttr2} attrs={string.Join(",", devCfg.Attrs)} attrVal={attrVal}");
-                int addon = CalculateDevAddon(devCfg.DevAttr2, devCfg.DevAttr2Value[0], devCfg.DevAttr2Value[1], forceData, attrVal);
+                GameLog.Debug($"CalculateDevAttrAddonsForAssignment DevAttr2={devCfg.DevAttr2} attrs={string.Join(",", devCfg.Attrs)} avgWeightedValue={avgWeightedValue} tier={tier}");
+                float addon = CalculateDevAddonByTier(devCfg.DevAttr2, devCfg.DevAttr2Value[tier]);
                 if (addon > 0)
                 {
                     string attrName = devCfg.DevAttr2.ToLower();
@@ -478,37 +479,21 @@ public class SaveCityData
         }
     }
 
-    private int GetHeroAttrValueForDev(SaveHeroData heroData, string[] attrs)
-    {
-        if (attrs == null || attrs.Length == 0)
-            return 0;
-        
-        if (attrs.Length == 1)
-        {
-            return heroData.GetAttr(attrs[0]);
-        }
-        else
-        {
-            int firstAttr = heroData.GetAttr(attrs[0]);
-            int secondAttr = heroData.GetAttr(attrs[1]);
-            if (secondAttr > firstAttr)
-            {
-                firstAttr += SysFormula.City.CalculateSecondaryAttrContribution(firstAttr, secondAttr);
-            }
-            return firstAttr;
-        }
-    }
-
-    private int CalculateDevAddon(string attrName, int min, int max, SaveForceData forceData, int heroAttrVal)
+    private float CalculateDevAddonByTier(string attrName, float tierValue)
     {
         var attrConfig = CityAttrConfig.GetConfigByname(attrName.ToLower());
         
         int currentVal = GetAttr(attrName);
         int valMax = attrConfig.ValMaxCity;
         
-        float val = SysFormula.City.CalculateDevValue(min, max, heroAttrVal, currentVal, valMax);
-        GameLog.Debug($"CalculateDevAddon attrName={attrName} min={min} max={max} heroAttrVal={heroAttrVal} currentVal={currentVal} valMax={valMax} result={val}");
-        return (int)val;
+        float addon = tierValue;
+        int remaining = valMax - currentVal;
+        
+        if (addon > remaining)
+            addon = Math.Max(0, remaining);
+        
+        GameLog.Debug($"CalculateDevAddonByTier attrName={attrName} tierValue={tierValue} currentVal={currentVal} valMax={valMax} addon={addon}");
+        return addon;
     }
 
 }

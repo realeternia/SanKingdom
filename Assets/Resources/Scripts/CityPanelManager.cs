@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -562,7 +563,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         var viewForce = GameManager.Instance.GetForce(viewForceId);
         
         var cityAttrAddons = cityData.CalculateDevAttrAddons();
-        var forceAttrAddons = viewForce != null ? viewForce.CalculateForceAttrAddons() : new Dictionary<string, int>();
+        var forceAttrAddons = viewForce != null ? viewForce.CalculateForceAttrAddons() : new Dictionary<string, float>();
         
         GameLog.Debug($"UpdateAllResItemAddons cityId={cityId} resItemDict={resItemDict.Count} cityAttrAddons={cityAttrAddons.Count}");
         
@@ -574,15 +575,16 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             if (attrConfig.IsPosRes)
                 continue;
             
-            int addon = 0;
+            float addonFloat = 0;
             if (attrConfig.IsForceAttr)
             {
-                forceAttrAddons.TryGetValue(attrName.ToLower(), out addon);
+                forceAttrAddons.TryGetValue(attrName.ToLower(), out addonFloat);
             }
             else
             {
-                cityAttrAddons.TryGetValue(attrName.ToLower(), out addon);
+                cityAttrAddons.TryGetValue(attrName.ToLower(), out addonFloat);
             }
+            int addon = (int)Math.Floor(addonFloat);
             GameLog.Debug($"UpdateAllResItemAddons attrName={attrName} addon={addon}");
             resItem.UpdateAddon(addon);
         }

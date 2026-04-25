@@ -155,6 +155,35 @@ public static class SysFormula
 
     public static class City
     {
+        public static int GetHeroTier(float avgWeightedValue)
+        {
+            if (avgWeightedValue >= 90)
+                return 0;
+            else if (avgWeightedValue >= 80)
+                return 1;
+            else if (avgWeightedValue >= 70)
+                return 2;
+            else
+                return 3;
+        }
+
+        public static float GetHeroWeightedAttrValue(SaveHeroData heroData, string[] attrs)
+        {
+            if (attrs == null || attrs.Length == 0)
+                return 0;
+            
+            if (attrs.Length == 1)
+            {
+                return heroData.GetAttr(attrs[0]);
+            }
+            else
+            {
+                float firstAttr = heroData.GetAttr(attrs[0]);
+                float secondAttr = heroData.GetAttr(attrs[1]);
+                return firstAttr * (2f / 3f) + secondAttr * (1f / 3f);
+            }
+        }
+
         public static float CalculateOwnerScore(int str, int inte, int fair, int leadship, int charm, bool isKing)
         {
             float totalScore = str * SystemConst.City.OWNER_SCORE_WEIGHT_STR
