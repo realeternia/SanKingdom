@@ -45,6 +45,9 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     private Dictionary<int, CityDevNodeNew> heroToDevNodeMap = new Dictionary<int, CityDevNodeNew>();
     private List<CityDevNodeNew> allDevNodes = new List<CityDevNodeNew>();
     private Dictionary<string, ResItem> resItemDict = new Dictionary<string, ResItem>();
+    
+    private bool isViewOnly = false;
+    private int viewForceId = 0;
 
     void Start()
     {
@@ -62,23 +65,37 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     {
         if (rankRegionCity.transform.childCount == 0)
         {
+            var cityData = GameManager.Instance.GetCity(cityId);
+            if (cityData == null) return;
+            
+            int targetForceId = cityData.forceId;
             var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
-            if (playerForce == null) 
-                return;
-            var cities = GameManager.Instance.GetCitiesByForce(playerForce.forceId);
+            
+            if (SysSwitch.CanViewOtherForceCity && targetForceId != playerForce?.forceId)
+            {
+                isViewOnly = true;
+                viewForceId = targetForceId;
+            }
+            else
+            {
+                isViewOnly = false;
+                viewForceId = playerForce?.forceId ?? 0;
+            }
+            
+            var cities = GameManager.Instance.GetCitiesByForce(viewForceId);
             int count = 0;
             CityCellCity currentCityCell = null;
             
-            foreach (var cityData in cities)
+            foreach (var city in cities)
             {
                 GameObject cell = Instantiate(rankCellCityPrefab, rankRegionCity.transform);
                 cell.transform.localScale = Vector3.one;
                 CityCellCity cellCity = cell.GetComponent<CityCellCity>();
                 cellCity.cityPanelManager = this;
-                var cityCfg = WorldConfig.GetConfig(cityData.cityId);
+                var cityCfg = WorldConfig.GetConfig(city.cityId);
                 cellCity.Init(cityCfg.Cname);
                 
-                if (cityData.cityId == cityId)
+                if (city.cityId == cityId)
                 {
                     currentCityCell = cellCity;
                 }
@@ -343,16 +360,23 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         if (cityData == null) return;
 
         var assignments = cityData.GetDevAssignments();
+        GameLog.Debug($"LoadDevAssignmentsFromSave cityId={cityId} assignments={assignments.Count} allDevNodes={allDevNodes.Count}");
+        
         foreach (var assignment in assignments)
         {
             var devNode = allDevNodes.FirstOrDefault(n => n.GetDevId() == assignment.devId);
+            GameLog.Debug($"LoadDevAssignmentsFromSave heroId={assignment.heroId} devId={assignment.devId} devNode={devNode != null}");
+            
             if (devNode != null)
             {
                 var hero = GameManager.Instance.GetHero(assignment.heroId);
+                GameLog.Debug($"LoadDevAssignmentsFromSave hero={hero != null} hero.cityId={hero?.cityId} cityId={cityId} hero.state={hero?.state}");
+                
                 if (hero != null && hero.cityId == cityId && hero.state == HeroState.Normal)
                 {
                     devNode.SetHero(assignment.heroId);
                     heroToDevNodeMap[assignment.heroId] = devNode;
+                    GameLog.Debug($"LoadDevAssignmentsFromSave set hero {assignment.heroId} to devNode {assignment.devId}");
                 }
             }
         }
@@ -371,6 +395,12 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public void AssignHeroToDevNode(int heroId, CityDevNodeNew targetNode)
     {
+        if (isViewOnly)
+        {
+            SystemTip.Instance.ShowTip("查看模式下无法操作");
+            return;
+        }
+        
         var currentForce = GameManager.Instance.CurrentForce;
         if (currentForce == null || !currentForce.isPlayer)
         {
@@ -384,15 +414,17 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             return;
         }
         
-        bool isHeroAlreadyAssigned = heroToDevNodeMap.ContainsKey(heroId);
-        int oldHeroId = targetNode.GetCurrentHeroId();
-        bool isTargetNodeOccupied = oldHeroId > 0;
-
         var cityData = GameManager.Instance.GetCity(cityId);
-        if (!isHeroAlreadyAssigned && !isTargetNodeOccupied)
+        var devCfg = CityDevConfig.GetConfig(targetNode.GetDevId());
+        
+        bool isHeroAlreadyAssigned = heroToDevNodeMap.ContainsKey(heroId);
+        var nodeHeroIds = targetNode.GetHeroIds();
+        bool isTargetNodeFull = nodeHeroIds.Count >= devCfg.HeroCount;
+
+        if (!isHeroAlreadyAssigned && !isTargetNodeFull)
         {
             var levelCfg = CityLevelConfig.GetConfig(cityData.level);
-            if (levelCfg != null && heroToDevNodeMap.Count >= levelCfg.JobCount)
+            if (heroToDevNodeMap.Count >= levelCfg.JobCount)
             {
                 SystemTip.Instance.ShowTip($"该城市最多只能派遣{levelCfg.JobCount}人工作");
                 return;
@@ -405,38 +437,19 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             {
                 return;
             }
-            oldNode.ClearHero();
+            oldNode.RemoveHero(heroId);
         }
 
-        if (oldHeroId > 0)
+        if (isTargetNodeFull && !nodeHeroIds.Contains(heroId))
         {
-            heroToDevNodeMap.Remove(oldHeroId);
-        }
-
-        if (heroToDevNodeMap.ContainsValue(targetNode))
-        {
-            int keyToRemove = -1;
-            foreach (var kvp in heroToDevNodeMap)
-            {
-                if (kvp.Value == targetNode)
-                {
-                    keyToRemove = kvp.Key;
-                    break;
-                }
-            }
-            if (keyToRemove > 0)
-            {
-                heroToDevNodeMap.Remove(keyToRemove);
-            }
+            int firstHeroId = nodeHeroIds[0];
+            targetNode.RemoveHero(firstHeroId);
+            heroToDevNodeMap.Remove(firstHeroId);
+            cityData.RemoveDevAssignment(firstHeroId);
         }
 
         targetNode.SetHero(heroId);
         heroToDevNodeMap[heroId] = targetNode;
-
-        if (oldHeroId > 0)
-        {
-            cityData.RemoveDevAssignment(oldHeroId);
-        }
         cityData.SetDevAssignment(heroId, targetNode.GetDevId());
 
         UpdateAllHeroWorkState();
@@ -518,6 +531,9 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         resItemDict.Clear();
         
         var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null) return;
+        
+        var viewForce = GameManager.Instance.GetForce(viewForceId);
         
         int index = 0;
         foreach (var attrConfig in CityAttrConfig.ConfigList)
@@ -543,10 +559,12 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     private void UpdateAllResItemAddons()
     {
         var cityData = GameManager.Instance.GetCity(cityId);
+        var viewForce = GameManager.Instance.GetForce(viewForceId);
         
-        var attrAddons = cityData.CalculateDevAttrAddons();
+        var cityAttrAddons = cityData.CalculateDevAttrAddons();
+        var forceAttrAddons = viewForce != null ? viewForce.CalculateForceAttrAddons() : new Dictionary<string, int>();
         
-        GameLog.Debug($"UpdateAllResItemAddons cityId={cityId} resItemDict={resItemDict.Count} attrAddons={attrAddons.Count}");
+        GameLog.Debug($"UpdateAllResItemAddons cityId={cityId} resItemDict={resItemDict.Count} cityAttrAddons={cityAttrAddons.Count}");
         
         foreach (var kvp in resItemDict)
         {
@@ -557,12 +575,22 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
                 continue;
             
             int addon = 0;
-            attrAddons.TryGetValue(attrName.ToLower(), out addon);
+            if (attrConfig.IsForceAttr)
+            {
+                forceAttrAddons.TryGetValue(attrName.ToLower(), out addon);
+            }
+            else
+            {
+                cityAttrAddons.TryGetValue(attrName.ToLower(), out addon);
+            }
             GameLog.Debug($"UpdateAllResItemAddons attrName={attrName} addon={addon}");
             resItem.UpdateAddon(addon);
         }
         
-        PanelManager.Instance.UpdateForceResItemAddons();
+        if (!isViewOnly)
+        {
+            PanelManager.Instance.UpdateForceResItemAddons();
+        }
     }
 
     private void RefreshTopNodeResItem(string attrName, int value)

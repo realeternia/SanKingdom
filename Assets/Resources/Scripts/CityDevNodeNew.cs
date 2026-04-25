@@ -21,7 +21,7 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
     public Image borderImage;
     public Image attrImg;
 
-    private int currentHeroId = 0;
+    private List<int> currentHeroIds = new List<int>();
     private CityPanelManager cityPanelManager;
     private bool isSelected = false;
     private Color normalBorderColor = new Color(0.5f, 0.5f, 0.5f, 1f);
@@ -30,10 +30,7 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
 
     void Start()
     {
-        if (heroImg != null)
-        {
-            heroImg.enabled = currentHeroId > 0;
-        }
+        UpdateHeroDisplay();
         UpdateBlackMask();
         UpdateBorderColor();
     }
@@ -112,33 +109,33 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
 
     public void SetHero(int heroId)
     {
-        this.currentHeroId = heroId;
-        if (heroId > 0)
+        if (!currentHeroIds.Contains(heroId))
         {
-            var heroCfg = HeroConfig.GetConfig(heroId);
-
-            heroImg.enabled = true;
-            heroImg.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
+            currentHeroIds.Add(heroId);
         }
-
-        UpdateBlackMask();
-        UpdateHeroImgBG();
+        UpdateHeroDisplay();
     }
 
     public void ClearHero()
     {
-        currentHeroId = 0;
-        if (heroImg != null)
-        {
-            heroImg.enabled = false;
-        }
-        UpdateBlackMask();
-        UpdateHeroImgBG();
+        currentHeroIds.Clear();
+        UpdateHeroDisplay();
+    }
+
+    public void RemoveHero(int heroId)
+    {
+        currentHeroIds.Remove(heroId);
+        UpdateHeroDisplay();
+    }
+
+    public List<int> GetHeroIds()
+    {
+        return new List<int>(currentHeroIds);
     }
 
     public int GetCurrentHeroId()
     {
-        return currentHeroId;
+        return currentHeroIds.Count > 0 ? currentHeroIds[0] : 0;
     }
 
     public int GetDevId()
@@ -155,11 +152,31 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
     {
     }
 
+    private void UpdateHeroDisplay()
+    {
+        if (heroImg != null)
+        {
+            if (currentHeroIds.Count > 0)
+            {
+                var heroCfg = HeroConfig.GetConfig(currentHeroIds[0]);
+                heroImg.enabled = true;
+                heroImg.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
+            }
+            else
+            {
+                heroImg.enabled = false;
+            }
+        }
+
+        UpdateBlackMask();
+        UpdateHeroImgBG();
+    }
+
     private void UpdateBlackMask()
     {
         if (blackMaskImg != null && blackMaskImg.gameObject != null)
         {
-            blackMaskImg.gameObject.SetActive(currentHeroId == 0);
+            blackMaskImg.gameObject.SetActive(currentHeroIds.Count == 0);
         }
     }
 
@@ -195,7 +212,7 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
         if (heroImgBG == null)
             return;
 
-        if (currentHeroId == 0)
+        if (currentHeroIds.Count == 0)
         {
             heroImgBG.color = grayColor;
             return;
@@ -208,24 +225,26 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
             return;
         }
 
-        var heroData = GameManager.Instance.GetHero(currentHeroId);
-        if (heroData == null)
+        float totalWeightedValue = 0;
+        foreach (var heroId in currentHeroIds)
         {
-            heroImgBG.color = grayColor;
-            return;
+            var heroData = GameManager.Instance.GetHero(heroId);
+            if (heroData != null)
+            {
+                totalWeightedValue += GetWeightedAttrValue(heroData, devCfg.Attrs);
+            }
         }
+        float avgWeightedValue = totalWeightedValue / currentHeroIds.Count;
 
-        float weightedValue = GetWeightedAttrValue(heroData, devCfg.Attrs);
-
-        if (weightedValue >= 90)
+        if (avgWeightedValue >= 90)
         {
             heroImgBG.color = Color.red;
         }
-        else if (weightedValue >= 80)
+        else if (avgWeightedValue >= 80)
         {
             heroImgBG.color = Color.yellow;
         }
-        else if (weightedValue >= 70)
+        else if (avgWeightedValue >= 70)
         {
             heroImgBG.color = Color.green;
         }

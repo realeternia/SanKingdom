@@ -317,6 +317,8 @@ public class GameManager : MonoBehaviour
         foreach (var city in cities)
         {
             var assignments = city.GetDevAssignments();
+            var attrChanges = new Dictionary<string, int>();
+            
             foreach (var assignment in assignments)
             {
                 var heroIds = new int[] { assignment.heroId };
@@ -324,20 +326,22 @@ public class GameManager : MonoBehaviour
                 
                 if (devCfg == null) continue;
                 
+                List<PopResultPanelManager.AttrData> attrDatas = null;
+                
                 if (devCfg.Prefab == "CityDevNormal")
                 {
-                    force.ExecuteCityDev(city.cityId, assignment.devId, heroIds, out _);
+                    force.ExecuteCityDev(city.cityId, assignment.devId, heroIds, out attrDatas);
                 }
                 else if (devCfg.Prefab == "CityDevChange")
                 {
-                    force.ExecuteCityChange(city.cityId, assignment.devId, heroIds, true, 300, SystemConst.Economy.EXCHANGE_RATE, out _);
+                    force.ExecuteCityChange(city.cityId, assignment.devId, heroIds, true, 300, SystemConst.Economy.EXCHANGE_RATE, out attrDatas);
                 }
                 else if (devCfg.Prefab == "CityDevUseHero")
                 {
                     var recruitableHeroes = city.GetRecruitableHeroList();
                     if (recruitableHeroes.Count > 0)
                     {
-                        force.ExecuteCityUseHero(city.cityId, assignment.devId, assignment.heroId, recruitableHeroes[0], out _);
+                        force.ExecuteCityUseHero(city.cityId, assignment.devId, assignment.heroId, recruitableHeroes[0], out attrDatas);
                     }
                 }
                 else if (devCfg.Prefab == "CityDevPraiseHero")
@@ -345,11 +349,29 @@ public class GameManager : MonoBehaviour
                     var praiseableHeroes = GetPraiseableHeroList(force.forceId);
                     if (praiseableHeroes.Count > 0)
                     {
-                        force.ExecuteCityPraiseHero(city.cityId, assignment.devId, praiseableHeroes.ToArray(), 1, out _);
+                        force.ExecuteCityPraiseHero(city.cityId, assignment.devId, praiseableHeroes.ToArray(), 1, out attrDatas);
+                    }
+                }
+                
+                if (attrDatas != null)
+                {
+                    foreach (var attrData in attrDatas)
+                    {
+                        if (attrData.valAddon == 0) continue;
+                        string attrName = attrData.attr.ToLower();
+                        if (!attrChanges.ContainsKey(attrName))
+                            attrChanges[attrName] = 0;
+                        attrChanges[attrName] += attrData.valAddon;
                     }
                 }
                 
                 yield return null;
+            }
+            
+            if (attrChanges.Count > 0)
+            {
+                var changeStrs = attrChanges.Select(kvp => $"{CityAttrConfig.GetConfigByname(kvp.Key).Cname}{(kvp.Value >= 0 ? "+" : "")}{kvp.Value}").ToArray();
+                GameLog.SetTag("AI").Info($"[{ConfigNameHelper.GetForceName(force.forceId)}] [{ConfigNameHelper.GetCityName(city.cityId)}] 收入: {string.Join(", ", changeStrs)}");
             }
         }
     }

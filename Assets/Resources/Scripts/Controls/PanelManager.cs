@@ -100,6 +100,33 @@ public class PanelManager : MonoBehaviour
         GameLog.Debug($"PanelManager.InitTopNodeResItems forceResItemDict.Count={forceResItemDict.Count}");
         UpdateForceResItemAddons();
     }
+    
+    public void RefreshForceResItems(int forceId)
+    {
+        var force = GameManager.Instance.GetForce(forceId);
+        if (force == null) return;
+        
+        foreach (var kvp in forceResItemDict)
+        {
+            string attrName = kvp.Key;
+            var resItem = kvp.Value;
+            resItem.UpdateNum(force.GetAttr(attrName));
+        }
+        
+        var attrAddons = force.CalculateForceAttrAddons();
+        foreach (var kvp in forceResItemDict)
+        {
+            string attrName = kvp.Key;
+            var resItem = kvp.Value;
+            var attrConfig = CityAttrConfig.GetConfigByname(attrName);
+            if (attrConfig.IsPosRes)
+                continue;
+            
+            int addon = 0;
+            attrAddons.TryGetValue(attrName.ToLower(), out addon);
+            resItem.UpdateAddon(addon);
+        }
+    }
 
     public void UpdateForceResItemAddons()
     {
@@ -162,6 +189,12 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(cityPanel, false);
         Destroy(cityPanel);
         cityPanel = null;
+        
+        var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
+        if (playerForce != null)
+        {
+            RefreshForceResItems(playerForce.forceId);
+        }
     }
     
     public void ShowCityDev(int cityId, int devId)

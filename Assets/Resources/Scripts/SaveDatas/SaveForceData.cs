@@ -271,31 +271,37 @@ public class SaveForceData
         
         var attr1Config = CityAttrConfig.GetConfigByname(devConfig.DevAttr1.ToLower());
         int attr1Old = attr1Config.IsForceAttr ? GetAttr(devConfig.DevAttr1) : cityData.GetAttr(devConfig.DevAttr1);
-        if (attr1Config.IsForceAttr)
-            AddAttr(devConfig.DevAttr1, results[0]);
-        else
-            cityData.AddAttr(devConfig.DevAttr1, results[0]);
-        attrDatas.Add(new PopResultPanelManager.AttrData()
+        if (!attr1Config.IsPosRes)
         {
-            attr = devConfig.DevAttr1,
-            valOld = attr1Old,
-            valAddon = results[0],
-        });
+            if (attr1Config.IsForceAttr)
+                AddAttr(devConfig.DevAttr1, results[0]);
+            else
+                cityData.AddAttr(devConfig.DevAttr1, results[0]);
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attr = devConfig.DevAttr1,
+                valOld = attr1Old,
+                valAddon = results[0],
+            });
+        }
         
         if (!string.IsNullOrEmpty(devConfig.DevAttr2))
         {
             var attr2Config = CityAttrConfig.GetConfigByname(devConfig.DevAttr2.ToLower());
-            int attr2Old = attr2Config.IsForceAttr ? GetAttr(devConfig.DevAttr2) : cityData.GetAttr(devConfig.DevAttr2);
-            if (attr2Config.IsForceAttr)
-                AddAttr(devConfig.DevAttr2, results[1]);
-            else
-                cityData.AddAttr(devConfig.DevAttr2, results[1]);
-            attrDatas.Add(new PopResultPanelManager.AttrData()
+            if (!attr2Config.IsPosRes)
             {
-                attr = devConfig.DevAttr2,
-                valOld = attr2Old,
-                valAddon = results[1],
-            });
+                int attr2Old = attr2Config.IsForceAttr ? GetAttr(devConfig.DevAttr2) : cityData.GetAttr(devConfig.DevAttr2);
+                if (attr2Config.IsForceAttr)
+                    AddAttr(devConfig.DevAttr2, results[1]);
+                else
+                    cityData.AddAttr(devConfig.DevAttr2, results[1]);
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attr = devConfig.DevAttr2,
+                    valOld = attr2Old,
+                    valAddon = results[1],
+                });
+            }
         }
 
         cityData.AddAction(devId, heroList.Length);

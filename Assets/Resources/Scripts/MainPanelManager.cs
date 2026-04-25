@@ -283,14 +283,21 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         cityDetail.SetCityDetail(pieceId);
 
         var cityData = GameManager.Instance.GetCity(pieceId);
-        if (!GameManager.Instance.GetForce(cityData.forceId).isPlayer)
+        bool isPlayerCity = GameManager.Instance.GetForce(cityData.forceId).isPlayer;
+        
+        if (!isPlayerCity && !SysSwitch.CanViewOtherForceCity)
         {
             btnCity.gameObject.SetActive(false);
             return;
         }
+        
+        if (SysSwitch.CanViewOtherForceCity)
+        {
+            PanelManager.Instance.RefreshForceResItems(cityData.forceId);
+        }
 
         var cityCfg = WorldConfig.GetConfig(pieceId);
-        btnCity.gameObject.GetComponentInChildren<TMP_Text>().text = "进入" + cityCfg.Cname;
+        btnCity.gameObject.GetComponentInChildren<TMP_Text>().text = isPlayerCity ? "进入" + cityCfg.Cname : "查看" + cityCfg.Cname;
         btnCity.gameObject.SetActive(true);
     }
 

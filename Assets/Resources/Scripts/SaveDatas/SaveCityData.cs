@@ -205,6 +205,12 @@ public class SaveCityData
             return;
         }
         
+        if (attrConfig.IsPosRes)
+        {
+            GameLog.Debug($"AddAttr: {type} is IsPosRes, skip auto add");
+            return;
+        }
+        
         switch (type.ToLower())
         {
             case "level":
