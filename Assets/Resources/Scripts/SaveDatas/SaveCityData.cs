@@ -348,7 +348,6 @@ public class SaveCityData
             var force = GameManager.Instance.GetForce(forceLose);
             if (force != null)
             {
-                force.mark = -1;
                 force.isEliminated = true;
             }
             GameLog.Info($"Occupy 势力 {forceLose} 已被消灭");

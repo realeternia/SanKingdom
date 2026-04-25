@@ -20,8 +20,7 @@ public class SaveForceData
     public List<WarPlanData> warPlans = new List<WarPlanData>();
     [NonSerialized]
     public bool planConfirmed = false;
-    [NonSerialized]
-    public int mark;
+
     [NonSerialized]
     private Dictionary<string, int> posResCache = new Dictionary<string, int>();
 
@@ -108,7 +107,7 @@ public class SaveForceData
                 string resType = devConfig.DevAttr1.ToLower();
                 posResCache[resType] += devConfig.DevAttr1Value[0];
             }
-        }
+        }        
         
         if (isPlayer)
         {
@@ -154,7 +153,6 @@ public class SaveForceData
         phase = TurnPhase.None;
         warPlans = new List<WarPlanData>();
         planConfirmed = false;
-        mark = 0;
         posResCache = new Dictionary<string, int>();
         RecalculatePosRes();
     }
