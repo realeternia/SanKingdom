@@ -60,60 +60,61 @@ public static class AI
         
         int newAssignedCount = 0;
         
-        foreach (var heroId in normalHeroes)
+        foreach (var devCfg in devConfigs)
         {
-            if (assignedHeroIds.Count >= maxJobCount) break;
-            
-            if (assignedHeroIds.Contains(heroId)) continue;
-            
-            var hero = GameManager.Instance.GetHero(heroId);
-            if (hero == null) continue;
-            
-            CityDevConfig bestDev = null;
-            int bestScore = -1;
-            
-            foreach (var devCfg in devConfigs)
+            while (assignedHeroIds.Count < maxJobCount)
             {
                 int currentCount = devAssignmentCounts.ContainsKey(devCfg.Id) ? devAssignmentCounts[devCfg.Id] : 0;
-                if (currentCount >= devCfg.HeroCount) continue;
+                if (currentCount >= devCfg.HeroCount) break;
                 
-                int score = CalculateDevScore(hero, devCfg, city, force);
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestDev = devCfg;
-                }
-            }
-            
-            if (bestDev != null)
-            {
-                city.SetDevAssignment(heroId, bestDev.Id);
-                assignedHeroIds.Add(heroId);
+                var bestHero = FindBestHeroForDev(normalHeroes, assignedHeroIds, devCfg, city, force);
+                if (bestHero == null) break;
+                
+                city.SetDevAssignment(bestHero.heroId, devCfg.Id);
+                assignedHeroIds.Add(bestHero.heroId);
                 newAssignedCount++;
                 
-                if (!devAssignmentCounts.ContainsKey(bestDev.Id))
-                    devAssignmentCounts[bestDev.Id] = 0;
-                devAssignmentCounts[bestDev.Id]++;
+                if (!devAssignmentCounts.ContainsKey(devCfg.Id))
+                    devAssignmentCounts[devCfg.Id] = 0;
+                devAssignmentCounts[devCfg.Id]++;
                 
-                GameLog.SetTag("AI").Debug($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 派遣 {ConfigNameHelper.GetHeroName(heroId)} 进行 {bestDev.Cname}");
+                GameLog.SetTag("AI").Debug($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 派遣 {ConfigNameHelper.GetHeroName(bestHero.heroId)} 进行 {devCfg.Cname}");
             }
         }
         
         GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 派遣完成，共 {assignedHeroIds.Count}/{maxJobCount} 人(新增{newAssignedCount})");
     }
     
-    private static int CalculateDevScore(SaveHeroData hero, CityDevConfig devCfg, SaveCityData city, SaveForceData force)
+    private static SaveHeroData FindBestHeroForDev(List<int> normalHeroes, HashSet<int> assignedHeroIds, CityDevConfig devCfg, SaveCityData city, SaveForceData force)
     {
-        int score = devCfg.AiPriotyDev * 10;
+        SaveHeroData bestHero = null;
+        float bestScore = -1;
+        
+        foreach (var heroId in normalHeroes)
+        {
+            if (assignedHeroIds.Contains(heroId)) continue;
+            
+            var hero = GameManager.Instance.GetHero(heroId);
+            if (hero == null) continue;
+            
+            float score = CalculateHeroDevScore(hero, devCfg, city, force);
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestHero = hero;
+            }
+        }
+        
+        return bestHero;
+    }
+    
+    private static float CalculateHeroDevScore(SaveHeroData hero, CityDevConfig devCfg, SaveCityData city, SaveForceData force)
+    {
+        float score = 0;
         
         if (devCfg.Attrs != null && devCfg.Attrs.Length > 0)
         {
-            int attrScore = 0;
-            foreach (var attr in devCfg.Attrs)
-            {
-                attrScore += hero.GetAttr(attr);
-            }
-            score += attrScore / devCfg.Attrs.Length;
+            score = GetWeightedAttrValue(hero, devCfg.Attrs);
         }
         
         if (!string.IsNullOrEmpty(devCfg.DevAttr1))
@@ -126,11 +127,7 @@ public static class AI
                 int deficit = maxVal - currentVal;
                 if (deficit > 0)
                 {
-                    score += deficit / 10;
-                }
-                else
-                {
-                    score -= 50;
+                    score += deficit / 10f;
                 }
             }
             else if (!attrConfig.IsPosRes)
@@ -140,16 +137,26 @@ public static class AI
                 int deficit = maxVal - currentVal;
                 if (deficit > 0)
                 {
-                    score += deficit / 10;
-                }
-                else
-                {
-                    score -= 50;
+                    score += deficit / 10f;
                 }
             }
         }
         
         return score;
+    }
+    
+    private static float GetWeightedAttrValue(SaveHeroData hero, string[] attrs)
+    {
+        if (attrs.Length == 1)
+        {
+            return hero.GetAttr(attrs[0]);
+        }
+        else
+        {
+            float firstAttr = hero.GetAttr(attrs[0]);
+            float secondAttr = hero.GetAttr(attrs[1]);
+            return firstAttr * (2f / 3f) + secondAttr * (1f / 3f);
+        }
     }
     
     private static void GenerateWarPlans(SaveForceData force, AIStrategyContext context, Dictionary<int, CityStrategyState> cityStrategies)
