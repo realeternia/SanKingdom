@@ -663,4 +663,104 @@ public class SaveForceData
         
         return true;
     }
+
+    public Dictionary<string, int> CalculateForceAttrAddons()
+    {
+        Dictionary<string, int> attrAddons = new Dictionary<string, int>();
+        
+        var cities = GetCityList();
+        GameLog.Debug($"CalculateForceAttrAddons forceId={forceId} cities={cities.Count}");
+        
+        foreach (var city in cities)
+        {
+            var assignments = city.GetDevAssignments();
+            GameLog.Debug($"CalculateForceAttrAddons cityId={city.cityId} assignments={assignments.Count}");
+            
+            foreach (var assignment in assignments)
+            {
+                var devCfg = CityDevConfig.GetConfig(assignment.devId);
+                var heroData = GameManager.Instance.GetHero(assignment.heroId);
+                
+                GameLog.Debug($"CalculateForceAttrAddons devId={assignment.devId} DevAttr1={devCfg.DevAttr1} DevAttr2={devCfg.DevAttr2}");
+                CalculateForceAttrAddonsForAssignment(devCfg, heroData, city, attrAddons);
+            }
+        }
+        
+        foreach (var kvp in attrAddons)
+        {
+            GameLog.Debug($"CalculateForceAttrAddons result: {kvp.Key}={kvp.Value}");
+        }
+        
+        return attrAddons;
+    }
+
+    private void CalculateForceAttrAddonsForAssignment(CityDevConfig devCfg, SaveHeroData heroData, SaveCityData cityData, Dictionary<string, int> attrAddons)
+    {
+        if (!string.IsNullOrEmpty(devCfg.DevAttr1))
+        {
+            var attrConfig = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower());
+            if (attrConfig.IsForceAttr)
+            {
+                int attrVal = GetHeroAttrValueForDev(heroData, devCfg.Attrs);
+                int addon = CalculateForceDevAddon(devCfg.DevAttr1, devCfg.DevAttr1Value[0], devCfg.DevAttr1Value[1], attrVal);
+                if (addon > 0)
+                {
+                    string attrName = devCfg.DevAttr1.ToLower();
+                    if (!attrAddons.ContainsKey(attrName))
+                        attrAddons[attrName] = 0;
+                    attrAddons[attrName] += addon;
+                }
+            }
+        }
+        
+        if (!string.IsNullOrEmpty(devCfg.DevAttr2) && devCfg.DevAttr2Value != null && devCfg.DevAttr2Value.Length >= 2)
+        {
+            var attrConfig = CityAttrConfig.GetConfigByname(devCfg.DevAttr2.ToLower());
+            if (attrConfig.IsForceAttr)
+            {
+                int attrVal = GetHeroAttrValueForDev(heroData, devCfg.Attrs);
+                int addon = CalculateForceDevAddon(devCfg.DevAttr2, devCfg.DevAttr2Value[0], devCfg.DevAttr2Value[1], attrVal);
+                if (addon > 0)
+                {
+                    string attrName = devCfg.DevAttr2.ToLower();
+                    if (!attrAddons.ContainsKey(attrName))
+                        attrAddons[attrName] = 0;
+                    attrAddons[attrName] += addon;
+                }
+            }
+        }
+    }
+
+    private int GetHeroAttrValueForDev(SaveHeroData heroData, string[] attrs)
+    {
+        if (attrs == null || attrs.Length == 0)
+            return 0;
+        
+        if (attrs.Length == 1)
+        {
+            return heroData.GetAttr(attrs[0]);
+        }
+        else
+        {
+            int firstAttr = heroData.GetAttr(attrs[0]);
+            int secondAttr = heroData.GetAttr(attrs[1]);
+            if (secondAttr > firstAttr)
+            {
+                firstAttr += SysFormula.City.CalculateSecondaryAttrContribution(firstAttr, secondAttr);
+            }
+            return firstAttr;
+        }
+    }
+
+    private int CalculateForceDevAddon(string attrName, int min, int max, int heroAttrVal)
+    {
+        var attrConfig = CityAttrConfig.GetConfigByname(attrName.ToLower());
+        
+        int currentVal = GetAttr(attrName);
+        int valMax = attrConfig.ValMaxForce;
+        
+        float val = SysFormula.City.CalculateDevValue(min, max, heroAttrVal, currentVal, valMax);
+        GameLog.Debug($"CalculateForceDevAddon attrName={attrName} min={min} max={max} heroAttrVal={heroAttrVal} currentVal={currentVal} valMax={valMax} result={val}");
+        return (int)val;
+    }
 }

@@ -13,6 +13,7 @@ public class ResItem : MonoBehaviour
 
     private int num;
     private int used;
+    private int addon;
     private CityAttrConfig config;
 
     void Start()
@@ -49,15 +50,37 @@ public class ResItem : MonoBehaviour
         RefreshDisplay();
     }
 
+    public void UpdateAddon(int addon)
+    {
+        if (config == null || config.IsPosRes)
+            return;
+        this.addon = addon;
+        RefreshDisplay();
+    }
+
     private void RefreshDisplay()
     {
-        if (used > 0)
+        if (config != null && config.IsPosRes)
         {
-            itemNum.text = $"{num}(<color=red>{used}</color>)";
+            if (used > 0)
+            {
+                itemNum.text = $"{num}(<color=red>{used}</color>)";
+            }
+            else
+            {
+                itemNum.text = num.ToString();
+            }
         }
         else
         {
-            itemNum.text = num.ToString();
+            if (addon > 0)
+            {
+                itemNum.text = $"{num}(<color=green>+{addon}</color>)";
+            }
+            else
+            {
+                itemNum.text = num.ToString();
+            }
         }
     }
 

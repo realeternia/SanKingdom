@@ -44,6 +44,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     private Dictionary<int, CityDevNodeNew> heroToDevNodeMap = new Dictionary<int, CityDevNodeNew>();
     private List<CityDevNodeNew> allDevNodes = new List<CityDevNodeNew>();
+    private Dictionary<string, ResItem> resItemDict = new Dictionary<string, ResItem>();
 
     void Start()
     {
@@ -357,6 +358,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         }
 
         UpdateAllHeroWorkState();
+        UpdateAllResItemAddons();
     }
 
     public void OnHeroDragStart(CityCellHero hero)
@@ -438,6 +440,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         cityData.SetDevAssignment(heroId, targetNode.GetDevId());
 
         UpdateAllHeroWorkState();
+        UpdateAllResItemAddons();
 
         GameLog.Info($"Hero {heroId} assigned to dev node {targetNode.GetDevId()}");
     }
@@ -466,6 +469,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             {
                 cityData.RemoveDevAssignment(heroId);
             }
+            
+            UpdateAllResItemAddons();
         }
     }
 
@@ -504,25 +509,60 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public void InitTopNodeResItems()
     {
-        if (topNode == null) return;
+        GameLog.Debug($"InitTopNodeResItems topNode={topNode}");
+        
         foreach (Transform child in topNode.transform)
         {
             Destroy(child.gameObject);
         }
+        resItemDict.Clear();
+        
         var cityData = GameManager.Instance.GetCity(cityId);
-        if (cityData == null) return;
+        
         int index = 0;
         foreach (var attrConfig in CityAttrConfig.ConfigList)
         {
-            if (attrConfig.IsForceAttr) continue;
-            if (string.IsNullOrEmpty(attrConfig.Icon)) continue;
+            if (attrConfig.IsForceAttr)
+                continue;
+            
+            GameLog.Debug($"InitTopNodeResItems creating ResItem for {attrConfig.name}");
             var resBasePrefab = Resources.Load<GameObject>("Prefabs/ResBase");
             var resObj = Instantiate(resBasePrefab, topNode.transform);
             resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(240 * index, 0);
-            resObj.GetComponent<ResItem>().Init(attrConfig.name);
-            resObj.GetComponent<ResItem>().UpdateNum(cityData.GetAttr(attrConfig.name));
+            var resItem = resObj.GetComponent<ResItem>();
+            resItem.Init(attrConfig.name);
+            resItem.UpdateNum(cityData.GetAttr(attrConfig.name));
+            resItemDict[attrConfig.name] = resItem;
             index++;
         }
+        
+        GameLog.Debug($"InitTopNodeResItems resItemDict.Count={resItemDict.Count}");
+        UpdateAllResItemAddons();
+    }
+
+    private void UpdateAllResItemAddons()
+    {
+        var cityData = GameManager.Instance.GetCity(cityId);
+        
+        var attrAddons = cityData.CalculateDevAttrAddons();
+        
+        GameLog.Debug($"UpdateAllResItemAddons cityId={cityId} resItemDict={resItemDict.Count} attrAddons={attrAddons.Count}");
+        
+        foreach (var kvp in resItemDict)
+        {
+            string attrName = kvp.Key;
+            var resItem = kvp.Value;
+            var attrConfig = CityAttrConfig.GetConfigByname(attrName);
+            if (attrConfig.IsPosRes)
+                continue;
+            
+            int addon = 0;
+            attrAddons.TryGetValue(attrName.ToLower(), out addon);
+            GameLog.Debug($"UpdateAllResItemAddons attrName={attrName} addon={addon}");
+            resItem.UpdateAddon(addon);
+        }
+        
+        PanelManager.Instance.UpdateForceResItemAddons();
     }
 
     private void RefreshTopNodeResItem(string attrName, int value)

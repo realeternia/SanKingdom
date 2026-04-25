@@ -31,6 +31,7 @@ public class PanelManager : MonoBehaviour
     private GameObject replayPanel;
 
     public GameObject topNode;
+    private Dictionary<string, ResItem> forceResItemDict = new Dictionary<string, ResItem>();
 
     public List<GameObject> openPanelList;
     private bool isShowWorld = false;
@@ -70,28 +71,61 @@ public class PanelManager : MonoBehaviour
 
     public void InitTopNodeResItems()
     {
+        GameLog.Debug($"PanelManager.InitTopNodeResItems topNode={topNode}");
         foreach (Transform child in topNode.transform)
         {
             Destroy(child.gameObject);
         }
+        forceResItemDict.Clear();
+        
         var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
         if (playerForce == null) return;
+        
         int index = 0;
         foreach (var attrConfig in CityAttrConfig.ConfigList)
         {
             if (!attrConfig.IsForceAttr) continue;
+            
+            GameLog.Debug($"PanelManager.InitTopNodeResItems creating ResItem for {attrConfig.name}");
             var resBasePrefab = Resources.Load<GameObject>("Prefabs/ResBase");
             var resObj = Instantiate(resBasePrefab, topNode.transform);
             resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(240 * index, 0);
-            resObj.GetComponent<ResItem>().Init(attrConfig.name);
-            resObj.GetComponent<ResItem>().UpdateNum(playerForce.GetAttr(attrConfig.name));
+            var resItem = resObj.GetComponent<ResItem>();
+            resItem.Init(attrConfig.name);
+            resItem.UpdateNum(playerForce.GetAttr(attrConfig.name));
+            forceResItemDict[attrConfig.name] = resItem;
             index++;
+        }
+        
+        GameLog.Debug($"PanelManager.InitTopNodeResItems forceResItemDict.Count={forceResItemDict.Count}");
+        UpdateForceResItemAddons();
+    }
+
+    public void UpdateForceResItemAddons()
+    {
+        var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
+        
+        var attrAddons = playerForce.CalculateForceAttrAddons();
+        
+        GameLog.Debug($"UpdateForceResItemAddons forceResItemDict={forceResItemDict.Count} attrAddons={attrAddons.Count}");
+        
+        foreach (var kvp in forceResItemDict)
+        {
+            string attrName = kvp.Key;
+            var resItem = kvp.Value;
+            var attrConfig = CityAttrConfig.GetConfigByname(attrName);
+            if (attrConfig.IsPosRes)
+                continue;
+            
+            int addon = 0;
+            attrAddons.TryGetValue(attrName.ToLower(), out addon);
+            GameLog.Debug($"UpdateForceResItemAddons attrName={attrName} addon={addon}");
+            resItem.UpdateAddon(addon);
         }
     }
 
     private void RefreshTopNodeResItem(string attrName, int value)
     {
-        if (topNode == null) return;
         foreach (Transform child in topNode.transform)
         {
             var resItem = child.GetComponent<ResItem>();
