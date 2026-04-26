@@ -138,7 +138,6 @@ Assets/Resources/Scripts/
 - 通过 `XxxConfig.ConfigList` 获取全部配置列表
 - `ConfigManager.Init()` 在游戏启动时统一加载所有配置
 - GetConfig或者GetConfigByname之后，不需要再检查是否为null
-- 配表是通过excel文件导表生成的，所以不要去创建他，可以因为测试目的修改，但是其实会被覆盖的
 
 ### 3. 公式与常量分离
 

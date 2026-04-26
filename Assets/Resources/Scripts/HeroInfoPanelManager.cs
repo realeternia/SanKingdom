@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,8 @@ public class HeroInfoPanelManager : MonoBehaviour
 {
     public int heroId;
     public TMP_Text heroNameText;
+    public TMP_Dropdown typeDropdown;
+
     public TMP_Text ageText;
     public TMP_Text cityText;
     public TMP_Text stateText;
@@ -36,15 +39,39 @@ public class HeroInfoPanelManager : MonoBehaviour
     private List<HeroInfoCell> heroInfoCells = new List<HeroInfoCell>();
     public AttrRadarChart attrRadarChart;
 
+    private int[] currentHeroList;
+    private int currentTargetHeroId;
+
+    private static readonly string[] SortOptions = { "所在", "统帅", "武力", "智力", "内政", "魅力" };
+    private static readonly string[] SortAttrKeys = { "City", "LeadShip", "Str", "Inte", "Fair", "Charm" };
+
     private void Start()
     {
         closeBtn.onClick.AddListener(() =>
         {      
             PanelManager.Instance.HideHeroInfoPanel();
         });
+        
+        InitTypeDropdown();
     }
-
-    public void Init(int[] heroList, int targetHeroId)
+    
+    private void InitTypeDropdown()
+    {
+        typeDropdown.ClearOptions();
+        typeDropdown.AddOptions(SortOptions.ToList());
+        typeDropdown.value = 0;
+        typeDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
+    }
+    
+    private void OnDropdownValueChanged(int index)
+    {
+        if (currentHeroList == null || currentHeroList.Length == 0)
+            return;
+        
+        RefreshHeroList(SortAttrKeys[index]);
+    }
+    
+    private void RefreshHeroList(string sortKey)
     {
         foreach (Transform child in rankRegionNames.transform)
         {
@@ -53,18 +80,23 @@ public class HeroInfoPanelManager : MonoBehaviour
         heroInfoCells.Clear();
         lastSelectedMode = null;
 
+        var sortedHeroIds = SortHeroes(currentHeroList, sortKey);
+        
         HeroInfoCell targetCell = null;
-        foreach (var hId in heroList)
+        foreach (var hId in sortedHeroIds)
         {
             GameObject cell = Instantiate(heroInfoCellPrefab, rankRegionNames.transform);
             cell.transform.localScale = Vector3.one;
             HeroInfoCell cellInfo = cell.GetComponent<HeroInfoCell>();
             cellInfo.heroInfoPanelManager = this;
             var heroConfig = HeroConfig.GetConfig(hId);
-            cellInfo.Init(hId, heroConfig.Name);
+            var heroData = GameManager.Instance.GetHero(hId);
+            
+            string displayText = GetDisplayText(hId, sortKey, heroData);
+            cellInfo.Init(hId, heroConfig.Name, displayText);
             heroInfoCells.Add(cellInfo);
 
-            if (hId == targetHeroId)
+            if (hId == currentTargetHeroId)
             {
                 targetCell = cellInfo;
             }
@@ -74,7 +106,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         RectTransform cellRect = heroInfoCellPrefab.GetComponent<RectTransform>();
         if (rankParentRect != null && cellRect != null)
         {
-            rankParentRect.sizeDelta = new Vector2(rankParentRect.sizeDelta.x, cellRect.sizeDelta.y * heroList.Length);
+            rankParentRect.sizeDelta = new Vector2(rankParentRect.sizeDelta.x, cellRect.sizeDelta.y * sortedHeroIds.Length);
         }
 
         if (scrollRectNames != null)
@@ -86,6 +118,98 @@ public class HeroInfoPanelManager : MonoBehaviour
         {
             OnSelectHero(targetCell);
         }
+    }
+    
+    private int[] SortHeroes(int[] heroIds, string sortKey)
+    {
+        var heroList = heroIds.ToList();
+        
+        if (sortKey == "City")
+        {
+            heroList.Sort((a, b) =>
+            {
+                var heroDataA = GameManager.Instance.GetHero(a);
+                var heroDataB = GameManager.Instance.GetHero(b);
+                int cityIdA = heroDataA != null ? heroDataA.cityId : 0;
+                int cityIdB = heroDataB != null ? heroDataB.cityId : 0;
+                return cityIdB.CompareTo(cityIdA);
+            });
+        }
+        else
+        {
+            heroList.Sort((a, b) =>
+            {
+                var heroDataA = GameManager.Instance.GetHero(a);
+                var heroDataB = GameManager.Instance.GetHero(b);
+                if (heroDataA != null) heroDataA.InitAttrsFromConfig();
+                if (heroDataB != null) heroDataB.InitAttrsFromConfig();
+                
+                int valA = GetAttrValue(heroDataA, sortKey);
+                int valB = GetAttrValue(heroDataB, sortKey);
+                return valB.CompareTo(valA);
+            });
+        }
+        
+        return heroList.ToArray();
+    }
+    
+    private int GetAttrValue(SaveHeroData heroData, string attrKey)
+    {
+        if (heroData == null)
+            return 0;
+        
+        switch (attrKey)
+        {
+            case "LeadShip": return heroData.leadShip;
+            case "Str": return heroData.str;
+            case "Inte": return heroData.inte;
+            case "Fair": return heroData.fair;
+            case "Charm": return heroData.charm;
+            default: return 0;
+        }
+    }
+    
+    private string GetDisplayText(int heroId, string sortKey, SaveHeroData heroData)
+    {
+        var heroConfig = HeroConfig.GetConfig(heroId);
+        string heroName = heroConfig.Name;
+        
+        if (sortKey == "City")
+        {
+            string cityName = "";
+            if (heroData != null && heroData.cityId > 0)
+            {
+                var cityConfig = WorldConfig.GetConfig(heroData.cityId);
+                cityName = cityConfig != null ? cityConfig.Cname : "";
+            }
+            return $"{heroName} <color=green>{cityName}</color>";
+        }
+        else
+        {
+            if (heroData != null) heroData.InitAttrsFromConfig();
+            int attrValue = GetAttrValue(heroData, sortKey);
+            string coloredValue = GetColoredAttrValue(attrValue);
+            return $"{heroName} {coloredValue}";
+        }
+    }
+    
+    private string GetColoredAttrValue(int value)
+    {
+        if (value >= 95)
+            return $"<color=red>{value}</color>";
+        else if (value >= 90)
+            return $"<color=yellow>{value}</color>";
+        else
+            return value.ToString();
+    }
+
+    public void Init(int[] heroList, int targetHeroId)
+    {
+        currentHeroList = heroList;
+        currentTargetHeroId = targetHeroId;
+        
+        typeDropdown.value = 0;
+        RefreshHeroList("City");
     }
 
     public void OnSelectHero(HeroInfoCell cellMode)

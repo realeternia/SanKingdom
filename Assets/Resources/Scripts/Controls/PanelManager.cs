@@ -81,6 +81,8 @@ public class PanelManager : MonoBehaviour
         var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
         if (playerForce == null) return;
         
+        playerForce.RecalculateResUsed();
+        
         int index = 0;
         foreach (var attrConfig in CityAttrConfig.ConfigList)
         {
@@ -93,6 +95,10 @@ public class PanelManager : MonoBehaviour
             var resItem = resObj.GetComponent<ResItem>();
             resItem.Init(attrConfig.name);
             resItem.UpdateNum(playerForce.GetAttr(attrConfig.name));
+            if (attrConfig.IsPosRes)
+            {
+                resItem.UpdateUsed(playerForce.GetResUsed(attrConfig.name));
+            }
             forceResItemDict[attrConfig.name] = resItem;
             index++;
         }
@@ -106,11 +112,18 @@ public class PanelManager : MonoBehaviour
         var force = GameManager.Instance.GetForce(forceId);
         if (force == null) return;
         
+        force.RecalculateResUsed();
+        
         foreach (var kvp in forceResItemDict)
         {
             string attrName = kvp.Key;
             var resItem = kvp.Value;
             resItem.UpdateNum(force.GetAttr(attrName));
+            var attrConfig = CityAttrConfig.GetConfigByname(attrName);
+            if (attrConfig.IsPosRes)
+            {
+                resItem.UpdateUsed(force.GetResUsed(attrName));
+            }
         }
         
         var attrAddons = force.CalculateForceAttrAddons();
@@ -131,6 +144,9 @@ public class PanelManager : MonoBehaviour
     public void UpdateForceResItemAddons()
     {
         var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
+        if (playerForce == null) return;
+        
+        playerForce.RecalculateResUsed();
         
         var attrAddons = playerForce.CalculateForceAttrAddons();
         
@@ -142,7 +158,10 @@ public class PanelManager : MonoBehaviour
             var resItem = kvp.Value;
             var attrConfig = CityAttrConfig.GetConfigByname(attrName);
             if (attrConfig.IsPosRes)
+            {
+                resItem.UpdateUsed(playerForce.GetResUsed(attrName));
                 continue;
+            }
             
             float addonFloat = 0;
             attrAddons.TryGetValue(attrName.ToLower(), out addonFloat);

@@ -145,6 +145,11 @@ public class GameManager : MonoBehaviour
         return SaveData.heros.FirstOrDefault(h => h.heroId == heroId);
     }
 
+    public List<SaveHeroData> GetHerosByForce(int forceId)
+    {
+        return SaveData.heros.Where(h => h.forceId == forceId).ToList();
+    }
+
     public List<int> GetPraiseableHeroList(int forceId)
     {
         var heroIds = new List<int>();

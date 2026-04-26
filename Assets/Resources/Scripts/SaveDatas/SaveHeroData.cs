@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CommonConfig;
+using Controls.Utils;
 
 public enum HeroState
 {
@@ -61,6 +62,40 @@ public class SaveHeroData
     public int GetLevel()
     {
         return HeroSelectionTool.GetCardLevel(exp, true);
+    }
+
+    public bool SetArmsId(int newArmsId)
+    {
+        if (state != HeroState.Normal)
+        {
+            GameLog.Warn($"SetArmsId: 英雄 {heroId} 状态不是 Normal，无法设置兵种");
+            return false;
+        }
+        
+        if (forceId <= 0)
+        {
+            GameLog.Warn($"SetArmsId: 英雄 {heroId} 不属于任何势力，无法设置兵种");
+            return false;
+        }
+        
+        var force = GameManager.Instance.GetForce(forceId);
+        if (force == null)
+        {
+            GameLog.Warn($"SetArmsId: 英雄 {heroId} 的势力 {forceId} 不存在");
+            return false;
+        }
+        
+        if (!force.CanAffordArms(newArmsId, heroId))
+        {
+            GameLog.Warn($"SetArmsId: 势力 {forceId} 资源不足，无法为英雄 {heroId} 设置兵种 {newArmsId}");
+            return false;
+        }
+        
+        armsId = newArmsId;
+        force.RecalculateResUsed();
+        
+        GameLog.Info($"SetArmsId: 英雄 {heroId} 成功设置兵种为 {newArmsId}");
+        return true;
     }
 
     public static SaveHeroData CreateWildHero(int heroId, int cityId)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -31,6 +31,10 @@ namespace CommonConfig
             {"ModelCountFactor", new FieldMetaInfo("多少个士兵显示一个模型", "int")},
             {"OvercomeStrong", new FieldMetaInfo("强克制", "string")},
             {"OvercomeWeak", new FieldMetaInfo("弱克制", "string")},
+            {"HorseCost", new FieldMetaInfo("马消耗", "int")},
+            {"SteelCost", new FieldMetaInfo("铁消耗", "int")},
+            {"WoodCost", new FieldMetaInfo("木材消耗", "int")},
+            {"StoneCost", new FieldMetaInfo("石料消耗", "int")},
         };
 
         public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
@@ -83,9 +87,25 @@ namespace CommonConfig
         ///弱克制
         /// </summary>
         public string OvercomeWeak;
+        /// <summary>
+        ///马消耗
+        /// </summary>
+        public int HorseCost;
+        /// <summary>
+        ///铁消耗
+        /// </summary>
+        public int SteelCost;
+        /// <summary>
+        ///木材消耗
+        /// </summary>
+        public int WoodCost;
+        /// <summary>
+        ///石料消耗
+        /// </summary>
+        public int StoneCost;
 
 
-        public ArmsConfig(int Id, string Name, string NameS, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, string HitEffect, string Model, int ModelCountFactor, string OvercomeStrong, string OvercomeWeak)
+        public ArmsConfig(int Id, string Name, string NameS, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, string HitEffect, string Model, int ModelCountFactor, string OvercomeStrong, string OvercomeWeak, int HorseCost, int SteelCost, int WoodCost, int StoneCost)
         {
             this.Id = Id;
             this.Name = Name;
@@ -99,6 +119,10 @@ namespace CommonConfig
             this.ModelCountFactor = ModelCountFactor;
             this.OvercomeStrong = OvercomeStrong;
             this.OvercomeWeak = OvercomeWeak;
+            this.HorseCost = HorseCost;
+            this.SteelCost = SteelCost;
+            this.WoodCost = WoodCost;
+            this.StoneCost = StoneCost;
 
         }
 
@@ -140,15 +164,15 @@ namespace CommonConfig
         public static void Load()
 {
 config.Clear();
-config[101] = new ArmsConfig(101, "ma", "马", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "戟弩炮车", "弓");
-config[102] = new ArmsConfig(102, "che", "车", 10, 17, 0, 0f, "SwordHitGreenCritical", "SodStick", 40, "", "");
-config[201] = new ArmsConfig(201, "gong", "弓", 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 40, "枪戟", "刀");
-config[202] = new ArmsConfig(202, "pao", "炮", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodBow", 40, "盾", "士");
-config[601] = new ArmsConfig(601, "dao", "刀", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "");
-config[602] = new ArmsConfig(602, "daoqiang", "枪", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "枪", "");
-config[603] = new ArmsConfig(603, "daoji", "戟", 10, 40, 30, 3f, "FanExplosion", "SodStick", 40, "", "");
-config[701] = new ArmsConfig(701, "shan", "扇", 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 40, "", "");
-config[702] = new ArmsConfig(702, "mou", "谋", 7, 50, 26, 8f, "GasShootFire", "SodStick", 40, "", "");
+config[101] = new ArmsConfig(101, "ma", "马", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "戟弩炮车", "弓", 2, 0, 0, 0);
+config[102] = new ArmsConfig(102, "che", "车", 10, 17, 0, 0f, "SwordHitGreenCritical", "SodStick", 40, "", "", 0, 1, 1, 0);
+config[201] = new ArmsConfig(201, "gong", "弓", 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 40, "枪戟", "刀", 0, 0, 1, 0);
+config[202] = new ArmsConfig(202, "pao", "炮", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodBow", 40, "盾", "士", 0, 2, 1, 0);
+config[601] = new ArmsConfig(601, "dao", "刀", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "", 0, 1, 0, 0);
+config[602] = new ArmsConfig(602, "daoqiang", "枪", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "枪", "", 0, 1, 1, 0);
+config[603] = new ArmsConfig(603, "daoji", "戟", 10, 40, 30, 3f, "FanExplosion", "SodStick", 40, "", "", 0, 1, 0, 0);
+config[701] = new ArmsConfig(701, "shan", "扇", 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 40, "", "", 0, 0, 0, 0);
+config[702] = new ArmsConfig(702, "mou", "谋", 7, 50, 26, 8f, "GasShootFire", "SodStick", 40, "", "", 0, 0, 0, 0);
 
 
 

@@ -29,10 +29,10 @@ public class HeroInfoCell : MonoBehaviour, IPointerDownHandler
         UpdateBackgroundColor();
     }
 
-    public void Init(int heroId, string heroName)
+    public void Init(int heroId, string heroName, string displayText = null)
     {
         this.heroId = heroId;
-        heroNameText.text = heroName;
+        heroNameText.text = !string.IsNullOrEmpty(displayText) ? displayText : heroName;
     }
 
     public void SetSelected(bool selected)

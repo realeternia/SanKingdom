@@ -24,6 +24,9 @@ public class SaveForceData
     [NonSerialized]
     private Dictionary<string, float> posResCache = new Dictionary<string, float>();
 
+    [NonSerialized]
+    private Dictionary<string, int> resUsedCache = new Dictionary<string, int>();
+
     public void AddAttr(string type, int add)
     {
         var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
@@ -125,6 +128,74 @@ public class SaveForceData
         }
     }
 
+    public void RecalculateResUsed()
+    {
+        resUsedCache.Clear();
+        resUsedCache["horse"] = 0;
+        resUsedCache["steel"] = 0;
+        resUsedCache["wood"] = 0;
+        resUsedCache["stone"] = 0;
+        
+        var heroes = GameManager.Instance.GetHerosByForce(forceId);
+        foreach (var hero in heroes)
+        {
+            if (hero.state != HeroState.Normal)
+                continue;
+            if (hero.armsId <= 0)
+                continue;
+            
+            var armsConfig = ArmsConfig.GetConfig(hero.armsId);
+            resUsedCache["horse"] += armsConfig.HorseCost;
+            resUsedCache["steel"] += armsConfig.SteelCost;
+            resUsedCache["wood"] += armsConfig.WoodCost;
+            resUsedCache["stone"] += armsConfig.StoneCost;
+        }
+    }
+
+    public int GetResUsed(string resType)
+    {
+        if (resUsedCache == null)
+            return 0;
+        resType = resType.ToLower();
+        if (resUsedCache.ContainsKey(resType))
+            return resUsedCache[resType];
+        return 0;
+    }
+
+    public bool CanAffordArms(int armsId, int excludeHeroId = 0)
+    {
+        var armsConfig = ArmsConfig.GetConfig(armsId);
+        
+        int horseAvailable = GetAttr("horse") - GetResUsed("horse");
+        int steelAvailable = GetAttr("steel") - GetResUsed("steel");
+        int woodAvailable = GetAttr("wood") - GetResUsed("wood");
+        int stoneAvailable = GetAttr("stone") - GetResUsed("stone");
+        
+        if (excludeHeroId > 0)
+        {
+            var excludeHero = GameManager.Instance.GetHero(excludeHeroId);
+            if (excludeHero != null && excludeHero.armsId > 0)
+            {
+                var excludeArmsConfig = ArmsConfig.GetConfig(excludeHero.armsId);
+                horseAvailable += excludeArmsConfig.HorseCost;
+                steelAvailable += excludeArmsConfig.SteelCost;
+                woodAvailable += excludeArmsConfig.WoodCost;
+                stoneAvailable += excludeArmsConfig.StoneCost;
+            }
+        }
+        
+        if (armsConfig.HorseCost > horseAvailable)
+            return false;
+        if (armsConfig.SteelCost > steelAvailable)
+            return false;
+        if (armsConfig.WoodCost > woodAvailable)
+            return false;
+        if (armsConfig.StoneCost > stoneAvailable)
+            return false;
+        
+        return true;
+    }
+
     public string Name
     {
         get
@@ -161,7 +232,9 @@ public class SaveForceData
         warPlans = new List<WarPlanData>();
         planConfirmed = false;
         posResCache = new Dictionary<string, float>();
+        resUsedCache = new Dictionary<string, int>();
         RecalculatePosRes();
+        RecalculateResUsed();
     }
 
     public void SetPhase(TurnPhase newPhase)
