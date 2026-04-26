@@ -163,6 +163,11 @@ namespace DesignCoder
                     dataGridView1.Columns[colName].DefaultCellStyle.BackColor = darkRow;
                     dataGridView1.Columns[colName].DefaultCellStyle.ForeColor = textColor;
 
+                    if (currentConfig.ColumnWidths.ContainsKey(colName))
+                    {
+                        dataGridView1.Columns[colName].Width = currentConfig.ColumnWidths[colName];
+                    }
+
                     if (colName == "Id" && firstDataColIdx < 0)
                     {
                         firstDataColIdx = dataGridView1.Columns[colName].Index;
@@ -249,12 +254,28 @@ namespace DesignCoder
             }
         }
 
+        private void SyncColumnWidthsToConfig()
+        {
+            if (currentConfig == null) return;
+            currentConfig.ColumnWidths.Clear();
+
+            foreach (var field in currentConfig.Fields)
+            {
+                if (dataGridView1.Columns.Contains(field.Name))
+                {
+                    int width = dataGridView1.Columns[field.Name].Width;
+                    currentConfig.ColumnWidths[field.Name] = width;
+                }
+            }
+        }
+
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (currentConfig == null || string.IsNullOrEmpty(currentFilePath)) return;
 
             SyncDataTableToConfig();
             SyncCellMetasToConfig();
+            SyncColumnWidthsToConfig();
             string newSource = currentConfig.GenerateSource();
             File.WriteAllText(currentFilePath, newSource, Encoding.UTF8);
             MessageBox.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -554,7 +575,9 @@ namespace DesignCoder
 
         private void dataGridView1_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            if (e.RowIndex == 2 && e.ColumnIndex >= 0)
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+
+            if (e.RowIndex == 2)
             {
                 e.Paint(e.CellBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.ContentForeground);
 
@@ -575,7 +598,147 @@ namespace DesignCoder
                     e.Graphics.DrawString(displayText, e.CellStyle.Font, brush, x, y);
                 }
                 e.Handled = true;
+                return;
             }
+
+            if (e.RowIndex >= HeaderRowCount)
+            {
+                string cellValue = e.Value != null ? e.Value.ToString() : "";
+                int fieldIdx = GetFieldIndexFromColumnIndex(e.ColumnIndex);
+                string fieldType = fieldIdx >= 0 && fieldIdx < currentConfig.Fields.Count ? currentConfig.Fields[fieldIdx].Type.ToLower() : "";
+                Color? colorValue = TryParseColorString(cellValue);
+                bool isBoolTrue = cellValue == "true" || cellValue == "True";
+                bool isBoolFalse = cellValue == "false" || cellValue == "False";
+                bool isNumberType = fieldType == "int" || fieldType == "float";
+
+                if (colorValue.HasValue || isBoolTrue || isBoolFalse || isNumberType)
+                {
+                    Color bgColor = e.CellStyle.BackColor;
+                    if (isNumberType)
+                    {
+                        bgColor = Color.FromArgb(60, 90, 70);
+                    }
+                    using (Brush bgBrush = new SolidBrush(bgColor))
+                    {
+                        e.Graphics.FillRectangle(bgBrush, e.CellBounds);
+                    }
+                    if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
+                    {
+                        using (Brush selBrush = new SolidBrush(e.CellStyle.SelectionBackColor))
+                        {
+                            e.Graphics.FillRectangle(selBrush, e.CellBounds);
+                        }
+                    }
+
+                    int barWidth = 4;
+                    int barPadding = 2;
+                    int iconSize = 12;
+                    int leftOffset = barPadding;
+
+                    if (colorValue.HasValue)
+                    {
+                        Rectangle barRect = new Rectangle(
+                            e.CellBounds.Left + barPadding,
+                            e.CellBounds.Top + barPadding,
+                            barWidth,
+                            e.CellBounds.Height - barPadding * 2
+                        );
+                        using (Brush brush = new SolidBrush(colorValue.Value))
+                        {
+                            e.Graphics.FillRectangle(brush, barRect);
+                        }
+                        leftOffset = barWidth + barPadding * 2;
+                    }
+
+                    if (isBoolTrue || isBoolFalse)
+                    {
+                        int iconX = e.CellBounds.Left + barPadding + 2;
+                        int iconY = e.CellBounds.Top + (e.CellBounds.Height - iconSize) / 2;
+
+                        if (isBoolTrue)
+                        {
+                            using (Pen greenPen = new Pen(Color.FromArgb(100, 220, 100), 2))
+                            {
+                                e.Graphics.DrawLine(greenPen, iconX, iconY + 6, iconX + 4, iconY + 10);
+                                e.Graphics.DrawLine(greenPen, iconX + 4, iconY + 10, iconX + 10, iconY + 2);
+                            }
+                        }
+                        else
+                        {
+                            using (Pen redPen = new Pen(Color.FromArgb(220, 80, 80), 2))
+                            {
+                                e.Graphics.DrawLine(redPen, iconX, iconY, iconX + iconSize, iconY + iconSize);
+                                e.Graphics.DrawLine(redPen, iconX + iconSize, iconY, iconX, iconY + iconSize);
+                            }
+                        }
+                        leftOffset = iconSize + barPadding * 2 + 4;
+                    }
+
+                    using (Brush textBrush = new SolidBrush(e.CellStyle.ForeColor))
+                    {
+                        Rectangle textRect = new Rectangle(
+                            e.CellBounds.Left + leftOffset,
+                            e.CellBounds.Top,
+                            e.CellBounds.Width - leftOffset,
+                            e.CellBounds.Height
+                        );
+                        StringFormat sf = new StringFormat
+                        {
+                            LineAlignment = StringAlignment.Center,
+                            Alignment = StringAlignment.Near
+                        };
+                        e.Graphics.DrawString(cellValue, e.CellStyle.Font, textBrush, textRect, sf);
+                    }
+
+                    using (Pen borderPen = new Pen(dataGridView1.GridColor))
+                    {
+                        e.Graphics.DrawRectangle(borderPen, new Rectangle(e.CellBounds.X, e.CellBounds.Y, e.CellBounds.Width - 1, e.CellBounds.Height - 1));
+                    }
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private Color? TryParseColorString(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return null;
+            if (value.Length != 7 && value.Length != 9 && value.Length != 4 && value.Length != 5) return null;
+            if (value[0] != '#') return null;
+
+            try
+            {
+                string hex = value.Substring(1);
+                if (hex.Length == 3)
+                {
+                    int r = Convert.ToInt32(hex[0].ToString() + hex[0], 16);
+                    int g = Convert.ToInt32(hex[1].ToString() + hex[1], 16);
+                    int b = Convert.ToInt32(hex[2].ToString() + hex[2], 16);
+                    return Color.FromArgb(r, g, b);
+                }
+                else if (hex.Length == 4)
+                {
+                    int r = Convert.ToInt32(hex[0].ToString() + hex[0], 16);
+                    int g = Convert.ToInt32(hex[1].ToString() + hex[1], 16);
+                    int b = Convert.ToInt32(hex[2].ToString() + hex[2], 16);
+                    int a = Convert.ToInt32(hex[3].ToString() + hex[3], 16);
+                    return Color.FromArgb(a, r, g, b);
+                }
+                else if (hex.Length == 6)
+                {
+                    int rgb = Convert.ToInt32(hex, 16);
+                    return Color.FromArgb((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+                }
+                else if (hex.Length == 8)
+                {
+                    int argb = Convert.ToInt32(hex, 16);
+                    return Color.FromArgb((argb >> 24) & 0xFF, (argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            return null;
         }
     }
 }

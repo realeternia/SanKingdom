@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -157,7 +157,91 @@ namespace CommonConfig
         {
             new CellMeta(0, 2, null, -65536),
         };
+        public static List<CellMeta> CellMetas { get { return cellMeta; } }        public class CellMeta
+        {
+            public int row;
+            public int col;
+            public int? foreColor;
+            public int? backColor;
+            public CellMeta(int row, int col, int? foreColor, int? backColor)
+            {
+                this.row = row;
+                this.col = col;
+                this.foreColor = foreColor;
+                this.backColor = backColor;
+            }
+        }
+
+        private static List<CellMeta> cellMeta = new List<CellMeta>()
+        {
+            new CellMeta(0, 2, null, -65536),
+        };
         public static List<CellMeta> CellMetas { get { return cellMeta; } }
+
+        private static Dictionary<string, int> columnWidths = new Dictionary<string, int>()
+        {
+            { "Id", 100 },
+            { "Name", 100 },
+            { "NameS", 100 },
+            { "MoveSpeed", 100 },
+            { "Range", 58 },
+            { "MissileSpeed", 41 },
+            { "MissileHight", 32 },
+            { "HitEffect", 100 },
+            { "Model", 100 },
+            { "ModelCountFactor", 100 },
+            { "OvercomeStrong", 100 },
+            { "OvercomeWeak", 100 },
+            { "HorseCost", 100 },
+            { "SteelCost", 100 },
+            { "WoodCost", 100 },
+            { "StoneCost", 100 },
+        };
+        public static Dictionary<string, int> ColumnWidths { get { return columnWidths; } }        public class CellMeta
+        {
+            public int row;
+            public int col;
+            public int? foreColor;
+            public int? backColor;
+            public CellMeta(int row, int col, int? foreColor, int? backColor)
+            {
+                this.row = row;
+                this.col = col;
+                this.foreColor = foreColor;
+                this.backColor = backColor;
+            }
+        }
+
+        private static List<CellMeta> cellMeta = new List<CellMeta>()
+        {
+            new CellMeta(0, 2, null, -65536),
+        };
+        public static List<CellMeta> CellMetas { get { return cellMeta; } }
+
+        private static Dictionary<string, int> columnWidths = new Dictionary<string, int>()
+        {
+            { "Id", 54 },
+            { "Name", 100 },
+            { "NameS", 100 },
+            { "MoveSpeed", 100 },
+            { "Range", 58 },
+            { "MissileSpeed", 41 },
+            { "MissileHight", 32 },
+            { "HitEffect", 100 },
+            { "Model", 100 },
+            { "ModelCountFactor", 100 },
+            { "OvercomeStrong", 100 },
+            { "OvercomeWeak", 100 },
+            { "HorseCost", 100 },
+            { "SteelCost", 100 },
+            { "WoodCost", 100 },
+            { "StoneCost", 100 },
+        };
+        public static Dictionary<string, int> ColumnWidths { get { return columnWidths; } }
+
+
+
+
 
 
 
@@ -177,6 +261,8 @@ config[702] = new ArmsConfig(702, "mou", "谋", 7, 50, 26, 8f, "GasShootFire", "
 
 
 }
+
+
 
 
         public static ArmsConfig GetConfig(int id)

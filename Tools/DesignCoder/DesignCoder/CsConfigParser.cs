@@ -39,6 +39,7 @@ namespace DesignCoder
         public List<FieldDef> Fields = new List<FieldDef>();
         public List<Dictionary<string, string>> Rows = new List<Dictionary<string, string>>();
         public List<CellMeta> CellMetas = new List<CellMeta>();
+        public Dictionary<string, int> ColumnWidths = new Dictionary<string, int>();
         public string UsingSection;
         public string PreFieldCode;
         public string PreLoadCode;
@@ -94,6 +95,21 @@ namespace DesignCoder
                     fd.ChineseName = chineseName;
                     fd.Type = fieldType;
                     data.Fields.Add(fd);
+                }
+            }
+
+            var widthPattern = @"private\s+static\s+Dictionary<string\s*,\s*int>\s+columnWidths\s*=\s*new\s+Dictionary<string\s*,\s*int>\s*\(\s*\)\s*\{([\s\S]*?)\};";
+            var widthMatch = Regex.Match(source, widthPattern);
+            if (widthMatch.Success)
+            {
+                string widthBody = widthMatch.Groups[1].Value;
+                var widthItemPattern = @"\{\s*""(\w+)""\s*,\s*(\d+)\s*\}";
+                var widthItemMatches = Regex.Matches(widthBody, widthItemPattern);
+                foreach (Match wm in widthItemMatches)
+                {
+                    string colName = wm.Groups[1].Value;
+                    int width = int.Parse(wm.Groups[2].Value);
+                    data.ColumnWidths[colName] = width;
                 }
             }
         }
@@ -455,6 +471,23 @@ namespace DesignCoder
                 sb.AppendLine("        private static List<CellMeta> cellMeta = new List<CellMeta>();");
             }
             sb.AppendLine("        public static List<CellMeta> CellMetas { get { return cellMeta; } }");
+            sb.AppendLine();
+
+            if (ColumnWidths.Count > 0)
+            {
+                sb.AppendLine("        private static Dictionary<string, int> columnWidths = new Dictionary<string, int>()");
+                sb.AppendLine("        {");
+                foreach (var kv in ColumnWidths)
+                {
+                    sb.AppendLine(string.Format("            {{ \"{0}\", {1} }},", kv.Key, kv.Value));
+                }
+                sb.AppendLine("        };");
+            }
+            else
+            {
+                sb.AppendLine("        private static Dictionary<string, int> columnWidths = new Dictionary<string, int>();");
+            }
+            sb.AppendLine("        public static Dictionary<string, int> ColumnWidths { get { return columnWidths; } }");
             sb.AppendLine();
 
             sb.Append(PreLoadCode);
