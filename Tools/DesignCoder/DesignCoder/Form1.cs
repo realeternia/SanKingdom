@@ -16,6 +16,8 @@ namespace DesignCoder
         private ConfigData currentConfig;
         private string currentFilePath;
         private DataTable dataTable;
+        private int sortedColumnIndex = -1;
+        private bool sortAscending = true;
 
         public Form1()
         {
@@ -63,6 +65,8 @@ namespace DesignCoder
         {
             string source = File.ReadAllText(filePath, Encoding.UTF8);
             currentConfig = ConfigData.Parse(source);
+            sortedColumnIndex = -1;
+            sortAscending = true;
             BuildDataTable();
             SetupDataGridView();
             ApplyColors();
@@ -462,6 +466,115 @@ namespace DesignCoder
                     if (cm.BackColor.HasValue)
                         cell.Style.BackColor = Color.FromArgb(cm.BackColor.Value);
                 }
+            }
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == 2 && e.ColumnIndex >= 0)
+            {
+                SortDataByColumn(e.ColumnIndex);
+            }
+        }
+
+        private void SortDataByColumn(int columnIndex)
+        {
+            if (dataTable == null || columnIndex < 0) return;
+            if (!dataGridView1.Columns[columnIndex].Visible) return;
+
+            string columnName = dataGridView1.Columns[columnIndex].Name;
+            string fieldType = "";
+            if (dataTable.Rows.Count > 2)
+            {
+                var typeRow = dataTable.Rows[2];
+                fieldType = typeRow[columnIndex] != null ? typeRow[columnIndex].ToString().ToLower() : "";
+            }
+
+            if (sortedColumnIndex == columnIndex)
+            {
+                sortAscending = !sortAscending;
+            }
+            else
+            {
+                sortedColumnIndex = columnIndex;
+                sortAscending = true;
+            }
+
+            List<object[]> headerRows = new List<object[]>();
+            List<object[]> dataRows = new List<object[]>();
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                string tag = row["_RowTag_"] as string;
+                if (tag == "Data")
+                    dataRows.Add(row.ItemArray);
+                else
+                    headerRows.Add(row.ItemArray);
+            }
+
+            dataRows.Sort((r1, r2) =>
+            {
+                string v1 = r1[columnIndex] == null ? "" : r1[columnIndex].ToString();
+                string v2 = r2[columnIndex] == null ? "" : r2[columnIndex].ToString();
+                
+                int cmp;
+                if (fieldType == "int")
+                {
+                    int i1, i2;
+                    int.TryParse(v1, out i1);
+                    int.TryParse(v2, out i2);
+                    cmp = i1.CompareTo(i2);
+                }
+                else if (fieldType == "float")
+                {
+                    float f1, f2;
+                    string s1 = v1.TrimEnd('f', 'F');
+                    string s2 = v2.TrimEnd('f', 'F');
+                    float.TryParse(s1, out f1);
+                    float.TryParse(s2, out f2);
+                    cmp = f1.CompareTo(f2);
+                }
+                else
+                {
+                    cmp = string.Compare(v1, v2, StringComparison.Ordinal);
+                }
+                return sortAscending ? cmp : -cmp;
+            });
+
+            dataTable.Rows.Clear();
+            foreach (var rowData in headerRows)
+                dataTable.Rows.Add(rowData);
+            foreach (var rowData in dataRows)
+                dataTable.Rows.Add(rowData);
+
+            SetupDataGridView();
+            ApplyColors();
+            dataGridView1.Invalidate();
+        }
+
+        private void dataGridView1_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex == 2 && e.ColumnIndex >= 0)
+            {
+                e.Paint(e.CellBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.ContentForeground);
+
+                string cellValue = e.Value != null ? e.Value.ToString() : "";
+                string displayText = cellValue;
+                
+                if (e.ColumnIndex == sortedColumnIndex)
+                {
+                    displayText += sortAscending ? " ▲" : " ▼";
+                }
+
+                using (Brush brush = new SolidBrush(e.CellStyle.ForeColor))
+                {
+                    SizeF textSize = e.Graphics.MeasureString(displayText, e.CellStyle.Font);
+                    float x = e.CellBounds.Left + (e.CellBounds.Width - textSize.Width) / 2;
+                    float y = e.CellBounds.Top + (e.CellBounds.Height - textSize.Height) / 2;
+                    
+                    e.Graphics.DrawString(displayText, e.CellStyle.Font, brush, x, y);
+                }
+                e.Handled = true;
             }
         }
     }
