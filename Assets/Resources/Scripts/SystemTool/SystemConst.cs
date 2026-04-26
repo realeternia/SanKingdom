@@ -151,14 +151,6 @@ public static class SystemConst
         /// </summary>
         public const int INITIAL_CITY_HAPPY = 70;
         /// <summary>
-        /// 每级金币产出
-        /// </summary>
-        public const int GOLD_PER_LEVEL = 50;
-        /// <summary>
-        /// 每级粮草产出
-        /// </summary>
-        public const int FOOD_PER_LEVEL = 40;
-        /// <summary>
         /// 太守评分武力权重
         /// </summary>
         public const float OWNER_SCORE_WEIGHT_STR = 0.75f;

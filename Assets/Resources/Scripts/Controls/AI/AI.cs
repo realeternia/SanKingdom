@@ -24,6 +24,15 @@ public static class AI
         GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} 计划阶段完成");
     }
     
+    public static void AssignHeroesToDev(SaveForceData force)
+    {
+        var context = new AIStrategyContext(force);
+        foreach (var city in context.cities)
+        {
+            AssignHeroesToCityDev(force, city);
+        }
+    }
+    
     private static void AssignHeroesToDev(SaveForceData force, AIStrategyContext context)
     {
         foreach (var city in context.cities)

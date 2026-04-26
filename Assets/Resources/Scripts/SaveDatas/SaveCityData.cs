@@ -66,11 +66,9 @@ public class SaveCityData
         var forceData = GameManager.Instance.GetForce(forceId);
         if(forceData != null)
         {
-            if(seasonCfg.AddGold != 0)
-                forceData.AddAttr("gold", (int)SysFormula.City.CalculateGoldProduction(level, seasonCfg.AddGold));
+            forceData.AddAttr("gold", (int)SysFormula.City.CalculateGoldProduction(level));
         }
-        if(seasonCfg.AddFood != 0)
-            AddAttr("food", (int)SysFormula.City.CalculateFoodProduction(level, seasonCfg.AddFood));
+        AddAttr("food", (int)SysFormula.City.CalculateFoodProduction(level));
         actions.Clear();
     }
 

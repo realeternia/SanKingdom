@@ -13,3 +13,7 @@
 *.json
 ~*.xlsx
 UserSettings/Layouts/default-2022.dwlt
+/Tools/DesignCoder/DesignCoder/bin
+/Tools/DesignCoder/DesignCoder/obj
+/Tools/DesignCoder/DesignCoder/.trae
+Tools/DesignCoder/.vs/

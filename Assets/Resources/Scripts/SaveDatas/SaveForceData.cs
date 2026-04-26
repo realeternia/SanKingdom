@@ -187,6 +187,7 @@ public class SaveForceData
 
         if (isPlayer)
         {
+            AI.AssignHeroesToDev(this);
             PanelManager.Instance.SendSignal(new PhaseChangeSignal { PhaseName = "Planning", ForceId = forceId });
             PanelManager.Instance.SendSignal(new AICheckSignal { ForceId = 0 });
         }

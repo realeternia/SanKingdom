@@ -1,4 +1,5 @@
 using System;
+using CommonConfig;
 
 public static class SysFormula
 {
@@ -197,14 +198,14 @@ public static class SysFormula
             return totalScore;
         }
 
-        public static int CalculateGoldProduction(int cityLevel, float seasonAddGold)
+        public static int CalculateGoldProduction(int cityLevel)
         {
-            return (int)(cityLevel * SystemConst.City.GOLD_PER_LEVEL + seasonAddGold);
+            return CityLevelConfig.GetConfig(cityLevel).GoldAdd;
         }
 
-        public static int CalculateFoodProduction(int cityLevel, float seasonAddFood)
+        public static int CalculateFoodProduction(int cityLevel)
         {
-            return (int)(cityLevel * SystemConst.City.FOOD_PER_LEVEL * seasonAddFood);
+            return (int)(CityLevelConfig.GetConfig(cityLevel).FoodAdd);
         }
 
         public static float CalculateDevValue(int min, int max, int addon, int currentVal, int valMax)

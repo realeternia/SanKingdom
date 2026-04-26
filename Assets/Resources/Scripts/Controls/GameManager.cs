@@ -357,7 +357,12 @@ public class GameManager : MonoBehaviour
                 {
                     foreach (var attrData in attrDatas)
                     {
-                        if (attrData.valAddon == 0) continue;
+                        if (attrData == null)
+                            continue;
+                        if (attrData.valAddon == 0)
+                            continue;
+                        if (string.IsNullOrEmpty(attrData.attr))
+                            continue;
                         string attrName = attrData.attr.ToLower();
                         if (!attrChanges.ContainsKey(attrName))
                             attrChanges[attrName] = 0;
