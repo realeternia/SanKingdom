@@ -116,29 +116,39 @@ namespace DesignCoder
         {
             dataGridView1.Columns["_RowTag_"].Visible = false;
 
+            typeof(DataGridView).InvokeMember("DoubleBuffered", 
+                System.Reflection.BindingFlags.SetProperty | 
+                System.Reflection.BindingFlags.Instance | 
+                System.Reflection.BindingFlags.NonPublic, 
+                null, dataGridView1, new object[] { true });
+
+            dataGridView1.SuspendLayout();
+
             Font dataFont = new Font("微软雅黑", 10F);
             Font headerFont = new Font("微软雅黑", 10F, FontStyle.Bold);
-            Color morandiBlue = Color.FromArgb(167, 184, 217);
-            Color idColumnColor = Color.FromArgb(220, 235, 250);
-            Color altRowColor = Color.FromArgb(245, 248, 252);
+            Color darkBg = Color.FromArgb(45, 45, 48);
+            Color darkRow = Color.FromArgb(37, 37, 38);
+            Color darkAltRow = Color.FromArgb(42, 42, 44);
+            Color darkSelection = Color.FromArgb(0, 122, 204);
+            Color textColor = Color.FromArgb(220, 220, 220);
+            Color deepMorandiBlue = Color.FromArgb(70, 90, 115);
+            Color idColumnBg = Color.FromArgb(35, 60, 95);
+            Color idColumnFg = Color.FromArgb(140, 190, 255);
 
+            dataGridView1.BackgroundColor = darkBg;
             dataGridView1.DefaultCellStyle.Font = dataFont;
-            dataGridView1.DefaultCellStyle.BackColor = Color.White;
-            dataGridView1.DefaultCellStyle.ForeColor = Color.FromArgb(50, 50, 50);
-            dataGridView1.DefaultCellStyle.SelectionBackColor = Color.FromArgb(180, 200, 230);
-            dataGridView1.DefaultCellStyle.SelectionForeColor = Color.Black;
-            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = altRowColor;
+            dataGridView1.DefaultCellStyle.BackColor = darkRow;
+            dataGridView1.DefaultCellStyle.ForeColor = textColor;
+            dataGridView1.DefaultCellStyle.SelectionBackColor = darkSelection;
+            dataGridView1.DefaultCellStyle.SelectionForeColor = Color.White;
+            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = darkAltRow;
 
             dataGridView1.ColumnHeadersVisible = false;
-            dataGridView1.ColumnHeadersDefaultCellStyle.Font = headerFont;
-            dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = morandiBlue;
-            dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dataGridView1.ColumnHeadersHeight = 28;
-
             dataGridView1.RowTemplate.Height = 26;
 
+            int firstDataColIdx = -1;
             for (int i = 0; i < currentConfig.Fields.Count; i++)
             {
                 string colName = currentConfig.Fields[i].Name;
@@ -146,36 +156,44 @@ namespace DesignCoder
                 {
                     dataGridView1.Columns[colName].HeaderText = colName;
                     dataGridView1.Columns[colName].DefaultCellStyle.Font = dataFont;
+                    dataGridView1.Columns[colName].DefaultCellStyle.BackColor = darkRow;
+                    dataGridView1.Columns[colName].DefaultCellStyle.ForeColor = textColor;
 
-                    if (colName == "Id")
+                    if (colName == "Id" && firstDataColIdx < 0)
                     {
-                        dataGridView1.Columns[colName].DefaultCellStyle.BackColor = idColumnColor;
-                        dataGridView1.Columns[colName].DefaultCellStyle.Font = new Font("微软雅黑", 10F, FontStyle.Bold);
-                        dataGridView1.Columns[colName].DefaultCellStyle.ForeColor = Color.FromArgb(0, 80, 150);
+                        firstDataColIdx = dataGridView1.Columns[colName].Index;
                     }
                 }
             }
 
+            if (firstDataColIdx >= 0)
+            {
+                dataGridView1.Columns[firstDataColIdx].DefaultCellStyle.BackColor = idColumnBg;
+                dataGridView1.Columns[firstDataColIdx].DefaultCellStyle.Font = headerFont;
+                dataGridView1.Columns[firstDataColIdx].DefaultCellStyle.ForeColor = idColumnFg;
+            }
+
             dataGridView1.AllowUserToResizeRows = false;
-            dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridView1.RowHeadersVisible = true;
-            dataGridView1.RowHeadersWidth = 30;
+            dataGridView1.RowHeadersVisible = false;
 
             for (int i = 0; i < HeaderRowCount && i < dataGridView1.Rows.Count; i++)
             {
                 dataGridView1.Rows[i].Frozen = true;
                 dataGridView1.Rows[i].ReadOnly = true;
-                dataGridView1.Rows[i].DefaultCellStyle.BackColor = morandiBlue;
+                dataGridView1.Rows[i].DefaultCellStyle.BackColor = deepMorandiBlue;
                 dataGridView1.Rows[i].DefaultCellStyle.ForeColor = Color.White;
                 dataGridView1.Rows[i].DefaultCellStyle.Font = headerFont;
                 dataGridView1.Rows[i].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dataGridView1.Rows[i].DefaultCellStyle.SelectionBackColor = morandiBlue;
+                dataGridView1.Rows[i].DefaultCellStyle.SelectionBackColor = deepMorandiBlue;
                 dataGridView1.Rows[i].DefaultCellStyle.SelectionForeColor = Color.White;
             }
 
-            dataGridView1.GridColor = Color.FromArgb(200, 210, 225);
+            dataGridView1.GridColor = Color.FromArgb(60, 60, 65);
             dataGridView1.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             dataGridView1.EnableHeadersVisualStyles = false;
+            dataGridView1.BorderStyle = BorderStyle.None;
+
+            dataGridView1.ResumeLayout(false);
 
             dataGridView1.FirstDisplayedScrollingRowIndex = HeaderRowCount;
         }

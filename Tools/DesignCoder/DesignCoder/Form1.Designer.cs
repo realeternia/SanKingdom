@@ -66,7 +66,7 @@ namespace DesignCoder
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(5, 0, 2, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(1399, 32);
+            this.toolStrip1.Size = new System.Drawing.Size(1399, 27);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -77,14 +77,14 @@ namespace DesignCoder
             this.btnRefresh.ForeColor = System.Drawing.Color.White;
             this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(40, 29);
+            this.btnRefresh.Size = new System.Drawing.Size(41, 24);
             this.btnRefresh.Text = "刷新";
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 32);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
             // 
             // btnSave
             // 
@@ -93,7 +93,7 @@ namespace DesignCoder
             this.btnSave.ForeColor = System.Drawing.Color.White;
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(40, 29);
+            this.btnSave.Size = new System.Drawing.Size(41, 24);
             this.btnSave.Text = "保存";
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
@@ -104,7 +104,7 @@ namespace DesignCoder
             this.btnNewRow.ForeColor = System.Drawing.Color.White;
             this.btnNewRow.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNewRow.Name = "btnNewRow";
-            this.btnNewRow.Size = new System.Drawing.Size(52, 29);
+            this.btnNewRow.Size = new System.Drawing.Size(55, 24);
             this.btnNewRow.Text = "新增行";
             this.btnNewRow.Click += new System.EventHandler(this.btnNewRow_Click);
             // 
@@ -115,14 +115,14 @@ namespace DesignCoder
             this.btnDeleteRow.ForeColor = System.Drawing.Color.White;
             this.btnDeleteRow.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnDeleteRow.Name = "btnDeleteRow";
-            this.btnDeleteRow.Size = new System.Drawing.Size(52, 29);
+            this.btnDeleteRow.Size = new System.Drawing.Size(55, 24);
             this.btnDeleteRow.Text = "删除行";
             this.btnDeleteRow.Click += new System.EventHandler(this.btnDeleteRow_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 32);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 27);
             // 
             // btnBatchFill
             // 
@@ -131,7 +131,7 @@ namespace DesignCoder
             this.btnBatchFill.ForeColor = System.Drawing.Color.White;
             this.btnBatchFill.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnBatchFill.Name = "btnBatchFill";
-            this.btnBatchFill.Size = new System.Drawing.Size(64, 29);
+            this.btnBatchFill.Size = new System.Drawing.Size(69, 24);
             this.btnBatchFill.Text = "批量填充";
             this.btnBatchFill.Click += new System.EventHandler(this.btnBatchFill_Click);
             // 
@@ -142,7 +142,7 @@ namespace DesignCoder
             this.btnForeColor.ForeColor = System.Drawing.Color.White;
             this.btnForeColor.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnForeColor.Name = "btnForeColor";
-            this.btnForeColor.Size = new System.Drawing.Size(52, 29);
+            this.btnForeColor.Size = new System.Drawing.Size(55, 24);
             this.btnForeColor.Text = "前景色";
             this.btnForeColor.Click += new System.EventHandler(this.btnForeColor_Click);
             // 
@@ -153,7 +153,7 @@ namespace DesignCoder
             this.btnBackColor.ForeColor = System.Drawing.Color.White;
             this.btnBackColor.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnBackColor.Name = "btnBackColor";
-            this.btnBackColor.Size = new System.Drawing.Size(52, 29);
+            this.btnBackColor.Size = new System.Drawing.Size(55, 24);
             this.btnBackColor.Text = "背景色";
             this.btnBackColor.Click += new System.EventHandler(this.btnBackColor_Click);
             // 
@@ -164,14 +164,16 @@ namespace DesignCoder
             this.btnClearColors.ForeColor = System.Drawing.Color.White;
             this.btnClearColors.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnClearColors.Name = "btnClearColors";
-            this.btnClearColors.Size = new System.Drawing.Size(64, 29);
+            this.btnClearColors.Size = new System.Drawing.Size(69, 24);
             this.btnClearColors.Text = "清除颜色";
             this.btnClearColors.Click += new System.EventHandler(this.btnClearColors_Click);
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 32);
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer1.IsSplitterFixed = true;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 27);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -181,7 +183,7 @@ namespace DesignCoder
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
-            this.splitContainer1.Size = new System.Drawing.Size(1399, 969);
+            this.splitContainer1.Size = new System.Drawing.Size(1399, 974);
             this.splitContainer1.SplitterDistance = 180;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -200,7 +202,7 @@ namespace DesignCoder
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(180, 969);
+            this.listView1.Size = new System.Drawing.Size(180, 974);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -222,7 +224,7 @@ namespace DesignCoder
             this.dataGridView1.RowHeadersWidth = 30;
             this.dataGridView1.RowTemplate.Height = 26;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1215, 969);
+            this.dataGridView1.Size = new System.Drawing.Size(1215, 974);
             this.dataGridView1.TabIndex = 0;
             // 
             // contextMenuStrip1
@@ -239,34 +241,34 @@ namespace DesignCoder
             // menuBatchFill
             // 
             this.menuBatchFill.Name = "menuBatchFill";
-            this.menuBatchFill.Size = new System.Drawing.Size(136, 24);
+            this.menuBatchFill.Size = new System.Drawing.Size(136, 22);
             this.menuBatchFill.Text = "批量填充";
             this.menuBatchFill.Click += new System.EventHandler(this.btnBatchFill_Click);
             // 
             // menuForeColor
             // 
             this.menuForeColor.Name = "menuForeColor";
-            this.menuForeColor.Size = new System.Drawing.Size(136, 24);
+            this.menuForeColor.Size = new System.Drawing.Size(136, 22);
             this.menuForeColor.Text = "设置前景色";
             this.menuForeColor.Click += new System.EventHandler(this.btnForeColor_Click);
             // 
             // menuBackColor
             // 
             this.menuBackColor.Name = "menuBackColor";
-            this.menuBackColor.Size = new System.Drawing.Size(136, 24);
+            this.menuBackColor.Size = new System.Drawing.Size(136, 22);
             this.menuBackColor.Text = "设置背景色";
             this.menuBackColor.Click += new System.EventHandler(this.btnBackColor_Click);
             // 
             // menuClearColors
             // 
             this.menuClearColors.Name = "menuClearColors";
-            this.menuClearColors.Size = new System.Drawing.Size(136, 24);
+            this.menuClearColors.Size = new System.Drawing.Size(136, 22);
             this.menuClearColors.Text = "清除颜色";
             this.menuClearColors.Click += new System.EventHandler(this.btnClearColors_Click);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
             this.ClientSize = new System.Drawing.Size(1399, 1001);
