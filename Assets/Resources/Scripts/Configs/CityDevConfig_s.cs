@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +6,43 @@ namespace CommonConfig
 {
     public class CityDevConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"Cname", new FieldMetaInfo("中文名", "string")},
+            {"Des", new FieldMetaInfo("描述", "string")},
+            {"Type", new FieldMetaInfo("类型", "string")},
+            {"Prefab", new FieldMetaInfo("对象", "string")},
+            {"Icon", new FieldMetaInfo("图片", "string")},
+            {"GoldCost", new FieldMetaInfo("人均消耗黄金", "int")},
+            {"HeroCount", new FieldMetaInfo("最大参与人数", "int")},
+            {"DevAttr1", new FieldMetaInfo("显示属性", "string")},
+            {"DevAttr1Value", new FieldMetaInfo("提升值", "float[]")},
+            {"DevAttr2", new FieldMetaInfo("显示属性", "string")},
+            {"DevAttr2Value", new FieldMetaInfo("提升值", "float[]")},
+            {"SpecialAction", new FieldMetaInfo("显示属性", "string")},
+            {"SpecialActionVal", new FieldMetaInfo("提升值", "int[]")},
+            {"Attrs", new FieldMetaInfo("显示属性", "string[]")},
+            {"ActionName", new FieldMetaInfo("行动", "string")},
+            {"AiPriotyDev", new FieldMetaInfo("发展时ai", "int")},
+            {"AiPriotyAtk", new FieldMetaInfo("战时优先级", "int")},
+            {"AiPriotyDef", new FieldMetaInfo("战时优先级", "int")},
+            {"Mp4", new FieldMetaInfo("动画文件", "string")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>

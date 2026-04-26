@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +6,43 @@ namespace CommonConfig
 {
     public class ItemConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"Name", new FieldMetaInfo("名字", "string")},
+            {"Des", new FieldMetaInfo("效果说明", "string")},
+            {"Lv", new FieldMetaInfo("等级", "int")},
+            {"Effect", new FieldMetaInfo("效果", "string")},
+            {"Attr1", new FieldMetaInfo("属性1", "string")},
+            {"Attr1Val", new FieldMetaInfo("属性1值", "int")},
+            {"Attr2", new FieldMetaInfo("属性2", "string")},
+            {"Attr2Val", new FieldMetaInfo("属性2值", "int")},
+            {"Skills", new FieldMetaInfo("技能", "int[]")},
+            {"HitEffect", new FieldMetaInfo("hit", "string")},
+            {"RateAbs", new FieldMetaInfo("出场概率", "int")},
+            {"ShopIdx", new FieldMetaInfo("出场时间", "int")},
+            {"AutoUse", new FieldMetaInfo("自动使用", "bool")},
+            {"AutoRemove", new FieldMetaInfo("自动回收", "bool")},
+            {"RemoveWhenUse", new FieldMetaInfo("使用后消失", "bool")},
+            {"Price", new FieldMetaInfo("价格", "int")},
+            {"PriceRound", new FieldMetaInfo("价格回合", "float")},
+            {"SellOne", new FieldMetaInfo("只卖一个", "bool")},
+            {"Icon", new FieldMetaInfo("背景图", "string")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>

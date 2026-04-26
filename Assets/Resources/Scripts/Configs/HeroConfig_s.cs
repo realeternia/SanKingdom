@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +6,51 @@ namespace CommonConfig
 {
     public class HeroConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"Name", new FieldMetaInfo("名字", "string")},
+            {"BornYear", new FieldMetaInfo("出生", "int")},
+            {"DeadYear", new FieldMetaInfo("死亡", "int")},
+            {"LeadShip", new FieldMetaInfo("统帅", "int")},
+            {"Str", new FieldMetaInfo("武力", "int")},
+            {"Inte", new FieldMetaInfo("智力", "int")},
+            {"Fair", new FieldMetaInfo("内政", "int")},
+            {"Charm", new FieldMetaInfo("魅力", "int")},
+            {"Total", new FieldMetaInfo("总属性", "int")},
+            {"ForceId", new FieldMetaInfo("阵营", "int")},
+            {"City", new FieldMetaInfo("所在", "string")},
+            {"BornCity", new FieldMetaInfo("出生", "string")},
+            {"Loyal", new FieldMetaInfo("初始中心度", "int")},
+            {"Xingge", new FieldMetaInfo("性格", "string")},
+            {"Pinzhi", new FieldMetaInfo("品质", "string[]")},
+            {"Aihao", new FieldMetaInfo("爱好", "string[]")},
+            {"Paixi", new FieldMetaInfo("派系", "string")},
+            {"Likes", new FieldMetaInfo("亲爱", "string[]")},
+            {"Hates", new FieldMetaInfo("厌恶", "string[]")},
+            {"Story", new FieldMetaInfo("Story", "string[]")},
+            {"Pos", new FieldMetaInfo("站位", "int")},
+            {"Skills", new FieldMetaInfo("技能", "int[]")},
+            {"Skill1", new FieldMetaInfo("技能", "string")},
+            {"Skill2", new FieldMetaInfo("技能2", "string")},
+            {"Group", new FieldMetaInfo("团队", "string")},
+            {"HitEffect", new FieldMetaInfo("hit", "string")},
+            {"Icon", new FieldMetaInfo("背景图", "string")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>

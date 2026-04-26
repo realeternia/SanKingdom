@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +6,31 @@ namespace CommonConfig
 {
     public class BuffConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"Name", new FieldMetaInfo("名字", "string")},
+            {"ScriptName", new FieldMetaInfo("脚本名", "string")},
+            {"ColorStart", new FieldMetaInfo("启动色", "string")},
+            {"ColorEnd", new FieldMetaInfo("结束色", "string")},
+            {"IsPositive", new FieldMetaInfo("是否正面", "bool")},
+            {"BuffEffect", new FieldMetaInfo("hit", "string")},
+            {"Icon", new FieldMetaInfo("图标", "string")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>

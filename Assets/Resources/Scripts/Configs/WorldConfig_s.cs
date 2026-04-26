@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +6,38 @@ namespace CommonConfig
 {
     public class WorldConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"Name", new FieldMetaInfo("名字", "string")},
+            {"Cname", new FieldMetaInfo("中文名", "string")},
+            {"X", new FieldMetaInfo("x", "int")},
+            {"Y", new FieldMetaInfo("y", "int")},
+            {"Width", new FieldMetaInfo("是否正面", "int")},
+            {"Height", new FieldMetaInfo("hit", "int")},
+            {"ForceId", new FieldMetaInfo("force", "int")},
+            {"Level", new FieldMetaInfo("等级", "int")},
+            {"Food", new FieldMetaInfo("粮食", "int")},
+            {"Soldier", new FieldMetaInfo("士兵", "int")},
+            {"Wall", new FieldMetaInfo("防御", "int")},
+            {"WorldNearIds", new FieldMetaInfo("相邻", "int[]")},
+            {"MiniMapOffsets", new FieldMetaInfo("Mini地图偏移", "int[]")},
+            {"ViewPrefab", new FieldMetaInfo("view位置", "string")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>

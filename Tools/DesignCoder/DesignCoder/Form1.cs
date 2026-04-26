@@ -11,11 +11,11 @@ namespace DesignCoder
     public partial class Form1 : Form
     {
         private const string ConfigDir = @"D:\U3dPrj\SanKingdom\Assets\Resources\Scripts\Configs";
+        private const int HeaderRowCount = 3;
 
         private ConfigData currentConfig;
         private string currentFilePath;
         private DataTable dataTable;
-        private Dictionary<string, ColorInfo> colorMap;
 
         public Form1()
         {
@@ -63,8 +63,8 @@ namespace DesignCoder
         {
             string source = File.ReadAllText(filePath, Encoding.UTF8);
             currentConfig = ConfigData.Parse(source);
-            LoadColorMap(filePath);
             BuildDataTable();
+            SetupDataGridView();
             ApplyColors();
         }
 
@@ -72,14 +72,35 @@ namespace DesignCoder
         {
             dataTable = new DataTable();
 
+            dataTable.Columns.Add("_RowTag_", typeof(string));
             foreach (var field in currentConfig.Fields)
             {
-                var col = dataTable.Columns.Add(field.Name, typeof(string));
+                dataTable.Columns.Add(field.Name, typeof(string));
             }
+
+            var fieldNameRow = dataTable.NewRow();
+            fieldNameRow["_RowTag_"] = "FieldName";
+            var chineseNameRow = dataTable.NewRow();
+            chineseNameRow["_RowTag_"] = "ChineseName";
+            var typeRow = dataTable.NewRow();
+            typeRow["_RowTag_"] = "Type";
+
+            for (int i = 0; i < currentConfig.Fields.Count; i++)
+            {
+                var field = currentConfig.Fields[i];
+                fieldNameRow[field.Name] = field.Name;
+                chineseNameRow[field.Name] = field.ChineseName ?? field.Comment ?? "";
+                typeRow[field.Name] = field.Type;
+            }
+
+            dataTable.Rows.Add(fieldNameRow);
+            dataTable.Rows.Add(chineseNameRow);
+            dataTable.Rows.Add(typeRow);
 
             foreach (var row in currentConfig.Rows)
             {
                 var dataRow = dataTable.NewRow();
+                dataRow["_RowTag_"] = "Data";
                 foreach (var field in currentConfig.Fields)
                 {
                     string val = row.ContainsKey(field.Name) ? row[field.Name] : "";
@@ -89,19 +110,74 @@ namespace DesignCoder
             }
 
             dataGridView1.DataSource = dataTable;
+        }
+
+        private void SetupDataGridView()
+        {
+            dataGridView1.Columns["_RowTag_"].Visible = false;
+
+            Font dataFont = new Font("微软雅黑", 10F);
+            Font headerFont = new Font("微软雅黑", 10F, FontStyle.Bold);
+            Color morandiBlue = Color.FromArgb(167, 184, 217);
+            Color idColumnColor = Color.FromArgb(220, 235, 250);
+            Color altRowColor = Color.FromArgb(245, 248, 252);
+
+            dataGridView1.DefaultCellStyle.Font = dataFont;
+            dataGridView1.DefaultCellStyle.BackColor = Color.White;
+            dataGridView1.DefaultCellStyle.ForeColor = Color.FromArgb(50, 50, 50);
+            dataGridView1.DefaultCellStyle.SelectionBackColor = Color.FromArgb(180, 200, 230);
+            dataGridView1.DefaultCellStyle.SelectionForeColor = Color.Black;
+            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = altRowColor;
+
+            dataGridView1.ColumnHeadersVisible = false;
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font = headerFont;
+            dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = morandiBlue;
+            dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridView1.ColumnHeadersHeight = 28;
+
+            dataGridView1.RowTemplate.Height = 26;
 
             for (int i = 0; i < currentConfig.Fields.Count; i++)
             {
-                if (i < dataGridView1.Columns.Count)
+                string colName = currentConfig.Fields[i].Name;
+                if (dataGridView1.Columns.Contains(colName))
                 {
-                    string tip = currentConfig.Fields[i].Comment;
-                    if (!string.IsNullOrEmpty(tip))
+                    dataGridView1.Columns[colName].HeaderText = colName;
+                    dataGridView1.Columns[colName].DefaultCellStyle.Font = dataFont;
+
+                    if (colName == "Id")
                     {
-                        dataGridView1.Columns[i].HeaderText = currentConfig.Fields[i].Name;
-                        dataGridView1.Columns[i].ToolTipText = tip;
+                        dataGridView1.Columns[colName].DefaultCellStyle.BackColor = idColumnColor;
+                        dataGridView1.Columns[colName].DefaultCellStyle.Font = new Font("微软雅黑", 10F, FontStyle.Bold);
+                        dataGridView1.Columns[colName].DefaultCellStyle.ForeColor = Color.FromArgb(0, 80, 150);
                     }
                 }
             }
+
+            dataGridView1.AllowUserToResizeRows = false;
+            dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            dataGridView1.RowHeadersVisible = true;
+            dataGridView1.RowHeadersWidth = 30;
+
+            for (int i = 0; i < HeaderRowCount && i < dataGridView1.Rows.Count; i++)
+            {
+                dataGridView1.Rows[i].Frozen = true;
+                dataGridView1.Rows[i].ReadOnly = true;
+                dataGridView1.Rows[i].DefaultCellStyle.BackColor = morandiBlue;
+                dataGridView1.Rows[i].DefaultCellStyle.ForeColor = Color.White;
+                dataGridView1.Rows[i].DefaultCellStyle.Font = headerFont;
+                dataGridView1.Rows[i].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGridView1.Rows[i].DefaultCellStyle.SelectionBackColor = morandiBlue;
+                dataGridView1.Rows[i].DefaultCellStyle.SelectionForeColor = Color.White;
+            }
+
+            dataGridView1.GridColor = Color.FromArgb(200, 210, 225);
+            dataGridView1.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridView1.EnableHeadersVisualStyles = false;
+
+            dataGridView1.FirstDisplayedScrollingRowIndex = HeaderRowCount;
         }
 
         private void SyncDataTableToConfig()
@@ -111,6 +187,9 @@ namespace DesignCoder
             currentConfig.Rows.Clear();
             foreach (DataRow dr in dataTable.Rows)
             {
+                string tag = dr["_RowTag_"] as string;
+                if (tag != "Data") continue;
+
                 var row = new Dictionary<string, string>();
                 foreach (var field in currentConfig.Fields)
                 {
@@ -120,14 +199,42 @@ namespace DesignCoder
             }
         }
 
+        private void SyncCellMetasToConfig()
+        {
+            if (currentConfig == null) return;
+            currentConfig.CellMetas.Clear();
+
+            for (int rowIdx = HeaderRowCount; rowIdx < dataGridView1.Rows.Count; rowIdx++)
+            {
+                for (int colIdx = 0; colIdx < dataGridView1.Columns.Count; colIdx++)
+                {
+                    if (!dataGridView1.Columns[colIdx].Visible) continue;
+
+                    var cell = dataGridView1.Rows[rowIdx].Cells[colIdx];
+                    bool hasForeColor = cell.Style.ForeColor != Color.Empty && cell.Style.ForeColor != dataGridView1.DefaultCellStyle.ForeColor;
+                    bool hasBackColor = cell.Style.BackColor != Color.Empty && cell.Style.BackColor != dataGridView1.DefaultCellStyle.BackColor;
+
+                    if (hasForeColor || hasBackColor)
+                    {
+                        var cm = new CellMeta();
+                        cm.Row = rowIdx - HeaderRowCount;
+                        cm.Col = colIdx;
+                        if (hasForeColor) cm.ForeColor = cell.Style.ForeColor.ToArgb();
+                        if (hasBackColor) cm.BackColor = cell.Style.BackColor.ToArgb();
+                        currentConfig.CellMetas.Add(cm);
+                    }
+                }
+            }
+        }
+
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (currentConfig == null || string.IsNullOrEmpty(currentFilePath)) return;
 
             SyncDataTableToConfig();
+            SyncCellMetasToConfig();
             string newSource = currentConfig.GenerateSource();
             File.WriteAllText(currentFilePath, newSource, Encoding.UTF8);
-            SaveColorMap(currentFilePath);
             MessageBox.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -135,6 +242,7 @@ namespace DesignCoder
         {
             if (dataTable == null) return;
             var row = dataTable.NewRow();
+            row["_RowTag_"] = "Data";
             foreach (var field in currentConfig.Fields)
             {
                 row[field.Name] = "";
@@ -148,7 +256,7 @@ namespace DesignCoder
 
             foreach (DataGridViewRow selRow in dataGridView1.SelectedRows)
             {
-                if (!selRow.IsNewRow)
+                if (selRow.Index >= HeaderRowCount && !selRow.IsNewRow)
                     dataGridView1.Rows.Remove(selRow);
             }
         }
@@ -166,24 +274,41 @@ namespace DesignCoder
 
             foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
             {
-                if (cell.RowIndex >= 0 && cell.ColumnIndex >= 0 && cell.ColumnIndex < currentConfig.Fields.Count)
+                if (cell.RowIndex < HeaderRowCount) continue;
+                if (cell.RowIndex >= 0 && cell.ColumnIndex >= 0)
                 {
-                    string fieldType = currentConfig.Fields[cell.ColumnIndex].Type;
-                    if (!ValidateInput(input, fieldType))
+                    int fieldIdx = GetFieldIndexFromColumnIndex(cell.ColumnIndex);
+                    if (fieldIdx >= 0 && fieldIdx < currentConfig.Fields.Count)
                     {
-                        MessageBox.Show(string.Format("值\"{0}\"不符合字段\"{1}\"的类型({2})", input, currentConfig.Fields[cell.ColumnIndex].Name, fieldType), "类型错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        string fieldType = currentConfig.Fields[fieldIdx].Type;
+                        if (!ValidateInput(input, fieldType))
+                        {
+                            MessageBox.Show(string.Format("值\"{0}\"不符合字段\"{1}\"的类型({2})", input, currentConfig.Fields[fieldIdx].Name, fieldType), "类型错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
                 }
             }
 
             foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
             {
-                if (cell.RowIndex >= 0 && cell.ColumnIndex >= 0)
+                if (cell.RowIndex >= HeaderRowCount && cell.ColumnIndex >= 0)
                 {
                     cell.Value = input;
                 }
             }
+        }
+
+        private int GetFieldIndexFromColumnIndex(int colIdx)
+        {
+            if (colIdx <= 0) return -1;
+            string colName = dataGridView1.Columns[colIdx].Name;
+            for (int i = 0; i < currentConfig.Fields.Count; i++)
+            {
+                if (currentConfig.Fields[i].Name == colName)
+                    return i;
+            }
+            return -1;
         }
 
         private bool ValidateInput(string input, string type)
@@ -220,8 +345,8 @@ namespace DesignCoder
 
             foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
             {
-                cell.Style.ForeColor = colorDialog1.Color;
-                SetCellColor(cell, true, colorDialog1.Color);
+                if (cell.RowIndex >= HeaderRowCount)
+                    cell.Style.ForeColor = colorDialog1.Color;
             }
         }
 
@@ -237,8 +362,8 @@ namespace DesignCoder
 
             foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
             {
-                cell.Style.BackColor = colorDialog1.Color;
-                SetCellColor(cell, false, colorDialog1.Color);
+                if (cell.RowIndex >= HeaderRowCount)
+                    cell.Style.BackColor = colorDialog1.Color;
             }
         }
 
@@ -252,10 +377,11 @@ namespace DesignCoder
 
             foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
             {
-                cell.Style.ForeColor = Color.Empty;
-                cell.Style.BackColor = Color.Empty;
-                string key = cell.RowIndex + "," + cell.ColumnIndex;
-                if (colorMap != null) colorMap.Remove(key);
+                if (cell.RowIndex >= HeaderRowCount)
+                {
+                    cell.Style.ForeColor = Color.Empty;
+                    cell.Style.BackColor = Color.Empty;
+                }
             }
         }
 
@@ -300,116 +426,25 @@ namespace DesignCoder
             return null;
         }
 
-        private void SetCellColor(DataGridViewCell cell, bool isFore, Color color)
-        {
-            if (colorMap == null) colorMap = new Dictionary<string, ColorInfo>();
-            string key = cell.RowIndex + "," + cell.ColumnIndex;
-            ColorInfo ci;
-            if (colorMap.ContainsKey(key))
-                ci = colorMap[key];
-            else
-                ci = new ColorInfo();
-
-            if (isFore)
-                ci.ForeColor = color;
-            else
-                ci.BackColor = color;
-
-            colorMap[key] = ci;
-        }
-
-        private void LoadColorMap(string csFilePath)
-        {
-            colorMap = new Dictionary<string, ColorInfo>();
-            string colorFile = Path.ChangeExtension(csFilePath, ".color");
-            if (!File.Exists(colorFile)) return;
-
-            try
-            {
-                string[] lines = File.ReadAllLines(colorFile, Encoding.UTF8);
-                foreach (string line in lines)
-                {
-                    if (string.IsNullOrWhiteSpace(line)) continue;
-                    string[] parts = line.Split('\t');
-                    if (parts.Length < 2) continue;
-
-                    string key = parts[0];
-                    var ci = new ColorInfo();
-
-                    if (parts.Length >= 2 && !string.IsNullOrEmpty(parts[1]))
-                    {
-                        ci.ForeColor = Color.FromArgb(int.Parse(parts[1]));
-                    }
-                    if (parts.Length >= 3 && !string.IsNullOrEmpty(parts[2]))
-                    {
-                        ci.BackColor = Color.FromArgb(int.Parse(parts[2]));
-                    }
-
-                    colorMap[key] = ci;
-                }
-            }
-            catch { }
-        }
-
-        private void SaveColorMap(string csFilePath)
-        {
-            if (colorMap == null || colorMap.Count == 0) return;
-
-            string colorFile = Path.ChangeExtension(csFilePath, ".color");
-            var sb = new StringBuilder();
-            foreach (var kv in colorMap)
-            {
-                sb.Append(kv.Key);
-                sb.Append('\t');
-                sb.Append(kv.Value.ForeColor.HasValue ? kv.Value.ForeColor.Value.ToArgb().ToString() : "");
-                sb.Append('\t');
-                sb.Append(kv.Value.BackColor.HasValue ? kv.Value.BackColor.Value.ToArgb().ToString() : "");
-                sb.AppendLine();
-            }
-            File.WriteAllText(colorFile, sb.ToString(), Encoding.UTF8);
-        }
-
         private void ApplyColors()
         {
-            if (colorMap == null || colorMap.Count == 0) return;
+            if (currentConfig == null || currentConfig.CellMetas == null || currentConfig.CellMetas.Count == 0) return;
 
-            dataGridView1.DataSource = null;
-            dataGridView1.DataSource = dataTable;
-
-            for (int colIdx = 0; colIdx < currentConfig.Fields.Count; colIdx++)
+            foreach (var cm in currentConfig.CellMetas)
             {
-                if (colIdx < dataGridView1.Columns.Count)
+                int rowIdx = cm.Row + HeaderRowCount;
+                int colIdx = cm.Col;
+
+                if (rowIdx >= HeaderRowCount && rowIdx < dataGridView1.Rows.Count &&
+                    colIdx >= 0 && colIdx < dataGridView1.Columns.Count)
                 {
-                    string tip = currentConfig.Fields[colIdx].Comment;
-                    if (!string.IsNullOrEmpty(tip))
-                    {
-                        dataGridView1.Columns[colIdx].HeaderText = currentConfig.Fields[colIdx].Name;
-                        dataGridView1.Columns[colIdx].ToolTipText = tip;
-                    }
+                    var cell = dataGridView1.Rows[rowIdx].Cells[colIdx];
+                    if (cm.ForeColor.HasValue)
+                        cell.Style.ForeColor = Color.FromArgb(cm.ForeColor.Value);
+                    if (cm.BackColor.HasValue)
+                        cell.Style.BackColor = Color.FromArgb(cm.BackColor.Value);
                 }
             }
-
-            for (int rowIdx = 0; rowIdx < dataGridView1.Rows.Count; rowIdx++)
-            {
-                for (int colIdx = 0; colIdx < dataGridView1.Columns.Count; colIdx++)
-                {
-                    string key = rowIdx + "," + colIdx;
-                    if (colorMap.ContainsKey(key))
-                    {
-                        var ci = colorMap[key];
-                        if (ci.ForeColor.HasValue)
-                            dataGridView1.Rows[rowIdx].Cells[colIdx].Style.ForeColor = ci.ForeColor.Value;
-                        if (ci.BackColor.HasValue)
-                            dataGridView1.Rows[rowIdx].Cells[colIdx].Style.BackColor = ci.BackColor.Value;
-                    }
-                }
-            }
-        }
-
-        private class ColorInfo
-        {
-            public Color? ForeColor;
-            public Color? BackColor;
         }
     }
 }

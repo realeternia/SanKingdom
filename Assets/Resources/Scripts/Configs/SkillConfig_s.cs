@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +6,66 @@ namespace CommonConfig
 {
     public class SkillConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"Name", new FieldMetaInfo("名字", "string")},
+            {"Sname", new FieldMetaInfo("缩写", "string")},
+            {"Descript", new FieldMetaInfo("说明", "string")},
+            {"Type", new FieldMetaInfo("分类", "string")},
+            {"Lv", new FieldMetaInfo("等级", "int")},
+            {"Rate", new FieldMetaInfo("发动概率", "float")},
+            {"CD", new FieldMetaInfo("发动cd", "float")},
+            {"AttackPointReduce", new FieldMetaInfo("攻击时间惩罚", "float")},
+            {"ConditionParm", new FieldMetaInfo("条件参数", "float")},
+            {"Attr", new FieldMetaInfo("相关属性", "string")},
+            {"CheckAttrs", new FieldMetaInfo("判定属性", "string[]")},
+            {"Range", new FieldMetaInfo("范围", "float")},
+            {"RangeOut", new FieldMetaInfo("范围外", "bool")},
+            {"TargetType", new FieldMetaInfo("选取点", "string")},
+            {"TargetCount", new FieldMetaInfo("最大目标数", "int")},
+            {"Strength", new FieldMetaInfo("技能强度（恒定）", "float")},
+            {"StrengthInt", new FieldMetaInfo("技能强度（恒定）", "int")},
+            {"SkillAttrRate", new FieldMetaInfo("技能数值比例", "float")},
+            {"SkillDamageRate", new FieldMetaInfo("技能强度伤害比例", "float")},
+            {"SkillDamageAttrRate", new FieldMetaInfo("技能强度属性比例", "float")},
+            {"DoCount", new FieldMetaInfo("计数次数", "int")},
+            {"TimeDelay", new FieldMetaInfo("计数延迟", "float")},
+            {"UnitHelpType", new FieldMetaInfo("效果范围(1横向，2纵向)", "int")},
+            {"HelpSkill", new FieldMetaInfo("光环技能", "string")},
+            {"HelpSkillJob", new FieldMetaInfo("职业限定", "string")},
+            {"BuffId", new FieldMetaInfo("BuffId", "int")},
+            {"NegBuff", new FieldMetaInfo("是否针对负面buff", "bool")},
+            {"BuffTime", new FieldMetaInfo("Buff持续", "float")},
+            {"SummonTag", new FieldMetaInfo("召唤物标签", "string")},
+            {"SummonCount", new FieldMetaInfo("技能场数", "int")},
+            {"SummonArea", new FieldMetaInfo("技能场范围", "float")},
+            {"SummonTime", new FieldMetaInfo("技能场持续", "float")},
+            {"SummonHitInterval", new FieldMetaInfo("技能场间隔", "float")},
+            {"SummonSpeed", new FieldMetaInfo("技能场速度", "float")},
+            {"ScriptName", new FieldMetaInfo("脚本名", "string")},
+            {"Action", new FieldMetaInfo("动作", "string")},
+            {"EffectSelf", new FieldMetaInfo("自己", "string")},
+            {"EffectArea", new FieldMetaInfo("区域", "string")},
+            {"EffectHit", new FieldMetaInfo("hit", "string")},
+            {"EffectSize", new FieldMetaInfo("size", "float")},
+            {"Price", new FieldMetaInfo("价值", "int")},
+            {"Icon", new FieldMetaInfo("图标", "string")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>

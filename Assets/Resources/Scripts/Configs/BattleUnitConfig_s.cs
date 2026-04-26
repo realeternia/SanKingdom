@@ -6,6 +6,35 @@ namespace CommonConfig
 {
     public class BattleUnitConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"Name", new FieldMetaInfo("名字", "string")},
+            {"Lv", new FieldMetaInfo("等级", "int")},
+            {"ArmsId", new FieldMetaInfo("ArmsId", "int")},
+            {"Hp", new FieldMetaInfo("生命", "int")},
+            {"Atk", new FieldMetaInfo("攻击", "int")},
+            {"Def", new FieldMetaInfo("防御", "int")},
+            {"IsShadow", new FieldMetaInfo("是否隐藏", "bool")},
+            {"SoldierAtkRate", new FieldMetaInfo("士兵加成攻击系数", "float")},
+            {"SoldierHpRate", new FieldMetaInfo("士兵加成hp系数", "float")},
+            {"Skills", new FieldMetaInfo("技能", "int[]")},
+            {"Model", new FieldMetaInfo("模型", "string")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>
@@ -88,16 +117,17 @@ namespace CommonConfig
         }
 
         public static void Load()
-        {
-            config.Clear();
-            config[500001] = new BattleUnitConfig(500001, "小兵", 1, 201, 130, 50, 50, false, 1f, 1f, null, "UnitBing");
-            config[500002] = new BattleUnitConfig(500002, "远程小兵", 1, 201, 90, 50, 50, false, .8f, .65f, null, "UnitBing2");
-            config[501001] = new BattleUnitConfig(501001, "法术场", 1, 201, 9999, 99, 99, true, 0, 0, null, "UnitSpell");
-            config[501002] = new BattleUnitConfig(501002, "关羽影子", 1, 201, 2, 50, 50, false, 0, 0, null, "UnitHero");
+{
+config.Clear();
+config[500001] = new BattleUnitConfig(500001, "小兵", 1, 201, 130, 50, 50, false, 1f, 1f, null, "UnitBing");
+config[500002] = new BattleUnitConfig(500002, "远程小兵", 1, 201, 90, 50, 50, false, .8f, .65f, null, "UnitBing2");
+config[501001] = new BattleUnitConfig(501001, "法术场", 1, 201, 9999, 99, 99, true, 0f, 0f, null, "UnitSpell");
+config[501002] = new BattleUnitConfig(501002, "关羽影子", 1, 201, 2, 50, 50, false, 0f, 0f, null, "UnitHero");
 
 
 
-        }
+}
+
 
         public static BattleUnitConfig GetConfig(int id)
         {

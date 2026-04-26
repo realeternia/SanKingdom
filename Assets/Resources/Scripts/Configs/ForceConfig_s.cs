@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +6,29 @@ namespace CommonConfig
 {
     public class ForceConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"Cname", new FieldMetaInfo("中文名", "string")},
+            {"Diff", new FieldMetaInfo("难度", "int")},
+            {"HeroId", new FieldMetaInfo("影响id", "int")},
+            {"InitGold", new FieldMetaInfo("初始金钱", "int")},
+            {"Color", new FieldMetaInfo("颜色", "string")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>

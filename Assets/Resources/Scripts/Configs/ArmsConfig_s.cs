@@ -6,6 +6,35 @@ namespace CommonConfig
 {
     public class ArmsConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"Name", new FieldMetaInfo("名字", "string")},
+            {"NameS", new FieldMetaInfo("名字", "string")},
+            {"MoveSpeed", new FieldMetaInfo("移动速度", "int")},
+            {"Range", new FieldMetaInfo("攻击距离", "int")},
+            {"MissileSpeed", new FieldMetaInfo("导弹速度", "int")},
+            {"MissileHight", new FieldMetaInfo("导弹高度", "float")},
+            {"HitEffect", new FieldMetaInfo("hit", "string")},
+            {"Model", new FieldMetaInfo("模型", "string")},
+            {"ModelCountFactor", new FieldMetaInfo("多少个士兵显示一个模型", "int")},
+            {"OvercomeStrong", new FieldMetaInfo("强克制", "string")},
+            {"OvercomeWeak", new FieldMetaInfo("弱克制", "string")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>
@@ -85,24 +114,46 @@ namespace CommonConfig
         {
             config.Clear();
             config = dict;
+        }        public class CellMeta
+        {
+            public int row;
+            public int col;
+            public int? foreColor;
+            public int? backColor;
+            public CellMeta(int row, int col, int? foreColor, int? backColor)
+            {
+                this.row = row;
+                this.col = col;
+                this.foreColor = foreColor;
+                this.backColor = backColor;
+            }
         }
+
+        private static List<CellMeta> cellMeta = new List<CellMeta>()
+        {
+            new CellMeta(0, 2, null, -65536),
+        };
+        public static List<CellMeta> CellMetas { get { return cellMeta; } }
+
+
 
         public static void Load()
-        {
-            config.Clear();
-            config[101] = new ArmsConfig(101, "ma", "马", 10, 17, 0, 0, "SwordHitYellowCritical", "SodStick", 40, "戟弩炮车", "弓");
-            config[102] = new ArmsConfig(102, "che", "车", 10, 17, 0, 0, "SwordHitGreenCritical", "SodStick", 40, "", "");
-            config[201] = new ArmsConfig(201, "gong", "弓", 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 40, "枪戟", "刀");
-            config[202] = new ArmsConfig(202, "pao", "炮", 10, 17, 0, 0, "SwordHitYellowCritical", "SodBow", 40, "盾", "士");
-            config[601] = new ArmsConfig(601, "dao", "刀", 10, 17, 0, 0, "SwordHitYellowCritical", "SodStick", 40, "马车", "");
-            config[602] = new ArmsConfig(602, "daoqiang", "枪", 10, 17, 0, 0, "SwordHitYellowCritical", "SodStick", 40, "枪", "");
-            config[603] = new ArmsConfig(603, "daoji", "戟", 10, 40, 30, 3f, "FanExplosion", "SodStick", 40, "", "");
-            config[701] = new ArmsConfig(701, "shan", "扇", 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 40, "", "");
-            config[702] = new ArmsConfig(702, "mou", "谋", 7, 50, 26, 8f, "GasShootFire", "SodStick", 40, "", "");
+{
+config.Clear();
+config[101] = new ArmsConfig(101, "ma", "马", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "戟弩炮车", "弓");
+config[102] = new ArmsConfig(102, "che", "车", 10, 17, 0, 0f, "SwordHitGreenCritical", "SodStick", 40, "", "");
+config[201] = new ArmsConfig(201, "gong", "弓", 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 40, "枪戟", "刀");
+config[202] = new ArmsConfig(202, "pao", "炮", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodBow", 40, "盾", "士");
+config[601] = new ArmsConfig(601, "dao", "刀", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "");
+config[602] = new ArmsConfig(602, "daoqiang", "枪", 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "枪", "");
+config[603] = new ArmsConfig(603, "daoji", "戟", 10, 40, 30, 3f, "FanExplosion", "SodStick", 40, "", "");
+config[701] = new ArmsConfig(701, "shan", "扇", 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 40, "", "");
+config[702] = new ArmsConfig(702, "mou", "谋", 7, 50, 26, 8f, "GasShootFire", "SodStick", 40, "", "");
 
 
 
-        }
+}
+
 
         public static ArmsConfig GetConfig(int id)
         {

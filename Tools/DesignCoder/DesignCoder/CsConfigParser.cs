@@ -11,6 +11,25 @@ namespace DesignCoder
         public string Name;
         public string Type;
         public string Comment;
+        public string ChineseName;
+    }
+
+    public class CellMeta
+    {
+        public int Row;
+        public int Col;
+        public int? ForeColor;
+        public int? BackColor;
+
+        public CellMeta() { }
+
+        public CellMeta(int row, int col, int? foreColor, int? backColor)
+        {
+            Row = row;
+            Col = col;
+            ForeColor = foreColor;
+            BackColor = backColor;
+        }
     }
 
     public class ConfigData
@@ -19,7 +38,9 @@ namespace DesignCoder
         public string Namespace;
         public List<FieldDef> Fields = new List<FieldDef>();
         public List<Dictionary<string, string>> Rows = new List<Dictionary<string, string>>();
+        public List<CellMeta> CellMetas = new List<CellMeta>();
         public string UsingSection;
+        public string PreFieldCode;
         public string PreLoadCode;
         public string PostLoadCode;
 
@@ -35,11 +56,73 @@ namespace DesignCoder
             if (classMatch.Success)
                 data.ClassName = classMatch.Groups[1].Value;
 
+            ParseFieldMetaInfo(source, data);
+            ParseCellMetas(source, data);
             ParseFields(source, data);
             ParseLoadMethod(source, data);
-            SplitCodeAroundLoad(source, data);
+            SplitCodeSections(source, data);
 
             return data;
+        }
+
+        private static void ParseFieldMetaInfo(string source, ConfigData data)
+        {
+            var metaPattern = @"private\s+static\s+Dictionary<string\s*,\s*FieldMetaInfo>\s+fieldMeta\s*=\s*new\s+Dictionary<string\s*,\s*FieldMetaInfo>\s*\(\s*\)\s*\{([\s\S]*?)\};";
+            var match = Regex.Match(source, metaPattern);
+            if (!match.Success) return;
+
+            string body = match.Groups[1].Value;
+            var itemPattern = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""\s*\)\s*\}";
+            var itemMatches = Regex.Matches(body, itemPattern);
+
+            foreach (Match m in itemMatches)
+            {
+                string fieldName = m.Groups[1].Value;
+                string chineseName = m.Groups[2].Value;
+                string fieldType = m.Groups[3].Value;
+
+                var existingField = data.Fields.FirstOrDefault(f => f.Name == fieldName);
+                if (existingField != null)
+                {
+                    existingField.ChineseName = chineseName;
+                    existingField.Type = fieldType;
+                }
+                else
+                {
+                    var fd = new FieldDef();
+                    fd.Name = fieldName;
+                    fd.ChineseName = chineseName;
+                    fd.Type = fieldType;
+                    data.Fields.Add(fd);
+                }
+            }
+        }
+
+        private static void ParseCellMetas(string source, ConfigData data)
+        {
+            var cellMetaPattern = @"private\s+static\s+List<CellMeta>\s+cellMeta\s*=\s*new\s+List<CellMeta>\s*\(\s*\)\s*\{([\s\S]*?)\};";
+            var match = Regex.Match(source, cellMetaPattern);
+            if (!match.Success) return;
+
+            string body = match.Groups[1].Value;
+            var itemPattern = @"new\s+CellMeta\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+|null)\s*,\s*(-?\d+|null)\s*\)";
+            var itemMatches = Regex.Matches(body, itemPattern);
+
+            foreach (Match m in itemMatches)
+            {
+                var cm = new CellMeta();
+                cm.Row = int.Parse(m.Groups[1].Value);
+                cm.Col = int.Parse(m.Groups[2].Value);
+                cm.ForeColor = ParseNullableInt(m.Groups[3].Value);
+                cm.BackColor = ParseNullableInt(m.Groups[4].Value);
+                data.CellMetas.Add(cm);
+            }
+        }
+
+        private static int? ParseNullableInt(string s)
+        {
+            if (s == "null") return null;
+            return int.Parse(s);
         }
 
         private static void ParseFields(string source, ConfigData data)
@@ -48,11 +131,22 @@ namespace DesignCoder
             var matches = Regex.Matches(source, pattern);
             foreach (Match m in matches)
             {
-                var fd = new FieldDef();
-                fd.Comment = m.Groups[1].Value.Trim();
-                fd.Type = m.Groups[2].Value.Trim();
-                fd.Name = m.Groups[3].Value.Trim();
-                data.Fields.Add(fd);
+                string fieldName = m.Groups[3].Value.Trim();
+                var existingField = data.Fields.FirstOrDefault(f => f.Name == fieldName);
+                if (existingField != null)
+                {
+                    existingField.Comment = m.Groups[1].Value.Trim();
+                    if (string.IsNullOrEmpty(existingField.Type))
+                        existingField.Type = m.Groups[2].Value.Trim();
+                }
+                else
+                {
+                    var fd = new FieldDef();
+                    fd.Comment = m.Groups[1].Value.Trim();
+                    fd.Type = m.Groups[2].Value.Trim();
+                    fd.Name = fieldName;
+                    data.Fields.Add(fd);
+                }
             }
         }
 
@@ -268,12 +362,13 @@ namespace DesignCoder
             return string.Join(",", items.ToArray());
         }
 
-        private static void SplitCodeAroundLoad(string source, ConfigData data)
+        private static void SplitCodeSections(string source, ConfigData data)
         {
             int loadStart = source.IndexOf("public static void Load()");
             if (loadStart < 0)
             {
-                data.PreLoadCode = source;
+                data.PreFieldCode = source;
+                data.PreLoadCode = "";
                 data.PostLoadCode = "";
                 return;
             }
@@ -291,13 +386,76 @@ namespace DesignCoder
                 }
             }
 
-            data.PreLoadCode = source.Substring(0, loadStart);
+            int fieldStart = FindFieldSectionStart(source, loadStart);
+            if (fieldStart > 0)
+            {
+                data.PreFieldCode = source.Substring(0, fieldStart);
+                data.PreLoadCode = source.Substring(fieldStart, loadStart - fieldStart);
+            }
+            else
+            {
+                data.PreFieldCode = "";
+                data.PreLoadCode = source.Substring(0, loadStart);
+            }
             data.PostLoadCode = source.Substring(loadEnd + 1);
+        }
+
+        private static int FindFieldSectionStart(string source, int loadStart)
+        {
+            int lastBrace = -1;
+            int depth = 0;
+            for (int i = 0; i < loadStart; i++)
+            {
+                if (source[i] == '{') depth++;
+                else if (source[i] == '}')
+                {
+                    depth--;
+                    lastBrace = i;
+                }
+            }
+            return lastBrace + 1;
         }
 
         public string GenerateSource()
         {
             var sb = new StringBuilder();
+
+            sb.Append(PreFieldCode);
+
+            sb.AppendLine("        public class CellMeta");
+            sb.AppendLine("        {");
+            sb.AppendLine("            public int row;");
+            sb.AppendLine("            public int col;");
+            sb.AppendLine("            public int? foreColor;");
+            sb.AppendLine("            public int? backColor;");
+            sb.AppendLine("            public CellMeta(int row, int col, int? foreColor, int? backColor)");
+            sb.AppendLine("            {");
+            sb.AppendLine("                this.row = row;");
+            sb.AppendLine("                this.col = col;");
+            sb.AppendLine("                this.foreColor = foreColor;");
+            sb.AppendLine("                this.backColor = backColor;");
+            sb.AppendLine("            }");
+            sb.AppendLine("        }");
+            sb.AppendLine();
+
+            if (CellMetas.Count > 0)
+            {
+                sb.AppendLine("        private static List<CellMeta> cellMeta = new List<CellMeta>()");
+                sb.AppendLine("        {");
+                foreach (var cm in CellMetas)
+                {
+                    string fore = cm.ForeColor.HasValue ? cm.ForeColor.Value.ToString() : "null";
+                    string back = cm.BackColor.HasValue ? cm.BackColor.Value.ToString() : "null";
+                    sb.AppendLine(string.Format("            new CellMeta({0}, {1}, {2}, {3}),", cm.Row, cm.Col, fore, back));
+                }
+                sb.AppendLine("        };");
+            }
+            else
+            {
+                sb.AppendLine("        private static List<CellMeta> cellMeta = new List<CellMeta>();");
+            }
+            sb.AppendLine("        public static List<CellMeta> CellMetas { get { return cellMeta; } }");
+            sb.AppendLine();
 
             sb.Append(PreLoadCode);
 

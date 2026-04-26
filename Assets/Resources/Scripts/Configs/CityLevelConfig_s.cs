@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +6,29 @@ namespace CommonConfig
 {
     public class CityLevelConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"ExpNeed", new FieldMetaInfo("名字", "int")},
+            {"GoldAdd", new FieldMetaInfo("黄金产量", "int")},
+            {"FoodAdd", new FieldMetaInfo("粮食产量", "int")},
+            {"SoldierAdd", new FieldMetaInfo("士兵产量", "int")},
+            {"JobCount", new FieldMetaInfo("工位数", "int")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>

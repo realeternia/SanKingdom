@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +6,29 @@ namespace CommonConfig
 {
     public class ShopConfig
     {
+        public class FieldMetaInfo
+        {
+            public string fieldName;
+            public string fieldType;
+            public FieldMetaInfo(string name, string type)
+            {
+                fieldName = name;
+                fieldType = type;
+            }
+        }
+
+        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
+        {
+            {"Id", new FieldMetaInfo("序列", "int")},
+            {"RoundGold", new FieldMetaInfo("回合加钱", "int")},
+            {"MultiCardRate", new FieldMetaInfo("多等级概率", "float")},
+            {"MultiPriceTotal", new FieldMetaInfo("多等级", "int")},
+            {"ItemCount", new FieldMetaInfo("道具数量", "int")},
+            {"ItemAmazingCount", new FieldMetaInfo("道具大量", "int")},
+        };
+
+        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
         /// <summary>
         ///序列
         /// </summary>
