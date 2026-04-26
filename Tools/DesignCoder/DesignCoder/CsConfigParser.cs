@@ -12,6 +12,7 @@ namespace DesignCoder
         public string Type;
         public string Comment;
         public string ChineseName;
+        public int? Width;
     }
 
     public class CellMeta
@@ -39,7 +40,6 @@ namespace DesignCoder
         public List<FieldDef> Fields = new List<FieldDef>();
         public List<Dictionary<string, string>> Rows = new List<Dictionary<string, string>>();
         public List<CellMeta> CellMetas = new List<CellMeta>();
-        public Dictionary<string, int> ColumnWidths = new Dictionary<string, int>();
         public string UsingSection;
         public string PreFieldCode;
         public string PreLoadCode;
@@ -73,12 +73,41 @@ namespace DesignCoder
             if (!match.Success) return;
 
             string body = match.Groups[1].Value;
-            var itemPattern = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""\s*\)\s*\}";
-            var itemMatches = Regex.Matches(body, itemPattern);
+            var itemPatternWithWidth = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""\s*,\s*(\d+)\s*\)\s*\}";
+            var itemPatternWithoutWidth = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""\s*\)\s*\}";
 
-            foreach (Match m in itemMatches)
+            var itemMatchesWithWidth = Regex.Matches(body, itemPatternWithWidth);
+            foreach (Match m in itemMatchesWithWidth)
             {
                 string fieldName = m.Groups[1].Value;
+                string chineseName = m.Groups[2].Value;
+                string fieldType = m.Groups[3].Value;
+                int width = int.Parse(m.Groups[4].Value);
+
+                var existingField = data.Fields.FirstOrDefault(f => f.Name == fieldName);
+                if (existingField != null)
+                {
+                    existingField.ChineseName = chineseName;
+                    existingField.Type = fieldType;
+                    existingField.Width = width;
+                }
+                else
+                {
+                    var fd = new FieldDef();
+                    fd.Name = fieldName;
+                    fd.ChineseName = chineseName;
+                    fd.Type = fieldType;
+                    fd.Width = width;
+                    data.Fields.Add(fd);
+                }
+            }
+
+            var itemMatchesWithoutWidth = Regex.Matches(body, itemPatternWithoutWidth);
+            foreach (Match m in itemMatchesWithoutWidth)
+            {
+                string fieldName = m.Groups[1].Value;
+                if (data.Fields.Any(f => f.Name == fieldName)) continue;
+
                 string chineseName = m.Groups[2].Value;
                 string fieldType = m.Groups[3].Value;
 
@@ -95,21 +124,6 @@ namespace DesignCoder
                     fd.ChineseName = chineseName;
                     fd.Type = fieldType;
                     data.Fields.Add(fd);
-                }
-            }
-
-            var widthPattern = @"private\s+static\s+Dictionary<string\s*,\s*int>\s+columnWidths\s*=\s*new\s+Dictionary<string\s*,\s*int>\s*\(\s*\)\s*\{([\s\S]*?)\};";
-            var widthMatch = Regex.Match(source, widthPattern);
-            if (widthMatch.Success)
-            {
-                string widthBody = widthMatch.Groups[1].Value;
-                var widthItemPattern = @"\{\s*""(\w+)""\s*,\s*(\d+)\s*\}";
-                var widthItemMatches = Regex.Matches(widthBody, widthItemPattern);
-                foreach (Match wm in widthItemMatches)
-                {
-                    string colName = wm.Groups[1].Value;
-                    int width = int.Parse(wm.Groups[2].Value);
-                    data.ColumnWidths[colName] = width;
                 }
             }
         }
@@ -402,16 +416,43 @@ namespace DesignCoder
                 }
             }
 
-            int fieldStart = FindFieldSectionStart(source, loadStart);
-            if (fieldStart > 0)
+            int fieldMetaInfoStart = source.IndexOf("public class FieldMetaInfo");
+            int fieldMetaEnd = source.IndexOf("public static Dictionary<string, FieldMetaInfo> FieldMeta");
+            
+            if (fieldMetaInfoStart > 0 && fieldMetaEnd > 0)
             {
-                data.PreFieldCode = source.Substring(0, fieldStart);
-                data.PreLoadCode = source.Substring(fieldStart, loadStart - fieldStart);
+                data.PreFieldCode = source.Substring(0, fieldMetaInfoStart);
+                int fieldMetaEndBrace = source.IndexOf('}', fieldMetaEnd);
+                if (fieldMetaEndBrace > 0)
+                {
+                    int nextLineStart = source.IndexOf('\n', fieldMetaEndBrace);
+                    if (nextLineStart > 0)
+                    {
+                        data.PreLoadCode = source.Substring(nextLineStart + 1, loadStart - nextLineStart - 1);
+                    }
+                    else
+                    {
+                        data.PreLoadCode = source.Substring(fieldMetaEndBrace + 1, loadStart - fieldMetaEndBrace - 1);
+                    }
+                }
+                else
+                {
+                    data.PreLoadCode = source.Substring(fieldMetaEnd, loadStart - fieldMetaEnd);
+                }
             }
             else
             {
-                data.PreFieldCode = "";
-                data.PreLoadCode = source.Substring(0, loadStart);
+                int fieldStart = FindFieldSectionStart(source, loadStart);
+                if (fieldStart > 0)
+                {
+                    data.PreFieldCode = source.Substring(0, fieldStart);
+                    data.PreLoadCode = source.Substring(fieldStart, loadStart - fieldStart);
+                }
+                else
+                {
+                    data.PreFieldCode = "";
+                    data.PreLoadCode = source.Substring(0, loadStart);
+                }
             }
             data.PostLoadCode = source.Substring(loadEnd + 1);
         }
@@ -438,6 +479,20 @@ namespace DesignCoder
 
             sb.Append(PreFieldCode);
 
+            sb.AppendLine("        public class FieldMetaInfo");
+            sb.AppendLine("        {");
+            sb.AppendLine("            public string fieldName;");
+            sb.AppendLine("            public string fieldType;");
+            sb.AppendLine("            public int fieldWidth;");
+            sb.AppendLine("            public FieldMetaInfo(string name, string type, int width = 0)");
+            sb.AppendLine("            {");
+            sb.AppendLine("                fieldName = name;");
+            sb.AppendLine("                fieldType = type;");
+            sb.AppendLine("                fieldWidth = width;");
+            sb.AppendLine("            }");
+            sb.AppendLine("        }");
+            sb.AppendLine();
+
             sb.AppendLine("        public class CellMeta");
             sb.AppendLine("        {");
             sb.AppendLine("            public int row;");
@@ -452,6 +507,19 @@ namespace DesignCoder
             sb.AppendLine("                this.backColor = backColor;");
             sb.AppendLine("            }");
             sb.AppendLine("        }");
+            sb.AppendLine();
+
+            sb.AppendLine("        private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()");
+            sb.AppendLine("        {");
+            foreach (var field in Fields)
+            {
+                string chineseName = field.ChineseName ?? field.Comment ?? "";
+                int width = field.Width ?? 0;
+                sb.AppendLine(string.Format("            {{\"{0}\", new FieldMetaInfo(\"{1}\", \"{2}\", {3})}},", field.Name, chineseName, field.Type, width));
+            }
+            sb.AppendLine("        };");
+            sb.AppendLine();
+            sb.AppendLine("        public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }");
             sb.AppendLine();
 
             if (CellMetas.Count > 0)
@@ -471,23 +539,6 @@ namespace DesignCoder
                 sb.AppendLine("        private static List<CellMeta> cellMeta = new List<CellMeta>();");
             }
             sb.AppendLine("        public static List<CellMeta> CellMetas { get { return cellMeta; } }");
-            sb.AppendLine();
-
-            if (ColumnWidths.Count > 0)
-            {
-                sb.AppendLine("        private static Dictionary<string, int> columnWidths = new Dictionary<string, int>()");
-                sb.AppendLine("        {");
-                foreach (var kv in ColumnWidths)
-                {
-                    sb.AppendLine(string.Format("            {{ \"{0}\", {1} }},", kv.Key, kv.Value));
-                }
-                sb.AppendLine("        };");
-            }
-            else
-            {
-                sb.AppendLine("        private static Dictionary<string, int> columnWidths = new Dictionary<string, int>();");
-            }
-            sb.AppendLine("        public static Dictionary<string, int> ColumnWidths { get { return columnWidths; } }");
             sb.AppendLine();
 
             sb.Append(PreLoadCode);

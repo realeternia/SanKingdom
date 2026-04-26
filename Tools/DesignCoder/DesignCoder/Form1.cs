@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -18,6 +19,11 @@ namespace DesignCoder
         private DataTable dataTable;
         private int sortedColumnIndex = -1;
         private bool sortAscending = true;
+        private bool isLoading = false;
+
+        private Dictionary<string, ConfigData> loadedConfigs = new Dictionary<string, ConfigData>();
+        private Dictionary<string, string> originalSources = new Dictionary<string, string>();
+        private HashSet<string> modifiedConfigs = new HashSet<string>();
 
         public Form1()
         {
@@ -52,24 +58,39 @@ namespace DesignCoder
         {
             if (listView1.SelectedItems.Count == 0) return;
 
-            string selectedName = listView1.SelectedItems[0].Text;
+            string selectedName = listView1.SelectedItems[0].Text.TrimEnd('*');
             string filePath = Path.Combine(ConfigDir, selectedName + "_s.cs");
 
             if (!File.Exists(filePath)) return;
 
             currentFilePath = filePath;
-            LoadConfigFile(filePath);
+            LoadConfigFile(filePath, selectedName);
         }
 
-        private void LoadConfigFile(string filePath)
+        private void LoadConfigFile(string filePath, string configName)
         {
-            string source = File.ReadAllText(filePath, Encoding.UTF8);
-            currentConfig = ConfigData.Parse(source);
-            sortedColumnIndex = -1;
-            sortAscending = true;
-            BuildDataTable();
-            SetupDataGridView();
-            ApplyColors();
+            isLoading = true;
+            try
+            {
+                string source = File.ReadAllText(filePath, Encoding.UTF8);
+                currentConfig = ConfigData.Parse(source);
+                
+                if (!loadedConfigs.ContainsKey(configName))
+                {
+                    loadedConfigs[configName] = currentConfig;
+                    originalSources[configName] = source;
+                }
+                
+                sortedColumnIndex = -1;
+                sortAscending = true;
+                BuildDataTable();
+                SetupDataGridView();
+                ApplyColors();
+            }
+            finally
+            {
+                isLoading = false;
+            }
         }
 
         private void BuildDataTable()
@@ -156,6 +177,7 @@ namespace DesignCoder
             for (int i = 0; i < currentConfig.Fields.Count; i++)
             {
                 string colName = currentConfig.Fields[i].Name;
+                string fieldType = currentConfig.Fields[i].Type.ToLower();
                 if (dataGridView1.Columns.Contains(colName))
                 {
                     dataGridView1.Columns[colName].HeaderText = colName;
@@ -163,9 +185,24 @@ namespace DesignCoder
                     dataGridView1.Columns[colName].DefaultCellStyle.BackColor = darkRow;
                     dataGridView1.Columns[colName].DefaultCellStyle.ForeColor = textColor;
 
-                    if (currentConfig.ColumnWidths.ContainsKey(colName))
+                    int defaultWidth = -1;
+                    if (colName == "Id")
                     {
-                        dataGridView1.Columns[colName].Width = currentConfig.ColumnWidths[colName];
+                        defaultWidth = 60;
+                    }
+                    else if (fieldType == "int" || fieldType == "float")
+                    {
+                        defaultWidth = 60;
+                    }
+
+                    var field = currentConfig.Fields.FirstOrDefault(f => f.Name == colName);
+                    if (field != null && field.Width.HasValue && field.Width.Value > 0)
+                    {
+                        dataGridView1.Columns[colName].Width = field.Width.Value;
+                    }
+                    else if (defaultWidth > 0)
+                    {
+                        dataGridView1.Columns[colName].Width = defaultWidth;
                     }
 
                     if (colName == "Id" && firstDataColIdx < 0)
@@ -257,27 +294,82 @@ namespace DesignCoder
         private void SyncColumnWidthsToConfig()
         {
             if (currentConfig == null) return;
-            currentConfig.ColumnWidths.Clear();
 
             foreach (var field in currentConfig.Fields)
             {
                 if (dataGridView1.Columns.Contains(field.Name))
                 {
                     int width = dataGridView1.Columns[field.Name].Width;
-                    currentConfig.ColumnWidths[field.Name] = width;
+                    int defaultWidth = GetDefaultColumnWidth(field.Name, field.Type);
+                    if (width != defaultWidth)
+                    {
+                        field.Width = width;
+                    }
+                    else
+                    {
+                        field.Width = null;
+                    }
+                }
+            }
+        }
+
+        private int GetDefaultColumnWidth(string colName, string fieldType)
+        {
+            if (colName == "Id") return 50;
+            fieldType = fieldType.ToLower();
+            if (fieldType == "int" || fieldType == "float") return 50;
+            return 100;
+        }
+
+        private void MarkCurrentConfigModified()
+        {
+            if (currentConfig == null || string.IsNullOrEmpty(currentFilePath)) return;
+            
+            string configName = Path.GetFileNameWithoutExtension(currentFilePath);
+            if (configName.EndsWith("_s")) configName = configName.Substring(0, configName.Length - 2);
+            
+            modifiedConfigs.Add(configName);
+            UpdateListViewModifiedMarks();
+        }
+
+        private void UpdateListViewModifiedMarks()
+        {
+            for (int i = 0; i < listView1.Items.Count; i++)
+            {
+                string name = listView1.Items[i].Text.TrimEnd('*');
+                if (modifiedConfigs.Contains(name))
+                {
+                    listView1.Items[i].Text = name + "*";
+                }
+                else
+                {
+                    listView1.Items[i].Text = name;
                 }
             }
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (currentConfig == null || string.IsNullOrEmpty(currentFilePath)) return;
+            if (modifiedConfigs.Count == 0)
+            {
+                MessageBox.Show("没有需要保存的修改", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
 
-            SyncDataTableToConfig();
-            SyncCellMetasToConfig();
-            SyncColumnWidthsToConfig();
-            string newSource = currentConfig.GenerateSource();
-            File.WriteAllText(currentFilePath, newSource, Encoding.UTF8);
+            foreach (string configName in modifiedConfigs)
+            {
+                string filePath = Path.Combine(ConfigDir, configName + "_s.cs");
+                if (loadedConfigs.ContainsKey(configName))
+                {
+                    var config = loadedConfigs[configName];
+                    string newSource = config.GenerateSource();
+                    File.WriteAllText(filePath, newSource, Encoding.UTF8);
+                    originalSources[configName] = newSource;
+                }
+            }
+            
+            modifiedConfigs.Clear();
+            UpdateListViewModifiedMarks();
             MessageBox.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -291,6 +383,8 @@ namespace DesignCoder
                 row[field.Name] = "";
             }
             dataTable.Rows.Add(row);
+            SyncDataTableToConfig();
+            MarkCurrentConfigModified();
         }
 
         private void btnDeleteRow_Click(object sender, EventArgs e)
@@ -302,6 +396,8 @@ namespace DesignCoder
                 if (selRow.Index >= HeaderRowCount && !selRow.IsNewRow)
                     dataGridView1.Rows.Remove(selRow);
             }
+            SyncDataTableToConfig();
+            MarkCurrentConfigModified();
         }
 
         private void btnBatchFill_Click(object sender, EventArgs e)
@@ -340,6 +436,8 @@ namespace DesignCoder
                     cell.Value = input;
                 }
             }
+            SyncDataTableToConfig();
+            MarkCurrentConfigModified();
         }
 
         private int GetFieldIndexFromColumnIndex(int colIdx)
@@ -391,6 +489,8 @@ namespace DesignCoder
                 if (cell.RowIndex >= HeaderRowCount)
                     cell.Style.ForeColor = colorDialog1.Color;
             }
+            SyncCellMetasToConfig();
+            MarkCurrentConfigModified();
         }
 
         private void btnBackColor_Click(object sender, EventArgs e)
@@ -408,6 +508,8 @@ namespace DesignCoder
                 if (cell.RowIndex >= HeaderRowCount)
                     cell.Style.BackColor = colorDialog1.Color;
             }
+            SyncCellMetasToConfig();
+            MarkCurrentConfigModified();
         }
 
         private void btnClearColors_Click(object sender, EventArgs e)
@@ -426,6 +528,8 @@ namespace DesignCoder
                     cell.Style.BackColor = Color.Empty;
                 }
             }
+            SyncCellMetasToConfig();
+            MarkCurrentConfigModified();
         }
 
         private string ShowInputDialog(string title, string prompt)
@@ -496,6 +600,30 @@ namespace DesignCoder
             {
                 SortDataByColumn(e.ColumnIndex);
             }
+        }
+
+        private void dataGridView1_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dataGridView1.IsCurrentCellDirty)
+            {
+                dataGridView1.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+
+        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= HeaderRowCount && e.ColumnIndex >= 0)
+            {
+                SyncDataTableToConfig();
+                MarkCurrentConfigModified();
+            }
+        }
+
+        private void dataGridView1_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            if (isLoading) return;
+            SyncColumnWidthsToConfig();
+            MarkCurrentConfigModified();
         }
 
         private void SortDataByColumn(int columnIndex)
