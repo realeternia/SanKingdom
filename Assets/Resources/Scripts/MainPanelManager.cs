@@ -14,7 +14,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     
     public CityDetail cityDetail;
     public Button btnSystem;
-    public Button btnCity;
     public Button btnRoundNext;
     public Button btnMode;
     public TMP_Text textRoundNext;
@@ -33,7 +32,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         LoadMapPieces();
         InitDragHandler();
 
-        btnCity.gameObject.SetActive(false);
         var nowRound = GameManager.Instance.SaveData.round;
         
         var seasonId = GameManager.Instance.SeasonId;
@@ -46,10 +44,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         {
             PanelManager.Instance.ShowSystemPanel();
         });        
-        btnCity.onClick.AddListener(() =>
-        {
-            PanelManager.Instance.ShowCity(cityDetail.cityId);
-        });
         btnRoundNext.onClick.AddListener(() =>
         {
             OnRoundNextClick();
@@ -287,7 +281,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         
         if (!isPlayerCity && !SysSwitch.CanViewOtherForceCity)
         {
-            btnCity.gameObject.SetActive(false);
             return;
         }
         
@@ -295,10 +288,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         {
             PanelManager.Instance.RefreshForceResItems(cityData.forceId);
         }
-
-        var cityCfg = WorldConfig.GetConfig(pieceId);
-        btnCity.gameObject.GetComponentInChildren<TMP_Text>().text = isPlayerCity ? "进入" + cityCfg.Cname : "查看" + cityCfg.Cname;
-        btnCity.gameObject.SetActive(true);
     }
 
     private int extraMode = 0;

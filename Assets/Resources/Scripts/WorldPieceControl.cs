@@ -11,12 +11,15 @@ public class WorldPieceControl : MonoBehaviour
 {
     private const float MAP_SCALE_FACTOR = SystemConst.WorldMap.MAP_SCALE_FACTOR;
     
+    private static WorldPieceControl currentActivePiece;
+    
     public int pieceId;
     public Image pieceImage;
     public MainPanelManager worldManager;
     public TMP_Text pieceName;
     public GameObject infoNode;
     public TMP_Text extraText;
+    public Button enterButton;
 
     private int extraMode = 1;
 
@@ -25,33 +28,69 @@ public class WorldPieceControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // 确保pieceImage存在并添加点击事件监听器
         if (pieceImage != null)
         {
-            pieceImage.raycastTarget = true; // 确保可以接收点击事件
-            pieceImage.alphaHitTestMinimumThreshold = 0.1f; // 设置点击检测的最小alpha阈值
+            pieceImage.raycastTarget = true;
+            pieceImage.alphaHitTestMinimumThreshold = 0.1f;
             
-            // 获取或添加Button组件
             Button button = pieceImage.GetComponent<Button>();
             if (button == null)
             {
-                // 如果没有Button组件，则添加一个
                 button = pieceImage.gameObject.AddComponent<Button>();
             }
             
-            // 添加点击事件监听
             button.onClick.AddListener(OnPieceClicked);
         }
+        
+        enterButton.onClick.AddListener(OnEnterButtonClick);
+        enterButton.gameObject.SetActive(false);
+        
         infoNode.SetActive(false);
         extraText.gameObject.SetActive(false);
     }
     
-    /// <summary>
-    /// 处理地块点击事件
-    /// </summary>
     private void OnPieceClicked()
     {
         worldManager.OnPieceClick(pieceId);
+        
+        if (currentActivePiece != null && currentActivePiece != this)
+        {
+            currentActivePiece.enterButton.gameObject.SetActive(false);
+        }
+        
+        var cityData = GameManager.Instance.GetCity(pieceId);
+        var forceData = GameManager.Instance.GetForce(cityData.forceId);
+        bool isPlayerCity = forceData.isPlayer;
+        
+        if (isPlayerCity)
+        {
+            var cityCfg = WorldConfig.GetConfig(pieceId);
+            enterButton.image.color = Color.green;
+            enterButton.GetComponentInChildren<TMP_Text>().text = "进入";
+            enterButton.gameObject.SetActive(true);
+            currentActivePiece = this;
+        }
+        else if (SysSwitch.CanViewOtherForceCity)
+        {
+            var cityCfg = WorldConfig.GetConfig(pieceId);
+            enterButton.image.color = Color.yellow;
+            enterButton.GetComponentInChildren<TMP_Text>().text = "查看";
+            enterButton.gameObject.SetActive(true);
+            currentActivePiece = this;
+        }
+        else
+        {
+            enterButton.gameObject.SetActive(false);
+            if (currentActivePiece == this)
+            {
+                currentActivePiece = null;
+            }
+        }
+    }
+    
+    private void OnEnterButtonClick()
+    {
+        PanelManager.Instance.ShowCity(pieceId);
     }
 
     private Color defaultColor;
