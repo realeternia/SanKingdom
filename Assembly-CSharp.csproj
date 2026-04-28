@@ -171,6 +171,7 @@
     <Compile Include="Assets\Resources\Scripts\MainPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessChangeHpAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\PO\ArmsType.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\PanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleHeroInfoGroup.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Chess.cs" />

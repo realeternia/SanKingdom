@@ -138,6 +138,7 @@ Assets/Resources/Scripts/
 - 通过 `XxxConfig.ConfigList` 获取全部配置列表
 - `ConfigManager.Init()` 在游戏启动时统一加载所有配置
 - GetConfig或者GetConfigByname之后，不需要再检查是否为null
+- 几种值的类型配置，需要考虑是否用枚举表示，枚举类型放到PO目录下
 
 ### 3. 公式与常量分离
 

@@ -1,0 +1,18 @@
+- [x] PO 目录下存在 ArmsType.cs 文件，定义了 ArmsType 枚举（SodWalk, SodHorse, SodBow, SodWater, SodTank）
+- [x] Assembly-CSharp.csproj 中包含 ArmsType.cs 的 Compile Include 条目
+- [x] ArmsConfig 包含 Type(ArmsType)、Atk(int)、Def(int) 三个新字段，字段顺序正确（NameS 后、MoveSpeed 前）
+- [x] ArmsConfig 构造函数包含 Type(ArmsType)、Atk(int)、Def(int) 参数，参数顺序正确
+- [x] ArmsConfig.Load() 中所有 9 条数据行包含 Type(ArmsType枚举值)、Atk、Def 值
+- [x] ArmsConfig 的 Type 值为 ArmsType 枚举成员之一
+- [x] HeroConfig 包含 SodWalk、SodHorse、SodBow、SodWater、SodTank 五个新字段，位于 Charm 后
+- [x] HeroConfig 构造函数包含五个 SodXxx 参数，参数顺序正确
+- [x] HeroConfig.Load() 中所有英雄数据行包含五个 SodXxx 值（1-10 范围）
+- [x] HeroConfig 的 Total 字段包含 SodXxx 五个属性之和
+- [x] SystemConst.Battle 包含 SOD_BONUS_RATE_PER_POINT、SOD_BONUS_MIN、SOD_BONUS_MAX 常量
+- [x] SysFormula.Battle 包含 CalculateSodBonus 方法，参数为 HeroConfig 和 ArmsType
+- [x] CalculateSodBonus 根据 ArmsType 枚举值用 switch 获取对应 SodXxx 值
+- [x] CalculateSodBonus 返回值在 [SOD_BONUS_MIN, SOD_BONUS_MAX] 范围内
+- [x] Chess.CreateChessView 中 Hero 分支 atk = str + armsConfig.Atk
+- [x] Chess.CreateChessView 中 Hero 分支 def = leadShip + armsConfig.Def
+- [x] Chess.CalculateDamage 方法中 Hero 攻击时应用兵种驾驭加成
+- [x] 非 Hero 的 Chess 攻击时不应用兵种驾驭加成

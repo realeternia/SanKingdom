@@ -13,6 +13,22 @@ public static class SysFormula
             return SystemConst.Battle.BASE_DAMAGE + powerDiff / SystemConst.Battle.DAMAGE_POWER_DIFF_DIVISOR;
         }
 
+        public static float CalculateSodBonus(SaveHeroData heroData, ArmsType armsType)
+        {
+            var heroConfig = HeroConfig.GetConfig(heroData.heroId);
+            int sodValue = armsType switch
+            {
+                ArmsType.SodWalk => heroConfig.SodWalk, 
+                ArmsType.SodHorse => heroConfig.SodHorse,
+                ArmsType.SodBow => heroConfig.SodBow,
+                ArmsType.SodWater => heroConfig.SodWater,
+                ArmsType.SodTank => heroConfig.SodTank,
+                _ => 1
+            };
+            float bonus = sodValue * SystemConst.Battle.SOD_BONUS_RATE_PER_POINT;
+            return Math.Clamp(bonus, SystemConst.Battle.SOD_BONUS_MIN, SystemConst.Battle.SOD_BONUS_MAX);
+        }
+
         public static (int minDamage, int maxDamage) GetDamageRange(int levelDiff, bool isCrit, float critDamageMulti)
         {
             int minDamage = SystemConst.Battle.MIN_ATTACK_DAMAGE;

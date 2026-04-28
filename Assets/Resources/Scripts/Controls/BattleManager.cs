@@ -192,18 +192,29 @@ public class BattleManager : MonoBehaviour
     public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)
     {
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickIndex, id, force.forceId, battleUnitId, spawnPos, summonTime, cb);
+
+        var battleUnitConfig = BattleUnitConfig.GetConfig(battleUnitId);
+        var armsId = battleUnitConfig.ArmsId;
+        var atk = battleUnitConfig.Atk;
+        var def = battleUnitConfig.Def;
+        var soldierNum = battleUnitConfig.Hp;
+        
+        var action = new CreateChessAction(0, tickIndex, id, force.forceId, battleUnitId, soldierNum, armsId, atk, def, spawnPos, summonTime, cb);
         AddChessAction(action);
 
         return id;
     }
 
-    private void SpawnHerosForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, BattleCardData heroData)
+    private void SpawnHerosForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, BattleCardData heroCardData)
     {
-        var heroConfig = HeroConfig.GetConfig(heroData.CardId);
-
+        var heroData = GameManager.Instance.GetHero(heroCardData.CardId);
+        var armsConfig = ArmsConfig.GetConfig(heroData.armsId);
+        
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickAdd, id, force.forceId, spawnPoint, heroConfig.Id, heroData.Level, heroData.SoldierNum, heroData.ArmsId);
+        float sodBonus = SysFormula.Battle.CalculateSodBonus(heroData, armsConfig.Type);
+        int atk = (int)(heroData.str * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Atk * (1f + sodBonus));
+        int def = (int)(heroData.leadShip * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Def * (1f + sodBonus));
+        var action = new CreateChessAction(0, tickAdd, id, force.forceId, heroCardData.CardId, 1, heroCardData.SoldierNum, heroData.armsId, atk, def, heroData.str, heroData.leadShip, heroData.inte, spawnPoint);
         AddChessAction(action);
     }
 

@@ -24,7 +24,11 @@ public class Chess : SceneObj
 
     public int heroId;
     public int battleUnitId;
+    
     public int armsId;
+    public int str;
+    public int leadShip;
+    public int inte;
 
     [NonSerialized]
     public string chessName = "0";
@@ -33,9 +37,6 @@ public class Chess : SceneObj
     // 目标单位
     // 移动速度
 
-    public int inte;
-    public int str;
-    public int leadShip;
     public int level = 1;
     
     public float dodgeRate; //闪避
@@ -149,17 +150,8 @@ public class Chess : SceneObj
         {
             var heroConfig = HeroConfig.GetConfig(heroId);
             chessName = heroConfig.Icon;
-            atk = str;
-            def = leadShip;
         }
-        else if(battleUnitId > 0)
-        {
-            var battleUnitConfig = BattleUnitConfig.GetConfig(battleUnitId);
-            armsId = battleUnitConfig.ArmsId;
-            chessName = "";//HeroConfig.GetConfig(owner.heroId).Icon; todo
-            atk = battleUnitConfig.Atk;
-            def = battleUnitConfig.Def;
-        }
+
         var armsConfig = ArmsConfig.GetConfig(armsId);
         hitEffect = armsConfig.HitEffect;
         missileSpeed = armsConfig.MissileSpeed;

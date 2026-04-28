@@ -14,14 +14,20 @@ public class CreateChessAction : ChessAction
     public int Level;
     public int SoldierNum;
     public int ArmsId;
+    public int Atk;
+    public int Def;
     public bool IsFakeHero;
     public float SummonTime;
+
+    public int Str;
+    public int LeadShip;
+    public int Inte;
 
     [NonSerialized]
     public Action<int> CallBack;
 
 
-    public CreateChessAction(int sourceId, int tick, int id, int forceId, UnityEngine.Vector3 spawnPos, int heroId, int level, int soldierNum, int armsId)
+    public CreateChessAction(int sourceId, int tick, int id, int forceId, int heroId, int level, int soldierNum, int armsId, int atk, int def, int str, int leadShip, int inte, UnityEngine.Vector3 spawnPos)
         : base(sourceId, tick)
     {
         Id = id;
@@ -32,17 +38,28 @@ public class CreateChessAction : ChessAction
         Level = level;
         SoldierNum = soldierNum;
         ArmsId = armsId;
+        Atk = atk;
+        Def = def;
+        Str = str;
+        LeadShip = leadShip;
+        Inte = inte;
     }
-
-    public CreateChessAction(int sourceId, int tick, int id, int forceId, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb)
+    public CreateChessAction(int sourceId, int tick, int id, int forceId, int battleUnitId, int soldierNum, int armsId, int atk, int def, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb)
         : base(sourceId, tick)
     {
         Id = id;
         ForceId = forceId;
         BattleUnitId = battleUnitId;
+        SoldierNum = soldierNum;
+        ArmsId = armsId;
+        Atk = atk;
+        Def = def;
         SpawnPos = spawnPos;
         SummonTime = summonTime;
         CallBack = cb;
+        Str = 50;
+        LeadShip = 50;
+        Inte = 50;
     }
 
     public override void Doing()
@@ -53,30 +70,27 @@ public class CreateChessAction : ChessAction
         var chessObj = new Chess(Id);
         chessObj.forceId = ForceId;
         chessObj.position = SpawnPos;
+        chessObj.atk = Atk;
+        chessObj.def = Def;     
+        chessObj.armsId = ArmsId;           
+        chessObj.maxHp = SoldierNum;        
+        chessObj.str = Str;
+        chessObj.leadShip = LeadShip;
+        chessObj.inte = Inte;
 
         if (IsHero)
         {
             chessObj.isHero = true;
             chessObj.heroId = HeroId;
             chessObj.level = Level;
-            chessObj.armsId = ArmsId;
-
-            var attr = HeroSelectionTool.GetCardAttr(HeroId, Level);
-
-            chessObj.maxHp = SoldierNum;
-            chessObj.inte = attr.Inte;
-            chessObj.str = attr.Str;
-            chessObj.leadShip = attr.Lead;
         }
         else
         {
-            chessObj.isHero = false;
             var battleUnitCfg = BattleUnitConfig.GetConfig(BattleUnitId);
-            chessObj.armsId = battleUnitCfg.ArmsId;
-            chessObj.maxHp = battleUnitCfg.Hp;
+            chessObj.battleUnitId = BattleUnitId;
+            chessObj.isHero = false;
             chessObj.isFakeHero = IsFakeHero || battleUnitCfg.Model == "UnitHero";
             chessObj.isShadow = battleUnitCfg.IsShadow;
-            chessObj.battleUnitId = BattleUnitId;
         }
 
         chessObj.hp = chessObj.maxHp;
