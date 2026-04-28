@@ -742,9 +742,20 @@ namespace DesignCoder
                 if (colorValue.HasValue || isBoolTrue || isBoolFalse || isNumberType)
                 {
                     Color bgColor = e.CellStyle.BackColor;
+                    Color fgColor = e.CellStyle.ForeColor;
                     if (isNumberType)
                     {
-                        bgColor = Color.FromArgb(60, 90, 70);
+                        fgColor = Color.FromArgb(100, 220, 130);
+                        if (fieldIdx >= 0 && fieldIdx < currentConfig.Fields.Count)
+                        {
+                            var fieldDef = currentConfig.Fields[fieldIdx];
+                            Color? ruleColor = GetRuleColor(fieldDef.FieldRule, cellValue);
+                            if (ruleColor.HasValue)
+                            {
+                                bgColor = ruleColor.Value;
+                                fgColor = e.CellStyle.ForeColor;
+                            }
+                        }
                     }
                     using (Brush bgBrush = new SolidBrush(bgColor))
                     {
@@ -802,7 +813,7 @@ namespace DesignCoder
                         leftOffset = iconSize + barPadding * 2 + 4;
                     }
 
-                    using (Brush textBrush = new SolidBrush(e.CellStyle.ForeColor))
+                    using (Brush textBrush = new SolidBrush(fgColor))
                     {
                         Rectangle textRect = new Rectangle(
                             e.CellBounds.Left + leftOffset,
@@ -825,6 +836,51 @@ namespace DesignCoder
                     e.Handled = true;
                 }
             }
+        }
+
+        private Color? GetRuleColor(string fieldRule, string cellValue)
+        {
+            if (string.IsNullOrEmpty(fieldRule) || string.IsNullOrEmpty(cellValue)) return null;
+
+            double numValue;
+            if (!double.TryParse(cellValue, out numValue)) return null;
+
+            string[] rules = fieldRule.Split(',');
+            foreach (string rule in rules)
+            {
+                string trimmed = rule.Trim();
+                int colonIdx = trimmed.LastIndexOf(':');
+                if (colonIdx < 0) continue;
+
+                string rangePart = trimmed.Substring(0, colonIdx).Trim();
+                string colorPart = trimmed.Substring(colonIdx + 1).Trim();
+
+                Color? color = TryParseColorString(colorPart);
+                if (!color.HasValue) continue;
+
+                int dashIdx = rangePart.IndexOf('-');
+                if (dashIdx >= 0)
+                {
+                    double rangeMin, rangeMax;
+                    if (double.TryParse(rangePart.Substring(0, dashIdx).Trim(), out rangeMin) &&
+                        double.TryParse(rangePart.Substring(dashIdx + 1).Trim(), out rangeMax))
+                    {
+                        if (numValue >= rangeMin && numValue <= rangeMax)
+                            return color;
+                    }
+                }
+                else
+                {
+                    double exactVal;
+                    if (double.TryParse(rangePart, out exactVal))
+                    {
+                        if (numValue == exactVal)
+                            return color;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private Color? TryParseColorString(string value)

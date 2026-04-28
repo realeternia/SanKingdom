@@ -6,59 +6,79 @@ namespace CommonConfig
 {
     public class HeroConfig
     {
-        public class FieldMetaInfo
+                                public class FieldMetaInfo
         {
             public string fieldName;
             public string fieldType;
-            public FieldMetaInfo(string name, string type)
+            public int fieldWidth;
+            public string fieldRule;
+            public FieldMetaInfo(string name, string type, int width = 0, string rule = "")
             {
                 fieldName = name;
                 fieldType = type;
+                fieldWidth = width;
+                fieldRule = rule;
+            }
+        }
+
+        public class CellMeta
+        {
+            public int row;
+            public int col;
+            public int? foreColor;
+            public int? backColor;
+            public CellMeta(int row, int col, int? foreColor, int? backColor)
+            {
+                this.row = row;
+                this.col = col;
+                this.foreColor = foreColor;
+                this.backColor = backColor;
             }
         }
 
         private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
         {
-            {"Id", new FieldMetaInfo("序列", "int")},
-            {"Name", new FieldMetaInfo("名字", "string")},
-            {"BornYear", new FieldMetaInfo("出生", "int")},
-            {"DeadYear", new FieldMetaInfo("死亡", "int")},
-            {"LeadShip", new FieldMetaInfo("统帅", "int")},
-            {"Str", new FieldMetaInfo("武力", "int")},
-            {"Inte", new FieldMetaInfo("智力", "int")},
-            {"Fair", new FieldMetaInfo("内政", "int")},
-            {"Charm", new FieldMetaInfo("魅力", "int")},
-            {"SodWalk", new FieldMetaInfo("步兵驾驭", "int")},
-            {"SodHorse", new FieldMetaInfo("骑兵驾驭", "int")},
-            {"SodBow", new FieldMetaInfo("弓兵驾驭", "int")},
-            {"SodWater", new FieldMetaInfo("水军驾驭", "int")},
-            {"SodTank", new FieldMetaInfo("车炮驾驭", "int")},
-            {"Total", new FieldMetaInfo("总属性", "int")},
-            {"ForceId", new FieldMetaInfo("阵营", "int")},
-            {"City", new FieldMetaInfo("所在", "string")},
-            {"BornCity", new FieldMetaInfo("出生", "string")},
-            {"Loyal", new FieldMetaInfo("初始中心度", "int")},
-            {"Xingge", new FieldMetaInfo("性格", "string")},
-            {"Pinzhi", new FieldMetaInfo("品质", "string[]")},
-            {"Aihao", new FieldMetaInfo("爱好", "string[]")},
-            {"Paixi", new FieldMetaInfo("派系", "string")},
-            {"Likes", new FieldMetaInfo("亲爱", "string[]")},
-            {"Hates", new FieldMetaInfo("厌恶", "string[]")},
-            {"Story", new FieldMetaInfo("Story", "string[]")},
-            {"Pos", new FieldMetaInfo("站位", "int")},
-            {"Skills", new FieldMetaInfo("技能", "int[]")},
-            {"Skill1", new FieldMetaInfo("技能", "string")},
-            {"Skill2", new FieldMetaInfo("技能2", "string")},
-            {"Group", new FieldMetaInfo("团队", "string")},
-            {"HitEffect", new FieldMetaInfo("hit", "string")},
-            {"Icon", new FieldMetaInfo("背景图", "string")},
+            {"Id", new FieldMetaInfo("序列", "int", 60)},
+            {"Name", new FieldMetaInfo("名字", "string", 76)},
+            {"BornYear", new FieldMetaInfo("出生", "int", 60)},
+            {"DeadYear", new FieldMetaInfo("死亡", "int", 60)},
+            {"LeadShip", new FieldMetaInfo("统帅", "int", 60)},
+            {"Str", new FieldMetaInfo("武力", "int", 60)},
+            {"Inte", new FieldMetaInfo("智力", "int", 60)},
+            {"Fair", new FieldMetaInfo("内政", "int", 60)},
+            {"Charm", new FieldMetaInfo("魅力", "int", 60)},
+            {"SodWalk", new FieldMetaInfo("步兵驾驭", "int", 60, "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC")},
+            {"SodHorse", new FieldMetaInfo("骑兵驾驭", "int", 60, "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC")},
+            {"SodBow", new FieldMetaInfo("弓兵驾驭", "int", 60, "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC")},
+            {"SodWater", new FieldMetaInfo("水军驾驭", "int", 60, "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC")},
+            {"SodTank", new FieldMetaInfo("车炮驾驭", "int", 60, "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC")},
+            {"Total", new FieldMetaInfo("总属性", "int", 60)},
+            {"ForceId", new FieldMetaInfo("阵营", "int", 60)},
+            {"City", new FieldMetaInfo("所在", "string", 0)},
+            {"BornCity", new FieldMetaInfo("出生", "string", 0)},
+            {"Loyal", new FieldMetaInfo("初始中心度", "int", 60)},
+            {"Xingge", new FieldMetaInfo("性格", "string", 0)},
+            {"Pinzhi", new FieldMetaInfo("品质", "string[]", 0)},
+            {"Aihao", new FieldMetaInfo("爱好", "string[]", 0)},
+            {"Paixi", new FieldMetaInfo("派系", "string", 0)},
+            {"Likes", new FieldMetaInfo("亲爱", "string[]", 0)},
+            {"Hates", new FieldMetaInfo("厌恶", "string[]", 0)},
+            {"Story", new FieldMetaInfo("Story", "string[]", 0)},
+            {"Pos", new FieldMetaInfo("站位", "int", 60)},
+            {"Skills", new FieldMetaInfo("技能", "int[]", 0)},
+            {"Skill1", new FieldMetaInfo("技能", "string", 0)},
+            {"Skill2", new FieldMetaInfo("技能2", "string", 0)},
+            {"Group", new FieldMetaInfo("团队", "string", 0)},
+            {"HitEffect", new FieldMetaInfo("hit", "string", 0)},
+            {"Icon", new FieldMetaInfo("背景图", "string", 0)},
         };
 
         public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
 
-        /// <summary>
-        ///序列
-        /// </summary>
+        private static List<CellMeta> cellMeta = new List<CellMeta>();
+        public static List<CellMeta> CellMetas { get { return cellMeta; } }
+
+
         public int Id;
         /// <summary>
         ///名字
@@ -232,11 +252,11 @@ namespace CommonConfig
 config.Clear();
 config[100001] = new HeroConfig(100001, "刘备", 161, 223, 80, 77, 74, 78, 99, 7, 5, 3, 2, 4, 429, 1, "新野", "蓟", 100, "豪爽", new string[]{"忠义","仁德"}, new string[]{"饮酒","读书"}, "蜀汉元从", new string[]{"关羽","张飞","赵云"}, new string[]{"曹操","吕布"}, new string[]{"三顾茅庐","桃园结义","携民渡江"}, 1, null, "仁", "", "core", "SwordHitYellowCritical", "liubei");
 config[101001] = new HeroConfig(101001, "张飞", 165, 221, 92, 98, 30, 22, 45, 9, 4, 3, 1, 2, 306, 1, "新野", "北平", 100, "急躁", new string[]{"忠义","果敢"}, new string[]{"饮酒","结交"}, "蜀汉元从", new string[]{"刘备","关羽"}, new string[]{"吕布","范疆","张达"}, new string[]{"当阳桥喝退曹军","义释严颜"}, 1, null, "威", "", "atk", "SwordHitYellowCritical", "zhangfei");
-config[101002] = new HeroConfig(101002, "关羽", 160, 220, 97, 97, 77, 62, 94, 9, 7, 4, 1, 3, 451, 1, "新野", "洛阳", 100, "刚愎", new string[]{"忠义","坚韧"}, new string[]{"读书","骑马"}, "蜀汉元从", new string[]{"刘备","张飞","周仓"}, new string[]{"孙权","吕蒙"}, new string[]{"过五关斩六将","温酒斩华雄","水淹七军"}, 1, null, "斩", "", "atk", "SwordHitGreenCritical", "guanyu");
+config[101002] = new HeroConfig(101002, "关羽", 160, 220, 97, 97, 77, 62, 94, 10, 7, 4, 1, 3, 451, 1, "新野", "洛阳", 100, "刚愎", new string[]{"忠义","坚韧"}, new string[]{"读书","骑马"}, "蜀汉元从", new string[]{"刘备","张飞","周仓"}, new string[]{"孙权","吕蒙"}, new string[]{"过五关斩六将","温酒斩华雄","水淹七军"}, 1, null, "斩", "", "atk", "SwordHitGreenCritical", "guanyu");
 config[101003] = new HeroConfig(101003, "徐庶", 189, 234, 87, 65, 93, 82, 84, 5, 4, 3, 2, 4, 429, 1, "新野", "许昌", 92, "冷静", new string[]{"忠义","思辨"}, new string[]{"读书","剑术"}, "蜀汉元从", new string[]{"刘备","诸葛亮"}, new string[]{"曹操"}, new string[]{"走马荐诸葛"}, 3, null, "火", "共", "inte", "GasExplosionFire", "xusu");
 config[101004] = new HeroConfig(101004, "周仓", 178, 220, 63, 82, 42, 33, 60, 7, 3, 2, 1, 2, 295, 1, "新野", "洛阳", 100, "豪爽", new string[]{"忠义","果敢"}, new string[]{"舞剑","结交"}, "蜀汉关羽部", new string[]{"关羽","关平"}, new string[]{"无"}, new string[]{"为关羽扛刀","水淹七军擒庞德"}, 1, null, "劫", "", "atk", "SwordHitYellowCritical", "zhoucang");
 config[101005] = new HeroConfig(101005, "廖化", 184, 264, 74, 78, 64, 49, 66, 7, 4, 3, 2, 3, 350, 1, "新野", "襄阳", 91, "坚韧", new string[]{"坚韧","忠义"}, new string[]{"骑马"}, "蜀汉后期", new string[]{"诸葛亮","姜维"}, new string[]{"无"}, new string[]{"千里走单骑归蜀"}, 1, null, "透", "", "atk", "SwordHitYellowCritical", "liaohua");
-config[101006] = new HeroConfig(101006, "简雍", 164, 221, 72, 65, 70, 75, 70, 3, 2, 2, 1, 2, 362, 1, "新野", "北平", 94, "豪爽", new string[]{"能言"}, new string[]{"饮酒","清谈"}, "蜀汉元从", new string[]{"刘备"}, new string[]{"无"}, new string[]{"说和刘璋"}, 3, null, "破", "", "shoot", "BulletExplosionBlue", "jianyong");
+config[101006] = new HeroConfig(101006, "简雍", 164, 221, 72, 65, 70, 75, 70, 3, 2, 2, 4, 2, 362, 1, "新野", "北平", 94, "豪爽", new string[]{"能言"}, new string[]{"饮酒","清谈"}, "蜀汉元从", new string[]{"刘备"}, new string[]{"无"}, new string[]{"说和刘璋"}, 3, null, "破", "", "shoot", "BulletExplosionBlue", "jianyong");
 config[101007] = new HeroConfig(101007, "孙乾", 163, 215, 62, 54, 80, 84, 82, 3, 2, 2, 1, 2, 372, 1, "新野", "北海", 92, "谦和", new string[]{"忠义","勤勉"}, new string[]{"读书"}, "蜀汉元从", new string[]{"刘备","糜竺"}, new string[]{"无"}, null, 3, null, "白", "", "help", "SoulExplosionOrange", "sunqian");
 config[101009] = new HeroConfig(101009, "关平", 178, 220, 79, 82, 72, 71, 78, 8, 5, 3, 1, 3, 402, 1, "新野", "洛阳", 95, "冷静", new string[]{"坚韧","忠义"}, new string[]{"舞剑","骑马"}, "蜀汉关羽部", new string[]{"关羽","周仓"}, new string[]{"无"}, null, 1, null, "连", "", "def", "SwordHitYellowCritical", "guanping");
 config[101010] = new HeroConfig(101010, "胡班", 170, 220, 54, 54, 57, 49, 61, 6, 3, 2, 1, 2, 289, 1, "新野", "陈留", 90, "刚猛", new string[]{"果敢"}, new string[]{"骑马","兵器"}, "蜀汉关羽部", new string[]{"关羽"}, new string[]{"无"}, new string[]{"荥阳放关羽"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "huban");
@@ -581,6 +601,9 @@ config[199043] = new HeroConfig(199043, "骆统", 193, 236, 69, 53, 69, 70, 70, 
 
 
 }
+
+
+
 
 
         public static HeroConfig GetConfig(int id)

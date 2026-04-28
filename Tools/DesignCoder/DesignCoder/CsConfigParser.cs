@@ -13,6 +13,7 @@ namespace DesignCoder
         public string Comment;
         public string ChineseName;
         public int? Width;
+        public string FieldRule;
     }
 
     public class CellMeta
@@ -73,23 +74,24 @@ namespace DesignCoder
             if (!match.Success) return;
 
             string body = match.Groups[1].Value;
-            var itemPatternWithWidth = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""\s*,\s*(\d+)\s*\)\s*\}";
-            var itemPatternWithoutWidth = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""\s*\)\s*\}";
+            var itemPattern = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""(?:\s*,\s*(\d+))?(?:\s*,\s*""([^""]*)"")?\s*\)\s*\}";
 
-            var itemMatchesWithWidth = Regex.Matches(body, itemPatternWithWidth);
-            foreach (Match m in itemMatchesWithWidth)
+            var itemMatches = Regex.Matches(body, itemPattern);
+            foreach (Match m in itemMatches)
             {
                 string fieldName = m.Groups[1].Value;
                 string chineseName = m.Groups[2].Value;
                 string fieldType = m.Groups[3].Value;
-                int width = int.Parse(m.Groups[4].Value);
+                int? width = m.Groups[4].Success ? (int?)int.Parse(m.Groups[4].Value) : null;
+                string fieldRule = m.Groups[5].Success ? m.Groups[5].Value : null;
 
                 var existingField = data.Fields.FirstOrDefault(f => f.Name == fieldName);
                 if (existingField != null)
                 {
                     existingField.ChineseName = chineseName;
                     existingField.Type = fieldType;
-                    existingField.Width = width;
+                    if (width.HasValue) existingField.Width = width;
+                    if (fieldRule != null) existingField.FieldRule = fieldRule;
                 }
                 else
                 {
@@ -98,31 +100,7 @@ namespace DesignCoder
                     fd.ChineseName = chineseName;
                     fd.Type = fieldType;
                     fd.Width = width;
-                    data.Fields.Add(fd);
-                }
-            }
-
-            var itemMatchesWithoutWidth = Regex.Matches(body, itemPatternWithoutWidth);
-            foreach (Match m in itemMatchesWithoutWidth)
-            {
-                string fieldName = m.Groups[1].Value;
-                if (data.Fields.Any(f => f.Name == fieldName)) continue;
-
-                string chineseName = m.Groups[2].Value;
-                string fieldType = m.Groups[3].Value;
-
-                var existingField = data.Fields.FirstOrDefault(f => f.Name == fieldName);
-                if (existingField != null)
-                {
-                    existingField.ChineseName = chineseName;
-                    existingField.Type = fieldType;
-                }
-                else
-                {
-                    var fd = new FieldDef();
-                    fd.Name = fieldName;
-                    fd.ChineseName = chineseName;
-                    fd.Type = fieldType;
+                    fd.FieldRule = fieldRule;
                     data.Fields.Add(fd);
                 }
             }
@@ -422,23 +400,37 @@ namespace DesignCoder
             if (fieldMetaInfoStart > 0 && fieldMetaEnd > 0)
             {
                 data.PreFieldCode = source.Substring(0, fieldMetaInfoStart);
-                int fieldMetaEndBrace = source.IndexOf('}', fieldMetaEnd);
-                if (fieldMetaEndBrace > 0)
+
+                int sectionEndPos;
+                int cellMetasEnd = source.IndexOf("public static List<CellMeta> CellMetas");
+                if (cellMetasEnd > fieldMetaEnd)
                 {
-                    int nextLineStart = source.IndexOf('\n', fieldMetaEndBrace);
-                    if (nextLineStart > 0)
+                    int cellMetasEndBrace = source.IndexOf('}', cellMetasEnd);
+                    if (cellMetasEndBrace > 0)
                     {
-                        data.PreLoadCode = source.Substring(nextLineStart + 1, loadStart - nextLineStart - 1);
+                        int nextLine = source.IndexOf('\n', cellMetasEndBrace);
+                        sectionEndPos = nextLine > 0 ? nextLine + 1 : cellMetasEndBrace + 1;
                     }
                     else
                     {
-                        data.PreLoadCode = source.Substring(fieldMetaEndBrace + 1, loadStart - fieldMetaEndBrace - 1);
+                        sectionEndPos = cellMetasEnd;
                     }
                 }
                 else
                 {
-                    data.PreLoadCode = source.Substring(fieldMetaEnd, loadStart - fieldMetaEnd);
+                    int fieldMetaEndBrace = source.IndexOf('}', fieldMetaEnd);
+                    if (fieldMetaEndBrace > 0)
+                    {
+                        int nextLine = source.IndexOf('\n', fieldMetaEndBrace);
+                        sectionEndPos = nextLine > 0 ? nextLine + 1 : fieldMetaEndBrace + 1;
+                    }
+                    else
+                    {
+                        sectionEndPos = fieldMetaEnd;
+                    }
                 }
+
+                data.PreLoadCode = source.Substring(sectionEndPos, loadStart - sectionEndPos);
             }
             else
             {
@@ -484,11 +476,13 @@ namespace DesignCoder
             sb.AppendLine("            public string fieldName;");
             sb.AppendLine("            public string fieldType;");
             sb.AppendLine("            public int fieldWidth;");
-            sb.AppendLine("            public FieldMetaInfo(string name, string type, int width = 0)");
+            sb.AppendLine("            public string fieldRule;");
+            sb.AppendLine("            public FieldMetaInfo(string name, string type, int width = 0, string rule = \"\")");
             sb.AppendLine("            {");
             sb.AppendLine("                fieldName = name;");
             sb.AppendLine("                fieldType = type;");
             sb.AppendLine("                fieldWidth = width;");
+            sb.AppendLine("                fieldRule = rule;");
             sb.AppendLine("            }");
             sb.AppendLine("        }");
             sb.AppendLine();
@@ -515,7 +509,11 @@ namespace DesignCoder
             {
                 string chineseName = field.ChineseName ?? field.Comment ?? "";
                 int width = field.Width ?? 0;
-                sb.AppendLine(string.Format("            {{\"{0}\", new FieldMetaInfo(\"{1}\", \"{2}\", {3})}},", field.Name, chineseName, field.Type, width));
+                string rule = field.FieldRule ?? "";
+                if (!string.IsNullOrEmpty(rule))
+                    sb.AppendLine(string.Format("            {{\"{0}\", new FieldMetaInfo(\"{1}\", \"{2}\", {3}, \"{4}\")}},", field.Name, chineseName, field.Type, width, rule));
+                else
+                    sb.AppendLine(string.Format("            {{\"{0}\", new FieldMetaInfo(\"{1}\", \"{2}\", {3})}},", field.Name, chineseName, field.Type, width));
             }
             sb.AppendLine("        };");
             sb.AppendLine();
