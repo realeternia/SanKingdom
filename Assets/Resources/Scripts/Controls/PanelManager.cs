@@ -29,6 +29,7 @@ public class PanelManager : MonoBehaviour
     private GameObject heroInfoPanel;
     private GameObject battleResultPanel;
     private GameObject replayPanel;
+    public GameObject sideBarPanel;
 
     public GameObject topNode;
     private Dictionary<string, ResItem> forceResItemDict = new Dictionary<string, ResItem>();

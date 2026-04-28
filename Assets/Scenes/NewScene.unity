@@ -1749,6 +1749,7 @@ GameObject:
   - component: {fileID: 665867434}
   - component: {fileID: 665867436}
   - component: {fileID: 665867435}
+  - component: {fileID: 665867437}
   m_Layer: 5
   m_Name: SideBarBG
   m_TagString: Untagged
@@ -1814,6 +1815,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 665867433}
   m_CullTransparentMesh: 1
+--- !u!114 &665867437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665867433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e68b2f021a1a5489c433c18e2b0289, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollItem: {fileID: 542103206}
+  scrollImg: {fileID: 542103208}
 --- !u!1001 &683616323
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4625,6 +4640,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rankPanel: {fileID: 0}
   worldPanel: {fileID: 1181113649}
+  sideBarPanel: {fileID: 665867433}
   topNode: {fileID: 1083717912}
   openPanelList: []
 --- !u!1 &1947805576
