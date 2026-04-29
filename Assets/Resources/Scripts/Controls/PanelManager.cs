@@ -509,6 +509,22 @@ public class PanelManager : MonoBehaviour
         replayPanel = null;
     }
 
+    public void ShowSideBar()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        sideBarPanel.SetActive(true);
+        sideBarPanel.GetComponent<SideBar>().OnShow();
+    }
+
+    public void HideSideBar()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        sideBarPanel.GetComponent<SideBar>().OnHide(() =>
+        {
+            sideBarPanel.SetActive(false);
+        });
+    }
+
     public void SendSignal(SignalData data)
     {
         GameLog.Debug($"PanelManager SendSignal {data.Name}");

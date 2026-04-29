@@ -85,6 +85,7 @@
     <Compile Include="Assets\Resources\Scripts\Controls\AI\TaskPriorityCalculator.cs" />
     <Compile Include="Assets\Resources\Scripts\PickPanelCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Missile.cs" />
+    <Compile Include="Assets\Resources\Scripts\UIScripts\SideBarAlphaGradient.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitArea.cs" />
     <Compile Include="Assets\Resources\Scripts\PopArmySetManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateChessAction.cs" />

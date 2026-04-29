@@ -51,6 +51,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         btnMode.onClick.AddListener(() =>
         {
             SetMode();
+            PanelManager.Instance.ShowSideBar();
         });
         
         StartCoroutine(MoveToPlayerCapitalDelayed());
