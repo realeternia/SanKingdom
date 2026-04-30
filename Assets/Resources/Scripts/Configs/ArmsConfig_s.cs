@@ -6,16 +6,18 @@ namespace CommonConfig
 {
     public class ArmsConfig
     {
-                public class FieldMetaInfo
+                        public class FieldMetaInfo
         {
             public string fieldName;
             public string fieldType;
             public int fieldWidth;
-            public FieldMetaInfo(string name, string type, int width = 0)
+            public string fieldRule;
+            public FieldMetaInfo(string name, string type, int width = 0, string rule = "")
             {
                 fieldName = name;
                 fieldType = type;
                 fieldWidth = width;
+                fieldRule = rule;
             }
         }
 
@@ -63,7 +65,11 @@ namespace CommonConfig
         public static List<CellMeta> CellMetas { get { return cellMeta; } }
 
 
+
         /// <summary>
+        ///序列
+        /// </summary>
+                /// <summary>
         ///序列
         /// </summary>
         public int Id;
@@ -150,8 +156,8 @@ namespace CommonConfig
             this.SteelCost = SteelCost;
             this.WoodCost = WoodCost;
             this.StoneCost = StoneCost;
-
         }
+
 
         public ArmsConfig() { }
 
@@ -184,6 +190,7 @@ config[702] = new ArmsConfig(702, "mou", "谋", ArmsType.SodWalk, 3, 5, 7, 50, 2
 
 
 }
+
 
 
 

@@ -56,18 +56,18 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         var att1Val = heroData.GetAttr(attrs[0]);
         this.attr1Val = att1Val;
         textAttr1.text = att1Val.ToString();
-        textAttr1.color = att1Val >= 95 ? Color.red : (att1Val >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+        textAttr1.color = HeroAttrTool.GetColorByValue(attrs[0], att1Val);
         if(attrs.Length > 1)
         {
             var att2Val = heroData.GetAttr(attrs[1]);
             textAttr2.text = att2Val.ToString();
-            textAttr2.color = att2Val >= 95 ? Color.red : (att2Val >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+            textAttr2.color = HeroAttrTool.GetColorByValue(attrs[1], att2Val);
         }
         else
             textAttr2.text = "";
 
         textLoyalty.text = heroData.loyalty.ToString();
-        textLoyalty.color = heroData.loyalty < 50 ? Color.red : (heroData.loyalty < 80 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+        textLoyalty.color = HeroAttrTool.GetColorByValue("loyalty", heroData.loyalty);
 
         switch (heroData.state)
         {

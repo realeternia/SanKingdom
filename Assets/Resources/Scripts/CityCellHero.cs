@@ -247,24 +247,15 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
             weightedValue = firstAttr * (2f / 3f) + secondAttr * (1f / 3f);
         }
 
-        if (weightedValue >= 90)
+        Color color = HeroAttrTool.GetColorByValue("weightedAttr", (int)weightedValue);
+        if (color == Color.white)
         {
-            thumbIcon.color = Color.red;
-            thumbIcon.gameObject.SetActive(true);
-        }
-        else if (weightedValue >= 80)
-        {
-            thumbIcon.color = Color.yellow;
-            thumbIcon.gameObject.SetActive(true);
-        }
-        else if (weightedValue >= 70)
-        {
-            thumbIcon.color = Color.green;
-            thumbIcon.gameObject.SetActive(true);
+            thumbIcon.gameObject.SetActive(false);
         }
         else
         {
-            thumbIcon.gameObject.SetActive(false);
+            thumbIcon.color = color;
+            thumbIcon.gameObject.SetActive(true);
         }
     }
 

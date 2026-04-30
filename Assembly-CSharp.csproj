@@ -102,7 +102,6 @@
     <Compile Include="Assets\Resources\Scripts\HeroInfoPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\RankCellMode.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackRunCrossPlus.cs" />
-    <Compile Include="Assets\Resources\Scripts\SystemTool\NameTransTool.cs" />
     <Compile Include="Assets\Resources\Scripts\PopResultPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveBuffAction.cs" />
     <Compile Include="Assets\Resources\Scripts\RankCellInfoForce.cs" />
@@ -139,6 +138,7 @@
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AI.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitAttr.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\HeroSelectionTool.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\HeroAttrTool.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackMultiArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RoundUpdateAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
@@ -191,6 +191,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitWall.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\HeroAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />
@@ -640,12 +641,12 @@
       <HintPath>Library\PackageCache\com.unity.testtools.codecoverage@1.2.6\lib\ReportGenerator\ReportGeneratorMerged.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
-      <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.4\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="DOTween">
       <HintPath>Assets\DOTween\DOTween.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
+      <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.4\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Android.Types">

@@ -69,9 +69,9 @@ public class PopHeroSelectPanelManager : MonoBehaviour
         }
 
         // 初始化属性文本
-        textAttr1.text = NameTransTool.GetAttrCName(attrs[0]);
+        textAttr1.text = HeroAttrTool.GetCName(attrs[0]);
         if(attrs.Length > 1)
-            textAttr2.text = NameTransTool.GetAttrCName(attrs[1]);
+            textAttr2.text = HeroAttrTool.GetCName(attrs[1]);
         else
             textAttr2.text = "";
 

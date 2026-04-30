@@ -33,6 +33,8 @@ public class HeroInfoPanelManager : MonoBehaviour
     public GameObject rankRegionNames;
     public GameObject heroInfoCellPrefab;
 
+    public GameObject armsPanel;
+
     public Button closeBtn;
 
     private HeroInfoCell lastSelectedMode; // 上次选中的模式单元格
@@ -188,19 +190,14 @@ public class HeroInfoPanelManager : MonoBehaviour
         {
             if (heroData != null) heroData.InitAttrsFromConfig();
             int attrValue = GetAttrValue(heroData, sortKey);
-            string coloredValue = GetColoredAttrValue(attrValue);
+            string coloredValue = GetColoredAttrValue(sortKey, attrValue);
             return $"{heroName} {coloredValue}";
         }
     }
     
-    private string GetColoredAttrValue(int value)
+    private string GetColoredAttrValue(string attrName, int value)
     {
-        if (value >= 95)
-            return $"<color=red>{value}</color>";
-        else if (value >= 90)
-            return $"<color=yellow>{value}</color>";
-        else
-            return value.ToString();
+        return HeroAttrTool.GetColoredText(attrName, value);
     }
 
     public void Init(int[] heroList, int targetHeroId)

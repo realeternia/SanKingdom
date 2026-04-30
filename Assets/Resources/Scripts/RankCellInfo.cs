@@ -133,35 +133,11 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         var forceCfg = ForceConfig.GetConfig(heroData.forceId);
         bg.color = ColorUtility.TryParseHtmlString(forceCfg.Color, out var wColor) ? wColor : Color.white;
 
-        heroStr.text = heroData.str.ToString();
-        if (heroData.str >= 95)
-            heroStr.text = "<color=red>" + heroData.str.ToString() + "</color>";
-        else if (heroData.str >= 90)
-            heroStr.text = "<color=yellow>" + heroData.str.ToString() + "</color>";
-
-        heroInte.text = heroData.inte.ToString();
-        if (heroData.inte >= 95)
-            heroInte.text = "<color=red>" + heroData.inte.ToString() + "</color>";
-        else if (heroData.inte >= 90)
-            heroInte.text = "<color=yellow>" + heroData.inte.ToString() + "</color>";
-
-        heroLeadShip.text = heroData.leadShip.ToString();
-        if (heroData.leadShip >= 95)
-            heroLeadShip.text = "<color=red>" + heroData.leadShip.ToString() + "</color>";
-        else if (heroData.leadShip >= 90)
-            heroLeadShip.text = "<color=yellow>" + heroData.leadShip.ToString() + "</color>";
-
-        heroFair.text = heroData.fair.ToString();
-        if (heroData.fair >= 95)
-            heroFair.text = "<color=red>" + heroData.fair.ToString() + "</color>";
-        else if (heroData.fair >= 90)
-            heroFair.text = "<color=yellow>" + heroData.fair.ToString() + "</color>";
-
-        heroCharm.text = heroData.charm.ToString();
-        if (heroData.charm >= 95)
-            heroCharm.text = "<color=red>" + heroData.charm.ToString() + "</color>";
-        else if (heroData.charm >= 90)
-            heroCharm.text = "<color=yellow>" + heroData.charm.ToString() + "</color>";      
+        heroStr.text = HeroAttrTool.GetColoredText("str", heroData.str);
+        heroInte.text = HeroAttrTool.GetColoredText("inte", heroData.inte);
+        heroLeadShip.text = HeroAttrTool.GetColoredText("leadShip", heroData.leadShip);
+        heroFair.text = HeroAttrTool.GetColoredText("fair", heroData.fair);
+        heroCharm.text = HeroAttrTool.GetColoredText("charm", heroData.charm);      
         heroPic.gameObject.SetActive(false);
 
         if (heroData.cityId > 0)

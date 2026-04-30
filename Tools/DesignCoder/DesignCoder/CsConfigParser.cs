@@ -44,6 +44,8 @@ namespace DesignCoder
         public string UsingSection;
         public string PreFieldCode;
         public string PreLoadCode;
+        public string PreFieldDeclCode;
+        public string PostConstructorCode;
         public string PostLoadCode;
 
         public static ConfigData Parse(string source)
@@ -63,6 +65,7 @@ namespace DesignCoder
             ParseFields(source, data);
             ParseLoadMethod(source, data);
             SplitCodeSections(source, data);
+            SplitPreLoadCode(data);
 
             return data;
         }
@@ -465,6 +468,63 @@ namespace DesignCoder
             return lastBrace + 1;
         }
 
+        private static void SplitPreLoadCode(ConfigData data)
+        {
+            if (string.IsNullOrEmpty(data.PreLoadCode))
+            {
+                data.PreFieldDeclCode = "";
+                data.PostConstructorCode = "";
+                return;
+            }
+
+            var firstFieldMatch = Regex.Match(data.PreLoadCode, @"public\s+\w+(?:\[\])?\s+\w+\s*;");
+            if (!firstFieldMatch.Success)
+            {
+                data.PreFieldDeclCode = data.PreLoadCode;
+                data.PostConstructorCode = "";
+                return;
+            }
+
+            data.PreFieldDeclCode = data.PreLoadCode.Substring(0, firstFieldMatch.Index);
+
+            string ctorPattern = @"public\s+" + Regex.Escape(data.ClassName) + @"\s*\(";
+            var ctorMatch = Regex.Match(data.PreLoadCode, ctorPattern);
+            if (!ctorMatch.Success)
+            {
+                var lastFieldMatch = Regex.Match(data.PreLoadCode, @"public\s+\w+(?:\[\])?\s+\w+\s*;", RegexOptions.RightToLeft);
+                int endPos = lastFieldMatch.Success ? lastFieldMatch.Index + lastFieldMatch.Length : 0;
+                data.PostConstructorCode = data.PreLoadCode.Substring(endPos);
+                return;
+            }
+
+            int braceStart = data.PreLoadCode.IndexOf('{', ctorMatch.Index);
+            if (braceStart < 0)
+            {
+                data.PostConstructorCode = "";
+                return;
+            }
+
+            int depth = 0;
+            int ctorEnd = -1;
+            for (int i = braceStart; i < data.PreLoadCode.Length; i++)
+            {
+                if (data.PreLoadCode[i] == '{') depth++;
+                else if (data.PreLoadCode[i] == '}')
+                {
+                    depth--;
+                    if (depth == 0) { ctorEnd = i; break; }
+                }
+            }
+
+            if (ctorEnd < 0)
+            {
+                data.PostConstructorCode = "";
+                return;
+            }
+
+            data.PostConstructorCode = data.PreLoadCode.Substring(ctorEnd + 1);
+        }
+
         public string GenerateSource()
         {
             var sb = new StringBuilder();
@@ -539,7 +599,36 @@ namespace DesignCoder
             sb.AppendLine("        public static List<CellMeta> CellMetas { get { return cellMeta; } }");
             sb.AppendLine();
 
-            sb.Append(PreLoadCode);
+            sb.Append(PreFieldDeclCode);
+
+            foreach (var field in Fields)
+            {
+                if (!string.IsNullOrEmpty(field.Comment))
+                {
+                    sb.AppendLine("        /// <summary>");
+                    sb.AppendLine("        ///" + field.Comment);
+                    sb.AppendLine("        /// </summary>");
+                }
+                sb.AppendLine("        public " + field.Type + " " + field.Name + ";");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.Append("        public " + ClassName + "(");
+            for (int i = 0; i < Fields.Count; i++)
+            {
+                if (i > 0) sb.Append(", ");
+                sb.Append(Fields[i].Type + " " + Fields[i].Name);
+            }
+            sb.AppendLine(")");
+            sb.AppendLine("        {");
+            foreach (var field in Fields)
+            {
+                sb.AppendLine("            this." + field.Name + " = " + field.Name + ";");
+            }
+            sb.AppendLine("        }");
+
+            sb.Append(PostConstructorCode);
 
             sb.Append("public static void Load()");
             sb.AppendLine();

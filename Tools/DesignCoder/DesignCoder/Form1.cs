@@ -573,6 +573,251 @@ namespace DesignCoder
             return null;
         }
 
+        private FieldDef ShowAddColumnDialog()
+        {
+            Form dlg = new Form();
+            dlg.Text = "新增列";
+            dlg.Size = new Size(360, 300);
+            dlg.StartPosition = FormStartPosition.CenterParent;
+            dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
+            dlg.MaximizeBox = false;
+            dlg.MinimizeBox = false;
+            dlg.Font = new Font("微软雅黑", 9F);
+
+            int labelX = 15, inputX = 100, inputW = 220, rowH = 32, startY = 15;
+
+            Label lblName = new Label(); lblName.Text = "字段名:"; lblName.Location = new Point(labelX, startY + 5); lblName.AutoSize = true; dlg.Controls.Add(lblName);
+            TextBox txtName = new TextBox(); txtName.Location = new Point(inputX, startY); txtName.Size = new Size(inputW, 22); dlg.Controls.Add(txtName);
+
+            startY += rowH;
+            Label lblChinese = new Label(); lblChinese.Text = "中文名:"; lblChinese.Location = new Point(labelX, startY + 5); lblChinese.AutoSize = true; dlg.Controls.Add(lblChinese);
+            TextBox txtChinese = new TextBox(); txtChinese.Location = new Point(inputX, startY); txtChinese.Size = new Size(inputW, 22); dlg.Controls.Add(txtChinese);
+
+            startY += rowH;
+            Label lblType = new Label(); lblType.Text = "类型:"; lblType.Location = new Point(labelX, startY + 5); lblType.AutoSize = true; dlg.Controls.Add(lblType);
+            ComboBox cmbType = new ComboBox();
+            cmbType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbType.Items.AddRange(new object[] { "int", "float", "string", "bool", "string[]", "int[]" });
+            cmbType.Location = new Point(inputX, startY);
+            cmbType.Size = new Size(inputW, 22);
+            cmbType.SelectedIndex = 0;
+            dlg.Controls.Add(cmbType);
+
+            startY += rowH;
+            Label lblRule = new Label(); lblRule.Text = "字段规则:"; lblRule.Location = new Point(labelX, startY + 5); lblRule.AutoSize = true; dlg.Controls.Add(lblRule);
+            TextBox txtRule = new TextBox(); txtRule.Location = new Point(inputX, startY); txtRule.Size = new Size(inputW, 22); dlg.Controls.Add(txtRule);
+
+            startY += rowH + 10;
+            Button btnOk = new Button();
+            btnOk.Text = "确定";
+            btnOk.DialogResult = DialogResult.OK;
+            btnOk.Location = new Point(inputX + 50, startY);
+            dlg.Controls.Add(btnOk);
+
+            Button btnCancel = new Button();
+            btnCancel.Text = "取消";
+            btnCancel.DialogResult = DialogResult.Cancel;
+            btnCancel.Location = new Point(inputX + 140, startY);
+            dlg.Controls.Add(btnCancel);
+
+            dlg.AcceptButton = btnOk;
+            dlg.CancelButton = btnCancel;
+
+            if (dlg.ShowDialog() != DialogResult.OK)
+                return null;
+
+            string fieldName = txtName.Text.Trim();
+            if (string.IsNullOrEmpty(fieldName))
+            {
+                MessageBox.Show("字段名不能为空", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
+            }
+
+            if (currentConfig.Fields.Any(f => f.Name == fieldName))
+            {
+                MessageBox.Show(string.Format("字段名\"{0}\"已存在", fieldName), "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
+            }
+
+            var fd = new FieldDef();
+            fd.Name = fieldName;
+            fd.ChineseName = txtChinese.Text.Trim();
+            fd.Type = cmbType.SelectedItem.ToString();
+            fd.Comment = txtChinese.Text.Trim();
+            fd.FieldRule = txtRule.Text.Trim();
+            return fd;
+        }
+
+        private string GetDefaultValueForType(string type)
+        {
+            switch (type)
+            {
+                case "int": return "0";
+                case "float": return "0";
+                case "bool": return "false";
+                case "string": return "";
+                case "string[]": return "";
+                case "int[]": return "";
+                default: return "";
+            }
+        }
+
+        private void InsertColumn(FieldDef newField, int insertAtFieldIndex)
+        {
+            isLoading = true;
+            try
+            {
+                currentConfig.Fields.Insert(insertAtFieldIndex, newField);
+
+                string defaultValue = GetDefaultValueForType(newField.Type);
+
+                dataTable.Columns.Add(newField.Name, typeof(string));
+
+                dataTable.Rows[0][newField.Name] = newField.Name;
+                dataTable.Rows[1][newField.Name] = newField.ChineseName ?? newField.Comment ?? "";
+                dataTable.Rows[2][newField.Name] = newField.Type;
+
+                for (int i = HeaderRowCount; i < dataTable.Rows.Count; i++)
+                {
+                    if (dataTable.Rows[i]["_RowTag_"] as string == "Data")
+                        dataTable.Rows[i][newField.Name] = defaultValue;
+                }
+
+                foreach (var row in currentConfig.Rows)
+                {
+                    if (!row.ContainsKey(newField.Name))
+                        row[newField.Name] = defaultValue;
+                }
+
+                AdjustCellMetasAfterColumnInsert(insertAtFieldIndex);
+
+                dataGridView1.DataSource = null;
+                dataGridView1.DataSource = dataTable;
+                SetupDataGridView();
+                ApplyColors();
+                dataGridView1.Invalidate();
+
+                MarkCurrentConfigModified();
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+
+        private void AdjustCellMetasAfterColumnInsert(int insertedFieldIndex)
+        {
+            int insertedColIndex = insertedFieldIndex + 1;
+
+            foreach (var cm in currentConfig.CellMetas)
+            {
+                if (cm.Col >= insertedColIndex)
+                    cm.Col++;
+            }
+        }
+
+        private int GetSelectedFieldIndex()
+        {
+            if (dataGridView1.CurrentCell == null) return -1;
+            int colIdx = dataGridView1.CurrentCell.ColumnIndex;
+            if (colIdx <= 0) return -1;
+            string colName = dataGridView1.Columns[colIdx].Name;
+            for (int i = 0; i < currentConfig.Fields.Count; i++)
+            {
+                if (currentConfig.Fields[i].Name == colName)
+                    return i;
+            }
+            return -1;
+        }
+
+        private void menuAddColLeft_Click(object sender, EventArgs e)
+        {
+            if (currentConfig == null || dataTable == null) return;
+
+            int fieldIdx = GetSelectedFieldIndex();
+            if (fieldIdx < 0)
+            {
+                MessageBox.Show("请先选中一个数据列", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var newField = ShowAddColumnDialog();
+            if (newField == null) return;
+
+            InsertColumn(newField, fieldIdx);
+        }
+
+        private void menuAddColRight_Click(object sender, EventArgs e)
+        {
+            if (currentConfig == null || dataTable == null) return;
+
+            int fieldIdx = GetSelectedFieldIndex();
+            if (fieldIdx < 0)
+            {
+                MessageBox.Show("请先选中一个数据列", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var newField = ShowAddColumnDialog();
+            if (newField == null) return;
+
+            InsertColumn(newField, fieldIdx + 1);
+        }
+
+        private void menuDeleteCol_Click(object sender, EventArgs e)
+        {
+            if (currentConfig == null || dataTable == null) return;
+
+            int fieldIdx = GetSelectedFieldIndex();
+            if (fieldIdx < 0)
+            {
+                MessageBox.Show("请先选中一个数据列", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string fieldName = currentConfig.Fields[fieldIdx].Name;
+            if (MessageBox.Show(string.Format("确定要删除列\"{0}\"吗？", fieldName), "确认删除", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
+                return;
+
+            isLoading = true;
+            try
+            {
+                int colIndex = fieldIdx + 1;
+
+                currentConfig.Fields.RemoveAt(fieldIdx);
+
+                foreach (var row in currentConfig.Rows)
+                {
+                    if (row.ContainsKey(fieldName))
+                        row.Remove(fieldName);
+                }
+
+                var metasToRemove = currentConfig.CellMetas.Where(cm => cm.Col == colIndex).ToList();
+                foreach (var cm in metasToRemove)
+                    currentConfig.CellMetas.Remove(cm);
+
+                foreach (var cm in currentConfig.CellMetas)
+                {
+                    if (cm.Col > colIndex)
+                        cm.Col--;
+                }
+
+                dataTable.Columns.Remove(fieldName);
+
+                dataGridView1.DataSource = null;
+                dataGridView1.DataSource = dataTable;
+                SetupDataGridView();
+                ApplyColors();
+                dataGridView1.Invalidate();
+
+                MarkCurrentConfigModified();
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+
         private void ApplyColors()
         {
             if (currentConfig == null || currentConfig.CellMetas == null || currentConfig.CellMetas.Count == 0) return;

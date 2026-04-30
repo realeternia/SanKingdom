@@ -38,6 +38,9 @@ namespace DesignCoder
             this.menuForeColor = new System.Windows.Forms.ToolStripMenuItem();
             this.menuBackColor = new System.Windows.Forms.ToolStripMenuItem();
             this.menuClearColors = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuAddColLeft = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuAddColRight = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuDeleteCol = new System.Windows.Forms.ToolStripMenuItem();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -236,12 +239,36 @@ namespace DesignCoder
             // 
             this.contextMenuStrip1.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuAddColLeft,
+            this.menuAddColRight,
+            this.menuDeleteCol,
             this.menuBatchFill,
             this.menuForeColor,
             this.menuBackColor,
             this.menuClearColors});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 136);
+            // 
+            // menuAddColLeft
+            // 
+            this.menuAddColLeft.Name = "menuAddColLeft";
+            this.menuAddColLeft.Size = new System.Drawing.Size(136, 22);
+            this.menuAddColLeft.Text = "左加一列";
+            this.menuAddColLeft.Click += new System.EventHandler(this.menuAddColLeft_Click);
+            // 
+            // menuAddColRight
+            // 
+            this.menuAddColRight.Name = "menuAddColRight";
+            this.menuAddColRight.Size = new System.Drawing.Size(136, 22);
+            this.menuAddColRight.Text = "右加一列";
+            this.menuAddColRight.Click += new System.EventHandler(this.menuAddColRight_Click);
+            // 
+            // menuDeleteCol
+            // 
+            this.menuDeleteCol.Name = "menuDeleteCol";
+            this.menuDeleteCol.Size = new System.Drawing.Size(136, 22);
+            this.menuDeleteCol.Text = "删除此列";
+            this.menuDeleteCol.Click += new System.EventHandler(this.menuDeleteCol_Click);
             // 
             // menuBatchFill
             // 
@@ -318,6 +345,9 @@ namespace DesignCoder
         private System.Windows.Forms.ToolStripMenuItem menuForeColor;
         private System.Windows.Forms.ToolStripMenuItem menuBackColor;
         private System.Windows.Forms.ToolStripMenuItem menuClearColors;
+        private System.Windows.Forms.ToolStripMenuItem menuAddColLeft;
+        private System.Windows.Forms.ToolStripMenuItem menuAddColRight;
+        private System.Windows.Forms.ToolStripMenuItem menuDeleteCol;
         private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }

@@ -139,6 +139,7 @@ Assets/Resources/Scripts/
 - `ConfigManager.Init()` 在游戏启动时统一加载所有配置
 - GetConfig或者GetConfigByname之后，不需要再检查是否为null
 - 几种值的类型配置，需要考虑是否用枚举表示，枚举类型放到PO目录下
+- **配置文件是模板化的，不要在配置类中添加定制方法**。定制逻辑应放到 `SystemTool/` 目录下的工具类中
 
 ### 3. 公式与常量分离
 
