@@ -34,6 +34,9 @@ public class HeroInfoPanelManager : MonoBehaviour
     public GameObject heroInfoCellPrefab;
 
     public GameObject armsPanel;
+    public GameObject armsItemPrefab;
+
+    private List<ArmsItemControl> armsItems = new List<ArmsItemControl>();
 
     public Button closeBtn;
 
@@ -287,6 +290,43 @@ public class HeroInfoPanelManager : MonoBehaviour
             ? string.Join(" ", heroConfig.Hates) : "无";
         storyText.text = heroConfig.Story != null && heroConfig.Story.Length > 0 
             ? string.Join(" ", heroConfig.Story) : "无";
+
+        UpdateArmsPanel(heroConfig);
+    }
+
+    private void UpdateArmsPanel(HeroConfig heroConfig)
+    {
+        foreach (var item in armsItems)
+        {
+            if (item != null && item.gameObject != null)
+            {
+                Destroy(item.gameObject);
+            }
+        }
+        armsItems.Clear();
+
+        var armsAttrs = HeroAttrConfig.ConfigList.Where(c => c.IsArmsAttr).ToList();
+        if (armsAttrs.Count == 0 || armsPanel == null || armsItemPrefab == null)
+            return;
+
+        float itemWidth = 180f;
+        float spacing = 10f;
+        float startX = -(armsAttrs.Count - 1) * (itemWidth + spacing) / 2f;
+
+        for (int i = 0; i < armsAttrs.Count; i++)
+        {
+            var attrConfig = armsAttrs[i];
+            GameObject item = Instantiate(armsItemPrefab, armsPanel.transform);
+            item.transform.localScale = Vector3.one;
+            item.transform.localPosition = new Vector3(startX + i * (itemWidth + spacing), 0, 0);
+
+            ArmsItemControl control = item.GetComponent<ArmsItemControl>();
+            if (control != null)
+            {
+                control.Init(attrConfig, heroConfig);
+            }
+            armsItems.Add(control);
+        }
     }
 
     public void OnHide()

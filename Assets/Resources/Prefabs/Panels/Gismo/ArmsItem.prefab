@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 135.1, y: -40}
+  m_AnchoredPosition: {x: 126.5, y: -40}
   m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2406135700187970817
@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 8779840272028296412}
   - component: {fileID: 8759466863340974558}
   - component: {fileID: 1745993978471807161}
+  - component: {fileID: -6734259679292976091}
   m_Layer: 5
   m_Name: ArmsItem
   m_TagString: Untagged
@@ -171,7 +172,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 118, y: -49.2}
-  m_SizeDelta: {x: 200, y: 80}
+  m_SizeDelta: {x: 180, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8759466863340974558
 CanvasRenderer:
@@ -211,6 +212,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &-6734259679292976091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2788329513411137456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ba26c60531d21e46bec87874f31b34b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemIcon: {fileID: 32142451887210268}
+  itemName: {fileID: 1376789487617223173}
 --- !u!1 &3161409515843623733
 GameObject:
   m_ObjectHideFlags: 0

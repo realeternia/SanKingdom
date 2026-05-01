@@ -109,6 +109,8 @@ MonoBehaviour:
   scrollRectNames: {fileID: 2770608539309558115}
   rankRegionNames: {fileID: 818773695012911939}
   heroInfoCellPrefab: {fileID: 6220797925647248127, guid: 2f833ac2e9a09734dabfb3e2293e2803, type: 3}
+  armsPanel: {fileID: 4708168333337527610}
+  armsItemPrefab: {fileID: 2788329513411137456, guid: e065869414aa8b84695080d5c44f8a37, type: 3}
   closeBtn: {fileID: 2008911989125620064}
   attrRadarChart: {fileID: 5199333239577664204}
 --- !u!1 &547650541507964243

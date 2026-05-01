@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,30 +6,54 @@ namespace CommonConfig
 {
     public class CityAttrConfig
     {
-        public class FieldMetaInfo
+                public class FieldMetaInfo
         {
             public string fieldName;
             public string fieldType;
-            public FieldMetaInfo(string name, string type)
+            public int fieldWidth;
+            public string fieldRule;
+            public bool fieldIndex;
+            public FieldMetaInfo(string name, string type, int width = 0, string rule = "", bool index = false)
             {
                 fieldName = name;
                 fieldType = type;
+                fieldWidth = width;
+                fieldRule = rule;
+                fieldIndex = index;
+            }
+        }
+
+        public class CellMeta
+        {
+            public int row;
+            public int col;
+            public int? foreColor;
+            public int? backColor;
+            public CellMeta(int row, int col, int? foreColor, int? backColor)
+            {
+                this.row = row;
+                this.col = col;
+                this.foreColor = foreColor;
+                this.backColor = backColor;
             }
         }
 
         private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
         {
-            {"Id", new FieldMetaInfo("序列", "int")},
-            {"name", new FieldMetaInfo("名字", "string")},
-            {"Cname", new FieldMetaInfo("中文名", "string")},
-            {"IsForceAttr", new FieldMetaInfo("是否force", "bool")},
-            {"IsPosRes", new FieldMetaInfo("占用类资源", "bool")},
-            {"ValMaxCity", new FieldMetaInfo("最大值", "int")},
-            {"ValMaxForce", new FieldMetaInfo("最大值", "int")},
-            {"Icon", new FieldMetaInfo("icon", "string")},
+            {"Id", new FieldMetaInfo("序列", "int", 0)},
+            {"name", new FieldMetaInfo("名字", "string", 0, "", true)},
+            {"Cname", new FieldMetaInfo("中文名", "string", 0)},
+            {"IsForceAttr", new FieldMetaInfo("是否force", "bool", 0)},
+            {"IsPosRes", new FieldMetaInfo("占用类资源", "bool", 0)},
+            {"ValMaxCity", new FieldMetaInfo("最大值", "int", 0)},
+            {"ValMaxForce", new FieldMetaInfo("最大值", "int", 0)},
+            {"Icon", new FieldMetaInfo("icon", "string", 0)},
         };
 
         public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
+        private static List<CellMeta> cellMeta = new List<CellMeta>();
+        public static List<CellMeta> CellMetas { get { return cellMeta; } }
 
         /// <summary>
         ///序列
@@ -75,7 +99,6 @@ namespace CommonConfig
             this.ValMaxCity = ValMaxCity;
             this.ValMaxForce = ValMaxForce;
             this.Icon = Icon;
-
         }
 
         public CityAttrConfig() { }
@@ -90,47 +113,35 @@ namespace CommonConfig
         {
             config.Clear();
             config = dict;
+            RebuildIndex();
         }
 
-        public static void Load()
+public static void Load()
+{
+config.Clear();
+config[1] = new CityAttrConfig(1, "level", "等级", false, false, 99, 0, "");
+config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, 999, 0, "citydev");
+config[5] = new CityAttrConfig(5, "food", "粮食", false, false, 999, 0, "cityfood");
+config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, 999, 0, "citysod");
+config[7] = new CityAttrConfig(7, "happy", "民心", false, false, 999, 0, "cityheart");
+config[8] = new CityAttrConfig(8, "wall", "城墙", false, false, 999, 0, "citywall");
+config[12] = new CityAttrConfig(12, "gold", "金钱", true, false, 0, 999, "citygold");
+config[13] = new CityAttrConfig(13, "steel", "铁", true, true, 0, 999, "citysteel");
+config[14] = new CityAttrConfig(14, "horse", "马", true, true, 0, 999, "cityhorse");
+config[15] = new CityAttrConfig(15, "wood", "木材", true, true, 0, 999, "citywood");
+config[16] = new CityAttrConfig(16, "stone", "石料", true, true, 0, 999, "citystone");
+
+RebuildIndex();
+
+}
+
+        private static void RebuildIndex()
         {
-            config.Clear();
-            config[1] = new CityAttrConfig(1, "level", "等级", false, false, 99, 0, "");
-            config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, 999, 0, "citydev");
-            config[5] = new CityAttrConfig(5, "food", "粮食", false, false, 999, 0, "cityfood");
-            config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, 999, 0, "citysod");
-            config[7] = new CityAttrConfig(7, "happy", "民心", false, false, 999, 0, "cityheart");
-            config[8] = new CityAttrConfig(8, "wall", "城墙", false, false, 999, 0, "citywall");
-            config[12] = new CityAttrConfig(12, "gold", "金钱", true, false, 0, 999, "citygold");
-            config[13] = new CityAttrConfig(13, "steel", "铁", true, true, 0, 999, "citysteel");
-            config[14] = new CityAttrConfig(14, "horse", "马", true, true, 0, 999, "cityhorse");
-            config[15] = new CityAttrConfig(15, "wood", "木材", true, true, 0, 999, "citywood");
-            config[16] = new CityAttrConfig(16, "stone", "石料", true, true, 0, 999, "citystone");
-
-
-            idxname["level"] =  1;
-            idxCname["等级"] =  1;
-            idxname["exp"] =  2;
-            idxCname["发展度"] =  2;
-            idxname["food"] =  5;
-            idxCname["粮食"] =  5;
-            idxname["soldier"] =  6;
-            idxCname["士兵"] =  6;
-            idxname["happy"] =  7;
-            idxCname["民心"] =  7;
-            idxname["wall"] =  8;
-            idxCname["城墙"] =  8;
-            idxname["gold"] =  12;
-            idxCname["金钱"] =  12;
-            idxname["steel"] =  13;
-            idxCname["铁"] =  13;
-            idxname["horse"] =  14;
-            idxCname["马"] =  14;
-            idxname["wood"] =  15;
-            idxCname["木材"] =  15;
-            idxname["stone"] =  16;
-            idxCname["石料"] =  16;
-
+            idxname.Clear();
+            foreach (var kv in config)
+            {
+                if (!string.IsNullOrEmpty(kv.Value.name)) idxname[kv.Value.name] = kv.Key;
+            }
         }
 
         public static CityAttrConfig GetConfig(int id)
@@ -146,9 +157,6 @@ namespace CommonConfig
         private static Dictionary<string, int> idxname = new Dictionary<string, int>();
         public static CityAttrConfig GetConfigByname(string val)        {
             return GetConfig(idxname[val]);        }
-        private static Dictionary<string, int> idxCname = new Dictionary<string, int>();
-        public static CityAttrConfig GetConfigByCname(string val)        {
-            return GetConfig(idxCname[val]);        }
 
 
         public static bool HasConfig(int id)

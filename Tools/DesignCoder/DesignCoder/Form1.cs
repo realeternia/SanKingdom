@@ -20,6 +20,7 @@ namespace DesignCoder
         private int sortedColumnIndex = -1;
         private bool sortAscending = true;
         private bool isLoading = false;
+        private int selectedColumnIndex = -1;
 
         private Dictionary<string, ConfigData> loadedConfigs = new Dictionary<string, ConfigData>();
         private Dictionary<string, string> originalSources = new Dictionary<string, string>();
@@ -83,6 +84,7 @@ namespace DesignCoder
                 
                 sortedColumnIndex = -1;
                 sortAscending = true;
+                selectedColumnIndex = -1;
                 BuildDataTable();
                 SetupDataGridView();
                 ApplyColors();
@@ -113,7 +115,7 @@ namespace DesignCoder
             for (int i = 0; i < currentConfig.Fields.Count; i++)
             {
                 var field = currentConfig.Fields[i];
-                fieldNameRow[field.Name] = field.Name;
+                fieldNameRow[field.Name] = field.IsIndex ? "★" + field.Name : field.Name;
                 chineseNameRow[field.Name] = field.ChineseName ?? field.Comment ?? "";
                 typeRow[field.Name] = field.Type;
             }
@@ -672,8 +674,9 @@ namespace DesignCoder
                 string defaultValue = GetDefaultValueForType(newField.Type);
 
                 dataTable.Columns.Add(newField.Name, typeof(string));
+                dataTable.Columns[newField.Name].SetOrdinal(insertAtFieldIndex + 1);
 
-                dataTable.Rows[0][newField.Name] = newField.Name;
+                dataTable.Rows[0][newField.Name] = newField.IsIndex ? "★" + newField.Name : newField.Name;
                 dataTable.Rows[1][newField.Name] = newField.ChineseName ?? newField.Comment ?? "";
                 dataTable.Rows[2][newField.Name] = newField.Type;
 
@@ -818,6 +821,106 @@ namespace DesignCoder
             }
         }
 
+        private void menuSetIndex_Click(object sender, EventArgs e)
+        {
+            if (currentConfig == null || dataTable == null) return;
+
+            int fieldIdx = GetSelectedFieldIndex();
+            if (fieldIdx < 0) return;
+
+            currentConfig.Fields[fieldIdx].IsIndex = true;
+
+            string colName = currentConfig.Fields[fieldIdx].Name;
+            if (dataTable.Columns.Contains(colName))
+            {
+                dataTable.Rows[0][colName] = "★" + colName;
+            }
+
+            MarkCurrentConfigModified();
+        }
+
+        private void menuCancelIndex_Click(object sender, EventArgs e)
+        {
+            if (currentConfig == null || dataTable == null) return;
+
+            int fieldIdx = GetSelectedFieldIndex();
+            if (fieldIdx < 0) return;
+
+            currentConfig.Fields[fieldIdx].IsIndex = false;
+
+            string colName = currentConfig.Fields[fieldIdx].Name;
+            if (dataTable.Columns.Contains(colName))
+            {
+                dataTable.Rows[0][colName] = colName;
+            }
+
+            MarkCurrentConfigModified();
+        }
+
+        private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            int fieldIdx = GetSelectedFieldIndex();
+            bool isDataColumn = fieldIdx >= 0;
+            bool isIndexed = isDataColumn && currentConfig.Fields[fieldIdx].IsIndex;
+
+            menuSetIndex.Enabled = isDataColumn && !isIndexed;
+            menuCancelIndex.Enabled = isDataColumn && isIndexed;
+            menuMoveColLeft.Enabled = isDataColumn && fieldIdx > 0;
+            menuMoveColRight.Enabled = isDataColumn && fieldIdx < currentConfig.Fields.Count - 1;
+        }
+
+        private void menuMoveColLeft_Click(object sender, EventArgs e)
+        {
+            if (currentConfig == null || dataTable == null) return;
+            int fieldIdx = GetSelectedFieldIndex();
+            if (fieldIdx <= 0) return;
+            MoveColumn(fieldIdx, fieldIdx - 1);
+        }
+
+        private void menuMoveColRight_Click(object sender, EventArgs e)
+        {
+            if (currentConfig == null || dataTable == null) return;
+            int fieldIdx = GetSelectedFieldIndex();
+            if (fieldIdx < 0 || fieldIdx >= currentConfig.Fields.Count - 1) return;
+            MoveColumn(fieldIdx, fieldIdx + 1);
+        }
+
+        private void MoveColumn(int fromFieldIdx, int toFieldIdx)
+        {
+            isLoading = true;
+            try
+            {
+                var temp = currentConfig.Fields[fromFieldIdx];
+                currentConfig.Fields[fromFieldIdx] = currentConfig.Fields[toFieldIdx];
+                currentConfig.Fields[toFieldIdx] = temp;
+
+                int fromColIdx = fromFieldIdx + 1;
+                int toColIdx = toFieldIdx + 1;
+
+                dataTable.Columns[fromColIdx].SetOrdinal(toColIdx);
+
+                foreach (var cm in currentConfig.CellMetas)
+                {
+                    if (cm.Col == fromColIdx)
+                        cm.Col = toColIdx;
+                    else if (cm.Col == toColIdx)
+                        cm.Col = fromColIdx;
+                }
+
+                dataGridView1.DataSource = null;
+                dataGridView1.DataSource = dataTable;
+                SetupDataGridView();
+                ApplyColors();
+                dataGridView1.Invalidate();
+
+                MarkCurrentConfigModified();
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+
         private void ApplyColors()
         {
             if (currentConfig == null || currentConfig.CellMetas == null || currentConfig.CellMetas.Count == 0) return;
@@ -845,6 +948,23 @@ namespace DesignCoder
             {
                 SortDataByColumn(e.ColumnIndex);
             }
+
+            if (e.ColumnIndex >= 0 && e.ColumnIndex != selectedColumnIndex)
+            {
+                int oldSel = selectedColumnIndex;
+                selectedColumnIndex = e.ColumnIndex;
+                InvalidateColumnHeaders(oldSel);
+                InvalidateColumnHeaders(selectedColumnIndex);
+            }
+        }
+
+        private void InvalidateColumnHeaders(int colIdx)
+        {
+            if (colIdx < 0 || colIdx >= dataGridView1.Columns.Count) return;
+            for (int r = 0; r < HeaderRowCount && r < dataGridView1.Rows.Count; r++)
+            {
+                dataGridView1.InvalidateCell(colIdx, r);
+            }
         }
 
         private void dataGridView1_CurrentCellDirtyStateChanged(object sender, EventArgs e)
@@ -853,6 +973,57 @@ namespace DesignCoder
             {
                 dataGridView1.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
+        }
+
+        private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+                {
+                    dataGridView1.CurrentCell = dataGridView1[e.ColumnIndex, e.RowIndex];
+                }
+                if (e.RowIndex < HeaderRowCount)
+                {
+                    dataGridView1.ContextMenuStrip = contextMenuStrip1;
+                }
+                else
+                {
+                    dataGridView1.ContextMenuStrip = contextMenuStripCell;
+                }
+            }
+        }
+
+        private void menuDeleteRowCtx_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1 == null || currentConfig == null) return;
+
+            if (dataGridView1.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("请先选中要删除的行中的单元格", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            HashSet<int> rowsToDelete = new HashSet<int>();
+            foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
+            {
+                if (cell.RowIndex >= HeaderRowCount && !cell.OwningRow.IsNewRow)
+                    rowsToDelete.Add(cell.RowIndex);
+            }
+
+            if (rowsToDelete.Count == 0) return;
+
+            if (MessageBox.Show(string.Format("确定要删除选中的{0}行吗？", rowsToDelete.Count), "确认删除", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
+                return;
+
+            var sortedRows = rowsToDelete.OrderByDescending(r => r).ToList();
+            foreach (int rowIdx in sortedRows)
+            {
+                dataGridView1.Rows.RemoveAt(rowIdx);
+            }
+
+            SyncDataTableToConfig();
+            MarkCurrentConfigModified();
         }
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -950,25 +1121,52 @@ namespace DesignCoder
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
-            if (e.RowIndex == 2)
+            if (e.RowIndex < HeaderRowCount)
             {
-                e.Paint(e.CellBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.ContentForeground);
+                bool isSelectedCol = e.ColumnIndex == selectedColumnIndex;
+                int fieldIdx = GetFieldIndexFromColumnIndex(e.ColumnIndex);
+                bool isIndexCol = fieldIdx >= 0 && fieldIdx < currentConfig.Fields.Count && currentConfig.Fields[fieldIdx].IsIndex;
+                e.Paint(e.CellBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.ContentForeground & ~DataGridViewPaintParts.Background);
 
-                string cellValue = e.Value != null ? e.Value.ToString() : "";
-                string displayText = cellValue;
-                
-                if (e.ColumnIndex == sortedColumnIndex)
+                Color headerBg;
+                if (isIndexCol)
+                    headerBg = isSelectedCol ? Color.FromArgb(160, 140, 70) : Color.FromArgb(130, 110, 50);
+                else
+                    headerBg = isSelectedCol ? Color.FromArgb(90, 120, 160) : Color.FromArgb(70, 90, 115);
+                using (Brush bgBrush = new SolidBrush(headerBg))
                 {
-                    displayText += sortAscending ? " ▲" : " ▼";
+                    e.Graphics.FillRectangle(bgBrush, e.CellBounds);
                 }
 
-                using (Brush brush = new SolidBrush(e.CellStyle.ForeColor))
+                if (e.RowIndex == 2)
                 {
-                    SizeF textSize = e.Graphics.MeasureString(displayText, e.CellStyle.Font);
-                    float x = e.CellBounds.Left + (e.CellBounds.Width - textSize.Width) / 2;
-                    float y = e.CellBounds.Top + (e.CellBounds.Height - textSize.Height) / 2;
-                    
-                    e.Graphics.DrawString(displayText, e.CellStyle.Font, brush, x, y);
+                    string cellValue = e.Value != null ? e.Value.ToString() : "";
+                    string displayText = cellValue;
+                    if (e.ColumnIndex == sortedColumnIndex)
+                    {
+                        displayText += sortAscending ? " ▲" : " ▼";
+                    }
+                    using (Brush brush = new SolidBrush(Color.White))
+                    {
+                        SizeF textSize = e.Graphics.MeasureString(displayText, e.CellStyle.Font);
+                        float x = e.CellBounds.Left + (e.CellBounds.Width - textSize.Width) / 2;
+                        float y = e.CellBounds.Top + (e.CellBounds.Height - textSize.Height) / 2;
+                        e.Graphics.DrawString(displayText, e.CellStyle.Font, brush, x, y);
+                    }
+                }
+                else
+                {
+                    string cellValue = e.Value != null ? e.Value.ToString() : "";
+                    using (Brush brush = new SolidBrush(Color.White))
+                    {
+                        StringFormat sf = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center };
+                        e.Graphics.DrawString(cellValue, e.CellStyle.Font, brush, e.CellBounds, sf);
+                    }
+                }
+
+                using (Pen borderPen = new Pen(Color.FromArgb(60, 60, 65)))
+                {
+                    e.Graphics.DrawRectangle(borderPen, new Rectangle(e.CellBounds.X, e.CellBounds.Y, e.CellBounds.Width - 1, e.CellBounds.Height - 1));
                 }
                 e.Handled = true;
                 return;

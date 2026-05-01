@@ -41,6 +41,16 @@ namespace DesignCoder
             this.menuAddColLeft = new System.Windows.Forms.ToolStripMenuItem();
             this.menuAddColRight = new System.Windows.Forms.ToolStripMenuItem();
             this.menuDeleteCol = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuSetIndex = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuCancelIndex = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMoveColLeft = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMoveColRight = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStripCell = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.menuDeleteRowCtx = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuCellBatchFill = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuCellForeColor = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuCellBackColor = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuCellClearColors = new System.Windows.Forms.ToolStripMenuItem();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -49,6 +59,7 @@ namespace DesignCoder
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStripCell.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -234,6 +245,7 @@ namespace DesignCoder
             this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
             this.dataGridView1.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.dataGridView1_ColumnWidthChanged);
             this.dataGridView1.CurrentCellDirtyStateChanged += new System.EventHandler(this.dataGridView1_CurrentCellDirtyStateChanged);
+            this.dataGridView1.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseDown);
             // 
             // contextMenuStrip1
             // 
@@ -242,12 +254,13 @@ namespace DesignCoder
             this.menuAddColLeft,
             this.menuAddColRight,
             this.menuDeleteCol,
-            this.menuBatchFill,
-            this.menuForeColor,
-            this.menuBackColor,
-            this.menuClearColors});
+            this.menuSetIndex,
+            this.menuCancelIndex,
+            this.menuMoveColLeft,
+            this.menuMoveColRight});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(137, 136);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // menuAddColLeft
             // 
@@ -269,6 +282,81 @@ namespace DesignCoder
             this.menuDeleteCol.Size = new System.Drawing.Size(136, 22);
             this.menuDeleteCol.Text = "删除此列";
             this.menuDeleteCol.Click += new System.EventHandler(this.menuDeleteCol_Click);
+            // 
+            // menuSetIndex
+            // 
+            this.menuSetIndex.Name = "menuSetIndex";
+            this.menuSetIndex.Size = new System.Drawing.Size(148, 22);
+            this.menuSetIndex.Text = "设为索引列";
+            this.menuSetIndex.Click += new System.EventHandler(this.menuSetIndex_Click);
+            // 
+            // menuCancelIndex
+            // 
+            this.menuCancelIndex.Name = "menuCancelIndex";
+            this.menuCancelIndex.Size = new System.Drawing.Size(148, 22);
+            this.menuCancelIndex.Text = "取消索引列";
+            this.menuCancelIndex.Click += new System.EventHandler(this.menuCancelIndex_Click);
+            // 
+            // menuMoveColLeft
+            // 
+            this.menuMoveColLeft.Name = "menuMoveColLeft";
+            this.menuMoveColLeft.Size = new System.Drawing.Size(148, 22);
+            this.menuMoveColLeft.Text = "左移列";
+            this.menuMoveColLeft.Click += new System.EventHandler(this.menuMoveColLeft_Click);
+            // 
+            // menuMoveColRight
+            // 
+            this.menuMoveColRight.Name = "menuMoveColRight";
+            this.menuMoveColRight.Size = new System.Drawing.Size(148, 22);
+            this.menuMoveColRight.Text = "右移列";
+            this.menuMoveColRight.Click += new System.EventHandler(this.menuMoveColRight_Click);
+            // 
+            // contextMenuStripCell
+            // 
+            this.contextMenuStripCell.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.contextMenuStripCell.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuDeleteRowCtx,
+            this.menuCellBatchFill,
+            this.menuCellForeColor,
+            this.menuCellBackColor,
+            this.menuCellClearColors});
+            this.contextMenuStripCell.Name = "contextMenuStripCell";
+            this.contextMenuStripCell.Size = new System.Drawing.Size(137, 114);
+            // 
+            // menuDeleteRowCtx
+            // 
+            this.menuDeleteRowCtx.Name = "menuDeleteRowCtx";
+            this.menuDeleteRowCtx.Size = new System.Drawing.Size(136, 22);
+            this.menuDeleteRowCtx.Text = "删除整行";
+            this.menuDeleteRowCtx.Click += new System.EventHandler(this.menuDeleteRowCtx_Click);
+            // 
+            // menuCellBatchFill
+            // 
+            this.menuCellBatchFill.Name = "menuCellBatchFill";
+            this.menuCellBatchFill.Size = new System.Drawing.Size(136, 22);
+            this.menuCellBatchFill.Text = "批量填充";
+            this.menuCellBatchFill.Click += new System.EventHandler(this.btnBatchFill_Click);
+            // 
+            // menuCellForeColor
+            // 
+            this.menuCellForeColor.Name = "menuCellForeColor";
+            this.menuCellForeColor.Size = new System.Drawing.Size(136, 22);
+            this.menuCellForeColor.Text = "设置前景色";
+            this.menuCellForeColor.Click += new System.EventHandler(this.btnForeColor_Click);
+            // 
+            // menuCellBackColor
+            // 
+            this.menuCellBackColor.Name = "menuCellBackColor";
+            this.menuCellBackColor.Size = new System.Drawing.Size(136, 22);
+            this.menuCellBackColor.Text = "设置背景色";
+            this.menuCellBackColor.Click += new System.EventHandler(this.btnBackColor_Click);
+            // 
+            // menuCellClearColors
+            // 
+            this.menuCellClearColors.Name = "menuCellClearColors";
+            this.menuCellClearColors.Size = new System.Drawing.Size(136, 22);
+            this.menuCellClearColors.Text = "清除颜色";
+            this.menuCellClearColors.Click += new System.EventHandler(this.btnClearColors_Click);
             // 
             // menuBatchFill
             // 
@@ -318,6 +406,7 @@ namespace DesignCoder
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStripCell.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -348,6 +437,16 @@ namespace DesignCoder
         private System.Windows.Forms.ToolStripMenuItem menuAddColLeft;
         private System.Windows.Forms.ToolStripMenuItem menuAddColRight;
         private System.Windows.Forms.ToolStripMenuItem menuDeleteCol;
+        private System.Windows.Forms.ToolStripMenuItem menuSetIndex;
+        private System.Windows.Forms.ToolStripMenuItem menuCancelIndex;
+        private System.Windows.Forms.ToolStripMenuItem menuMoveColLeft;
+        private System.Windows.Forms.ToolStripMenuItem menuMoveColRight;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripCell;
+        private System.Windows.Forms.ToolStripMenuItem menuDeleteRowCtx;
+        private System.Windows.Forms.ToolStripMenuItem menuCellBatchFill;
+        private System.Windows.Forms.ToolStripMenuItem menuCellForeColor;
+        private System.Windows.Forms.ToolStripMenuItem menuCellBackColor;
+        private System.Windows.Forms.ToolStripMenuItem menuCellClearColors;
         private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }

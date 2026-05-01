@@ -14,6 +14,7 @@ namespace DesignCoder
         public string ChineseName;
         public int? Width;
         public string FieldRule;
+        public bool IsIndex;
     }
 
     public class CellMeta
@@ -66,6 +67,7 @@ namespace DesignCoder
             ParseLoadMethod(source, data);
             SplitCodeSections(source, data);
             SplitPreLoadCode(data);
+            ParseIndexFields(source, data);
 
             return data;
         }
@@ -77,7 +79,7 @@ namespace DesignCoder
             if (!match.Success) return;
 
             string body = match.Groups[1].Value;
-            var itemPattern = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""(?:\s*,\s*(\d+))?(?:\s*,\s*""([^""]*)"")?\s*\)\s*\}";
+            var itemPattern = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""(?:\s*,\s*(\d+))?(?:\s*,\s*""([^""]*)"")?(?:\s*,\s*(true|false))?\s*\)\s*\}";
 
             var itemMatches = Regex.Matches(body, itemPattern);
             foreach (Match m in itemMatches)
@@ -87,6 +89,7 @@ namespace DesignCoder
                 string fieldType = m.Groups[3].Value;
                 int? width = m.Groups[4].Success ? (int?)int.Parse(m.Groups[4].Value) : null;
                 string fieldRule = m.Groups[5].Success ? m.Groups[5].Value : null;
+                bool isIndex = m.Groups[6].Success && m.Groups[6].Value == "true";
 
                 var existingField = data.Fields.FirstOrDefault(f => f.Name == fieldName);
                 if (existingField != null)
@@ -95,6 +98,7 @@ namespace DesignCoder
                     existingField.Type = fieldType;
                     if (width.HasValue) existingField.Width = width;
                     if (fieldRule != null) existingField.FieldRule = fieldRule;
+                    existingField.IsIndex = isIndex;
                 }
                 else
                 {
@@ -104,6 +108,7 @@ namespace DesignCoder
                     fd.Type = fieldType;
                     fd.Width = width;
                     fd.FieldRule = fieldRule;
+                    fd.IsIndex = isIndex;
                     data.Fields.Add(fd);
                 }
             }
@@ -525,6 +530,21 @@ namespace DesignCoder
             data.PostConstructorCode = data.PreLoadCode.Substring(ctorEnd + 1);
         }
 
+        private static void ParseIndexFields(string source, ConfigData data)
+        {
+            var pattern = @"private\s+static\s+Dictionary<(\w+),\s*int>\s+idx(\w+)\s*=\s*new\s+Dictionary<\w+,\s*int>\s*\(\s*\)\s*;";
+            var matches = Regex.Matches(source, pattern);
+            foreach (Match m in matches)
+            {
+                string fieldName = m.Groups[2].Value;
+                var existingField = data.Fields.FirstOrDefault(f => f.Name == fieldName);
+                if (existingField != null)
+                {
+                    existingField.IsIndex = true;
+                }
+            }
+        }
+
         public string GenerateSource()
         {
             var sb = new StringBuilder();
@@ -537,12 +557,14 @@ namespace DesignCoder
             sb.AppendLine("            public string fieldType;");
             sb.AppendLine("            public int fieldWidth;");
             sb.AppendLine("            public string fieldRule;");
-            sb.AppendLine("            public FieldMetaInfo(string name, string type, int width = 0, string rule = \"\")");
+            sb.AppendLine("            public bool fieldIndex;");
+            sb.AppendLine("            public FieldMetaInfo(string name, string type, int width = 0, string rule = \"\", bool index = false)");
             sb.AppendLine("            {");
             sb.AppendLine("                fieldName = name;");
             sb.AppendLine("                fieldType = type;");
             sb.AppendLine("                fieldWidth = width;");
             sb.AppendLine("                fieldRule = rule;");
+            sb.AppendLine("                fieldIndex = index;");
             sb.AppendLine("            }");
             sb.AppendLine("        }");
             sb.AppendLine();
@@ -570,7 +592,9 @@ namespace DesignCoder
                 string chineseName = field.ChineseName ?? field.Comment ?? "";
                 int width = field.Width ?? 0;
                 string rule = field.FieldRule ?? "";
-                if (!string.IsNullOrEmpty(rule))
+                if (field.IsIndex)
+                    sb.AppendLine(string.Format("            {{\"{0}\", new FieldMetaInfo(\"{1}\", \"{2}\", {3}, \"{4}\", true)}},", field.Name, chineseName, field.Type, width, rule));
+                else if (!string.IsNullOrEmpty(rule))
                     sb.AppendLine(string.Format("            {{\"{0}\", new FieldMetaInfo(\"{1}\", \"{2}\", {3}, \"{4}\")}},", field.Name, chineseName, field.Type, width, rule));
                 else
                     sb.AppendLine(string.Format("            {{\"{0}\", new FieldMetaInfo(\"{1}\", \"{2}\", {3})}},", field.Name, chineseName, field.Type, width));
@@ -599,8 +623,6 @@ namespace DesignCoder
             sb.AppendLine("        public static List<CellMeta> CellMetas { get { return cellMeta; } }");
             sb.AppendLine();
 
-            sb.Append(PreFieldDeclCode);
-
             foreach (var field in Fields)
             {
                 if (!string.IsNullOrEmpty(field.Comment))
@@ -627,8 +649,23 @@ namespace DesignCoder
                 sb.AppendLine("            this." + field.Name + " = " + field.Name + ";");
             }
             sb.AppendLine("        }");
+            sb.AppendLine();
+            sb.AppendLine("        public " + ClassName + "() { }");
+            sb.AppendLine();
 
-            sb.Append(PostConstructorCode);
+            sb.AppendLine("        private static Dictionary<int, " + ClassName + "> config = new Dictionary<int, " + ClassName + ">();");
+            sb.AppendLine("        public static Dictionary<int, " + ClassName + ">.ValueCollection ConfigList");
+            sb.AppendLine("        {");
+            sb.AppendLine("            get { return config.Values; }");
+            sb.AppendLine("        }");
+            sb.AppendLine();
+            sb.AppendLine("        public static void Refresh(Dictionary<int, " + ClassName + "> dict)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            config.Clear();");
+            sb.AppendLine("            config = dict;");
+            sb.AppendLine("            RebuildIndex();");
+            sb.AppendLine("        }");
+            sb.AppendLine();
 
             sb.Append("public static void Load()");
             sb.AppendLine();
@@ -656,11 +693,94 @@ namespace DesignCoder
             }
 
             sb.AppendLine();
-            sb.AppendLine();
+            sb.AppendLine("RebuildIndex();");
             sb.AppendLine();
             sb.AppendLine("}");
 
-            sb.Append(PostLoadCode);
+            sb.AppendLine();
+            sb.AppendLine("        private static void RebuildIndex()");
+            sb.AppendLine("        {");
+            foreach (var field in Fields)
+            {
+                if (!field.IsIndex) continue;
+                sb.AppendLine("            idx" + field.Name + ".Clear();");
+            }
+            sb.AppendLine("            foreach (var kv in config)");
+            sb.AppendLine("            {");
+            foreach (var field in Fields)
+            {
+                if (!field.IsIndex) continue;
+                string keyType = field.Type == "int" ? "int" : "string";
+                if (keyType == "string")
+                {
+                    sb.AppendLine("                if (!string.IsNullOrEmpty(kv.Value." + field.Name + ")) idx" + field.Name + "[kv.Value." + field.Name + "] = kv.Key;");
+                }
+                else
+                {
+                    sb.AppendLine("                idx" + field.Name + "[kv.Value." + field.Name + "] = kv.Key;");
+                }
+            }
+            sb.AppendLine("            }");
+            sb.AppendLine("        }");
+
+            sb.AppendLine();
+            sb.AppendLine("        public static " + ClassName + " GetConfig(int id)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            " + ClassName + " data;");
+            sb.AppendLine("            if (config.TryGetValue(id, out data))");
+            sb.AppendLine("            {");
+            sb.AppendLine("                return data;");
+            sb.AppendLine("            }");
+            sb.AppendLine("            throw new NullReferenceException(string.Format(\"配置表" + ClassName + "不存在id={0}\", id));");
+            sb.AppendLine("        }");
+
+            foreach (var field in Fields)
+            {
+                if (!field.IsIndex) continue;
+
+                string keyType = field.Type == "int" ? "int" : "string";
+                string paramType = keyType;
+
+                sb.AppendLine();
+                sb.AppendLine("        private static Dictionary<" + keyType + ", int> idx" + field.Name + " = new Dictionary<" + keyType + ", int>();");
+                sb.AppendLine("        public static " + ClassName + " GetConfigBy" + field.Name + "(" + paramType + " val)        {");
+                sb.AppendLine("            return GetConfig(idx" + field.Name + "[val]);        }");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendLine("        public static bool HasConfig(int id)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            if (config.ContainsKey(id))");
+            sb.AppendLine("            {");
+            sb.AppendLine("                return true;");
+            sb.AppendLine("            }");
+            sb.AppendLine("            return false;");
+            sb.AppendLine("        }");
+            sb.AppendLine();
+            sb.AppendLine("        public static void Assign(int id, " + ClassName + " configData)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            config[id] = configData; ");
+            sb.AppendLine("        }");
+            sb.AppendLine();
+            sb.AppendLine("        public static void Add(int id, " + ClassName + " configData)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            if (!config.ContainsKey(id))");
+            sb.AppendLine("            {");
+            sb.AppendLine("                config.Add(id, configData);");
+            sb.AppendLine("            }");
+            sb.AppendLine("        }");
+            sb.AppendLine();
+            sb.AppendLine("        public static void Remove(int id)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            if (config.ContainsKey(id))");
+            sb.AppendLine("            {");
+            sb.AppendLine("                config.Remove(id);");
+            sb.AppendLine("            }");
+            sb.AppendLine("        }");
+
+            sb.AppendLine("    }");
+            sb.AppendLine("}");
 
             return sb.ToString();
         }
