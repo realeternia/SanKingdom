@@ -862,11 +862,13 @@ namespace DesignCoder
             int fieldIdx = GetSelectedFieldIndex();
             bool isDataColumn = fieldIdx >= 0;
             bool isIndexed = isDataColumn && currentConfig.Fields[fieldIdx].IsIndex;
+            bool isIntColumn = isDataColumn && currentConfig.Fields[fieldIdx].Type.ToLower() == "int";
 
             menuSetIndex.Enabled = isDataColumn && !isIndexed;
             menuCancelIndex.Enabled = isDataColumn && isIndexed;
             menuMoveColLeft.Enabled = isDataColumn && fieldIdx > 0;
             menuMoveColRight.Enabled = isDataColumn && fieldIdx < currentConfig.Fields.Count - 1;
+            menuViewDistribution.Enabled = isIntColumn;
         }
 
         private void menuMoveColLeft_Click(object sender, EventArgs e)
@@ -1366,6 +1368,39 @@ namespace DesignCoder
                 return null;
             }
             return null;
+        }
+
+        private void menuViewDistribution_Click(object sender, EventArgs e)
+        {
+            if (currentConfig == null || dataTable == null) return;
+
+            int fieldIdx = GetSelectedFieldIndex();
+            if (fieldIdx < 0) return;
+
+            var field = currentConfig.Fields[fieldIdx];
+            if (field.Type.ToLower() != "int") return;
+
+            List<int> values = new List<int>();
+            string colName = field.Name;
+            foreach (DataRow row in dataTable.Rows)
+            {
+                if (row["_RowTag_"] as string != "Data") continue;
+                string val = row[colName] == DBNull.Value ? "" : row[colName].ToString();
+                int intVal;
+                if (int.TryParse(val, out intVal))
+                    values.Add(intVal);
+            }
+
+            if (values.Count == 0)
+            {
+                MessageBox.Show("该列没有有效的int数据", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (var distForm = new DistributionForm(field.ChineseName ?? field.Name, field.Name, values))
+            {
+                distForm.ShowDialog(this);
+            }
         }
     }
 }

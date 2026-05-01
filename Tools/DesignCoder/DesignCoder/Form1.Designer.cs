@@ -45,6 +45,7 @@ namespace DesignCoder
             this.menuCancelIndex = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMoveColLeft = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMoveColRight = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewDistribution = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripCell = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuDeleteRowCtx = new System.Windows.Forms.ToolStripMenuItem();
             this.menuCellBatchFill = new System.Windows.Forms.ToolStripMenuItem();
@@ -257,7 +258,8 @@ namespace DesignCoder
             this.menuSetIndex,
             this.menuCancelIndex,
             this.menuMoveColLeft,
-            this.menuMoveColRight});
+            this.menuMoveColRight,
+            this.menuViewDistribution});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(137, 136);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
@@ -310,6 +312,13 @@ namespace DesignCoder
             this.menuMoveColRight.Size = new System.Drawing.Size(148, 22);
             this.menuMoveColRight.Text = "右移列";
             this.menuMoveColRight.Click += new System.EventHandler(this.menuMoveColRight_Click);
+            // 
+            // menuViewDistribution
+            // 
+            this.menuViewDistribution.Name = "menuViewDistribution";
+            this.menuViewDistribution.Size = new System.Drawing.Size(148, 22);
+            this.menuViewDistribution.Text = "查看分布";
+            this.menuViewDistribution.Click += new System.EventHandler(this.menuViewDistribution_Click);
             // 
             // contextMenuStripCell
             // 
@@ -441,6 +450,7 @@ namespace DesignCoder
         private System.Windows.Forms.ToolStripMenuItem menuCancelIndex;
         private System.Windows.Forms.ToolStripMenuItem menuMoveColLeft;
         private System.Windows.Forms.ToolStripMenuItem menuMoveColRight;
+        private System.Windows.Forms.ToolStripMenuItem menuViewDistribution;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripCell;
         private System.Windows.Forms.ToolStripMenuItem menuDeleteRowCtx;
         private System.Windows.Forms.ToolStripMenuItem menuCellBatchFill;

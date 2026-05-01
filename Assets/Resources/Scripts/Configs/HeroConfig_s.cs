@@ -1,4 +1,4 @@
-﻿﻿﻿using System;
+﻿﻿﻿﻿﻿﻿﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,18 +6,20 @@ namespace CommonConfig
 {
     public class HeroConfig
     {
-                                public class FieldMetaInfo
+                                        public class FieldMetaInfo
         {
             public string fieldName;
             public string fieldType;
             public int fieldWidth;
             public string fieldRule;
-            public FieldMetaInfo(string name, string type, int width = 0, string rule = "")
+            public bool fieldIndex;
+            public FieldMetaInfo(string name, string type, int width = 0, string rule = "", bool index = false)
             {
                 fieldName = name;
                 fieldType = type;
                 fieldWidth = width;
                 fieldRule = rule;
+                fieldIndex = index;
             }
         }
 
@@ -42,11 +44,11 @@ namespace CommonConfig
             {"Name", new FieldMetaInfo("名字", "string", 76)},
             {"BornYear", new FieldMetaInfo("出生", "int", 60)},
             {"DeadYear", new FieldMetaInfo("死亡", "int", 60)},
-            {"LeadShip", new FieldMetaInfo("统帅", "int", 60)},
-            {"Str", new FieldMetaInfo("武力", "int", 60)},
-            {"Inte", new FieldMetaInfo("智力", "int", 60)},
-            {"Fair", new FieldMetaInfo("内政", "int", 60)},
-            {"Charm", new FieldMetaInfo("魅力", "int", 60)},
+            {"LeadShip", new FieldMetaInfo("统帅", "int", 60, "95-100:#FF9900,90-94:#995500,80-89:#33CC33")},
+            {"Str", new FieldMetaInfo("武力", "int", 60, "95-100:#FF9900,90-94:#995500,80-89:#33CC33")},
+            {"Inte", new FieldMetaInfo("智力", "int", 60, "95-100:#FF9900,90-94:#995500,80-89:#33CC33")},
+            {"Fair", new FieldMetaInfo("内政", "int", 60, "95-100:#FF9900,90-94:#995500,80-89:#33CC33")},
+            {"Charm", new FieldMetaInfo("魅力", "int", 60, "95-100:#FF9900,90-94:#995500,80-89:#33CC33")},
             {"SodWalk", new FieldMetaInfo("步兵驾驭", "int", 60, "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC")},
             {"SodHorse", new FieldMetaInfo("骑兵驾驭", "int", 60, "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC")},
             {"SodBow", new FieldMetaInfo("弓兵驾驭", "int", 60, "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC")},
@@ -77,7 +79,6 @@ namespace CommonConfig
 
         private static List<CellMeta> cellMeta = new List<CellMeta>();
         public static List<CellMeta> CellMetas { get { return cellMeta; } }
-
 
         public int Id;
         /// <summary>
@@ -230,7 +231,6 @@ namespace CommonConfig
             this.Group = Group;
             this.HitEffect = HitEffect;
             this.Icon = Icon;
-
         }
 
         public HeroConfig() { }
@@ -245,14 +245,15 @@ namespace CommonConfig
         {
             config.Clear();
             config = dict;
+            RebuildIndex();
         }
 
-        public static void Load()
+public static void Load()
 {
 config.Clear();
 config[100001] = new HeroConfig(100001, "刘备", 161, 223, 80, 77, 74, 78, 99, 8, 7, 6, 5, 6, 440, 1, "新野", "蓟", 100, "豪爽", new string[]{"忠义","仁德"}, new string[]{"饮酒","读书"}, "蜀汉元从", new string[]{"关羽","张飞","赵云"}, new string[]{"曹操","吕布"}, new string[]{"三顾茅庐","桃园结义","携民渡江"}, 1, null, "仁", "", "core", "SwordHitYellowCritical", "liubei");
-config[101001] = new HeroConfig(101001, "张飞", 165, 221, 92, 98, 30, 22, 45, 10, 9, 7, 7, 7, 327, 1, "新野", "北平", 100, "急躁", new string[]{"忠义","果敢"}, new string[]{"饮酒","结交"}, "蜀汉元从", new string[]{"刘备","关羽"}, new string[]{"吕布","范疆","张达"}, new string[]{"当阳桥喝退曹军","义释严颜"}, 1, null, "威", "", "atk", "SwordHitYellowCritical", "zhangfei");
-config[101002] = new HeroConfig(101002, "关羽", 160, 220, 97, 97, 77, 62, 94, 10, 9, 7, 7, 8, 468, 1, "新野", "洛阳", 100, "刚愎", new string[]{"忠义","坚韧"}, new string[]{"读书","骑马"}, "蜀汉元从", new string[]{"刘备","张飞","周仓"}, new string[]{"孙权","吕蒙"}, new string[]{"过五关斩六将","温酒斩华雄","水淹七军"}, 1, null, "斩", "", "atk", "SwordHitGreenCritical", "guanyu");
+config[101001] = new HeroConfig(101001, "张飞", 165, 221, 92, 98, 30, 22, 45, 10, 9, 8, 7, 7, 327, 1, "新野", "北平", 100, "急躁", new string[]{"忠义","果敢"}, new string[]{"饮酒","结交"}, "蜀汉元从", new string[]{"刘备","关羽"}, new string[]{"吕布","范疆","张达"}, new string[]{"当阳桥喝退曹军","义释严颜"}, 1, null, "威", "", "atk", "SwordHitYellowCritical", "zhangfei");
+config[101002] = new HeroConfig(101002, "关羽", 160, 220, 97, 97, 77, 62, 94, 9, 9, 10, 7, 8, 468, 1, "新野", "洛阳", 100, "刚愎", new string[]{"忠义","坚韧"}, new string[]{"读书","骑马"}, "蜀汉元从", new string[]{"刘备","张飞","周仓"}, new string[]{"孙权","吕蒙"}, new string[]{"过五关斩六将","温酒斩华雄","水淹七军"}, 1, null, "斩", "", "atk", "SwordHitGreenCritical", "guanyu");
 config[101003] = new HeroConfig(101003, "徐庶", 189, 234, 87, 65, 93, 82, 84, 7, 6, 6, 6, 8, 444, 1, "新野", "许昌", 92, "冷静", new string[]{"忠义","思辨"}, new string[]{"读书","剑术"}, "蜀汉元从", new string[]{"刘备","诸葛亮"}, new string[]{"曹操"}, new string[]{"走马荐诸葛"}, 3, null, "火", "共", "inte", "GasExplosionFire", "xusu");
 config[101004] = new HeroConfig(101004, "周仓", 178, 220, 63, 82, 42, 33, 60, 8, 6, 5, 5, 5, 309, 1, "新野", "洛阳", 100, "豪爽", new string[]{"忠义","果敢"}, new string[]{"舞剑","结交"}, "蜀汉关羽部", new string[]{"关羽","关平"}, new string[]{"无"}, new string[]{"为关羽扛刀","水淹七军擒庞德"}, 1, null, "劫", "", "atk", "SwordHitYellowCritical", "zhoucang");
 config[101005] = new HeroConfig(101005, "廖化", 184, 264, 74, 78, 64, 49, 66, 8, 6, 6, 5, 6, 362, 1, "新野", "襄阳", 91, "坚韧", new string[]{"坚韧","忠义"}, new string[]{"骑马"}, "蜀汉后期", new string[]{"诸葛亮","姜维"}, new string[]{"无"}, new string[]{"千里走单骑归蜀"}, 1, null, "透", "", "atk", "SwordHitYellowCritical", "liaohua");
@@ -322,7 +323,7 @@ config[102057] = new HeroConfig(102057, "国渊", 170, 215, 49, 18, 70, 85, 73, 
 config[102058] = new HeroConfig(102058, "典满", 170, 220, 49, 71, 38, 25, 50, 6, 5, 5, 4, 4, 257, 2, "陈留", "会稽", 94, "刚猛", new string[]{"忠义"}, new string[]{"舞戟"}, "曹魏宿将", new string[]{"曹操"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "dianman");
 config[102059] = new HeroConfig(102059, "娄圭", 165, 201, 48, 12, 81, 63, 14, 4, 3, 4, 3, 5, 237, 2, "濮阳", "柴桑", 86, "多疑", new string[]{"智识"}, new string[]{"兵法"}, "曹魏谋士", new string[]{"曹操"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "lougui");
 config[102060] = new HeroConfig(102060, "王朗", 152, 228, 46, 34, 79, 84, 51, 3, 2, 3, 3, 5, 310, 2, "宛", "永安", 82, "急躁", new string[]{"才思"}, new string[]{"读书","辩论"}, "曹魏重臣", new string[]{"华歆"}, new string[]{"诸葛亮"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "wanglang");
-config[102061] = new HeroConfig(102061, "卞氏", 159, 230, 35, 23, 74, 76, 87, 1, 1, 1, 1, 4, 303, 2, "许昌", "江州", 93, "谦和", new string[]{"仁德","贤明"}, new string[]{"女红"}, "曹魏后妃", new string[]{"曹操"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "nvbianshi2");
+config[102061] = new HeroConfig(102061, "卞氏", 159, 230, 35, 23, 74, 76, 87, 2, 1, 4, 1, 4, 303, 2, "许昌", "江州", 93, "谦和", new string[]{"仁德","贤明"}, new string[]{"女红"}, "曹魏后妃", new string[]{"曹操"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "nvbianshi2");
 config[102063] = new HeroConfig(102063, "李孚", 170, 230, 30, 35, 73, 72, 68, 4, 3, 3, 3, 5, 296, 2, "下邳", "建宁", 88, "多疑", new string[]{"智识","果敢"}, new string[]{"权谋"}, "曹魏谋士", new string[]{"袁绍"}, new string[]{"无"}, new string[]{"邺城突围"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "lifu");
 config[102065] = new HeroConfig(102065, "孔融", 153, 208, 29, 4, 69, 76, 63, 2, 1, 2, 1, 4, 251, 2, "北海", "北海", 84, "刚直", new string[]{"仁德","才思"}, new string[]{"读书","清谈"}, "汉末名士", new string[]{"祢衡"}, new string[]{"曹操"}, new string[]{"孔融让梨"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "kongrong");
 config[102066] = new HeroConfig(102066, "司马朗", 171, 217, 20, 21, 71, 84, 81, 3, 2, 2, 2, 5, 291, 2, "陈留", "梓潼", 90, "谦和", new string[]{"仁德","勤勉"}, new string[]{"读书"}, "河内司马氏", new string[]{"司马懿"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "simalang");
@@ -331,8 +332,8 @@ config[102068] = new HeroConfig(102068, "董昭", 156, 236, 18, 24, 78, 83, 57, 
 config[102070] = new HeroConfig(102070, "崔琰", 163, 216, 17, 54, 69, 84, 74, 4, 3, 3, 3, 5, 316, 2, "濮阳", "汝南", 91, "刚直", new string[]{"清廉","贤明"}, new string[]{"书法"}, "清河崔氏", new string[]{"曹操"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "cuiyan");
 config[102071] = new HeroConfig(102071, "吴质", 178, 230, 16, 29, 68, 57, 37, 2, 2, 2, 2, 4, 219, 2, "小沛", "寿春", 82, "狡诈", new string[]{"才思"}, new string[]{"文学","结交"}, "曹魏文士", new string[]{"曹丕"}, new string[]{"无"}, new string[]{"助曹丕争储"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "wuzhi");
 config[102072] = new HeroConfig(102072, "桓阶", 162, 221, 9, 25, 65, 76, 67, 2, 2, 2, 2, 4, 254, 2, "濮阳", "北平", 90, "冷静", new string[]{"贤明","思辨"}, new string[]{"兵法"}, "曹魏谋士", new string[]{"曹操","曹丕"}, new string[]{"无"}, new string[]{"劝曹操立曹丕"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "huanjie");
-config[102073] = new HeroConfig(102073, "蒋干", 174, 212, 9, 6, 65, 64, 47, 2, 1, 2, 1, 3, 200, 2, "濮阳", "蓟", 70, "多疑", new string[]{"能言"}, new string[]{"清谈"}, "曹魏文士", new string[]{"曹操"}, new string[]{"周瑜"}, new string[]{"蒋干盗书（虽中计","但算事件）"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "jianggan");
-config[100003] = new HeroConfig(100003, "孙策", 175, 200, 96, 93, 74, 75, 94, 8, 9, 7, 8, 7, 471, 3, "吴", "吴", 100, "豪爽", new string[]{"果敢","雄才"}, new string[]{"武艺","结交"}, "东吴奠基", new string[]{"周瑜","孙权"}, new string[]{"无"}, new string[]{"小霸王"}, 1, null, "虎", "", "core", "SwordHitYellowCritical", "sunce");
+config[102073] = new HeroConfig(102073, "蒋干", 174, 212, 9, 6, 65, 64, 47, 2, 1, 2, 1, 5, 200, 2, "濮阳", "蓟", 70, "多疑", new string[]{"能言"}, new string[]{"清谈"}, "曹魏文士", new string[]{"曹操"}, new string[]{"周瑜"}, new string[]{"蒋干盗书（虽中计","但算事件）"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "jianggan");
+config[100003] = new HeroConfig(100003, "孙策", 175, 200, 96, 93, 74, 75, 94, 8, 10, 7, 8, 7, 471, 3, "吴", "吴", 100, "豪爽", new string[]{"果敢","雄才"}, new string[]{"武艺","结交"}, "东吴奠基", new string[]{"周瑜","孙权"}, new string[]{"无"}, new string[]{"小霸王"}, 1, null, "虎", "", "core", "SwordHitYellowCritical", "sunce");
 config[103001] = new HeroConfig(103001, "甘宁", 175, 215, 93, 94, 76, 18, 58, 8, 7, 8, 9, 7, 378, 3, "长沙", "江州", 97, "豪爽", new string[]{"果敢","忠义"}, new string[]{"舞剑","珍宝"}, "东吴大将", new string[]{"孙权","周泰"}, new string[]{"无"}, new string[]{"百骑劫魏营"}, 3, null, "连", "", "shoot", "BulletExplosionBlue", "ganning");
 config[103002] = new HeroConfig(103002, "太史慈", 166, 206, 85, 93, 66, 58, 79, 8, 7, 9, 7, 7, 419, 3, "吴", "北海", 96, "刚猛", new string[]{"忠义","果敢"}, new string[]{"射箭","舞戟"}, "东吴大将", new string[]{"孙权","刘繇"}, new string[]{"无"}, new string[]{"北海救孔融"}, 3, null, "雨", "", "shoot", "BulletExplosionBlue", "taishici");
 config[103003] = new HeroConfig(103003, "黄盖", 155, 210, 79, 83, 65, 65, 80, 7, 6, 6, 8, 6, 405, 3, "桂阳", "零陵", 100, "刚猛", new string[]{"忠义","坚韧"}, new string[]{"舞鞭","练兵"}, "东吴元从", new string[]{"孙权","程普"}, new string[]{"无"}, new string[]{"苦肉计"}, 1, null, "奋", "", "def", "SwordHitYellowCritical", "huanggai");
@@ -346,8 +347,8 @@ config[103010] = new HeroConfig(103010, "张昭", 156, 236, 32, 2, 83, 98, 79, 3
 config[103011] = new HeroConfig(103011, "诸葛瑾", 174, 241, 72, 34, 81, 90, 90, 5, 4, 4, 6, 7, 393, 3, "吴", "襄阳", 96, "谦和", new string[]{"仁德","思辨"}, new string[]{"读书","书法"}, "东吴谋士", new string[]{"孙权"}, new string[]{"无"}, null, 3, null, "励", "", "help", "FanExplosion", "zhugejin");
 config[103012] = new HeroConfig(103012, "孙尚香", 191, 222, 69, 83, 64, 61, 70, 7, 7, 7, 7, 5, 380, 3, "吴", "吴", 96, "豪爽", new string[]{"果敢"}, new string[]{"舞剑","射猎"}, "东吴宗室", new string[]{"刘备"}, new string[]{"无"}, new string[]{"孙刘联姻"}, 3, null, "", "", "shoot", "BulletExplosionBlue", "sunshangxiang");
 config[103013] = new HeroConfig(103013, "朱桓", 177, 238, 84, 82, 75, 56, 59, 7, 7, 6, 7, 6, 389, 3, "桂阳", "吴", 94, "刚愎", new string[]{"果敢"}, new string[]{"舞槊"}, "东吴大将", new string[]{"孙权"}, new string[]{"无"}, null, 1, null, "伏", "缓", "def", "SwordHitYellowCritical", "zhuhuan");
-config[103014] = new HeroConfig(103014, "大乔", 175, 221, 17, 11, 72, 78, 92, 1, 1, 1, 3, 4, 280, 3, "吴", "庐江", 100, "隐忍", new string[]{"贤明"}, new string[]{"音律","女红"}, "东吴宗室", new string[]{"孙策"}, new string[]{"无"}, null, 3, null, "碉", "陷", "help", "StormExplosion", "daqiao");
-config[103015] = new HeroConfig(103015, "小乔", 176, 223, 16, 12, 73, 77, 92, 1, 1, 1, 3, 4, 280, 3, "柴桑", "庐江", 100, "豪爽", new string[]{"贤明"}, new string[]{"音律","女红"}, "东吴宗室", new string[]{"周瑜"}, new string[]{"无"}, null, 3, null, "曲", "陷", "help", "StormExplosion", "xiaoqiao");
+config[103014] = new HeroConfig(103014, "大乔", 175, 221, 17, 11, 72, 78, 92, 2, 1, 2, 3, 4, 280, 3, "吴", "庐江", 100, "隐忍", new string[]{"贤明"}, new string[]{"音律","女红"}, "东吴宗室", new string[]{"孙策"}, new string[]{"无"}, null, 3, null, "碉", "陷", "help", "StormExplosion", "daqiao");
+config[103015] = new HeroConfig(103015, "小乔", 176, 223, 16, 12, 73, 77, 92, 2, 1, 3, 3, 4, 280, 3, "柴桑", "庐江", 100, "豪爽", new string[]{"贤明"}, new string[]{"音律","女红"}, "东吴宗室", new string[]{"周瑜"}, new string[]{"无"}, null, 3, null, "曲", "陷", "help", "StormExplosion", "xiaoqiao");
 config[103016] = new HeroConfig(103016, "丁奉", 186, 271, 76, 95, 66, 51, 52, 8, 7, 7, 8, 7, 377, 3, "长沙", "庐江", 94, "刚猛", new string[]{"果敢"}, new string[]{"舞刀"}, "东吴后期", new string[]{"孙权","孙峻"}, new string[]{"无"}, new string[]{"雪中奋短兵"}, 3, null, "", "", "shoot", "GasShootFire", "dingfeng");
 config[103017] = new HeroConfig(103017, "董袭", 170, 213, 72, 85, 50, 48, 60, 7, 6, 6, 8, 5, 347, 3, "长沙", "会稽", 93, "刚猛", new string[]{"果敢","忠义"}, new string[]{"舞戟"}, "东吴元从", new string[]{"孙权"}, new string[]{"无"}, null, 1, null, "透", "", "atk", "SwordHitYellowCritical", "dongxi");
 config[103018] = new HeroConfig(103018, "凌统", 189, 237, 72, 83, 54, 37, 66, 7, 6, 6, 7, 5, 343, 3, "建业", "吴", 96, "急躁", new string[]{"果敢","忠义"}, new string[]{"舞刀"}, "东吴大将", new string[]{"孙权","甘宁"}, new string[]{"无"}, new string[]{"与甘宁和解"}, 3, null, "虐", "", "shoot", "BulletExplosionBlue", "lingtong");
@@ -371,8 +372,8 @@ config[103038] = new HeroConfig(103038, "贾华", 178, 234, 49, 65, 71, 29, 52, 
 config[103039] = new HeroConfig(103039, "贺齐", 170, 227, 83, 78, 42, 64, 73, 7, 6, 6, 7, 5, 371, 3, "会稽", "上庸", 92, "冷静", new string[]{"果敢","勤勉"}, new string[]{"兵器","造船"}, "东吴大将", new string[]{"孙权"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "heqi");
 config[103040] = new HeroConfig(103040, "留赞", 183, 255, 78, 75, 64, 57, 62, 7, 6, 6, 7, 5, 367, 3, "会稽", "汉中", 90, "刚猛", new string[]{"果敢"}, new string[]{"舞刀","饮酒"}, "东吴后期", new string[]{"诸葛恪"}, new string[]{"无"}, new string[]{"东兴之战"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "liuzhan");
 config[103041] = new HeroConfig(103041, "虞翻", 164, 233, 43, 46, 86, 83, 46, 4, 3, 3, 5, 6, 325, 3, "会稽", "汝南", 83, "刚直", new string[]{"智识","思辨"}, new string[]{"易学","围棋"}, "东吴文臣", new string[]{"孙权"}, new string[]{"无"}, new string[]{"骂关羽"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "lufan");
-config[103042] = new HeroConfig(103042, "陆绩", 187, 219, 19, 48, 61, 69, 41, 2, 1, 2, 3, 4, 250, 3, "会稽", "寿春", 86, "刚直", new string[]{"仁德"}, new string[]{"读书","算术"}, "东吴文臣", new string[]{"无"}, new string[]{"无"}, new string[]{"怀橘遗亲"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "luji");
-config[103043] = new HeroConfig(103043, "程秉", 168, 225, 16, 15, 71, 73, 65, 2, 1, 2, 3, 4, 252, 3, "庐江", "北平", 89, "谦和", new string[]{"贤明","勤勉"}, new string[]{"读书"}, "东吴文臣", new string[]{"孙权"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "chenbing");
+config[103042] = new HeroConfig(103042, "陆绩", 187, 219, 19, 48, 61, 69, 41, 2, 4, 2, 3, 4, 250, 3, "会稽", "寿春", 86, "刚直", new string[]{"仁德"}, new string[]{"读书","算术"}, "东吴文臣", new string[]{"无"}, new string[]{"无"}, new string[]{"怀橘遗亲"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "luji");
+config[103043] = new HeroConfig(103043, "程秉", 168, 225, 16, 15, 71, 73, 65, 2, 6, 2, 3, 4, 252, 3, "庐江", "北平", 89, "谦和", new string[]{"贤明","勤勉"}, new string[]{"读书"}, "东吴文臣", new string[]{"孙权"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "chenbing");
 config[103044] = new HeroConfig(103044, "吕岱", 161, 256, 81, 70, 68, 74, 62, 7, 6, 5, 7, 5, 385, 3, "柴桑", "蓟", 91, "冷静", new string[]{"果敢","勤勉"}, new string[]{"治理"}, "东吴大将", new string[]{"孙权"}, new string[]{"无"}, new string[]{"平定交州"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "lvdai");
 config[103045] = new HeroConfig(103045, "孙瑜", 177, 215, 77, 70, 68, 69, 78, 6, 5, 5, 7, 5, 390, 3, "柴桑", "襄平", 89, "谦和", new string[]{"仁德","勤勉"}, new string[]{"读书"}, "东吴宗室", new string[]{"孙权"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "sunyu");
 config[103046] = new HeroConfig(103046, "吾粲", 190, 245, 66, 40, 76, 73, 70, 4, 3, 3, 5, 5, 345, 3, "柴桑", "洛阳", 88, "刚直", new string[]{"忠义","仁德"}, new string[]{"治理"}, "东吴文臣", new string[]{"孙权"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "wucan");
@@ -385,9 +386,9 @@ config[103054] = new HeroConfig(103054, "薛综", 176, 243, 32, 15, 68, 77, 59, 
 config[103055] = new HeroConfig(103055, "孙朗", 185, 223, 32, 40, 28, 38, 42, 3, 2, 2, 3, 3, 193, 3, "柴桑", "吴", 85, "多疑", new string[]{"怯懦"}, new string[]{"珍宝"}, "东吴宗室", new string[]{"无"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "sunlang");
 config[103056] = new HeroConfig(103056, "吴国太", 156, 216, 29, 20, 70, 74, 81, 1, 1, 1, 3, 4, 284, 3, "吴", "新野", 98, "隐忍", new string[]{"仁德","贤明"}, new string[]{"女红"}, "东吴宗室", new string[]{"孙策","孙权"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "wuguotai");
 config[199001] = new HeroConfig(199001, "孙权", 182, 252, 74, 65, 78, 87, 93, 7, 6, 5, 7, 6, 428, 3, "吴", "吴", 100, "隐忍", new string[]{"雄才","果敢"}, new string[]{"射猎","读书"}, "东吴奠基", new string[]{"周瑜","鲁肃","陆逊"}, new string[]{"曹操","刘备"}, new string[]{"赤壁之战","夷陵之战"}, 1, null, "衡", "", "def", "SwordHitYellowCritical", "sunquan");
-config[100004] = new HeroConfig(100004, "袁绍", 154, 202, 86, 73, 70, 73, 90, 8, 7, 6, 5, 6, 412, 4, "邺", "汝南", 100, "刚愎", new string[]{"雄才"}, new string[]{"华服","珍宝"}, "河北霸主", new string[]{"审配","沮授"}, new string[]{"曹操","田丰"}, new string[]{"官渡之战"}, 1, null, "", "", "core", "SwordHitYellowCritical", "yuanshao");
-config[104001] = new HeroConfig(104001, "张郃", 167, 231, 89, 90, 69, 56, 70, 9, 9, 7, 5, 7, 400, 4, "邺", "南皮", 95, "冷静", new string[]{"坚韧","果敢"}, new string[]{"兵法","武艺"}, "河北", new string[]{"司马懿"}, new string[]{"无"}, new string[]{"街亭破马谡"}, 1, null, "分", "", "def", "SwordHitYellowCritical", "zhanghe");
-config[104002] = new HeroConfig(104002, "颜良", 165, 200, 78, 93, 42, 32, 53, 9, 9, 7, 5, 7, 318, 4, "南皮", "平原", 100, "刚愎", new string[]{"果敢"}, new string[]{"舞刀"}, "河北", new string[]{"袁绍"}, new string[]{"无"}, null, 1, null, "破", "", "atk", "SwordHitYellowCritical", "yanliang");
+config[100004] = new HeroConfig(100004, "袁绍", 154, 202, 86, 73, 70, 73, 90, 9, 7, 9, 5, 6, 412, 4, "邺", "汝南", 100, "刚愎", new string[]{"雄才"}, new string[]{"华服","珍宝"}, "河北霸主", new string[]{"审配","沮授"}, new string[]{"曹操","田丰"}, new string[]{"官渡之战"}, 1, null, "", "", "core", "SwordHitYellowCritical", "yuanshao");
+config[104001] = new HeroConfig(104001, "张郃", 167, 231, 89, 90, 69, 56, 70, 9, 10, 7, 5, 7, 400, 4, "邺", "南皮", 95, "冷静", new string[]{"坚韧","果敢"}, new string[]{"兵法","武艺"}, "河北", new string[]{"司马懿"}, new string[]{"无"}, new string[]{"街亭破马谡"}, 1, null, "分", "", "def", "SwordHitYellowCritical", "zhanghe");
+config[104002] = new HeroConfig(104002, "颜良", 165, 200, 78, 93, 42, 32, 53, 9, 10, 7, 5, 7, 318, 4, "南皮", "平原", 100, "刚愎", new string[]{"果敢"}, new string[]{"舞刀"}, "河北", new string[]{"袁绍"}, new string[]{"无"}, null, 1, null, "破", "", "atk", "SwordHitYellowCritical", "yanliang");
 config[104003] = new HeroConfig(104003, "文丑", 163, 200, 79, 92, 48, 52, 68, 9, 9, 7, 5, 7, 359, 4, "晋阳", "平原", 100, "急躁", new string[]{"果敢"}, new string[]{"舞刀"}, "河北", new string[]{"袁绍"}, new string[]{"无"}, null, 1, null, "刺", "", "def", "SwordHitYellowCritical", "wenchou");
 config[104004] = new HeroConfig(104004, "田丰", 170, 200, 72, 33, 93, 89, 64, 4, 3, 3, 3, 7, 367, 4, "晋阳", "南皮", 94, "刚直", new string[]{"忠义","智识"}, new string[]{"读书"}, "河北谋士", new string[]{"袁绍"}, new string[]{"逢纪"}, new string[]{"谏袁绍被下狱"}, 3, null, "雷", "", "inte", "StormExplosion", "tianfeng");
 config[104005] = new HeroConfig(104005, "鞠义", 158, 191, 72, 78, 55, 18, 37, 8, 7, 7, 4, 6, 282, 4, "平原", "武威", 89, "刚愎", new string[]{"果敢"}, new string[]{"练兵"}, "河北", new string[]{"袁绍"}, new string[]{"无"}, new string[]{"破公孙瓒"}, 3, null, "", "", "shoot", "BulletExplosionBlue", "juyi");
@@ -416,9 +417,9 @@ config[104028] = new HeroConfig(104028, "袁熙", 170, 207, 62, 47, 59, 61, 60, 
 config[104029] = new HeroConfig(104029, "陈震", 178, 235, 44, 44, 65, 73, 70, 3, 2, 2, 2, 4, 306, 4, "南皮", "汝南", 90, "谦和", new string[]{"忠义"}, new string[]{"外交"}, "河北", new string[]{"诸葛亮"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "chenzhen");
 config[104030] = new HeroConfig(104030, "辛评", 175, 204, 69, 43, 76, 75, 68, 3, 2, 2, 2, 5, 342, 4, "邺", "寿春", 86, "刚直", new string[]{"忠义"}, new string[]{"读书"}, "河北", new string[]{"袁谭"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "xinping");
 config[104031] = new HeroConfig(104031, "高柔", 174, 263, 54, 40, 67, 75, 70, 3, 2, 2, 2, 4, 317, 4, "南皮", "北平", 92, "冷静", new string[]{"贤明","勤勉"}, new string[]{"律法"}, "河北", new string[]{"曹操"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "gaorou");
-config[104032] = new HeroConfig(104032, "荀谌", 172, 214, 19, 25, 77, 79, 64, 3, 2, 2, 2, 5, 275, 4, "平原", "蓟", 89, "冷静", new string[]{"智识"}, new string[]{"清谈"}, "河北", new string[]{"袁绍"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "xunshen");
-config[104033] = new HeroConfig(104033, "辛毗", 171, 235, 37, 23, 75, 77, 69, 3, 2, 2, 2, 5, 292, 4, "南皮", "襄平", 90, "刚直", new string[]{"忠义","贤明"}, new string[]{"书法"}, "河北", new string[]{"曹丕"}, new string[]{"无"}, new string[]{"助曹丕争储"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "xinpi");
-config[104034] = new HeroConfig(104034, "逢纪", 175, 202, 27, 21, 84, 72, 39, 3, 2, 3, 2, 5, 256, 4, "南皮", "宛", 84, "多疑", new string[]{"智识"}, new string[]{"权谋"}, "河北", new string[]{"袁绍"}, new string[]{"田丰"}, new string[]{"谗害田丰"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "fengji");
+config[104032] = new HeroConfig(104032, "荀谌", 172, 214, 19, 25, 77, 79, 64, 4, 2, 2, 2, 5, 275, 4, "平原", "蓟", 89, "冷静", new string[]{"智识"}, new string[]{"清谈"}, "河北", new string[]{"袁绍"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "xunshen");
+config[104033] = new HeroConfig(104033, "辛毗", 171, 235, 37, 23, 75, 77, 69, 4, 2, 2, 2, 5, 292, 4, "南皮", "襄平", 90, "刚直", new string[]{"忠义","贤明"}, new string[]{"书法"}, "河北", new string[]{"曹丕"}, new string[]{"无"}, new string[]{"助曹丕争储"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "xinpi");
+config[104034] = new HeroConfig(104034, "逢纪", 175, 202, 27, 21, 84, 72, 39, 5, 2, 3, 2, 5, 256, 4, "南皮", "宛", 84, "多疑", new string[]{"智识"}, new string[]{"权谋"}, "河北", new string[]{"袁绍"}, new string[]{"田丰"}, new string[]{"谗害田丰"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "fengji");
 config[104035] = new HeroConfig(104035, "陈琳", 160, 217, 10, 9, 74, 79, 72, 2, 1, 2, 1, 4, 252, 4, "平原", "长安", 87, "刚直", new string[]{"才思"}, new string[]{"文章","书法"}, "河北", new string[]{"曹操"}, new string[]{"无"}, new string[]{"讨曹檄文"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "chenlin");
 config[100005] = new HeroConfig(100005, "董卓", 139, 192, 77, 87, 67, 18, 36, 8, 7, 5, 4, 5, 305, 5, "洛阳", "安定", 100, "暴戾", new string[]{"狡诈"}, new string[]{"美色","珍宝"}, "西凉军阀", new string[]{"李儒","吕布"}, new string[]{"袁绍","曹操"}, new string[]{"火烧洛阳"}, 1, null, "", "", "core", "SwordHitYellowCritical", "dongzhuo");
 config[105001] = new HeroConfig(105001, "张辽", 169, 222, 95, 92, 78, 56, 76, 9, 10, 7, 5, 7, 425, 5, "长安", "邺", 97, "冷静", new string[]{"忠义","果敢"}, new string[]{"武艺","兵法"}, "并州", new string[]{"关羽","曹操"}, new string[]{"无"}, new string[]{"威震逍遥津"}, 1, null, "旋", "", "def", "SwordHitYellowCritical", "zhangliao");
@@ -451,26 +452,26 @@ config[105027] = new HeroConfig(105027, "皇甫嵩", 135, 195, 83, 58, 70, 48, 6
 config[105028] = new HeroConfig(105028, "董承", 167, 200, 56, 53, 65, 63, 75, 5, 4, 3, 3, 3, 325, 5, "长安", "永安", 82, "刚直", new string[]{"忠义"}, new string[]{"结交"}, "汉室", new string[]{"刘备"}, new string[]{"曹操"}, new string[]{"衣带诏"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "dongcheng");
 config[105029] = new HeroConfig(105029, "华歆", 157, 232, 18, 33, 82, 84, 17, 3, 2, 2, 2, 5, 245, 5, "长安", "江州", 78, "多疑", new string[]{"雄才"}, new string[]{"书法"}, "汉末", new string[]{"曹操","曹丕"}, new string[]{"伏皇后"}, new string[]{"逼禅称帝"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "huaxin");
 config[105030] = new HeroConfig(105030, "王允", 137, 192, 25, 5, 67, 83, 73, 3, 2, 2, 2, 4, 264, 5, "洛阳", "建宁", 88, "隐忍", new string[]{"忠义"}, new string[]{"音律"}, "汉室", new string[]{"貂蝉"}, new string[]{"董卓"}, new string[]{"连环计"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "wangyun");
-config[100006] = new HeroConfig(100006, "马腾", 155, 212, 82, 80, 51, 58, 88, 8, 8, 5, 4, 6, 382, 6, "武威", "武威", 100, "豪爽", new string[]{"忠义"}, new string[]{"骑马"}, "西凉军阀", new string[]{"韩遂"}, new string[]{"曹操"}, null, 1, null, "", "", "core", "SwordHitYellowCritical", "mateng");
+config[100006] = new HeroConfig(100006, "马腾", 155, 212, 82, 80, 51, 58, 88, 8, 10, 5, 4, 6, 382, 6, "武威", "武威", 100, "豪爽", new string[]{"忠义"}, new string[]{"骑马"}, "西凉军阀", new string[]{"韩遂"}, new string[]{"曹操"}, null, 1, null, "", "", "core", "SwordHitYellowCritical", "mateng");
 config[106001] = new HeroConfig(106001, "马超", 176, 222, 92, 97, 42, 25, 80, 9, 10, 7, 5, 7, 361, 6, "武威", "武威", 98, "急躁", new string[]{"果敢"}, new string[]{"武艺","骑射"}, "西凉", new string[]{"马岱","庞德"}, new string[]{"曹操","韩遂"}, new string[]{"渭水之战"}, 1, null, "铁", "", "atk", "SwordHitWhiteCritical", "machao");
-config[106002] = new HeroConfig(106002, "马岱", 183, 235, 80, 85, 54, 52, 71, 8, 8, 5, 4, 6, 362, 6, "武威", "武威", 96, "冷静", new string[]{"忠义","果敢"}, new string[]{"武艺"}, "西凉", new string[]{"马超"}, new string[]{"魏延"}, new string[]{"斩魏延"}, 1, null, "坚", "羽", "atk", "SwordHitYellowCritical", "madai");
+config[106002] = new HeroConfig(106002, "马岱", 183, 235, 80, 85, 54, 52, 71, 8, 9, 5, 4, 6, 362, 6, "武威", "武威", 96, "冷静", new string[]{"忠义","果敢"}, new string[]{"武艺"}, "西凉", new string[]{"马超"}, new string[]{"魏延"}, new string[]{"斩魏延"}, 1, null, "坚", "羽", "atk", "SwordHitYellowCritical", "madai");
 config[106003] = new HeroConfig(106003, "庞德", 176, 219, 89, 94, 67, 43, 67, 9, 9, 7, 5, 7, 383, 6, "武威", "天水", 97, "刚猛", new string[]{"忠义","果敢"}, new string[]{"武艺"}, "西凉", new string[]{"马超"}, new string[]{"关羽"}, new string[]{"抬棺战关羽"}, 1, null, "坚", "", "atk", "SwordHitYellowCritical", "pangde");
 config[106004] = new HeroConfig(106004, "成公英", 170, 220, 70, 68, 76, 60, 65, 6, 6, 5, 4, 5, 357, 6, "天水", "武威", 92, "冷静", new string[]{"忠义","智识"}, new string[]{"骑射"}, "西凉", new string[]{"韩遂"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "chenggongying");
 config[106005] = new HeroConfig(106005, "成宜", 175, 211, 72, 70, 40, 47, 54, 6, 6, 4, 3, 4, 301, 6, "天水", "寿春", 86, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "chengyi");
-config[106006] = new HeroConfig(106006, "侯选", 170, 211, 59, 62, 32, 52, 49, 5, 5, 3, 2, 3, 269, 6, "天水", "北平", 85, "多疑", new string[]{"怯懦"}, new string[]{"无"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "houxuan");
-config[106007] = new HeroConfig(106007, "马休", 178, 212, 63, 67, 44, 41, 63, 6, 6, 4, 3, 4, 296, 6, "武威", "蓟", 88, "急躁", new string[]{"果敢"}, new string[]{"骑射"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "maxiu");
-config[106008] = new HeroConfig(106008, "马玩", 175, 211, 68, 71, 15, 22, 35, 6, 6, 4, 3, 4, 226, 6, "天水", "蓟", 86, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "mawan");
+config[106006] = new HeroConfig(106006, "侯选", 170, 211, 59, 62, 32, 52, 49, 5, 6, 3, 2, 3, 269, 6, "天水", "北平", 85, "多疑", new string[]{"怯懦"}, new string[]{"无"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "houxuan");
+config[106007] = new HeroConfig(106007, "马休", 178, 212, 63, 67, 44, 41, 63, 6, 8, 4, 3, 4, 296, 6, "武威", "蓟", 88, "急躁", new string[]{"果敢"}, new string[]{"骑射"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "maxiu");
+config[106008] = new HeroConfig(106008, "马玩", 175, 211, 68, 71, 15, 22, 35, 6, 8, 4, 3, 4, 226, 6, "天水", "蓟", 86, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "mawan");
 config[106009] = new HeroConfig(106009, "马铁", 179, 212, 65, 57, 52, 48, 57, 6, 6, 4, 3, 4, 297, 6, "武威", "蓟", 87, "急躁", new string[]{"果敢"}, new string[]{"骑射"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "matie");
 config[106010] = new HeroConfig(106010, "梁兴", 172, 211, 59, 63, 18, 21, 25, 5, 5, 3, 2, 3, 201, 6, "天水", "长安", 84, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "liangxing");
 config[106011] = new HeroConfig(106011, "程银", 170, 211, 67, 71, 39, 35, 49, 6, 6, 4, 3, 4, 276, 6, "天水", "许昌", 85, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "chenying");
 config[106012] = new HeroConfig(106012, "杨秋", 175, 220, 64, 61, 55, 61, 40, 5, 5, 4, 3, 3, 298, 6, "天水", "邺", 84, "多疑", new string[]{"果敢"}, new string[]{"武艺"}, "西凉", new string[]{"马超"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "yangqiu");
 config[106013] = new HeroConfig(106013, "阎行", 175, 215, 72, 84, 61, 58, 69, 8, 7, 5, 4, 5, 365, 6, "天水", "天水", 91, "刚猛", new string[]{"果敢"}, new string[]{"武艺"}, "西凉", new string[]{"韩遂"}, new string[]{"马超"}, new string[]{"与马超单挑"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "yanxing");
-config[106014] = new HeroConfig(106014, "韩遂", 158, 215, 84, 75, 77, 61, 80, 7, 7, 5, 4, 6, 398, 6, "天水", "天水", 93, "多疑", new string[]{"雄才","狡诈"}, new string[]{"权谋"}, "西凉军阀", new string[]{"马腾"}, new string[]{"马超"}, new string[]{"与马超反目"}, 1, null, "乱", "", "def", "SwordHitYellowCritical", "hansui");
+config[106014] = new HeroConfig(106014, "韩遂", 158, 215, 84, 75, 77, 61, 80, 7, 9, 5, 4, 6, 398, 6, "天水", "天水", 93, "多疑", new string[]{"雄才","狡诈"}, new string[]{"权谋"}, "西凉军阀", new string[]{"马腾"}, new string[]{"马超"}, new string[]{"与马超反目"}, 1, null, "乱", "", "def", "SwordHitYellowCritical", "hansui");
 config[100007] = new HeroConfig(100007, "刘表", 142, 208, 46, 31, 68, 81, 80, 4, 3, 2, 5, 4, 323, 7, "襄阳", "陈留", 100, "谦和", new string[]{"仁德","贤明"}, new string[]{"读书","清谈"}, "荆州牧", new string[]{"蒯良","蒯越"}, new string[]{"无"}, new string[]{"单骑定荆州"}, 1, null, "", "", "core", "SwordHitYellowCritical", "liubiao");
 config[107001] = new HeroConfig(107001, "魏延", 175, 234, 84, 91, 68, 49, 51, 9, 7, 7, 5, 7, 365, 7, "武陵", "襄阳", 87, "刚愎", new string[]{"果敢"}, new string[]{"武艺"}, "荆州", new string[]{"刘备","诸葛亮"}, new string[]{"杨仪"}, new string[]{"献长沙","汉中太守"}, 1, null, "破", "乱", "atk", "SwordHitYellowCritical", "weiyan");
 config[107002] = new HeroConfig(107002, "黄忠", 145, 220, 88, 93, 64, 52, 75, 9, 7, 9, 5, 7, 399, 7, "武陵", "宛", 97, "刚猛", new string[]{"忠义","果敢"}, new string[]{"射箭","舞刀"}, "荆州", new string[]{"刘备","关羽"}, new string[]{"无"}, new string[]{"定军山斩夏侯渊"}, 3, null, "矢", "速", "shoot", "BulletExplosionFire", "huangzhong");
 config[107003] = new HeroConfig(107003, "王威", 165, 208, 60, 70, 59, 52, 66, 6, 5, 5, 5, 4, 326, 7, "江夏", "宛", 91, "冷静", new string[]{"忠义"}, new string[]{"武艺"}, "荆州", new string[]{"刘表"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "wangwei");
-config[107004] = new HeroConfig(107004, "王粲", 177, 217, 5, 2, 79, 81, 52, 2, 1, 2, 2, 4, 228, 7, "江夏", "陈留", 89, "豪爽", new string[]{"才思"}, new string[]{"读书","赋诗"}, "荆州", new string[]{"曹丕"}, new string[]{"无"}, new string[]{"登楼赋"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "wangcan");
+config[107004] = new HeroConfig(107004, "王粲", 177, 217, 5, 2, 79, 81, 52, 2, 4, 2, 2, 4, 228, 7, "江夏", "陈留", 89, "豪爽", new string[]{"才思"}, new string[]{"读书","赋诗"}, "荆州", new string[]{"曹丕"}, new string[]{"无"}, new string[]{"登楼赋"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "wangcan");
 config[107005] = new HeroConfig(107005, "黄祖", 158, 208, 73, 65, 52, 37, 31, 7, 5, 5, 6, 5, 280, 7, "江夏", "江夏", 84, "急躁", new string[]{"刚愎"}, new string[]{"射猎"}, "荆州", new string[]{"刘表"}, new string[]{"孙坚","甘宁"}, new string[]{"射杀孙坚"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "huangzu");
 config[107006] = new HeroConfig(107006, "韩嵩", 159, 215, 25, 15, 70, 78, 61, 3, 2, 2, 4, 4, 262, 7, "襄阳", "襄阳", 87, "谦和", new string[]{"忠义"}, new string[]{"读书"}, "荆州", new string[]{"刘表"}, new string[]{"曹操"}, new string[]{"劝刘表降曹"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "hansong");
 config[107007] = new HeroConfig(107007, "苏飞", 162, 209, 66, 60, 63, 59, 60, 5, 4, 4, 6, 4, 326, 7, "零陵", "小沛", 90, "豪爽", new string[]{"忠义"}, new string[]{"结交"}, "荆州", new string[]{"甘宁"}, new string[]{"无"}, new string[]{"救甘宁"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "sufei");
@@ -480,14 +481,14 @@ config[107010] = new HeroConfig(107010, "伊籍", 168, 223, 29, 24, 80, 86, 84, 
 config[107011] = new HeroConfig(107011, "张允", 168, 210, 72, 67, 42, 56, 48, 6, 5, 5, 8, 5, 307, 7, "襄阳", "晋阳", 80, "多疑", new string[]{"怯懦"}, new string[]{"水战"}, "荆州", new string[]{"蔡瑁"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "zhangyun");
 config[107012] = new HeroConfig(107012, "蒯良", 162, 203, 68, 33, 88, 83, 71, 4, 2, 3, 5, 6, 360, 7, "襄阳", "襄阳", 93, "冷静", new string[]{"智识"}, new string[]{"兵法","地理"}, "荆州", new string[]{"刘表"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "kuailiang");
 config[107013] = new HeroConfig(107013, "蒯越", 163, 214, 47, 27, 82, 89, 73, 3, 2, 3, 5, 5, 334, 7, "襄阳", "襄阳", 93, "冷静", new string[]{"智识"}, new string[]{"谋略"}, "荆州", new string[]{"刘表"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "kuaiyue");
-config[107015] = new HeroConfig(107015, "刘琦", 171, 209, 49, 11, 58, 68, 69, 3, 2, 2, 3, 3, 267, 7, "襄阳", "武威", 86, "隐忍", new string[]{"孝道"}, new string[]{"读书"}, "荆州", new string[]{"刘备","诸葛亮"}, new string[]{"蔡氏"}, new string[]{"求计诸葛亮"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "liuqi");
+config[107015] = new HeroConfig(107015, "刘琦", 171, 209, 49, 11, 58, 68, 69, 3, 4, 2, 3, 3, 267, 7, "襄阳", "武威", 86, "隐忍", new string[]{"孝道"}, new string[]{"读书"}, "荆州", new string[]{"刘备","诸葛亮"}, new string[]{"蔡氏"}, new string[]{"求计诸葛亮"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "liuqi");
 config[107016] = new HeroConfig(107016, "蔡中", 170, 208, 39, 52, 1, 21, 42, 4, 3, 3, 5, 3, 169, 7, "襄阳", "武陵", 78, "多疑", new string[]{"怯懦"}, new string[]{"无"}, "荆州", new string[]{"蔡瑁"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "caizhong");
 config[107017] = new HeroConfig(107017, "蔡氏", 165, 208, 8, 7, 69, 58, 66, 1, 1, 1, 3, 2, 215, 7, "襄阳", "零陵", 80, "多疑", new string[]{"狡诈"}, new string[]{"华服"}, "荆州", new string[]{"蔡瑁"}, new string[]{"刘琦","刘备"}, new string[]{"排挤刘琦"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "nvcaishi");
 config[107018] = new HeroConfig(107018, "蔡和", 172, 208, 38, 49, 1, 25, 44, 4, 3, 3, 5, 3, 171, 7, "襄阳", "江陵", 77, "多疑", new string[]{"怯懦"}, new string[]{"无"}, "荆州", new string[]{"蔡瑁"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "caihe");
 config[107019] = new HeroConfig(107019, "蔡瑁", 155, 208, 77, 70, 77, 72, 62, 6, 5, 5, 9, 6, 383, 7, "襄阳", "襄阳", 82, "多疑", new string[]{"狡诈"}, new string[]{"水战"}, "荆州", new string[]{"刘表"}, new string[]{"刘备"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "caimao");
 config[100008] = new HeroConfig(100008, "刘璋", 165, 221, 15, 4, 8, 37, 64, 2, 1, 1, 2, 2, 135, 8, "成都", "江夏", 100, "懦弱", new string[]{"仁德"}, new string[]{"清谈"}, "益州牧", new string[]{"张松"}, new string[]{"刘备"}, new string[]{"引刘备入川"}, 1, null, "", "", "core", "SwordHitYellowCritical", "liuzhang");
-config[108001] = new HeroConfig(108001, "严颜", 158, 214, 79, 83, 69, 64, 79, 8, 7, 5, 4, 6, 394, 8, "建宁", "长沙", 95, "刚猛", new string[]{"忠义","果敢"}, new string[]{"武艺"}, "益州", new string[]{"张飞"}, new string[]{"无"}, new string[]{"宁死不屈"}, 1, null, "敏", "", "def", "SwordHitYellowCritical", "yanyan");
-config[108002] = new HeroConfig(108002, "李严", 171, 234, 82, 83, 72, 71, 50, 8, 7, 5, 4, 6, 378, 8, "建宁", "庐江", 92, "刚愎", new string[]{"果敢"}, new string[]{"武艺"}, "益州", new string[]{"诸葛亮"}, new string[]{"无"}, null, 1, null, "实", "", "def", "SwordHitYellowCritical", "liyan");
+config[108001] = new HeroConfig(108001, "严颜", 158, 214, 79, 83, 69, 64, 79, 8, 7, 8, 4, 6, 394, 8, "建宁", "长沙", 95, "刚猛", new string[]{"忠义","果敢"}, new string[]{"武艺"}, "益州", new string[]{"张飞"}, new string[]{"无"}, new string[]{"宁死不屈"}, 1, null, "敏", "", "def", "SwordHitYellowCritical", "yanyan");
+config[108002] = new HeroConfig(108002, "李严", 171, 234, 82, 83, 72, 71, 50, 8, 7, 8, 4, 6, 378, 8, "建宁", "庐江", 92, "刚愎", new string[]{"果敢"}, new string[]{"武艺"}, "益州", new string[]{"诸葛亮"}, new string[]{"无"}, null, 1, null, "实", "", "def", "SwordHitYellowCritical", "liyan");
 config[108003] = new HeroConfig(108003, "张松", 165, 212, 15, 6, 88, 83, 19, 2, 1, 2, 1, 6, 220, 8, "成都", "成都", 84, "多疑", new string[]{"才思"}, new string[]{"读书","地理"}, "益州", new string[]{"刘备"}, new string[]{"刘璋"}, new string[]{"献西川地图"}, 3, null, "", "", "inte", "FanExplosion", "zhangsong");
 config[108004] = new HeroConfig(108004, "董允", 185, 246, 67, 65, 78, 94, 79, 3, 2, 2, 2, 5, 394, 8, "江州", "柴桑", 90, "谦和", new string[]{"贤明","勤勉"}, new string[]{"读书"}, "益州", new string[]{"诸葛亮","蒋琬"}, new string[]{"黄皓"}, null, 3, null, "米", "", "inte", "FanExplosion", "dongyun");
 config[108005] = new HeroConfig(108005, "孟获", 175, 225, 87, 87, 51, 55, 75, 8, 7, 5, 4, 6, 372, 8, "云南", "云南", 94, "豪爽", new string[]{"果敢"}, new string[]{"饮酒","武艺"}, "南中", new string[]{"祝融"}, new string[]{"诸葛亮"}, new string[]{"七擒七纵"}, 1, null, "藤", "", "atk", "SwordHitYellowCritical", "menghuo");
@@ -496,7 +497,7 @@ config[108007] = new HeroConfig(108007, "法正", 176, 220, 83, 52, 94, 79, 55, 
 config[108008] = new HeroConfig(108008, "黄权", 171, 240, 75, 59, 82, 81, 78, 6, 4, 4, 3, 6, 394, 8, "建宁", "云南", 91, "冷静", new string[]{"忠义","智识"}, new string[]{"兵法"}, "益州", new string[]{"刘璋"}, new string[]{"无"}, new string[]{"夷陵降魏"}, 1, null, "缓", "", "atk", "SwordHitYellowCritical", "huangquan");
 config[108009] = new HeroConfig(108009, "孟达", 170, 228, 75, 73, 74, 67, 72, 5, 4, 4, 3, 4, 377, 8, "江州", "梓潼", 86, "多疑", new string[]{"反复"}, new string[]{"书法"}, "益州", new string[]{"刘封"}, new string[]{"无"}, new string[]{"反复常"}, 3, null, "乱", "", "shoot", "BulletExplosionBlue", "mengda");
 config[108010] = new HeroConfig(108010, "李恢", 174, 231, 79, 65, 79, 81, 78, 5, 3, 3, 3, 5, 398, 8, "建宁", "上庸", 90, "冷静", new string[]{"能言"}, new string[]{"外交"}, "益州", new string[]{"诸葛亮"}, new string[]{"无"}, new string[]{"说降马超"}, 1, null, "境", "", "def", "SwordHitYellowCritical", "lihui");
-config[108011] = new HeroConfig(108011, "张任", 169, 214, 88, 84, 78, 59, 76, 8, 7, 6, 4, 6, 406, 8, "建宁", "汉中", 96, "刚猛", new string[]{"忠义","果敢"}, new string[]{"武艺","射箭"}, "益州", new string[]{"刘璋"}, new string[]{"刘备","庞统"}, new string[]{"落凤坡射庞统"}, 3, null, "复", "", "shoot", "BulletExplosionBlue", "zhangren");
+config[108011] = new HeroConfig(108011, "张任", 169, 214, 88, 84, 78, 59, 76, 8, 7, 9, 4, 6, 406, 8, "建宁", "汉中", 96, "刚猛", new string[]{"忠义","果敢"}, new string[]{"武艺","射箭"}, "益州", new string[]{"刘璋"}, new string[]{"刘备","庞统"}, new string[]{"落凤坡射庞统"}, 3, null, "复", "", "shoot", "BulletExplosionBlue", "zhangren");
 config[108012] = new HeroConfig(108012, "雷铜", 165, 218, 69, 78, 51, 37, 53, 7, 6, 4, 3, 4, 302, 8, "梓潼", "汝南", 88, "刚猛", new string[]{"果敢"}, new string[]{"武艺"}, "益州", new string[]{"张飞"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "leitong");
 config[108013] = new HeroConfig(108013, "高沛", 168, 214, 66, 61, 69, 57, 52, 5, 4, 3, 3, 3, 318, 8, "梓潼", "寿春", 86, "急躁", new string[]{"怯懦"}, new string[]{"无"}, "益州", new string[]{"刘璋"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "gaopei");
 config[108014] = new HeroConfig(108014, "杨怀", 166, 212, 62, 68, 68, 62, 53, 6, 5, 4, 3, 4, 326, 8, "成都", "北平", 87, "急躁", new string[]{"怯懦"}, new string[]{"无"}, "益州", new string[]{"刘璋"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "yanghuai");
@@ -513,7 +514,7 @@ config[108024] = new HeroConfig(108024, "王累", 168, 214, 28, 30, 78, 81, 73, 
 config[108025] = new HeroConfig(108025, "秦宓", 174, 226, 15, 6, 71, 77, 75, 2, 1, 2, 2, 4, 252, 8, "成都", "新野", 90, "豪爽", new string[]{"能言"}, new string[]{"清谈","读书"}, "益州", new string[]{"刘备"}, new string[]{"无"}, new string[]{"天辩"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "qinse");
 config[108026] = new HeroConfig(108026, "费诗", 170, 250, 15, 28, 64, 75, 66, 3, 2, 2, 2, 4, 258, 8, "成都", "宛", 89, "刚直", new string[]{"忠义"}, new string[]{"外交"}, "益州", new string[]{"刘备"}, new string[]{"无"}, new string[]{"劝关羽受封"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "feishi");
 config[108027] = new HeroConfig(108027, "许靖", 155, 222, 2, 4, 64, 77, 65, 2, 1, 2, 2, 4, 220, 8, "成都", "陈留", 82, "谦和", new string[]{"贤明"}, new string[]{"清谈"}, "益州", new string[]{"刘备"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "xujing");
-config[100009] = new HeroConfig(100009, "张鲁", 155, 216, 51, 26, 74, 78, 75, 3, 2, 2, 2, 5, 315, 9, "汉中", "濮阳", 100, "隐忍", new string[]{"仁德"}, new string[]{"炼丹","道教"}, "汉中", new string[]{"阎圃"}, new string[]{"曹操"}, new string[]{"五斗米道"}, 1, null, "", "", "core", "SwordHitYellowCritical", "zhanglu");
+config[100009] = new HeroConfig(100009, "张鲁", 155, 216, 51, 26, 74, 78, 75, 4, 2, 2, 2, 5, 315, 9, "汉中", "濮阳", 100, "隐忍", new string[]{"仁德"}, new string[]{"炼丹","道教"}, "汉中", new string[]{"阎圃"}, new string[]{"曹操"}, new string[]{"五斗米道"}, 1, null, "", "", "core", "SwordHitYellowCritical", "zhanglu");
 config[109001] = new HeroConfig(109001, "张卫", 170, 215, 71, 63, 43, 42, 58, 6, 5, 4, 3, 4, 290, 9, "汉中", "下邳", 88, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "汉中", new string[]{"张鲁"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "zhangwei");
 config[109002] = new HeroConfig(109002, "杨任", 170, 215, 67, 75, 51, 38, 54, 6, 5, 4, 3, 4, 298, 9, "上庸", "小沛", 86, "刚猛", new string[]{"忠义"}, new string[]{"武艺"}, "汉中", new string[]{"张鲁"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "yangren");
 config[109003] = new HeroConfig(109003, "杨昂", 172, 215, 65, 69, 36, 33, 40, 5, 4, 3, 3, 3, 256, 9, "汉中", "北海", 85, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "汉中", new string[]{"张鲁"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "yangang2");
@@ -523,7 +524,7 @@ config[109006] = new HeroConfig(109006, "阎圃", 170, 215, 29, 25, 82, 80, 70, 
 config[100010] = new HeroConfig(100010, "袁术", 155, 199, 67, 65, 65, 60, 45, 6, 5, 4, 3, 4, 319, 10, "寿春", "汝南", 100, "骄横", new string[]{"雄才"}, new string[]{"珍宝","华服"}, "淮南", new string[]{"纪灵"}, new string[]{"袁绍","曹操","孙策"}, new string[]{"称帝"}, 1, null, "", "", "core", "SwordHitYellowCritical", "yuanshu");
 config[110001] = new HeroConfig(110001, "李丰", 165, 199, 69, 74, 50, 22, 47, 6, 5, 4, 3, 4, 277, 10, "寿春", "天水", 83, "谦和", new string[]{"忠义"}, new string[]{"读书"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "lifeng");
 config[110002] = new HeroConfig(110002, "纪灵", 166, 199, 78, 83, 51, 48, 55, 8, 7, 5, 4, 6, 334, 10, "寿春", "武威", 93, "刚猛", new string[]{"果敢"}, new string[]{"三尖刀"}, "淮南", new string[]{"袁术"}, new string[]{"关羽"}, new string[]{"与关羽战平"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "jiling");
-config[110003] = new HeroConfig(110003, "袁胤", 168, 199, 17, 14, 39, 43, 46, 2, 1, 1, 1, 1, 165, 10, "寿春", "武陵", 82, "多疑", new string[]{"怯懦"}, new string[]{"珍宝"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "yuanyin");
+config[110003] = new HeroConfig(110003, "袁胤", 168, 199, 17, 14, 39, 43, 46, 2, 1, 3, 2, 3, 165, 10, "寿春", "武陵", 82, "多疑", new string[]{"怯懦"}, new string[]{"珍宝"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "yuanyin");
 config[110004] = new HeroConfig(110004, "袁涣", 170, 215, 30, 17, 68, 79, 83, 3, 2, 2, 2, 4, 287, 10, "寿春", "零陵", 88, "谦和", new string[]{"仁德","贤明"}, new string[]{"读书"}, "淮南", new string[]{"吕布","曹操"}, new string[]{"无"}, new string[]{"不为吕布写书"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "yuanhuan");
 config[110005] = new HeroConfig(110005, "袁燿", 170, 230, 38, 47, 38, 48, 49, 2, 1, 1, 1, 1, 226, 10, "寿春", "江陵", 80, "多疑", new string[]{"庸常"}, new string[]{"无"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "yuanyao");
 config[110006] = new HeroConfig(110006, "张勋", 166, 199, 72, 68, 41, 39, 59, 6, 5, 4, 3, 4, 295, 10, "汝南", "江夏", 84, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "zhangxun");
@@ -535,8 +536,8 @@ config[110011] = new HeroConfig(110011, "雷薄", 168, 200, 62, 70, 36, 11, 15, 
 config[110012] = new HeroConfig(110012, "刘勋", 165, 200, 47, 63, 35, 16, 32, 5, 4, 3, 3, 3, 205, 10, "寿春", "永安", 83, "多疑", new string[]{"果敢"}, new string[]{"珍宝"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "liuxun2");
 config[110013] = new HeroConfig(110013, "乐就", 166, 199, 53, 66, 58, 42, 53, 5, 4, 3, 3, 3, 285, 10, "汝南", "江州", 82, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "lejiu");
 config[110014] = new HeroConfig(110014, "桥蕤", 164, 199, 62, 67, 37, 40, 56, 5, 4, 3, 3, 3, 275, 10, "寿春", "建宁", 81, "刚猛", new string[]{"果敢"}, new string[]{"武艺"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "qiaorui");
-config[110015] = new HeroConfig(110015, "阎象", 166, 199, 30, 27, 70, 75, 51, 3, 2, 2, 2, 4, 263, 10, "寿春", "寿春", 88, "冷静", new string[]{"忠义","智识"}, new string[]{"读书"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, new string[]{"谏袁术称帝"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "yanxiang");
-config[110016] = new HeroConfig(110016, "韩胤", 168, 199, 26, 29, 64, 55, 44, 2, 1, 2, 2, 4, 226, 10, "汝南", "梓潼", 78, "多疑", new string[]{"能言"}, new string[]{"外交"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, new string[]{"出使吕布"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "hanyin");
+config[110015] = new HeroConfig(110015, "阎象", 166, 199, 30, 27, 70, 75, 51, 3, 2, 2, 2, 6, 263, 10, "寿春", "寿春", 88, "冷静", new string[]{"忠义","智识"}, new string[]{"读书"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, new string[]{"谏袁术称帝"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "yanxiang");
+config[110016] = new HeroConfig(110016, "韩胤", 168, 199, 26, 29, 64, 55, 44, 2, 3, 2, 2, 4, 226, 10, "汝南", "梓潼", 78, "多疑", new string[]{"能言"}, new string[]{"外交"}, "淮南", new string[]{"袁术"}, new string[]{"无"}, new string[]{"出使吕布"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "hanyin");
 config[110017] = new HeroConfig(110017, "韩浩", 170, 215, 69, 72, 68, 88, 62, 6, 5, 4, 3, 4, 375, 10, "寿春", "上庸", 90, "冷静", new string[]{"忠义","勤勉"}, new string[]{"屯田"}, "淮南", new string[]{"曹操"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "hanhao");
 config[100011] = new HeroConfig(100011, "公孙瓒", 160, 199, 83, 81, 75, 46, 77, 8, 7, 5, 4, 6, 386, 11, "北平", "汉中", 100, "刚愎", new string[]{"果敢"}, new string[]{"白马","射猎"}, "幽州", new string[]{"赵云"}, new string[]{"袁绍"}, new string[]{"白马义从"}, 1, null, "", "", "core", "SwordHitYellowCritical", "gongsunzan");
 config[111001] = new HeroConfig(111001, "公孙范", 165, 195, 73, 69, 64, 62, 61, 6, 5, 4, 3, 4, 347, 11, "北平", "汝南", 100, "急躁", new string[]{"果敢"}, new string[]{"武艺"}, "幽州", new string[]{"公孙瓒"}, new string[]{"无"}, null, 1, null, "", "", "def", "SwordHitWhiteCritical", "gongsunfan");
@@ -568,7 +569,7 @@ config[199006] = new HeroConfig(199006, "庞统", 179, 214, 85, 47, 98, 86, 65, 
 config[199007] = new HeroConfig(199007, "张苞", 199, 231, 75, 87, 47, 45, 67, 8, 7, 5, 4, 5, 340, 99, "", "零陵", 0, "急躁", new string[]{"忠义","果敢"}, new string[]{"武艺"}, "蜀汉后期", new string[]{"关兴"}, new string[]{"无"}, new string[]{"为父报仇"}, 1, null, "乱", "", "atk", "SwordHitYellowCritical", "zhangbao");
 config[199008] = new HeroConfig(199008, "关索", 200, 263, 74, 81, 50, 46, 72, 7, 6, 5, 4, 5, 343, 99, "", "江陵", 0, "刚猛", new string[]{"忠义","果敢"}, new string[]{"武艺"}, "蜀汉后期", new string[]{"关羽"}, new string[]{"无"}, new string[]{"花关索"}, 3, null, "", "", "shoot", "BulletExplosionBlue", "guansuo");
 config[199009] = new HeroConfig(199009, "黄月英", 183, 234, 58, 34, 86, 85, 70, 3, 2, 3, 3, 6, 351, 99, "", "江夏", 0, "冷静", new string[]{"智识","贤明"}, new string[]{"发明","农事"}, "蜀汉", new string[]{"诸葛亮"}, new string[]{"无"}, new string[]{"木牛流马"}, 3, null, "", "", "shoot", "GasShootFire", "huangyueying");
-config[199010] = new HeroConfig(199010, "刘禅", 207, 271, 12, 15, 27, 40, 52, 1, 1, 1, 1, 1, 151, 99, "", "新野", 0, "懦弱", new string[]{"庸常"}, new string[]{"玩乐","美色"}, "蜀汉后主", new string[]{"诸葛亮"}, new string[]{"无"}, new string[]{"乐不思蜀"}, 3, null, "碉", "", "help", "SoulExplosionOrange", "liushan");
+config[199010] = new HeroConfig(199010, "刘禅", 207, 271, 12, 15, 27, 40, 52, 4, 1, 2, 1, 6, 151, 99, "", "新野", 0, "懦弱", new string[]{"庸常"}, new string[]{"玩乐","美色"}, "蜀汉后主", new string[]{"诸葛亮"}, new string[]{"无"}, new string[]{"乐不思蜀"}, 3, null, "碉", "", "help", "SoulExplosionOrange", "liushan");
 config[199011] = new HeroConfig(199011, "刘巴", 170, 222, 33, 24, 78, 85, 65, 3, 2, 2, 2, 5, 296, 99, "", "长沙", 0, "刚直", new string[]{"清廉","才思"}, new string[]{"算术","书法"}, "蜀汉", new string[]{"刘备"}, new string[]{"张飞"}, new string[]{"铸直百钱"}, 3, null, "纷", "", "inte", "FanExplosion", "liuba");
 config[199012] = new HeroConfig(199012, "司马懿", 179, 251, 98, 63, 98, 93, 87, 7, 5, 4, 4, 7, 465, 99, "", "庐江", 0, "隐忍", new string[]{"雄才","坚韧"}, new string[]{"兵法","权谋"}, "河内司马氏", new string[]{"曹丕"}, new string[]{"诸葛亮","曹爽"}, new string[]{"高平陵之变"}, 3, null, "鬼", "", "inte", "ShadowExplosion", "simayi");
 config[199013] = new HeroConfig(199013, "夏侯霸", 200, 259, 82, 77, 69, 53, 68, 7, 6, 5, 4, 5, 371, 99, "", "会稽", 0, "急躁", new string[]{"忠义","果敢"}, new string[]{"武艺"}, "曹魏", new string[]{"姜维"}, new string[]{"司马懿"}, new string[]{"投蜀"}, 1, null, "连", "", "atk", "SwordHitYellowCritical", "xiahouba");
@@ -583,12 +584,12 @@ config[199025] = new HeroConfig(199025, "张角", 156, 184, 87, 29, 86, 82, 88, 
 config[199026] = new HeroConfig(199026, "张宝", 155, 184, 83, 71, 81, 78, 75, 7, 6, 5, 4, 5, 406, 99, "", "汝南", 0, "急躁", new string[]{"果敢"}, new string[]{"妖术"}, "黄巾", new string[]{"张角"}, new string[]{"无"}, null, 1, null, "劫", "", "atk", "SwordHitYellowCritical", "zhangbao2");
 config[199027] = new HeroConfig(199027, "张梁", 156, 184, 78, 80, 74, 75, 70, 7, 6, 5, 4, 5, 394, 99, "", "寿春", 0, "急躁", new string[]{"果敢"}, new string[]{"妖术"}, "黄巾", new string[]{"张角"}, new string[]{"无"}, null, 3, null, "", "", "def", "SwordHitYellowCritical", "zhangliang");
 config[199029] = new HeroConfig(199029, "王异", 170, 214, 73, 51, 82, 75, 78, 6, 5, 4, 4, 5, 375, 99, "", "北平", 0, "冷静", new string[]{"忠义","坚韧"}, new string[]{"兵法","女红"}, "曹魏", new string[]{"赵昂"}, new string[]{"马超"}, new string[]{"守冀城"}, 1, null, "", "", "atk", "SwordHitYellowCritical", "wangyi");
-config[199030] = new HeroConfig(199030, "蔡琰", 177, 249, 61, 13, 77, 75, 82, 2, 1, 2, 2, 4, 316, 99, "", "蓟", 0, "隐忍", new string[]{"才思"}, new string[]{"音律","读书"}, "汉末才女", new string[]{"曹操"}, new string[]{"无"}, new string[]{"文姬归汉"}, 3, null, "碉", "", "help", "StormExplosion", "caiyan");
+config[199030] = new HeroConfig(199030, "蔡琰", 177, 249, 61, 13, 77, 75, 82, 2, 4, 2, 2, 4, 316, 99, "", "蓟", 0, "隐忍", new string[]{"才思"}, new string[]{"音律","读书"}, "汉末才女", new string[]{"曹操"}, new string[]{"无"}, new string[]{"文姬归汉"}, 3, null, "碉", "", "help", "StormExplosion", "caiyan");
 config[199031] = new HeroConfig(199031, "马谡", 190, 228, 70, 72, 88, 70, 65, 4, 3, 3, 3, 5, 381, 99, "", "襄阳", 0, "刚愎", new string[]{"才思"}, new string[]{"兵法","清谈"}, "蜀汉", new string[]{"诸葛亮"}, new string[]{"无"}, new string[]{"失街亭"}, 3, null, "百", "", "inte", "StormExplosion", "masu");
-config[199032] = new HeroConfig(199032, "马良", 187, 222, 68, 60, 93, 87, 86, 3, 2, 2, 2, 5, 405, 99, "", "襄阳", 0, "谦和", new string[]{"贤明","仁德"}, new string[]{"书法","读书"}, "蜀汉", new string[]{"诸葛亮"}, new string[]{"无"}, new string[]{"白眉最良"}, 3, null, "静", "", "help", "SharpExplosionGreen", "maliang");
+config[199032] = new HeroConfig(199032, "马良", 187, 222, 68, 60, 93, 87, 86, 3, 2, 2, 2, 7, 405, 99, "", "襄阳", 0, "谦和", new string[]{"贤明","仁德"}, new string[]{"书法","读书"}, "蜀汉", new string[]{"诸葛亮"}, new string[]{"无"}, new string[]{"白眉最良"}, 3, null, "静", "", "help", "SharpExplosionGreen", "maliang");
 config[199033] = new HeroConfig(199033, "蒋琬", 193, 246, 64, 52, 85, 97, 81, 4, 3, 2, 3, 5, 394, 99, "", "零陵", 0, "谦和", new string[]{"贤明","勤勉"}, new string[]{"治理"}, "蜀汉", new string[]{"诸葛亮"}, new string[]{"无"}, new string[]{"继任丞相"}, 3, null, "", "", "help", "SharpExplosionGreen", "jiangwan");
 config[199034] = new HeroConfig(199034, "费祎", 185, 253, 68, 42, 83, 95, 83, 4, 3, 2, 3, 5, 386, 99, "", "江夏", 0, "谦和", new string[]{"贤明","能言"}, new string[]{"围棋"}, "蜀汉", new string[]{"诸葛亮","蒋琬"}, new string[]{"无"}, null, 3, null, "励", "", "help", "SharpExplosionGreen", "feiyi");
-config[199035] = new HeroConfig(199035, "郭攸之", 180, 243, 63, 48, 82, 80, 75, 3, 2, 2, 2, 4, 359, 99, "", "邺", 0, "谦和", new string[]{"贤明"}, new string[]{"读书"}, "蜀汉", new string[]{"诸葛亮"}, new string[]{"无"}, null, 3, null, "陷", "", "help", "SoulExplosionOrange", "guoyouzhi");
+config[199035] = new HeroConfig(199035, "郭攸之", 180, 243, 63, 48, 82, 80, 75, 3, 2, 2, 2, 6, 359, 99, "", "邺", 0, "谦和", new string[]{"贤明"}, new string[]{"读书"}, "蜀汉", new string[]{"诸葛亮"}, new string[]{"无"}, null, 3, null, "陷", "", "help", "SoulExplosionOrange", "guoyouzhi");
 config[199036] = new HeroConfig(199036, "邓芝", 178, 251, 70, 71, 80, 89, 87, 7, 6, 5, 4, 6, 416, 99, "", "新野", 0, "刚直", new string[]{"忠义","能言"}, new string[]{"外交"}, "蜀汉", new string[]{"诸葛亮"}, new string[]{"无"}, new string[]{"出使东吴"}, 1, null, "境", "", "def", "SwordHitYellowCritical", "dengzhi");
 config[199037] = new HeroConfig(199037, "王平", 175, 248, 83, 78, 75, 58, 51, 7, 6, 5, 4, 5, 365, 99, "", "汉中", 0, "冷静", new string[]{"忠义","坚韧"}, new string[]{"书法"}, "蜀汉", new string[]{"马谡"}, new string[]{"无"}, new string[]{"街亭劝谏"}, 1, null, "伏", "坚", "def", "SwordHitYellowCritical", "wangping");
 config[199038] = new HeroConfig(199038, "陆抗", 226, 274, 91, 63, 87, 88, 86, 8, 6, 5, 7, 6, 443, 99, "", "建业", 0, "冷静", new string[]{"忠义","贤明"}, new string[]{"兵法"}, "东吴后期", new string[]{"羊祜"}, new string[]{"无"}, new string[]{"西陵之战"}, 3, null, "透", "", "shoot", "BulletExplosionBlue", "lukang");
@@ -598,13 +599,16 @@ config[199041] = new HeroConfig(199041, "太史享", 190, 256, 53, 62, 45, 55, 5
 config[199042] = new HeroConfig(199042, "全琮", 198, 249, 75, 69, 68, 59, 64, 6, 5, 4, 5, 5, 356, 99, "", "陈留", 0, "谦和", new string[]{"果敢","贤明"}, new string[]{"结交"}, "东吴", new string[]{"孙权"}, new string[]{"无"}, new string[]{"芍陂之战"}, 1, null, "实", "", "def", "SwordHitYellowCritical", "quanzong");
 config[199043] = new HeroConfig(199043, "骆统", 193, 236, 69, 53, 69, 70, 70, 4, 3, 3, 4, 4, 344, 99, "", "濮阳", 0, "谦和", new string[]{"仁德","贤明"}, new string[]{"读书"}, "东吴", new string[]{"孙权"}, new string[]{"无"}, new string[]{"谏孙权宽刑"}, 1, null, "", "", "def", "SwordHitWhiteCritical", "luotong");
 
-
+RebuildIndex();
 
 }
 
-
-
-
+        private static void RebuildIndex()
+        {
+            foreach (var kv in config)
+            {
+            }
+        }
 
         public static HeroConfig GetConfig(int id)
         {
@@ -615,7 +619,6 @@ config[199043] = new HeroConfig(199043, "骆统", 193, 236, 69, 53, 69, 70, 70, 
             }
             throw new NullReferenceException(string.Format("配置表HeroConfig不存在id={0}", id));
         }
-
 
 
         public static bool HasConfig(int id)
