@@ -25,6 +25,7 @@ namespace DesignCoder
         private Dictionary<string, ConfigData> loadedConfigs = new Dictionary<string, ConfigData>();
         private Dictionary<string, string> originalSources = new Dictionary<string, string>();
         private HashSet<string> modifiedConfigs = new HashSet<string>();
+        private string copiedCellValue = null;
 
         public Form1()
         {
@@ -1400,6 +1401,63 @@ namespace DesignCoder
             using (var distForm = new DistributionForm(field.ChineseName ?? field.Name, field.Name, values))
             {
                 distForm.ShowDialog(this);
+            }
+        }
+
+        private void dataGridView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (currentConfig == null || dataTable == null) return;
+
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                if (dataGridView1.SelectedCells.Count == 1)
+                {
+                    var cell = dataGridView1.SelectedCells[0];
+                    if (cell.RowIndex >= HeaderRowCount && cell.ColumnIndex >= 0)
+                    {
+                        copiedCellValue = cell.Value?.ToString() ?? "";
+                    }
+                }
+                e.Handled = true;
+            }
+            else if (e.Control && e.KeyCode == Keys.V)
+            {
+                if (copiedCellValue != null && dataGridView1.SelectedCells.Count > 1)
+                {
+                    bool anyChanged = false;
+                    foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
+                    {
+                        if (cell.RowIndex >= HeaderRowCount && cell.ColumnIndex >= 0)
+                        {
+                            int fieldIdx = GetFieldIndexFromColumnIndex(cell.ColumnIndex);
+                            if (fieldIdx >= 0 && fieldIdx < currentConfig.Fields.Count)
+                            {
+                                string fieldType = currentConfig.Fields[fieldIdx].Type;
+                                if (!ValidateInput(copiedCellValue, fieldType))
+                                {
+                                    MessageBox.Show(string.Format("值\"{0}\"不符合字段\"{1}\"的类型({2})", copiedCellValue, currentConfig.Fields[fieldIdx].Name, fieldType), "类型错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
+                    {
+                        if (cell.RowIndex >= HeaderRowCount && cell.ColumnIndex >= 0)
+                        {
+                            cell.Value = copiedCellValue;
+                            anyChanged = true;
+                        }
+                    }
+
+                    if (anyChanged)
+                    {
+                        SyncDataTableToConfig();
+                        MarkCurrentConfigModified();
+                    }
+                }
+                e.Handled = true;
             }
         }
     }

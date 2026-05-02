@@ -22,6 +22,7 @@ public class SelectArmsItem : MonoBehaviour
 
     public Button button;
     private System.Action<SelectArmsItem> onClickCallback;
+    private int armsId;
 
     void Start()
     {
@@ -38,8 +39,10 @@ public class SelectArmsItem : MonoBehaviour
 
     public void SetData(int armId)
     {
+        armsId = armId;
         ArmsConfig config = ArmsConfig.GetConfig(armId);
         NameText.text = config.NameS;
+        NameText.color = GetColorByLevel(config.Level);
         AtkText.text = config.Atk.ToString();
         DefText.text = config.Def.ToString();
 
@@ -109,5 +112,15 @@ public class SelectArmsItem : MonoBehaviour
     public bool IsSelected()
     {
         return isSelected;
+    }
+
+    public int GetArmsId()
+    {
+        return armsId;
+    }
+
+    private static Color GetColorByLevel(int level)
+    {
+        return SystemConst.Arms.GetColorByLevel(level);
     }
 }

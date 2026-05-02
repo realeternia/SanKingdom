@@ -91,8 +91,21 @@ public class SaveHeroData
             return false;
         }
         
+        int oldArmsId = armsId;
+        var oldArmsConfig = oldArmsId > 0 ? ArmsConfig.GetConfig(oldArmsId) : null;
+        var newArmsConfig = ArmsConfig.GetConfig(newArmsId);
+        
         armsId = newArmsId;
         force.RecalculateResUsed();
+        
+        if (oldArmsConfig == null || oldArmsConfig.HorseCost != newArmsConfig.HorseCost)
+            PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = "horse", Value = force.GetAttr("horse"), Used = force.GetResUsed("horse") });
+        if (oldArmsConfig == null || oldArmsConfig.SteelCost != newArmsConfig.SteelCost)
+            PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = "steel", Value = force.GetAttr("steel"), Used = force.GetResUsed("steel") });
+        if (oldArmsConfig == null || oldArmsConfig.WoodCost != newArmsConfig.WoodCost)
+            PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = "wood", Value = force.GetAttr("wood"), Used = force.GetResUsed("wood") });
+        if (oldArmsConfig == null || oldArmsConfig.StoneCost != newArmsConfig.StoneCost)
+            PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = "stone", Value = force.GetAttr("stone"), Used = force.GetResUsed("stone") });
         
         GameLog.Info($"SetArmsId: 英雄 {heroId} 成功设置兵种为 {newArmsId}");
         return true;

@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
-
+using Controls.Utils;
 
 public class HeroInfoPanelManager : MonoBehaviour
 {
@@ -51,8 +51,8 @@ public class HeroInfoPanelManager : MonoBehaviour
     private int[] currentHeroList;
     private int currentTargetHeroId;
 
-    private static readonly string[] SortOptions = { "所在", "统帅", "武力", "智力", "内政", "魅力" };
-    private static readonly string[] SortAttrKeys = { "City", "LeadShip", "Str", "Inte", "Fair", "Charm" };
+    private static readonly string[] SortOptions = { "所在", "兵种", "统帅", "武力", "智力", "内政", "魅力" };
+    private static readonly string[] SortAttrKeys = { "City", "Arms", "LeadShip", "Str", "Inte", "Fair", "Charm" };
 
     private void Start()
     {
@@ -76,6 +76,15 @@ public class HeroInfoPanelManager : MonoBehaviour
         typeDropdown.AddOptions(SortOptions.ToList());
         typeDropdown.value = 0;
         typeDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
+
+        if (typeDropdown.template != null)
+        {
+            var scrollbars = typeDropdown.template.GetComponentsInChildren<Scrollbar>(true);
+            foreach (var scrollbar in scrollbars)
+            {
+                scrollbar.gameObject.SetActive(false);
+            }
+        }
     }
     
     private void OnDropdownValueChanged(int index)
@@ -96,7 +105,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         lastSelectedMode = null;
 
         var sortedHeroIds = SortHeroes(currentHeroList, sortKey);
-        
+
         HeroInfoCell targetCell = null;
         foreach (var hId in sortedHeroIds)
         {
@@ -114,6 +123,7 @@ public class HeroInfoPanelManager : MonoBehaviour
             if (hId == currentTargetHeroId)
             {
                 targetCell = cellInfo;
+                GameLog.Info($"RefreshHeroList: targetCell={targetCell != null}");
             }
         }
 
@@ -150,6 +160,15 @@ public class HeroInfoPanelManager : MonoBehaviour
                 return cityIdB.CompareTo(cityIdA);
             });
         }
+        else if (sortKey == "Arms")
+        {
+            heroList.Sort((a, b) =>
+            {
+                int levelA = GetArmsLevel(a);
+                int levelB = GetArmsLevel(b);
+                return levelB.CompareTo(levelA);
+            });
+        }
         else
         {
             heroList.Sort((a, b) =>
@@ -166,6 +185,15 @@ public class HeroInfoPanelManager : MonoBehaviour
         }
         
         return heroList.ToArray();
+    }
+
+    private int GetArmsLevel(int heroId)
+    {
+        var heroData = GameManager.Instance.GetHero(heroId);
+        if (heroData == null || heroData.armsId <= 0)
+            return 0;
+        var armsConfig = ArmsConfig.GetConfig(heroData.armsId);
+        return armsConfig.Level;
     }
     
     private int GetAttrValue(SaveHeroData heroData, string attrKey)
@@ -199,6 +227,18 @@ public class HeroInfoPanelManager : MonoBehaviour
             }
             return $"{heroName} <color=green>{cityName}</color>";
         }
+        else if (sortKey == "Arms")
+        {
+            string armsName = "";
+            if (heroData != null && heroData.armsId > 0)
+            {
+                var armsConfig = ArmsConfig.GetConfig(heroData.armsId);
+                Color color = GetColorByArmsLevel(armsConfig.Level);
+                string colorHex = ColorUtility.ToHtmlStringRGB(color);
+                armsName = $"<color=#{colorHex}>{armsConfig.NameS}</color>";
+            }
+            return $"{heroName} {armsName}";
+        }
         else
         {
             if (heroData != null) heroData.InitAttrsFromConfig();
@@ -206,6 +246,11 @@ public class HeroInfoPanelManager : MonoBehaviour
             string coloredValue = GetColoredAttrValue(sortKey, attrValue);
             return $"{heroName} {coloredValue}";
         }
+    }
+
+    private Color GetColorByArmsLevel(int level)
+    {
+        return SystemConst.Arms.GetColorByLevel(level);
     }
     
     private string GetColoredAttrValue(string attrName, int value)
@@ -234,7 +279,48 @@ public class HeroInfoPanelManager : MonoBehaviour
         lastSelectedMode = cellMode;
         
         heroId = cellMode.heroId;
+        
+        ScrollToCell(cellMode);
+        
         UpdateHeroInfo(heroId);
+    }
+
+    private void ScrollToCell(HeroInfoCell cellMode)
+    {
+        if (scrollRectNames == null || cellMode == null)
+        {
+            GameLog.Warn($"ScrollToCell: scrollRectNames={scrollRectNames}, cellMode={cellMode}");
+            return;
+        }
+
+        RectTransform contentRect = rankRegionNames.GetComponent<RectTransform>();
+        RectTransform cellRect = cellMode.GetComponent<RectTransform>();
+        
+        if (contentRect == null || cellRect == null)
+        {
+            GameLog.Warn($"ScrollToCell: contentRect={contentRect}, cellRect={cellRect}");
+            return;
+        }
+
+        float contentHeight = contentRect.sizeDelta.y;
+        RectTransform viewportTransform = scrollRectNames.viewport;
+        float viewportHeight = viewportTransform != null ? viewportTransform.rect.height : scrollRectNames.GetComponent<RectTransform>().rect.height;
+        float cellY = -cellRect.anchoredPosition.y;
+        float cellHeight = cellRect.sizeDelta.y;
+
+        float targetY = cellY - viewportHeight / 2f + cellHeight / 2f;
+        float maxScroll = contentHeight - viewportHeight;
+        
+        if (maxScroll <= 0)
+        {
+            scrollRectNames.normalizedPosition = new Vector2(0, 1);
+            return;
+        }
+
+        float normalizedY = 1f - (targetY / maxScroll);
+        normalizedY = Mathf.Clamp01(normalizedY);
+        
+        scrollRectNames.normalizedPosition = new Vector2(0, normalizedY);
     }
 
     private void UpdateHeroInfo(int hId)
@@ -319,6 +405,11 @@ public class HeroInfoPanelManager : MonoBehaviour
         if (armsAttrs.Count == 0 || armsPanel == null || armsItemPrefab == null)
             return;
 
+        var heroData = GameManager.Instance.GetHero(heroId);
+        int currentArmsId = heroData != null ? heroData.armsId : 0;
+
+        UpdateArmsInfo(currentArmsId);
+
         float itemWidth = 180f;
         float spacing = 10f;
         float startX = -(armsAttrs.Count - 1) * (itemWidth + spacing) / 2f;
@@ -333,9 +424,50 @@ public class HeroInfoPanelManager : MonoBehaviour
             ArmsItemControl control = item.GetComponent<ArmsItemControl>();
             if (control != null)
             {
-                control.Init(attrConfig, heroConfig);
+                control.Init(attrConfig, heroConfig, currentArmsId);
             }
             armsItems.Add(control);
+        }
+    }
+
+    private void UpdateArmsInfo(int armsId)
+    {
+        if (armsNameText == null || armsAttrText == null)
+            return;
+
+        if (armsId <= 0)
+        {
+            armsNameText.text = "无";
+            armsNameText.color = SystemConst.Arms.GetColorByLevel(0);
+            armsAttrText.text = "";
+            return;
+        }
+
+        var armsConfig = ArmsConfig.GetConfig(armsId);
+        armsNameText.text = armsConfig.NameS;
+        armsNameText.color = SystemConst.Arms.GetColorByLevel(armsConfig.Level);
+        armsAttrText.text = $"攻{armsConfig.Atk} 防{armsConfig.Def}";
+    }
+
+    private void RefreshArmsBG()
+    {
+        var heroData = GameManager.Instance.GetHero(heroId);
+        int currentArmsId = heroData != null ? heroData.armsId : 0;
+
+        UpdateArmsInfo(currentArmsId);
+
+        var armsAttrs = HeroAttrConfig.ConfigList.Where(c => c.IsArmsAttr).ToList();
+        for (int i = 0; i < armsItems.Count && i < armsAttrs.Count; i++)
+        {
+            if (armsItems[i] != null)
+            {
+                armsItems[i].UpdateBGColor(armsAttrs[i], currentArmsId);
+            }
+        }
+
+        if (typeDropdown != null && typeDropdown.value == 1)
+        {
+            RefreshHeroList("Arms");
         }
     }
 

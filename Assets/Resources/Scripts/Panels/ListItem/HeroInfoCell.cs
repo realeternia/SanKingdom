@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using CommonConfig;
+using Controls.Utils;
 
 public class HeroInfoCell : MonoBehaviour, IPointerDownHandler
 {
@@ -39,6 +40,7 @@ public class HeroInfoCell : MonoBehaviour, IPointerDownHandler
     {
         isSelect = selected;
         UpdateBackgroundColor();
+        GameLog.Info($"HeroInfoCell.SetSelected: heroId={heroId}, selected={selected}, color={(backgroundImage != null ? backgroundImage.color.ToString() : "null")}");
     }
 
     private void UpdateBackgroundColor()

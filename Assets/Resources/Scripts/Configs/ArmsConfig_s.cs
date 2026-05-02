@@ -6,7 +6,7 @@ namespace CommonConfig
 {
     public class ArmsConfig
     {
-                                public class FieldMetaInfo
+                                                public class FieldMetaInfo
         {
             public string fieldName;
             public string fieldType;
@@ -44,6 +44,7 @@ namespace CommonConfig
             {"Name", new FieldMetaInfo("名字", "string", 0)},
             {"NameS", new FieldMetaInfo("名字", "string", 64)},
             {"Type", new FieldMetaInfo("兵种类型", "ArmsType", 60)},
+            {"Level", new FieldMetaInfo("等级", "int", 0)},
             {"Atk", new FieldMetaInfo("攻击", "int", 60)},
             {"Def", new FieldMetaInfo("防御", "int", 60)},
             {"MoveSpeed", new FieldMetaInfo("移动速度", "int", 60)},
@@ -79,6 +80,10 @@ namespace CommonConfig
         /// </summary>
         public string NameS;
         public ArmsType Type;
+        /// <summary>
+        ///等级
+        /// </summary>
+        public int Level;
         public int Atk;
         public int Def;
         public int MoveSpeed;
@@ -132,12 +137,13 @@ namespace CommonConfig
         public int StoneCost;
 
 
-        public ArmsConfig(int Id, string Name, string NameS, ArmsType Type, int Atk, int Def, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, string HitEffect, string Model, int ModelCountFactor, string OvercomeStrong, string OvercomeWeak, int HorseCost, int SteelCost, int WoodCost, int StoneCost)
+        public ArmsConfig(int Id, string Name, string NameS, ArmsType Type, int Level, int Atk, int Def, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, string HitEffect, string Model, int ModelCountFactor, string OvercomeStrong, string OvercomeWeak, int HorseCost, int SteelCost, int WoodCost, int StoneCost)
         {
             this.Id = Id;
             this.Name = Name;
             this.NameS = NameS;
             this.Type = Type;
+            this.Level = Level;
             this.Atk = Atk;
             this.Def = Def;
             this.MoveSpeed = MoveSpeed;
@@ -173,16 +179,16 @@ namespace CommonConfig
 public static void Load()
 {
 config.Clear();
-config[0] = new ArmsConfig(0, "dyb", "动员兵", ArmsType.SodWalk, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "", 0, 0, 0, 0);
-config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 15, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "戟弩炮车", "弓", 2, 0, 0, 0);
-config[102] = new ArmsConfig(102, "che", "车", ArmsType.SodTank, 20, 25, 10, 17, 0, 0f, "SwordHitGreenCritical", "SodStick", 40, "", "", 0, 1, 1, 0);
-config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 18, 5, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 40, "枪戟", "刀", 0, 0, 1, 0);
-config[202] = new ArmsConfig(202, "pao", "炮", ArmsType.SodTank, 25, 8, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodBow", 40, "盾", "士", 0, 2, 1, 0);
-config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "", 0, 1, 0, 0);
-config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 12, 12, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "枪", "", 0, 1, 1, 0);
-config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 14, 14, 10, 40, 30, 3f, "FanExplosion", "SodStick", 40, "", "", 0, 1, 0, 0);
-config[701] = new ArmsConfig(701, "shan", "扇", ArmsType.SodWalk, 5, 8, 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 40, "", "", 0, 0, 0, 0);
-config[702] = new ArmsConfig(702, "mou", "谋", ArmsType.SodWalk, 3, 5, 7, 50, 26, 8f, "GasShootFire", "SodStick", 40, "", "", 0, 0, 0, 0);
+config[1] = new ArmsConfig(1, "dyb", "动员兵", ArmsType.SodWalk, 0, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "", 0, 0, 0, 0);
+config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 1, 15, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "戟弩炮车", "弓", 2, 0, 0, 0);
+config[102] = new ArmsConfig(102, "che", "车", ArmsType.SodTank, 1, 20, 25, 10, 17, 0, 0f, "SwordHitGreenCritical", "SodStick", 40, "", "", 0, 1, 1, 0);
+config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 1, 18, 5, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 40, "枪戟", "刀", 0, 0, 1, 0);
+config[202] = new ArmsConfig(202, "pao", "炮", ArmsType.SodTank, 1, 25, 8, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodBow", 40, "盾", "士", 0, 2, 1, 0);
+config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 1, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "", 0, 1, 0, 0);
+config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 12, 12, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "枪", "", 0, 1, 1, 0);
+config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 14, 14, 10, 40, 30, 3f, "FanExplosion", "SodStick", 40, "", "", 0, 1, 0, 0);
+config[701] = new ArmsConfig(701, "shan", "扇", ArmsType.SodWalk, 1, 5, 8, 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 40, "", "", 0, 0, 0, 0);
+config[702] = new ArmsConfig(702, "mou", "谋", ArmsType.SodWalk, 1, 3, 5, 7, 50, 26, 8f, "GasShootFire", "SodStick", 40, "", "", 0, 0, 0, 0);
 
 RebuildIndex();
 

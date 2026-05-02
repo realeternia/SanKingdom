@@ -52,7 +52,7 @@ public class SaveForceData
         }
         if (isPlayer && PanelManager.Instance != null)
         {
-            PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = type.ToLower(), Value = GetAttr(type.ToLower()) });
+            PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = type.ToLower(), Value = GetAttr(type.ToLower()), Used = GetResUsed(type.ToLower()) });
         }
     }
 
@@ -123,7 +123,7 @@ public class SaveForceData
         {
             foreach (var kvp in posResCache)
             {
-                PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = kvp.Key, Value = (int)Math.Floor(kvp.Value) });
+                PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = kvp.Key, Value = (int)Math.Floor(kvp.Value), Used = GetResUsed(kvp.Key) });
             }
         }
     }

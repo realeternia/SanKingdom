@@ -172,7 +172,7 @@ public class PanelManager : MonoBehaviour
         }
     }
 
-    private void RefreshTopNodeResItem(string attrName, int value)
+    private void RefreshTopNodeResItem(string attrName, int value, int used = -1)
     {
         foreach (Transform child in topNode.transform)
         {
@@ -180,6 +180,8 @@ public class PanelManager : MonoBehaviour
             if (resItem != null && resItem.attrName == attrName)
             {
                 resItem.UpdateNum(value);
+                if (used >= 0)
+                    resItem.UpdateUsed(used);
                 return;
             }
         }
@@ -532,7 +534,7 @@ public class PanelManager : MonoBehaviour
         if (data.Name == "ForceResChange")
         {
             var signal = data as ForceResChangeSignal;
-            RefreshTopNodeResItem(signal.ResType, signal.Value);
+            RefreshTopNodeResItem(signal.ResType, signal.Value, signal.Used);
         }
 
         if(worldPanel != null)

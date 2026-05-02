@@ -181,32 +181,23 @@ public class RankPanelManager : MonoBehaviour
         
         var rankCellInfoPrefab = Resources.Load<GameObject>("Prefabs/Panels/ListItem/" + prefabName);
 
-        // 为每个英雄配置创建一个RankCell
         int count = 0;
         if (prefabName == "RankCellMain")
         {
-            var heroConfigs = HeroConfig.ConfigList;
             List<int> heroList = new List<int>();
-            foreach (var heroConfig in heroConfigs)
+            var heroes = GameManager.Instance.SaveData.heros.Where(h => h.state == HeroState.Normal && h.forceId == lastSelectedForce.forceId).ToList();
+            foreach (var heroData in heroes)
             {
-                var heroData = GameManager.Instance.GetHero(heroConfig.Id);
-                if (heroData == null)
-                    continue;
-                if (heroData.state != HeroState.Normal || heroData.forceId != lastSelectedForce.forceId)
-                    continue;
-
-                // 实例化RankCell
                 GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
                 cell.transform.localScale = Vector3.one;
 
-                // 获取RankCellInfo组件
                 RankCellInfo cellInfo = cell.GetComponent<RankCellInfo>();
                 cellInfo.rankPanelManager = this;
                 cellInfo.SetMode(false);
                 if (cellInfo != null)
                     cellInfo.Init(heroData);
                 count++;
-                heroList.Add(heroConfig.Id);
+                heroList.Add(heroData.heroId);
             }
             mHeroList = heroList.ToArray();
         }

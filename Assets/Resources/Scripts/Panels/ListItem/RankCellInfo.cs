@@ -51,6 +51,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
         viewButton.onClick.AddListener(() =>
         {
+            GameLog.Info($"RankCellInfo.viewButton: heroId={heroId}, mHeroList={string.Join(",", rankPanelManager.mHeroList ?? new int[0])}");
             PanelManager.Instance.ShowHeroInfoPanel(rankPanelManager.mHeroList, heroId);
         });
     }

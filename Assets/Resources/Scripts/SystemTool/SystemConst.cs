@@ -1,5 +1,28 @@
+using UnityEngine;
+using System;
+
 public static class SystemConst
 {
+    public static class Arms
+    {
+        public static readonly Color[] LevelColors = new Color[]
+        {
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            Color.white,
+            new Color(0.27f, 0.51f, 0.9f, 1f),
+            new Color(0.2f, 0.8f, 0.2f, 1f),
+            new Color(1f, 0.85f, 0f, 1f),
+            new Color(1f, 0.5f, 0f, 1f)
+        };
+
+        public static Color GetColorByLevel(int level)
+        {
+            if (level >= 0 && level < LevelColors.Length)
+                return LevelColors[level];
+            return LevelColors[LevelColors.Length - 1];
+        }
+    }
+
     public static class Game
     {
         /// <summary>
@@ -49,7 +72,7 @@ public static class SystemConst
         /// <summary>
         /// 默认兵种ID
         /// </summary>
-        public const int DEFAULT_ARMS_ID = 601;
+        public const int DEFAULT_ARMS_ID = 1;
         /// <summary>
         /// 野外势力ID
         /// </summary>

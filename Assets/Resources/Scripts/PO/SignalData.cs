@@ -22,6 +22,7 @@ public class ForceResChangeSignal : SignalData
     public ForceResChangeSignal() { Name = "ForceResChange"; }
     public string ResType;
     public int Value;
+    public int Used;
 }
 
 public class PhaseChangeSignal : SignalData

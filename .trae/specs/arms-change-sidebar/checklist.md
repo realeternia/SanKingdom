@@ -1,6 +1,6 @@
-- [ ] armsChangeBtn 点击后弹出 SideArmsSelector 侧边栏，且侧边栏获知当前英雄 heroId
-- [ ] SideArmysSelector confirmButton 点击时，未选择兵种不执行操作
-- [ ] SideArmysSelector confirmButton 点击时，资源不足通过 SystemTip 飘字提示"资源不足"
-- [ ] SideArmysSelector confirmButton 点击时，资源充足调用 SaveHeroData.SetArmsId 更新兵种并关闭侧边栏
-- [ ] ArmsItemControl BG 默认黑色，根据 armsId 的 ArmsType 匹配 attrConfig.name 时设为绿色
-- [ ] 兵种切换成功后，HeroInfoPanel 中 ArmsItemControl 背景色根据新 armsId 刷新
+- [x] armsChangeBtn 点击后弹出 SideArmsSelector 侧边栏，且侧边栏获知当前英雄 heroId
+- [x] SideArmysSelector confirmButton 点击时，未选择兵种不执行操作
+- [x] SideArmysSelector confirmButton 点击时，资源不足通过 SystemTip 飘字提示"资源不足"
+- [x] SideArmysSelector confirmButton 点击时，资源充足调用 SaveHeroData.SetArmsId 更新兵种并关闭侧边栏
+- [x] ArmsItemControl BG 默认黑色，根据 armsId 的 ArmsType 匹配 attrConfig.name 时设为绿色
+- [x] 兵种切换成功后，HeroInfoPanel 中 ArmsItemControl 背景色根据新 armsId 刷新
