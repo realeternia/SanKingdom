@@ -196,6 +196,14 @@ namespace DesignCoder
             {
                 int argsStart = em.Index + em.Length;
                 var args = ParseConstructorArgs(loadBody, argsStart);
+                int id = int.Parse(em.Groups[1].Value);
+                
+                if (args.Count != data.Fields.Count)
+                {
+                    throw new Exception(string.Format("配置表 {0} 第 {1} 行参数数量不匹配：期望 {2} 个字段，实际解析到 {3} 个参数。请检查构造函数参数是否正确。", 
+                        data.ClassName, id, data.Fields.Count, args.Count));
+                }
+                
                 var row = new Dictionary<string, string>();
                 for (int i = 0; i < data.Fields.Count && i < args.Count; i++)
                 {
@@ -294,7 +302,7 @@ namespace DesignCoder
                 if (d == 0)
                 {
                     string trimmed = sb.ToString().TrimEnd();
-                    if (trimmed.EndsWith("}") || trimmed.EndsWith(")"))
+                    if (trimmed.EndsWith("}") || trimmed.EndsWith(")") || trimmed.EndsWith("]"))
                     {
                         while (i < source.Length && (source[i] == ' ' || source[i] == '\t')) i++;
                         if (i >= source.Length || source[i] == ',' || source[i] == ')')
@@ -325,15 +333,18 @@ namespace DesignCoder
             }
 
             if (type == "string[]")
-                return ParseArrayToDisplay(raw, true);
+                return ParseArrayToDisplay(raw, true, false);
 
             if (type == "int[]")
-                return ParseArrayToDisplay(raw, false);
+                return ParseArrayToDisplay(raw, false, false);
+
+            if (type == "float[]")
+                return ParseArrayToDisplay(raw, false, true);
 
             return raw;
         }
 
-        private static string ParseArrayToDisplay(string raw, bool isString)
+        private static string ParseArrayToDisplay(string raw, bool isString, bool isFloat)
         {
             var match = Regex.Match(raw, @"new\s+\w+\s*\[\s*\]\s*\{(.*)\}", RegexOptions.Singleline);
             if (!match.Success) return "";
@@ -368,6 +379,11 @@ namespace DesignCoder
                         sb.Append(inner[idx]); idx++;
                     }
                     string val = sb.ToString().Trim();
+                    if (isFloat && !string.IsNullOrEmpty(val))
+                    {
+                        if (val.EndsWith("f") || val.EndsWith("F"))
+                            val = val.Substring(0, val.Length - 1);
+                    }
                     if (!string.IsNullOrEmpty(val)) items.Add(val);
                 }
 
@@ -832,7 +848,7 @@ namespace DesignCoder
 
             if (type == "int[]")
             {
-                if (string.IsNullOrEmpty(display)) return "null";
+                if (string.IsNullOrEmpty(display)) return "new int[0]";
                 var items = display.Split(',');
                 var sb = new StringBuilder();
                 sb.Append("new int[]{");
@@ -840,6 +856,23 @@ namespace DesignCoder
                 {
                     if (i > 0) sb.Append(",");
                     sb.Append(items[i].Trim());
+                }
+                sb.Append("}");
+                return sb.ToString();
+            }
+
+            if (type == "float[]")
+            {
+                if (string.IsNullOrEmpty(display)) return "new float[0]";
+                var items = display.Split(',');
+                var sb = new StringBuilder();
+                sb.Append("new float[]{");
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (i > 0) sb.Append(",");
+                    string v = items[i].Trim();
+                    if (!v.EndsWith("f") && !v.EndsWith("F")) v = v + "f";
+                    sb.Append(v);
                 }
                 sb.Append("}");
                 return sb.ToString();

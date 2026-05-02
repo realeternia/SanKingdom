@@ -91,8 +91,10 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
         CityCellHero draggedHero = eventData.pointerDrag?.GetComponent<CityCellHero>();
         if (draggedHero != null && cityPanelManager != null)
         {
-            cityPanelManager.AssignHeroToDevNode(draggedHero.heroId, this);
-            BGMPlayer.Instance.PlaySound("Sounds/equip");
+            if (cityPanelManager.AssignHeroToDevNode(draggedHero.heroId, this))
+            {
+                BGMPlayer.Instance.PlaySound("Sounds/equip");
+            }
         }
     }
 

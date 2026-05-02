@@ -189,6 +189,7 @@ public static class SystemConst
         /// 君主担任太守的评分加成
         /// </summary>
         public const int KING_OWNER_BONUS_SCORE = 9999;
+        public const int KING_CITY_ID = -1;
     }
 
     public static class Economy

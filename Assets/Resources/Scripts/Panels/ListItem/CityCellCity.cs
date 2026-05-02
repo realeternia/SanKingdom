@@ -16,6 +16,7 @@ public class CityCellCity : MonoBehaviour, IPointerDownHandler
     public Image backgroundImage;
     public Color normalColor = Color.black;
     public Color selectedColor = Color.green;
+    public Image crownIcon;
 
     void Start()
     {
@@ -38,6 +39,32 @@ public class CityCellCity : MonoBehaviour, IPointerDownHandler
             }
         }
         cityName.text = city;
+        UpdateCrownIcon();
+    }
+
+    public void Init(int id, string displayName)
+    {
+        cityId = id;
+        cityName.text = displayName;
+        UpdateCrownIcon();
+    }
+
+    private void UpdateCrownIcon()
+    {
+        if (crownIcon == null) return;
+        
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null)
+        {
+            crownIcon.gameObject.SetActive(false);
+            return;
+        }
+        
+        var forceCfg = ForceConfig.GetConfig(cityData.forceId);
+        int kingHeroId = forceCfg.HeroId;
+        
+        bool isKingCity = cityData.ownerHeroId == kingHeroId;
+        crownIcon.gameObject.SetActive(isKingCity);
     }
 
     public void SetSelected(bool selected)

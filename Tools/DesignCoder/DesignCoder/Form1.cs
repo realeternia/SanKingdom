@@ -474,6 +474,29 @@ namespace DesignCoder
             {
                 return input == "true" || input == "false" || input == "True" || input == "False";
             }
+            if (type == "int[]")
+            {
+                if (string.IsNullOrWhiteSpace(input)) return true;
+                var items = input.Split(',');
+                foreach (var item in items)
+                {
+                    int v;
+                    if (!int.TryParse(item.Trim(), out v)) return false;
+                }
+                return true;
+            }
+            if (type == "float[]")
+            {
+                if (string.IsNullOrWhiteSpace(input)) return true;
+                var items = input.Split(',');
+                foreach (var item in items)
+                {
+                    string s = item.Trim().TrimEnd('f', 'F');
+                    float v;
+                    if (!float.TryParse(s, out v)) return false;
+                }
+                return true;
+            }
             return true;
         }
 
@@ -600,7 +623,7 @@ namespace DesignCoder
             Label lblType = new Label(); lblType.Text = "类型:"; lblType.Location = new Point(labelX, startY + 5); lblType.AutoSize = true; dlg.Controls.Add(lblType);
             ComboBox cmbType = new ComboBox();
             cmbType.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbType.Items.AddRange(new object[] { "int", "float", "string", "bool", "string[]", "int[]" });
+            cmbType.Items.AddRange(new object[] { "int", "float", "string", "bool", "string[]", "int[]", "float[]" });
             cmbType.Location = new Point(inputX, startY);
             cmbType.Size = new Size(inputW, 22);
             cmbType.SelectedIndex = 0;
@@ -661,6 +684,7 @@ namespace DesignCoder
                 case "string": return "";
                 case "string[]": return "";
                 case "int[]": return "";
+                case "float[]": return "";
                 default: return "";
             }
         }
@@ -1408,7 +1432,34 @@ namespace DesignCoder
         {
             if (currentConfig == null || dataTable == null) return;
 
-            if (e.Control && e.KeyCode == Keys.C)
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (dataGridView1.SelectedCells.Count == 0) return;
+
+                bool anyChanged = false;
+                foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
+                {
+                    if (cell.RowIndex >= HeaderRowCount && cell.ColumnIndex >= 0)
+                    {
+                        int fieldIdx = GetFieldIndexFromColumnIndex(cell.ColumnIndex);
+                        if (fieldIdx >= 0 && fieldIdx < currentConfig.Fields.Count)
+                        {
+                            string fieldType = currentConfig.Fields[fieldIdx].Type;
+                            string defaultValue = GetDefaultValueForType(fieldType);
+                            cell.Value = defaultValue;
+                            anyChanged = true;
+                        }
+                    }
+                }
+
+                if (anyChanged)
+                {
+                    SyncDataTableToConfig();
+                    MarkCurrentConfigModified();
+                }
+                e.Handled = true;
+            }
+            else if (e.Control && e.KeyCode == Keys.C)
             {
                 if (dataGridView1.SelectedCells.Count == 1)
                 {

@@ -50,6 +50,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     private bool isViewOnly = false;
     private int viewForceId = 0;
 
+    private bool IsKingCity()
+    {
+        return cityId == SystemConst.City.KING_CITY_ID;
+    }
+
     void Start()
     {
         closeBtn.onClick.AddListener(() =>
@@ -58,8 +63,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         });
 
         LoadCityCells();
-        LoadHeroCells();
-        CreateDevItems();
     }
 
     private void LoadCityCells()
@@ -86,7 +89,14 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             var cities = GameManager.Instance.GetCitiesByForce(viewForceId);
             int count = 0;
             CityCellCity currentCityCell = null;
-            
+
+            GameObject kingCell = Instantiate(rankCellCityPrefab, rankRegionCity.transform);
+            kingCell.transform.localScale = Vector3.one;
+            CityCellCity kingCellCity = kingCell.GetComponent<CityCellCity>();
+            kingCellCity.cityPanelManager = this;
+            kingCellCity.Init(SystemConst.City.KING_CITY_ID, "王命");
+            count++;
+
             foreach (var city in cities)
             {
                 GameObject cell = Instantiate(rankCellCityPrefab, rankRegionCity.transform);
@@ -140,6 +150,16 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         if (lastSelectedCity == null) return;
 
+        if (IsKingCity())
+        {
+            var heroRankRect = rankRegionHero.GetComponent<RectTransform>();
+            if (heroRankRect != null)
+            {
+                heroRankRect.sizeDelta = new Vector2(heroRankRect.sizeDelta.x, 0);
+            }
+            return;
+        }
+
         var heroes = GameManager.Instance.SaveData.heros.Where(h => h.cityId == lastSelectedCity.cityId).ToList();
         int count = 0;
         foreach (var heroData in heroes)
@@ -191,19 +211,20 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         cityId = cellCity.cityId;
 
         UpdateCityInfo();
-
-        if (allDevNodes.Count > 0)
-        {
-            ClearAllDevNodeHeroes();
-            LoadDevAssignmentsFromSave();
-        }
-
-        if (!init)
-            LoadHeroCells();
+        CreateDevItems();
+        LoadHeroCells();
     }
 
     private void UpdateCityInfo()
     {
+        if (IsKingCity())
+        {
+            cityName.text = "王命";
+            if (cityImage != null) cityImage.sprite = null;
+            UpdateCityAttrText();
+            return;
+        }
+
         var cityCfg = WorldConfig.GetConfig(cityId);
         var cityData = GameManager.Instance.GetCity(cityId);
 
@@ -219,6 +240,16 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     private void UpdateCityAttrText()
     {
+        if (IsKingCity())
+        {
+            if (textExp != null) textExp.text = "";
+            if (textGold != null) textGold.text = "";
+            if (textFood != null) textFood.text = "";
+            if (textSoldier != null) textSoldier.text = "";
+            if (textWall != null) textWall.text = "";
+            return;
+        }
+
         var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData == null) return;
 
@@ -322,12 +353,16 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         var devPrefab = Resources.Load<GameObject>("Prefabs/Panels/CityDevNew");
         if (devPrefab == null) return;
 
+        bool isKing = IsKingCity();
+
         float listWidth = devList.rect.width;
         int itemsPerRow = Mathf.Max(1, Mathf.FloorToInt((listWidth + devItemSpacing) / (devItemWidth + devItemSpacing)));
         int devIndex = 0;
 
         foreach (var cfg in CityDevConfig.ConfigList)
         {
+            if (isKing && !cfg.KingAction) continue;
+            if (!isKing && cfg.KingAction) continue;
             int row = devIndex / itemsPerRow;
             int col = devIndex % itemsPerRow;
 
@@ -357,6 +392,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     private void LoadDevAssignmentsFromSave()
     {
+        if (IsKingCity()) return;
+
         var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData == null) return;
 
@@ -394,25 +431,31 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     {
     }
 
-    public void AssignHeroToDevNode(int heroId, CityDevNodeNew targetNode)
+    public bool AssignHeroToDevNode(int heroId, CityDevNodeNew targetNode)
     {
+        if (IsKingCity())
+        {
+            SystemTip.Instance.ShowTip("王命城不能派遣武将");
+            return false;
+        }
+
         if (isViewOnly)
         {
             SystemTip.Instance.ShowTip("查看模式下无法操作");
-            return;
+            return false;
         }
         
         var currentForce = GameManager.Instance.CurrentForce;
         if (currentForce == null || !currentForce.isPlayer)
         {
             SystemTip.Instance.ShowTip("当前不是你的回合");
-            return;
+            return false;
         }
         
         if (currentForce.phase != TurnPhase.Planning)
         {
             SystemTip.Instance.ShowTip("当前阶段无法派遣英雄");
-            return;
+            return false;
         }
         
         var cityData = GameManager.Instance.GetCity(cityId);
@@ -428,7 +471,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             if (heroToDevNodeMap.Count >= levelCfg.JobCount)
             {
                 SystemTip.Instance.ShowTip($"该城市最多只能派遣{levelCfg.JobCount}人工作");
-                return;
+                return false;
             }
         }
 
@@ -436,7 +479,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         {
             if (oldNode == targetNode)
             {
-                return;
+                return true;
             }
             oldNode.RemoveHero(heroId);
         }
@@ -457,6 +500,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         UpdateAllResItemAddons();
 
         GameLog.Info($"Hero {heroId} assigned to dev node {targetNode.GetDevId()}");
+        return true;
     }
 
     private void UpdateAllHeroWorkState()
@@ -530,6 +574,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             Destroy(child.gameObject);
         }
         resItemDict.Clear();
+
+        if (IsKingCity()) return;
         
         var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData == null) return;
@@ -559,6 +605,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     private void UpdateAllResItemAddons()
     {
+        if (IsKingCity()) return;
+
         var cityData = GameManager.Instance.GetCity(cityId);
         var viewForce = GameManager.Instance.GetForce(viewForceId);
         
