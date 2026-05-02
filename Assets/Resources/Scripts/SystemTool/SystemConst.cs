@@ -500,7 +500,7 @@ public static class SystemConst
         public const float SOD_BONUS_RATE_PER_POINT = 0.03f;
         public const float SOD_BONUS_MIN = 0.01f;
         public const float SOD_BONUS_MAX = 0.30f;
-        public const float HERO_ATTR_TO_COMBAT_RATE = 0.3f;
+        public const float HERO_ATTR_TO_COMBAT_RATE = 0.7f;
     }
 
     public static class WorldMap

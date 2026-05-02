@@ -208,12 +208,9 @@ public class BattleManager : MonoBehaviour
     private void SpawnHerosForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, BattleCardData heroCardData)
     {
         var heroData = GameManager.Instance.GetHero(heroCardData.CardId);
-        var armsConfig = ArmsConfig.GetConfig(heroData.armsId);
         
         var id = idCounter++;
-        float sodBonus = SysFormula.Battle.CalculateSodBonus(heroData, armsConfig.Type);
-        int atk = (int)(heroData.str * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Atk * (1f + sodBonus));
-        int def = (int)(heroData.leadShip * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Def * (1f + sodBonus));
+        var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, heroData.armsId);
         var action = new CreateChessAction(0, tickAdd, id, force.forceId, heroCardData.CardId, 1, heroCardData.SoldierNum, heroData.armsId, atk, def, heroData.str, heroData.leadShip, heroData.inte, spawnPoint);
         AddChessAction(action);
     }

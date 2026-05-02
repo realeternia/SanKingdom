@@ -409,7 +409,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         var heroData = GameManager.Instance.GetHero(heroId);
         int currentArmsId = heroData != null ? heroData.armsId : 0;
 
-        UpdateArmsInfo(currentArmsId);
+        UpdateArmsInfo(currentArmsId, heroData);
 
         float itemWidth = 180f;
         float spacing = 10f;
@@ -431,7 +431,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         }
     }
 
-    private void UpdateArmsInfo(int armsId)
+    private void UpdateArmsInfo(int armsId, SaveHeroData heroData)
     {
         if (armsNameText == null || armsAttrText == null)
             return;
@@ -447,7 +447,9 @@ public class HeroInfoPanelManager : MonoBehaviour
         var armsConfig = ArmsConfig.GetConfig(armsId);
         armsNameText.text = armsConfig.NameS;
         armsNameText.color = SystemConst.Arms.GetColorByLevel(armsConfig.Level);
-        armsAttrText.text = $"攻{armsConfig.Atk} 防{armsConfig.Def}";
+        
+        var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, armsId);
+        armsAttrText.text = $"攻{atk} 防{def}";
     }
 
     private void RefreshArmsBG()
@@ -455,7 +457,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         var heroData = GameManager.Instance.GetHero(heroId);
         int currentArmsId = heroData != null ? heroData.armsId : 0;
 
-        UpdateArmsInfo(currentArmsId);
+        UpdateArmsInfo(currentArmsId, heroData);
 
         var armsAttrs = HeroAttrConfig.ConfigList.Where(c => c.IsArmsAttr).ToList();
         for (int i = 0; i < armsItems.Count && i < armsAttrs.Count; i++)

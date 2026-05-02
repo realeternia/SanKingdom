@@ -13,7 +13,7 @@ public static class SysFormula
             return SystemConst.Battle.BASE_DAMAGE + powerDiff / SystemConst.Battle.DAMAGE_POWER_DIFF_DIVISOR;
         }
 
-        public static float CalculateSodBonus(SaveHeroData heroData, ArmsType armsType)
+        private static float CalculateSodBonus(SaveHeroData heroData, ArmsType armsType)
         {
             var heroConfig = HeroConfig.GetConfig(heroData.heroId);
             int sodValue = armsType switch
@@ -27,6 +27,18 @@ public static class SysFormula
             };
             float bonus = sodValue * SystemConst.Battle.SOD_BONUS_RATE_PER_POINT;
             return Math.Clamp(bonus, SystemConst.Battle.SOD_BONUS_MIN, SystemConst.Battle.SOD_BONUS_MAX);
+        }
+
+        public static (int atk, int def) CalculateCombatAttr(SaveHeroData heroData, int armsId)
+        {
+            if (heroData == null || armsId <= 0)
+                return (0, 0);
+            
+            var armsConfig = ArmsConfig.GetConfig(armsId);
+            float sodBonus = CalculateSodBonus(heroData, armsConfig.Type);
+            int atk = (int)(heroData.str * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Atk * (1f + sodBonus));
+            int def = (int)(heroData.leadShip * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Def * (1f + sodBonus));
+            return (atk, def);
         }
 
         public static (int minDamage, int maxDamage) GetDamageRange(int levelDiff, bool isCrit, float critDamageMulti)
