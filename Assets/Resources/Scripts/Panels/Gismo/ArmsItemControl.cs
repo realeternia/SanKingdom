@@ -9,8 +9,12 @@ public class ArmsItemControl : MonoBehaviour
 {
     public Image itemIcon;
     public TMP_Text itemName;
+    public Image BG;
 
-    public void Init(HeroAttrConfig attrConfig, HeroConfig heroConfig)
+    private static readonly Color matchColor = new Color(0.3f, 0.7f, 0.3f, 1f);
+    private static readonly Color defaultColor = Color.black;
+
+    public void Init(HeroAttrConfig attrConfig, HeroConfig heroConfig, int armsId)
     {
         if (attrConfig == null || heroConfig == null)
             return;
@@ -33,6 +37,23 @@ public class ArmsItemControl : MonoBehaviour
             string colorHex = ColorUtility.ToHtmlStringRGB(color);
             itemName.text = $"<color=#{colorHex}>{displayText}</color>";
         }
+
+        UpdateBGColor(attrConfig, armsId);
+    }
+
+    public void UpdateBGColor(HeroAttrConfig attrConfig, int armsId)
+    {
+        if (BG == null || attrConfig == null)
+            return;
+
+        bool isMatch = false;
+        if (armsId > 0)
+        {
+            var armsConfig = ArmsConfig.GetConfig(armsId);
+            isMatch = armsConfig.Type.ToString() == attrConfig.name;
+        }
+
+        BG.color = isMatch ? matchColor : defaultColor;
     }
 
     private int GetHeroArmsAttrValue(HeroConfig heroConfig, string attrName)

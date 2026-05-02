@@ -53,6 +53,7 @@ MonoBehaviour:
   scrollRectMain: {fileID: 753827994978671974}
   subRegionMain: {fileID: 1555984702667590577}
   itemPrefab: {fileID: -5482804205385408277, guid: 4e5f240fc85b004419dd59b0a306a60f, type: 3}
+  confirmButton: {fileID: 7206603294186434415}
 --- !u!1 &815057429892514795
 GameObject:
   m_ObjectHideFlags: 0

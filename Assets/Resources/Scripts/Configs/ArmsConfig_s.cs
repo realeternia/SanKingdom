@@ -173,7 +173,7 @@ namespace CommonConfig
 public static void Load()
 {
 config.Clear();
-config[0] = new ArmsConfig(0, "dyb", "动员兵", ArmsType.SodWalk, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "", 0, 1, 0, 0);
+config[0] = new ArmsConfig(0, "dyb", "动员兵", ArmsType.SodWalk, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "", 0, 0, 0, 0);
 config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 15, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "戟弩炮车", "弓", 2, 0, 0, 0);
 config[102] = new ArmsConfig(102, "che", "车", ArmsType.SodTank, 20, 25, 10, 17, 0, 0f, "SwordHitGreenCritical", "SodStick", 40, "", "", 0, 1, 1, 0);
 config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 18, 5, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 40, "枪戟", "刀", 0, 0, 1, 0);

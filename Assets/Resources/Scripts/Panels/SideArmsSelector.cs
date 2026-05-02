@@ -11,6 +11,7 @@ public class SideArmysSelector : MonoBehaviour
     public SelectArmsItem itemPrefab;
 
     private SelectArmsItem selectedItem;
+    public Button confirmButton;
 
     void Start()
     {

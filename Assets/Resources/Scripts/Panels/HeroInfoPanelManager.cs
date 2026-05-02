@@ -61,6 +61,12 @@ public class HeroInfoPanelManager : MonoBehaviour
             PanelManager.Instance.HideHeroInfoPanel();
         });
         
+        armsChangeBtn.onClick.AddListener(() =>
+        {
+            SideArmysSelector.SetContext(heroId, () => RefreshArmsBG());
+            PanelManager.Instance.ShowSideBar("SideArmsSelector");
+        });
+        
         InitTypeDropdown();
     }
     
