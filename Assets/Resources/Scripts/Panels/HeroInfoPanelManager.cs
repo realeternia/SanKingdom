@@ -10,7 +10,7 @@ public class HeroInfoPanelManager : MonoBehaviour
 {
     public int heroId;
     public TMP_Text heroNameText;
-    public TMP_Dropdown typeDropdown;
+    public NLDropDown typeDropdown;
 
     public TMP_Text ageText;
     public TMP_Text cityText;
@@ -52,7 +52,7 @@ public class HeroInfoPanelManager : MonoBehaviour
     private int currentTargetHeroId;
 
     private static readonly string[] SortOptions = { "所在", "兵种", "统帅", "武力", "智力", "内政", "魅力" };
-    private static readonly string[] SortAttrKeys = { "City", "Arms", "LeadShip", "Str", "Inte", "Fair", "Charm" };
+    private static readonly string[] SortAttrKeys = { "City", "Arms", "leadShip", "str", "inte", "fair", "charm" };
 
     private void Start()
     {
@@ -203,11 +203,11 @@ public class HeroInfoPanelManager : MonoBehaviour
         
         switch (attrKey)
         {
-            case "LeadShip": return heroData.leadShip;
-            case "Str": return heroData.str;
-            case "Inte": return heroData.inte;
-            case "Fair": return heroData.fair;
-            case "Charm": return heroData.charm;
+            case "leadShip": return heroData.leadShip;
+            case "str": return heroData.str;
+            case "inte": return heroData.inte;
+            case "fair": return heroData.fair;
+            case "charm": return heroData.charm;
             default: return 0;
         }
     }
@@ -279,6 +279,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         lastSelectedMode = cellMode;
         
         heroId = cellMode.heroId;
+        currentTargetHeroId = cellMode.heroId;
         
         ScrollToCell(cellMode);
         

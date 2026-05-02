@@ -68,6 +68,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\MissileViewObj.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\NLCoroutineManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\BattleCardData.cs" />
+    <Compile Include="Assets\Resources\Scripts\UIScripts\NLDropDownItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveMissileAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamageAddRate.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\ItemConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\CityStrategyState.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SystemConst.cs" />
+    <Compile Include="Assets\Resources\Scripts\UIScripts\NLDropDown.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveForceData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffCoolDown.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAddDamage.cs" />
