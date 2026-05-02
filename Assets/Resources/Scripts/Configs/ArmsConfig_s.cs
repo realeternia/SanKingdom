@@ -6,18 +6,20 @@ namespace CommonConfig
 {
     public class ArmsConfig
     {
-                        public class FieldMetaInfo
+                                public class FieldMetaInfo
         {
             public string fieldName;
             public string fieldType;
             public int fieldWidth;
             public string fieldRule;
-            public FieldMetaInfo(string name, string type, int width = 0, string rule = "")
+            public bool fieldIndex;
+            public FieldMetaInfo(string name, string type, int width = 0, string rule = "", bool index = false)
             {
                 fieldName = name;
                 fieldType = type;
                 fieldWidth = width;
                 fieldRule = rule;
+                fieldIndex = index;
             }
         }
 
@@ -64,12 +66,7 @@ namespace CommonConfig
         private static List<CellMeta> cellMeta = new List<CellMeta>();
         public static List<CellMeta> CellMetas { get { return cellMeta; } }
 
-
-
         /// <summary>
-        ///序列
-        /// </summary>
-                /// <summary>
         ///序列
         /// </summary>
         public int Id;
@@ -158,7 +155,6 @@ namespace CommonConfig
             this.StoneCost = StoneCost;
         }
 
-
         public ArmsConfig() { }
 
         private static Dictionary<int, ArmsConfig> config = new Dictionary<int, ArmsConfig>();
@@ -171,15 +167,16 @@ namespace CommonConfig
         {
             config.Clear();
             config = dict;
-        } 
+            RebuildIndex();
+        }
 
-
-        public static void Load()
+public static void Load()
 {
 config.Clear();
-config[101] = new ArmsConfig(101, "ma", "马", ArmsType.SodHorse, 15, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "戟弩炮车", "弓", 2, 0, 0, 0);
+config[0] = new ArmsConfig(0, "dyb", "动员兵", ArmsType.SodWalk, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "", 0, 1, 0, 0);
+config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 15, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "戟弩炮车", "弓", 2, 0, 0, 0);
 config[102] = new ArmsConfig(102, "che", "车", ArmsType.SodTank, 20, 25, 10, 17, 0, 0f, "SwordHitGreenCritical", "SodStick", 40, "", "", 0, 1, 1, 0);
-config[201] = new ArmsConfig(201, "gong", "弓", ArmsType.SodBow, 18, 5, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 40, "枪戟", "刀", 0, 0, 1, 0);
+config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 18, 5, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 40, "枪戟", "刀", 0, 0, 1, 0);
 config[202] = new ArmsConfig(202, "pao", "炮", ArmsType.SodTank, 25, 8, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodBow", 40, "盾", "士", 0, 2, 1, 0);
 config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "马车", "", 0, 1, 0, 0);
 config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 12, 12, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 40, "枪", "", 0, 1, 1, 0);
@@ -187,14 +184,16 @@ config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 14, 14, 10, 
 config[701] = new ArmsConfig(701, "shan", "扇", ArmsType.SodWalk, 5, 8, 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 40, "", "", 0, 0, 0, 0);
 config[702] = new ArmsConfig(702, "mou", "谋", ArmsType.SodWalk, 3, 5, 7, 50, 26, 8f, "GasShootFire", "SodStick", 40, "", "", 0, 0, 0, 0);
 
-
+RebuildIndex();
 
 }
 
-
-
-
-
+        private static void RebuildIndex()
+        {
+            foreach (var kv in config)
+            {
+            }
+        }
 
         public static ArmsConfig GetConfig(int id)
         {
@@ -205,7 +204,6 @@ config[702] = new ArmsConfig(702, "mou", "谋", ArmsType.SodWalk, 3, 5, 7, 50, 2
             }
             throw new NullReferenceException(string.Format("配置表ArmsConfig不存在id={0}", id));
         }
-
 
 
         public static bool HasConfig(int id)

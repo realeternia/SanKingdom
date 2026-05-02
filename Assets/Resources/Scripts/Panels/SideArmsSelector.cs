@@ -1,0 +1,62 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using CommonConfig;
+
+public class SideArmysSelector : MonoBehaviour
+{
+    public ScrollRect scrollRectMain;
+    public GameObject subRegionMain;
+    public SelectArmsItem itemPrefab;
+
+    private SelectArmsItem selectedItem;
+
+    void Start()
+    {
+        LoadArmsList();
+    }
+
+    void LoadArmsList()
+    {
+        foreach (Transform child in subRegionMain.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        int count = 0;
+        foreach (var config in ArmsConfig.ConfigList)
+        {
+            GameObject item = Instantiate(itemPrefab.gameObject, subRegionMain.transform);
+            item.transform.localScale = Vector3.one;
+            SelectArmsItem armsItem = item.GetComponent<SelectArmsItem>();
+            armsItem.SetData(config.Id);
+            armsItem.SetOnClickCallback(OnItemSelected);
+            count++;
+        }
+
+        RectTransform subRect = subRegionMain.GetComponent<RectTransform>();
+        RectTransform itemRect = itemPrefab.GetComponent<RectTransform>();
+
+        if (subRect != null && itemRect != null)
+        {
+            subRect.sizeDelta = new Vector2(subRect.sizeDelta.x, itemRect.sizeDelta.y * count);
+        }
+
+        if (scrollRectMain != null)
+        {
+            scrollRectMain.normalizedPosition = new Vector2(0, 1);
+        }
+    }
+
+    void OnItemSelected(SelectArmsItem item)
+    {
+        if (selectedItem != null && selectedItem != item)
+        {
+            selectedItem.SetSelected(false);
+        }
+        
+        item.SetSelected(true);
+        selectedItem = item;
+    }
+}

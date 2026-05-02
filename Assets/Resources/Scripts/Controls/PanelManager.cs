@@ -509,11 +509,11 @@ public class PanelManager : MonoBehaviour
         replayPanel = null;
     }
 
-    public void ShowSideBar()
+    public void ShowSideBar(string panelName)
     {
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         sideBarPanel.SetActive(true);
-        sideBarPanel.GetComponent<SideBar>().OnShow();
+        sideBarPanel.GetComponent<SideBar>().OnShow(panelName);
     }
 
     public void HideSideBar()

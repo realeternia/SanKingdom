@@ -36,6 +36,10 @@ public class HeroInfoPanelManager : MonoBehaviour
     public GameObject armsPanel;
     public GameObject armsItemPrefab;
 
+    public TMP_Text armsNameText;
+    public TMP_Text armsAttrText;
+    public Button armsChangeBtn;
+    
     private List<ArmsItemControl> armsItems = new List<ArmsItemControl>();
 
     public Button closeBtn;
@@ -318,7 +322,7 @@ public class HeroInfoPanelManager : MonoBehaviour
             var attrConfig = armsAttrs[i];
             GameObject item = Instantiate(armsItemPrefab, armsPanel.transform);
             item.transform.localScale = Vector3.one;
-            item.transform.localPosition = new Vector3(startX + i * (itemWidth + spacing), 0, 0);
+            item.transform.localPosition = new Vector3(startX + i * (itemWidth + spacing), 30, 0);
 
             ArmsItemControl control = item.GetComponent<ArmsItemControl>();
             if (control != null)

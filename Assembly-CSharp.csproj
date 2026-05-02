@@ -80,6 +80,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShield.cs" />
     <Compile Include="Assets\Resources\Scripts\CityDevNodeBattle.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\SideArmsSelector.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillManager.cs" />
     <Compile Include="Assets\Resources\Scripts\OOs\ICityDevNode.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\TaskPriorityCalculator.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\FormulaLearnAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddRege.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideArmsItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefPlantSkin.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuffArea.cs" />

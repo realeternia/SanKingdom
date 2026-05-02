@@ -15,6 +15,8 @@ public class SideBar : MonoBehaviour
     private const float AnimDuration = 0.4f;
     private const float GradientWidth = 100f;
 
+    public GameObject subRegionNode;
+
     void Awake()
     {
         scrollRect = scrollItem.GetComponent<RectTransform>();
@@ -43,7 +45,7 @@ public class SideBar : MonoBehaviour
         PanelManager.Instance.HideSideBar();
     }
 
-    public void OnShow()
+    public void OnShow(string panelName)
     {
         scrollItem.SetActive(true);
 
@@ -56,6 +58,27 @@ public class SideBar : MonoBehaviour
                 new Vector2(fullWidth, scrollRect.sizeDelta.y), AnimDuration)
             .SetEase(Ease.OutCubic)
             .SetUpdate(true);
+
+        LoadSubPanel(panelName);
+    }
+
+    private void LoadSubPanel(string panelName)
+    {
+        foreach (Transform child in subRegionNode.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        var prefab = Resources.Load<GameObject>($"Prefabs/Panels/{panelName}");
+        var panelObj = Instantiate(prefab, subRegionNode.transform);
+        var rectTransform = panelObj.GetComponent<RectTransform>();
+        if (rectTransform != null)
+        {
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+        }
     }
 
     public void OnHide(Action onComplete = null)
@@ -70,7 +93,16 @@ public class SideBar : MonoBehaviour
             .OnComplete(() =>
             {
                 scrollItem.SetActive(false);
+                ClearSubPanel();
                 onComplete?.Invoke();
             });
+    }
+
+    private void ClearSubPanel()
+    {
+        foreach (Transform child in subRegionNode.transform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 }
