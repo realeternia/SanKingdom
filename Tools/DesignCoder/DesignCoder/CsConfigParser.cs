@@ -565,7 +565,10 @@ namespace DesignCoder
         {
             var sb = new StringBuilder();
 
-            sb.Append(PreFieldCode);
+            string preField = (PreFieldCode ?? "").TrimEnd();
+            sb.Append(preField);
+            if (preField.Length > 0 && !preField.EndsWith("\n"))
+                sb.AppendLine();
 
             sb.AppendLine("        public class FieldMetaInfo");
             sb.AppendLine("        {");
@@ -683,14 +686,13 @@ namespace DesignCoder
             sb.AppendLine("        }");
             sb.AppendLine();
 
-            sb.Append("public static void Load()");
-            sb.AppendLine();
-            sb.AppendLine("{");
-            sb.AppendLine("config.Clear();");
+            sb.AppendLine("        public static void Load()");
+            sb.AppendLine("        {");
+            sb.AppendLine("            config.Clear();");
 
             foreach (var row in Rows)
             {
-                sb.Append("config[");
+                sb.Append("            config[");
                 string idVal = row.ContainsKey("Id") ? row["Id"] : "0";
                 sb.Append(idVal);
                 sb.Append("] = new ");
@@ -709,9 +711,9 @@ namespace DesignCoder
             }
 
             sb.AppendLine();
-            sb.AppendLine("RebuildIndex();");
+            sb.AppendLine("            RebuildIndex();");
             sb.AppendLine();
-            sb.AppendLine("}");
+            sb.AppendLine("        }");
 
             sb.AppendLine();
             sb.AppendLine("        private static void RebuildIndex()");
@@ -759,8 +761,10 @@ namespace DesignCoder
 
                 sb.AppendLine();
                 sb.AppendLine("        private static Dictionary<" + keyType + ", int> idx" + field.Name + " = new Dictionary<" + keyType + ", int>();");
-                sb.AppendLine("        public static " + ClassName + " GetConfigBy" + field.Name + "(" + paramType + " val)        {");
-                sb.AppendLine("            return GetConfig(idx" + field.Name + "[val]);        }");
+                sb.AppendLine("        public static " + ClassName + " GetConfigBy" + field.Name + "(" + paramType + " val)");
+                sb.AppendLine("        {");
+                sb.AppendLine("            return GetConfig(idx" + field.Name + "[val]);");
+                sb.AppendLine("        }");
             }
 
             sb.AppendLine();

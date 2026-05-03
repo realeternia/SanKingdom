@@ -41,10 +41,10 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     private CityCellCity lastSelectedCity;
     private CityCellHero lastSelectedHero;
-    private CityDevNodeNew lastSelectedDevNode;
+    private CityDevItem lastSelectedDevNode;
 
-    private Dictionary<int, CityDevNodeNew> heroToDevNodeMap = new Dictionary<int, CityDevNodeNew>();
-    private List<CityDevNodeNew> allDevNodes = new List<CityDevNodeNew>();
+    private Dictionary<int, CityDevItem> heroToDevNodeMap = new Dictionary<int, CityDevItem>();
+    private List<CityDevItem> allDevNodes = new List<CityDevItem>();
     private Dictionary<string, ResItem> resItemDict = new Dictionary<string, ResItem>();
     
     private bool isViewOnly = false;
@@ -90,12 +90,15 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             int count = 0;
             CityCellCity currentCityCell = null;
 
-            GameObject kingCell = Instantiate(rankCellCityPrefab, rankRegionCity.transform);
-            kingCell.transform.localScale = Vector3.one;
-            CityCellCity kingCellCity = kingCell.GetComponent<CityCellCity>();
-            kingCellCity.cityPanelManager = this;
-            kingCellCity.Init(SystemConst.City.KING_CITY_ID, "王命");
-            count++;
+            if (!isViewOnly)
+            {
+                GameObject kingCell = Instantiate(rankCellCityPrefab, rankRegionCity.transform);
+                kingCell.transform.localScale = Vector3.one;
+                CityCellCity kingCellCity = kingCell.GetComponent<CityCellCity>();
+                kingCellCity.cityPanelManager = this;
+                kingCellCity.Init(SystemConst.City.KING_CITY_ID, "王命");
+                count++;
+            }
 
             foreach (var city in cities)
             {
@@ -280,7 +283,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         lastSelectedHero = cellHero;
     }
 
-    public void OnSelectDevNode(CityDevNodeNew devNode)
+    public void OnSelectDevNode(CityDevItem devNode)
     {
         if (lastSelectedDevNode != null && lastSelectedDevNode != devNode)
         {
@@ -340,7 +343,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         List<GameObject> toDestroy = new List<GameObject>();
         foreach (Transform child in devList)
         {
-            if (child.GetComponent<CityDevNodeNew>() != null)
+            if (child.GetComponent<CityDevItem>() != null)
             {
                 toDestroy.Add(child.gameObject);
             }
@@ -350,7 +353,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             Destroy(obj);
         }
 
-        var devPrefab = Resources.Load<GameObject>("Prefabs/Panels/CityDevNew");
+        var devPrefab = Resources.Load<GameObject>("Prefabs/Panels/Gismo/CityDevItem");
         if (devPrefab == null) return;
 
         bool isKing = IsKingCity();
@@ -376,7 +379,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             rectTransform.pivot = new Vector2(0, 1);
             rectTransform.anchoredPosition = new Vector2(posX, posY);
 
-            var devNodeMgr = devNode.GetComponent<CityDevNodeNew>();
+            var devNodeMgr = devNode.GetComponent<CityDevItem>();
             if (devNodeMgr != null)
             {
                 devNodeMgr.SetDev(cityId, cfg.Id);
@@ -431,7 +434,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     {
     }
 
-    public bool AssignHeroToDevNode(int heroId, CityDevNodeNew targetNode)
+    public bool AssignHeroToDevNode(int heroId, CityDevItem targetNode)
     {
         if (IsKingCity())
         {
@@ -475,7 +478,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             }
         }
 
-        if (heroToDevNodeMap.TryGetValue(heroId, out CityDevNodeNew oldNode))
+        if (heroToDevNodeMap.TryGetValue(heroId, out CityDevItem oldNode))
         {
             if (oldNode == targetNode)
             {
@@ -517,7 +520,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public void RemoveHeroFromDevNode(int heroId)
     {
-        if (heroToDevNodeMap.TryGetValue(heroId, out CityDevNodeNew node))
+        if (heroToDevNodeMap.TryGetValue(heroId, out CityDevItem node))
         {
             node.ClearHero();
             heroToDevNodeMap.Remove(heroId);

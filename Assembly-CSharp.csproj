@@ -181,6 +181,7 @@
     <Compile Include="Assets\Resources\Scripts\SaveDatas\DevAssignmentData.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />
     <Compile Include="Assets\Resources\Scripts\MainPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\CityDevItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\BattleResultHeroCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityPanelManager.cs" />
@@ -261,7 +262,6 @@
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\TurnPhaseData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\CityDevNodeNew.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
     <Compile Include="Assets\Resources\Scripts\Tooltip.cs" />
   </ItemGroup>

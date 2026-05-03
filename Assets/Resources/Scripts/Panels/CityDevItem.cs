@@ -8,7 +8,7 @@ using System.Linq;
 using System;
 using UnityEngine.EventSystems;
 
-public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     private int cityId;
     private int devId;
@@ -20,10 +20,12 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
     public Image blackMaskImg;
     public Image borderImage;
     public Image attrImg;
+    public Button btnRun;
 
     private List<int> currentHeroIds = new List<int>();
     private CityPanelManager cityPanelManager;
     private bool isSelected = false;
+    private bool isRunType = false;
     private Color normalBorderColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     private Color selectedBorderColor = Color.green;
     private Color grayColor = new Color(0.5f, 0.5f, 0.5f, 1f);
@@ -47,8 +49,11 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
         var devCfg = CityDevConfig.GetConfig(devId);
         nameText.text = devCfg.Cname;
         cityImg.sprite = Resources.Load<Sprite>("Textures/Buildings/" + devCfg.Icon);
+        isRunType = devCfg.Type == "run";
 
         UpdateAttrImg(devCfg);
+        UpdateBtnRun();
+        UpdateBlackMask();
     }
 
     private void UpdateAttrImg(CityDevConfig devCfg)
@@ -156,6 +161,14 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
 
     private void UpdateHeroDisplay()
     {
+        if (isRunType)
+        {
+            if (heroImg != null) heroImg.gameObject.SetActive(false);
+            if (heroImgBG != null) heroImgBG.gameObject.SetActive(false);
+            UpdateBlackMask();
+            return;
+        }
+
         if (heroImg != null)
         {
             if (currentHeroIds.Count > 0)
@@ -178,7 +191,22 @@ public class CityDevNodeNew : MonoBehaviour, IDropHandler, IPointerEnterHandler,
     {
         if (blackMaskImg != null && blackMaskImg.gameObject != null)
         {
-            blackMaskImg.gameObject.SetActive(currentHeroIds.Count == 0);
+            if (isRunType)
+            {
+                blackMaskImg.gameObject.SetActive(false);
+            }
+            else
+            {
+                blackMaskImg.gameObject.SetActive(currentHeroIds.Count == 0);
+            }
+        }
+    }
+
+    private void UpdateBtnRun()
+    {
+        if (btnRun != null)
+        {
+            btnRun.gameObject.SetActive(isRunType);
         }
     }
 

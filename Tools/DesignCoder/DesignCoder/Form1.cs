@@ -21,6 +21,8 @@ namespace DesignCoder
         private bool sortAscending = true;
         private bool isLoading = false;
         private int selectedColumnIndex = -1;
+        private int selectedRowIndex = -1;
+        private int firstDataColIdx = -1;
 
         private Dictionary<string, ConfigData> loadedConfigs = new Dictionary<string, ConfigData>();
         private Dictionary<string, string> originalSources = new Dictionary<string, string>();
@@ -30,6 +32,17 @@ namespace DesignCoder
         public Form1()
         {
             InitializeComponent();
+            this.KeyPreview = true;
+            this.KeyDown += Form1_KeyDown;
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                btnSave_Click(sender, e);
+                e.Handled = true;
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -86,6 +99,7 @@ namespace DesignCoder
                 sortedColumnIndex = -1;
                 sortAscending = true;
                 selectedColumnIndex = -1;
+                selectedRowIndex = -1;
                 BuildDataTable();
                 SetupDataGridView();
                 ApplyColors();
@@ -98,6 +112,10 @@ namespace DesignCoder
 
         private void BuildDataTable()
         {
+            foreach (DataGridViewColumn col in dataGridView1.Columns)
+                col.Frozen = false;
+            dataGridView1.DataSource = null;
+
             dataTable = new DataTable();
 
             dataTable.Columns.Add("_RowTag_", typeof(string));
@@ -176,7 +194,7 @@ namespace DesignCoder
             dataGridView1.ColumnHeadersHeight = 28;
             dataGridView1.RowTemplate.Height = 26;
 
-            int firstDataColIdx = -1;
+            firstDataColIdx = -1;
             for (int i = 0; i < currentConfig.Fields.Count; i++)
             {
                 string colName = currentConfig.Fields[i].Name;
@@ -215,11 +233,19 @@ namespace DesignCoder
                 }
             }
 
+            if (firstDataColIdx < 0 && currentConfig.Fields.Count > 0)
+            {
+                string firstFieldName = currentConfig.Fields[0].Name;
+                if (dataGridView1.Columns.Contains(firstFieldName))
+                    firstDataColIdx = dataGridView1.Columns[firstFieldName].Index;
+            }
+
             if (firstDataColIdx >= 0)
             {
                 dataGridView1.Columns[firstDataColIdx].DefaultCellStyle.BackColor = idColumnBg;
                 dataGridView1.Columns[firstDataColIdx].DefaultCellStyle.Font = headerFont;
                 dataGridView1.Columns[firstDataColIdx].DefaultCellStyle.ForeColor = idColumnFg;
+                dataGridView1.Columns[firstDataColIdx].Frozen = true;
             }
 
             dataGridView1.AllowUserToResizeRows = false;
@@ -994,6 +1020,39 @@ namespace DesignCoder
             }
         }
 
+        private void dataGridView1_SelectionChanged(object sender, EventArgs e)
+        {
+            if (isLoading || dataGridView1 == null) return;
+
+            int oldRow = selectedRowIndex;
+
+            if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.RowIndex >= HeaderRowCount)
+                selectedRowIndex = dataGridView1.CurrentCell.RowIndex;
+            else
+                selectedRowIndex = -1;
+
+            if (oldRow != selectedRowIndex)
+            {
+                if (oldRow >= HeaderRowCount && oldRow < dataGridView1.Rows.Count && firstDataColIdx >= 0)
+                    dataGridView1.InvalidateCell(firstDataColIdx, oldRow);
+                if (selectedRowIndex >= HeaderRowCount && selectedRowIndex < dataGridView1.Rows.Count && firstDataColIdx >= 0)
+                    dataGridView1.InvalidateCell(firstDataColIdx, selectedRowIndex);
+            }
+        }
+
+        private void dataGridView1_Scroll(object sender, ScrollEventArgs e)
+        {
+            if (e.ScrollOrientation == ScrollOrientation.HorizontalScroll && firstDataColIdx >= 0)
+            {
+                int firstRow = Math.Max(0, dataGridView1.FirstDisplayedScrollingRowIndex);
+                int lastRow = Math.Min(dataGridView1.Rows.Count - 1, firstRow + dataGridView1.DisplayedRowCount(true));
+                for (int r = 0; r < HeaderRowCount && r < dataGridView1.Rows.Count; r++)
+                    dataGridView1.InvalidateCell(firstDataColIdx, r);
+                for (int r = firstRow; r <= lastRow; r++)
+                    dataGridView1.InvalidateCell(firstDataColIdx, r);
+            }
+        }
+
         private void dataGridView1_CurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
             if (dataGridView1.IsCurrentCellDirty)
@@ -1208,12 +1267,19 @@ namespace DesignCoder
                 bool isBoolTrue = cellValue == "true" || cellValue == "True";
                 bool isBoolFalse = cellValue == "false" || cellValue == "False";
                 bool isNumberType = fieldType == "int" || fieldType == "float";
+                bool isFirstColHighlight = (e.ColumnIndex == firstDataColIdx && e.RowIndex == selectedRowIndex);
 
-                if (colorValue.HasValue || isBoolTrue || isBoolFalse || isNumberType)
+                if (colorValue.HasValue || isBoolTrue || isBoolFalse || isNumberType || isFirstColHighlight)
                 {
                     Color bgColor = e.CellStyle.BackColor;
                     Color fgColor = e.CellStyle.ForeColor;
-                    if (isNumberType)
+
+                    if (isFirstColHighlight)
+                    {
+                        bgColor = Color.FromArgb(80, 130, 200);
+                    }
+
+                    if (isNumberType && !isFirstColHighlight)
                     {
                         fgColor = Color.FromArgb(100, 220, 130);
                         if (fieldIdx >= 0 && fieldIdx < currentConfig.Fields.Count)
@@ -1466,7 +1532,7 @@ namespace DesignCoder
                     var cell = dataGridView1.SelectedCells[0];
                     if (cell.RowIndex >= HeaderRowCount && cell.ColumnIndex >= 0)
                     {
-                        copiedCellValue = cell.Value?.ToString() ?? "";
+                        copiedCellValue = cell.Value != null ? cell.Value.ToString() : "";
                     }
                 }
                 e.Handled = true;
