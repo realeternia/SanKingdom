@@ -65,7 +65,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         };
         destButton.onClick.AddListener(() =>
         {
-            PanelManager.Instance.ShowPopCitySelectPanel(cityId, false, (selectedCityId) =>
+            PanelManager.Instance.ShowPopCitySelectPanel(cityId, true, (selectedCityId) =>
             {
                 this.selectedCityId = selectedCityId;
                 if(selectedCityId == 0)
@@ -115,9 +115,9 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         
     } 
 
-    public void SetDev(int cityId, int devId)
+    public void SetDev(int devId)
     {
-        this.cityId = cityId;
+        this.cityId = PanelManager.Instance.CurrentCityId;
         this.devId = devId;
         
         foodCount = SystemConst.Expedition.DEFAULT_SELECTED_FOOD_DAYS;

@@ -114,9 +114,9 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         
     } 
 
-    public void SetDev(int cityId, int devId)
+    public void SetDev(int devId)
     {
-        this.cityId = cityId;
+        this.cityId = PanelManager.Instance.CurrentCityId;
         this.devId = devId;
         
         foodCount = SystemConst.Expedition.DEFAULT_SELECTED_FOOD_DAYS;

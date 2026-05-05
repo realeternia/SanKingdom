@@ -42,6 +42,8 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         
     } 
 
+    private string prefabName = "";
+
     public void SetDev(int cityId, int devId)
     {
         this.cityId = cityId;
@@ -50,6 +52,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         nameText.text = devCfg.Cname;
         cityImg.sprite = Resources.Load<Sprite>("Textures/Buildings/" + devCfg.Icon);
         isRunType = devCfg.Type == "run";
+        prefabName = devCfg.Prefab;
 
         UpdateAttrImg(devCfg);
         UpdateBtnRun();
@@ -207,6 +210,11 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         if (btnRun != null)
         {
             btnRun.gameObject.SetActive(isRunType);
+            btnRun.onClick.RemoveAllListeners();
+            btnRun.onClick.AddListener(() =>
+            {
+                PanelManager.Instance.ShowCityDev(devId);
+            });
         }
     }
 
@@ -234,6 +242,11 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         if (cityPanelManager != null)
         {
             cityPanelManager.OnSelectDevNode(this);
+        }
+
+        if (!string.IsNullOrEmpty(prefabName))
+        {
+            PanelManager.Instance.ShowCityDev(devId);
         }
     }
 

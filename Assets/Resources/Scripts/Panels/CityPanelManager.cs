@@ -96,7 +96,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
                 kingCell.transform.localScale = Vector3.one;
                 CityCellCity kingCellCity = kingCell.GetComponent<CityCellCity>();
                 kingCellCity.cityPanelManager = this;
-                kingCellCity.Init(SystemConst.City.KING_CITY_ID, "王命");
+                kingCellCity.Init(SystemConst.City.KING_CITY_ID, "王城");
                 count++;
             }
 
@@ -222,7 +222,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     {
         if (IsKingCity())
         {
-            cityName.text = "王命";
+            cityName.text = "王城";
             if (cityImage != null) cityImage.sprite = null;
             UpdateCityAttrText();
             return;
@@ -438,7 +438,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     {
         if (IsKingCity())
         {
-            SystemTip.Instance.ShowTip("王命城不能派遣武将");
+            SystemTip.Instance.ShowTip("王城不能派遣武将");
             return false;
         }
 

@@ -48,7 +48,5 @@ public class CityDevPanelCell : MonoBehaviour, IPointerClickHandler
     // 处理点击事件
     public void OnPointerClick(PointerEventData eventData)
     {
-        // 通知面板管理器当前单元格被点击
-        cityDevPanelManager.OnSelectItem(this);
     }    
 }
