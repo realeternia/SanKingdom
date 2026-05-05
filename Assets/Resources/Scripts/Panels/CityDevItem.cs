@@ -213,7 +213,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
             btnRun.onClick.RemoveAllListeners();
             btnRun.onClick.AddListener(() =>
             {
-                PanelManager.Instance.ShowCityDev(devId);
+                PanelManager.Instance.ShowCityDev(cityId, devId);
             });
         }
     }
@@ -246,7 +246,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
 
         if (!string.IsNullOrEmpty(prefabName))
         {
-            PanelManager.Instance.ShowCityDev(devId);
+            PanelManager.Instance.ShowCityDev(cityId, devId);
         }
     }
 

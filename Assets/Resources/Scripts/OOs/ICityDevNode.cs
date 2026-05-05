@@ -1,4 +1,4 @@
 internal interface ICityDevNode
 {
-    void SetDev(int devId);
+    void SetDev(int cityId, int devId);
 }

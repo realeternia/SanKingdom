@@ -10,6 +10,7 @@ using Controls.Utils;
 
 public class CityDevPanelManager : MonoBehaviour
 {
+    private int cityId;
     private int devId;
 
     public Button closeButton;
@@ -32,8 +33,9 @@ public class CityDevPanelManager : MonoBehaviour
         
     }
 
-    public void SetDev(int devId)
+    public void SetDev(int cityId, int devId)
     {
+        this.cityId = cityId;
         this.devId = devId;
 
         if (detailObj != null)
@@ -48,7 +50,7 @@ public class CityDevPanelManager : MonoBehaviour
         {
             detailObj = Instantiate(Resources.Load<GameObject>("Prefabs/Panels/" + devCfg.Prefab), devDetailParent.transform);
             detailObj.SetActive(true);
-            detailObj.GetComponent<ICityDevNode>().SetDev(devId);
+            detailObj.GetComponent<ICityDevNode>().SetDev(cityId, devId);
         }
     }
     

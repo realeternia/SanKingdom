@@ -230,7 +230,7 @@ public class PanelManager : MonoBehaviour
         }
         cityDevPanel.SetActive(true);
         var cityDevPanelManager = cityDevPanel.GetComponent<CityDevPanelManager>();
-        cityDevPanelManager.SetCityId(cityId, devId);
+        cityDevPanelManager.SetDev(cityId, devId);
         cityDevPanelManager.OnShow();
 
         ChangePanelCount(cityDevPanel, true);
