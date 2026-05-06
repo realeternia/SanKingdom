@@ -12,10 +12,6 @@ public enum HeroType
 
 public class HeroDispatcher
 {
-    private const int COMBAT_THRESHOLD = SystemConst.AIHero.COMBAT_THRESHOLD;
-    private const int DOMESTIC_THRESHOLD = SystemConst.AIHero.DOMESTIC_THRESHOLD;
-    private const int MIN_REAR_HEROES = SystemConst.AIHero.MIN_REAR_HEROES;
-    
     public static HeroType ClassifyHero(SaveHeroData hero)
     {
         return SysFormula.Hero.ClassifyHero(
@@ -23,40 +19,10 @@ public class HeroDispatcher
             hero.GetAttr("fair"), hero.GetAttr("charm"));
     }
     
-    public static List<int> GetFrontlineCities(SaveForceData force)
-    {
-        var result = new List<int>();
-        var cities = force.GetCityList();
-        
-        foreach (var city in cities)
-        {
-            if (CityEvaluator.IsFrontlineCity(city))
-            {
-                result.Add(city.cityId);
-            }
-        }
-        return result;
-    }
-    
-    public static List<int> GetRearCities(SaveForceData force)
-    {
-        var result = new List<int>();
-        var cities = force.GetCityList();
-        
-        foreach (var city in cities)
-        {
-            if (!CityEvaluator.IsFrontlineCity(city))
-            {
-                result.Add(city.cityId);
-            }
-        }
-        return result;
-    }
-    
     public static void DispatchHeroes(SaveForceData force)
     {
-        var frontlineCities = GetFrontlineCities(force);
-        var rearCities = GetRearCities(force);
+        var frontlineCities = MapTool.GetFrontlineCityIds(force.forceId);
+        var rearCities = MapTool.GetRearCityIds(force.forceId);
         
         if (frontlineCities.Count == 0 || rearCities.Count == 0)
             return;
@@ -106,7 +72,7 @@ public class HeroDispatcher
                 var srcCity = GameManager.Instance.GetCity(srcCityId);
 
                 if (rearCityHeroMap.ContainsKey(srcCityId) && 
-                    rearCityHeroMap[srcCityId].Count > MIN_REAR_HEROES)
+                    rearCityHeroMap[srcCityId].Count > SystemConst.AIHero.MIN_REAR_HEROES)
                 {
                     force.MoveHeroToCity(srcCityId, cityId, new int[] { heroToMove.heroId });
                     rearCityHeroMap[srcCityId].Remove(heroToMove);

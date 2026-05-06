@@ -97,7 +97,6 @@ public class SaveCityData
     public List<int> GetRecruitableHeroList()
     {
         var heroIds = new List<int>();
-        var nearCityIds = WorldConfig.GetConfig(cityId)?.WorldNearIds;
         
         foreach (var member in GameManager.Instance.SaveData.heros)
         {
@@ -110,7 +109,7 @@ public class SaveCityData
             }
             else if(member.state == HeroState.Normal && member.forceId != forceId && member.loyalty < SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD)
             {
-                if(nearCityIds != null && System.Array.Exists(nearCityIds, id => id == member.cityId))
+                if(MapTool.IsAdjacentCity(cityId, member.cityId))
                     heroIds.Add(member.heroId);
             }
         }
@@ -275,9 +274,7 @@ public class SaveCityData
 
     public int CalculateDistanceTo(int destCityId)
     {
-        var curCity = WorldConfig.GetConfig(cityId);
-        var destCity = WorldConfig.GetConfig(destCityId);
-        return SysFormula.City.CalculateDistance(curCity.X, curCity.Y, destCity.X, destCity.Y);
+        return MapTool.CalculateCityDistance(cityId, destCityId);
     }
 
     public void Occupy(int forceWin, List<int> winHeroIds, int forceLose, List<int> failHeroIds)

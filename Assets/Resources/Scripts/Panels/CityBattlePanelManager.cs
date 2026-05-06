@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,13 +9,14 @@ using System;
 public class CityBattlePanelManager : MonoBehaviour
 {
     public ScrollRect scrollRectMain;
-    public GameObject itemRegionMain;   
+    public GameObject itemRegionMain;
 
     private int foodCount = SystemConst.Expedition.DEFAULT_FOOD_DAYS;
 
+    private int forceId;
     private int selectedCityId;
     public Button destButton;
-    
+    public TMP_Text attrVal1Text;
 
     public Button closeButton;
 
@@ -30,28 +30,30 @@ public class CityBattlePanelManager : MonoBehaviour
         });
         destButton.onClick.AddListener(() =>
         {
-            // PanelManager.Instance.ShowPopCitySelectPanel(cityId, true, (selectedCityId) =>
-            // {
-            //     this.selectedCityId = selectedCityId;
-            //     if(selectedCityId == 0)
-            //     {
-            //         attrVal1Text.text = "-";
-            //         return;
-            //     }
-            //     var cityCfg = WorldConfig.GetConfig(selectedCityId);
-            //     attrVal1Text.text = cityCfg.Cname;
-            // });
+            var cityIds = MapTool.GetAdjacentEnemyCityIds(forceId);
+            PanelManager.Instance.ShowPopCitySelectPanel(cityIds, (selectedCityId) =>
+            {
+                this.selectedCityId = selectedCityId;
+                if(selectedCityId == 0)
+                {
+                    attrVal1Text.text = "-";
+                    return;
+                }
+                var cityCfg = WorldConfig.GetConfig(selectedCityId);
+                attrVal1Text.text = cityCfg.Cname;
+            });
         });
 
     }
 
     void Update()
     {
-        
-    } 
+
+    }
 
     public void Init(int forceId)
     {
+        this.forceId = forceId;
         CreateCityBattleItems(forceId);
     }
 

@@ -98,27 +98,10 @@ public class GameManager : MonoBehaviour
         return SaveData.cities.Where(c => c.forceId == forceId).ToList();
     }
 
-    public List<int> GetNearbyForceCityIds(int fromCityId, int forceId)
-    {
-        var result = new List<int>();
-        var fromCityCfg = WorldConfig.GetConfig(fromCityId);
-        if (fromCityCfg == null || fromCityCfg.WorldNearIds == null)
-            return result;
-
-        foreach (var nearCityId in fromCityCfg.WorldNearIds)
-        {
-            var nearCity = GetCity(nearCityId);
-            if (nearCity != null && nearCity.forceId == forceId)
-            {
-                result.Add(nearCityId);
-            }
-        }
-        return result;
-    }
 
     public int GetRandomForceCityId(int fromCityId, int forceId)
     {
-        var nearbyCityIds = GetNearbyForceCityIds(fromCityId, forceId);
+        var nearbyCityIds = MapTool.GetAdjacentFriendlyCityIds(fromCityId, forceId);
         if (nearbyCityIds.Count > 0)
         {
             return nearbyCityIds[SysRandom.Range(0, nearbyCityIds.Count)];
@@ -430,11 +413,10 @@ public class GameManager : MonoBehaviour
             {
                 if (SysFormula.Hero.CheckWildHeroMove())
                 {
-                    var cityCfg = WorldConfig.GetConfig(hero.cityId);
-                    if (cityCfg != null && cityCfg.WorldNearIds != null && cityCfg.WorldNearIds.Length > 0)
+                    var randomCityId = MapTool.GetRandomAdjacentCityId(hero.cityId);
+                    if (randomCityId != 0)
                     {
-                        int randomIndex = SysRandom.Range(0, cityCfg.WorldNearIds.Length);
-                        hero.cityId = cityCfg.WorldNearIds[randomIndex];
+                        hero.cityId = randomCityId;
                     }
                 }
             }

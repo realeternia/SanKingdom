@@ -147,10 +147,8 @@ public class StrategicDecider
         
         foreach (var city in cities)
         {
-            var nearCityIds = WorldConfig.GetConfig(city.cityId)?.WorldNearIds;
-            if (nearCityIds == null) continue;
-            
-            foreach (var nearId in nearCityIds)
+            var enemyNearIds = MapTool.GetAdjacentEnemyCityIdsForCity(city.cityId, force.forceId);
+            foreach (var nearId in enemyNearIds)
             {
                 if (myCityIds.Contains(nearId))
                     continue;
@@ -158,11 +156,7 @@ public class StrategicDecider
                 if (HasAttackedTarget(force.forceId, nearId))
                     continue;
                 
-                var nearCity = GameManager.Instance.GetCity(nearId);
-                if (nearCity != null && nearCity.forceId != force.forceId)
-                {
-                    potentialTargets.Add(nearId);
-                }
+                potentialTargets.Add(nearId);
             }
         }
         
@@ -198,14 +192,11 @@ public class StrategicDecider
         var cities = force.GetCityList();
         var targetCity = GameManager.Instance.GetCity(targetCityId);
         
-        var nearCityIds = WorldConfig.GetConfig(targetCityId)?.WorldNearIds;
-        if (nearCityIds == null) return null;
-        
         var candidateCities = new List<SaveCityData>();
         
         foreach (var city in cities)
         {
-            if (System.Array.Exists(nearCityIds, id => id == city.cityId))
+            if (MapTool.IsAdjacentCity(targetCityId, city.cityId))
             {
                 candidateCities.Add(city);
             }
@@ -243,13 +234,12 @@ public class StrategicDecider
             
             if (soldier >= MIN_CITY_SOLDIER_FOR_ATTACK && heroCount >= MIN_CITY_HEROES_FOR_ATTACK)
             {
-                var nearCityIds = WorldConfig.GetConfig(city.cityId)?.WorldNearIds;
-                if (nearCityIds == null) continue;
+                var enemyNearIds = MapTool.GetAdjacentEnemyCityIdsForCity(city.cityId, force.forceId);
                 
                 int? bestTarget = null;
                 int minTargetSoldier = int.MaxValue;
                 
-                foreach (var nearId in nearCityIds)
+                foreach (var nearId in enemyNearIds)
                 {
                     if (myCityIds.Contains(nearId))
                         continue;
@@ -258,7 +248,7 @@ public class StrategicDecider
                         continue;
                     
                     var nearCity = GameManager.Instance.GetCity(nearId);
-                    if (nearCity != null && nearCity.forceId != force.forceId)
+                    if (nearCity != null)
                     {
                         int targetSoldier = nearCity.GetAttr("soldier");
                         
@@ -285,13 +275,11 @@ public class StrategicDecider
     
     private static bool HasThreat(SaveCityData city)
     {
-        var nearCityIds = WorldConfig.GetConfig(city.cityId)?.WorldNearIds;
-        if (nearCityIds == null) return false;
-        
-        foreach (var nearId in nearCityIds)
+        var enemyNearIds = MapTool.GetAdjacentEnemyCityIdsForCity(city.cityId, city.forceId);
+        foreach (var nearId in enemyNearIds)
         {
             var nearCity = GameManager.Instance.GetCity(nearId);
-            if (nearCity != null && nearCity.forceId != city.forceId)
+            if (nearCity != null)
             {
                 int enemySoldier = nearCity.GetAttr("soldier");
                 if (SysFormula.AIStrategy.HasThreat(enemySoldier))

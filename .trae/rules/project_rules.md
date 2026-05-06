@@ -56,6 +56,7 @@ Assets/Resources/Scripts/
 ├── SystemTool/                # 工具类方法
 │   ├── SysFormula.cs          # 公式计算（核心）
 │   ├── SystemConst.cs         # 常量定义（核心）
+│   ├── MapTool.cs             # 地图工具（城市邻接、距离、前线判断）
 │   ├── BattleRandom.cs        # 战斗层随机数工具
 │   ├── SysRandom.cs           # 战略层随机数工具
 │   ├── GameLog.cs             # 日志系统
@@ -217,6 +218,32 @@ SignalData (基类, Name 字段)
 - `OnRecover()` 在反序列化后调用，用于重建运行时引用
 - 反序列化后必须遍历所有对象调用 `OnRecover()`
 
+### 9. 地图工具 - MapTool
+
+`MapTool` 是 `SystemTool/` 下的静态工具类，统一管理所有基于 `WorldConfig.WorldNearIds` 的城市邻接查询逻辑。**禁止在业务代码中直接访问 `WorldConfig.WorldNearIds` 进行邻接判断**，必须使用 `MapTool` 提供的方法。
+
+方法列表：
+
+| 方法 | 返回值 | 说明 |
+|------|--------|------|
+| `GetAdjacentCityIds(int cityId)` | `List<int>` | 获取某城市的所有相邻城市ID |
+| `GetAdjacentFriendlyCityIds(int cityId, int forceId)` | `List<int>` | 获取某城市相邻的同势力城市 |
+| `GetAdjacentEnemyCityIdsForCity(int cityId, int forceId)` | `List<int>` | 获取某城市相邻的敌对势力城市 |
+| `GetAdjacentEnemyCityIds(int forceId)` | `List<int>` | 获取某势力所有城市的相邻敌方城市并集（去重） |
+| `GetOwnCityIds(int forceId)` | `List<int>` | 获取某势力所有己方城市ID |
+| `IsAdjacentCity(int cityId1, int cityId2)` | `bool` | 判断两个城市是否相邻 |
+| `IsFrontlineCity(int cityId)` | `bool` | 判断某城市是否为前线城市（相邻有敌城） |
+| `GetFrontlineCityIds(int forceId)` | `List<int>` | 获取某势力所有前线城市ID |
+| `GetRearCityIds(int forceId)` | `List<int>` | 获取某势力所有后方城市ID |
+| `GetRandomAdjacentCityId(int cityId)` | `int` | 随机获取一个相邻城市ID（无则返回0） |
+| `CalculateCityDistance(int cityId1, int cityId2)` | `int` | 计算两城市间曼哈顿距离 |
+
+使用规则：
+- 城市邻接查询必须使用 `MapTool`，禁止直接访问 `WorldConfig.GetConfig(cityId).WorldNearIds`
+- 前线/后方城市判断必须使用 `MapTool.IsFrontlineCity` / `MapTool.GetFrontlineCityIds` / `MapTool.GetRearCityIds`
+- 城市间距离计算必须使用 `MapTool.CalculateCityDistance`，`SaveCityData.CalculateDistanceTo` 内部已委托给它
+- `GetRandomAdjacentCityId` 使用 `SysRandom`，符合战略层随机数规范
+
 ## 修改代码时的注意事项
 
 ### 新增文件
@@ -264,3 +291,4 @@ SignalData (基类, Name 字段)
 - 不要使用 `UnityEngine.Debug.Log`，统一使用 `GameLog`
 - 不要新增 `.cs` 文件后忘记在 `Assembly-CSharp.csproj` 中添加 `<Compile Include>` 条目
 - 不要将持久化数据类定义在 `PO/` 目录下，必须放在 `SaveDatas/` 目录下
+- 不要在业务代码中直接访问 `WorldConfig.WorldNearIds` 进行城市邻接判断，必须使用 `MapTool` 的方法

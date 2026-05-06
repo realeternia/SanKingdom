@@ -84,17 +84,6 @@ public class CityEvaluator
     
     public static bool IsFrontlineCity(SaveCityData city)
     {
-        var nearCityIds = WorldConfig.GetConfig(city.cityId)?.WorldNearIds;
-        if (nearCityIds == null) return false;
-        
-        foreach (var nearId in nearCityIds)
-        {
-            var nearCity = GameManager.Instance.GetCity(nearId);
-            if (nearCity != null && nearCity.forceId != city.forceId)
-            {
-                return true;
-            }
-        }
-        return false;
+        return MapTool.IsFrontlineCity(city.cityId);
     }
 }
