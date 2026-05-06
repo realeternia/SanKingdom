@@ -7,7 +7,7 @@ using CommonConfig;
 using System.Linq;
 using System;
 
-public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
+public class CityBattlePanelManager : MonoBehaviour
 {
     private int cityId;
     private int devId;
@@ -26,6 +26,7 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
     public TMP_Text foodCostText;
 
     private int selectedCityId;
+    public Button closeButton;
 
     void Start()
     {
@@ -63,6 +64,10 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         {
             UpdateFoodInfo();
         };
+        closeButton.onClick.AddListener(() =>
+        {
+            PanelManager.Instance.HideCityBattle();
+        });
         destButton.onClick.AddListener(() =>
         {
             PanelManager.Instance.ShowPopCitySelectPanel(cityId, true, (selectedCityId) =>
@@ -114,11 +119,9 @@ public class CityDevNodeBattle : MonoBehaviour, ICityDevNode
         
     } 
 
-    public void SetDev(int cityId, int devId)
+    public void Init()
     {
-        this.cityId = cityId;
-        this.devId = devId;
-        
+       
         foodCount = SystemConst.Expedition.DEFAULT_SELECTED_FOOD_DAYS;
         foodText.text = foodCount.ToString() + "日粮";
         foodButton.gameObject.SetActive(true);

@@ -207,15 +207,19 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
 
     private void UpdateBtnRun()
     {
-        if (btnRun != null)
+        btnRun.gameObject.SetActive(isRunType);
+        btnRun.onClick.RemoveAllListeners();
+        btnRun.onClick.AddListener(() =>
         {
-            btnRun.gameObject.SetActive(isRunType);
-            btnRun.onClick.RemoveAllListeners();
-            btnRun.onClick.AddListener(() =>
+            if (prefabName == "Battle")
+            {
+                PanelManager.Instance.ShowCityBattle();
+            }
+            else
             {
                 PanelManager.Instance.ShowCityDev(cityId, devId);
-            });
-        }
+            }
+        });
     }
 
     private void UpdateBorderColor()

@@ -80,7 +80,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\SideArmsSelector.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\CityDevNodeBattle.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillManager.cs" />
     <Compile Include="Assets\Resources\Scripts\OOs\ICityDevNode.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\TaskPriorityCalculator.cs" />
@@ -90,6 +89,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\PopResultPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityCellCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\SelectHeroControl.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\CityBattlePanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellForce.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleAudio.cs" />
@@ -215,6 +215,7 @@
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXLightFade.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitTeleport.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddCrit.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityBattleItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\Gismo\ArmsItemControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ForceConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessAction.cs" />
