@@ -51,6 +51,8 @@ Assets/Resources/Scripts/
 │   ├── SaveData.cs            # 总存档
 │   ├── SaveCityData.cs        # 城市存档
 │   ├── SaveHeroData.cs        # 英雄存档
+│   ├── WarTeamData.cs         # 战争队伍数据
+│   └── WarPlanData.cs         # 战争计划数据
 ├── SystemTool/                # 工具类方法
 │   ├── SysFormula.cs          # 公式计算（核心）
 │   ├── SystemConst.cs         # 常量定义（核心）
@@ -81,6 +83,15 @@ Assets/Resources/Scripts/
 - 使用 `[SerializeReference]` 标记多态序列化字段（如 `List<ChessAction> actions`）
 - 使用 Unity `JsonUtility` 进行序列化/反序列化
 - 所有存档数据类（`SaveData`, `SaveCityData`, `SaveHeroData` 等）必须可被 JsonUtility 序列化
+
+### 数据类目录规范
+
+- **持久化数据结构**（需要序列化保存的数据类）必须定义在 `SaveDatas/` 目录下
+  - 例如：`SaveData`, `SaveCityData`, `SaveHeroData`, `WarTeamData`, `WarPlanData` 等
+  - 这类数据会被 `JsonUtility` 序列化到存档文件中
+- **运行时数据结构**（不需要持久化的数据类）定义在 `PO/` 目录下
+  - 例如：`SignalData`, `AttrInfo`, `BattleCardData` 等
+  - 这类数据仅在运行时使用，不需要保存到存档
 
 ### 单例模式
 
@@ -252,3 +263,4 @@ SignalData (基类, Name 字段)
 - 不要在业务代码中内联计算逻辑，必须提取到 `SysFormula`
 - 不要使用 `UnityEngine.Debug.Log`，统一使用 `GameLog`
 - 不要新增 `.cs` 文件后忘记在 `Assembly-CSharp.csproj` 中添加 `<Compile Include>` 条目
+- 不要将持久化数据类定义在 `PO/` 目录下，必须放在 `SaveDatas/` 目录下

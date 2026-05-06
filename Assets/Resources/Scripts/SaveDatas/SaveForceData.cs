@@ -245,7 +245,7 @@ public class SaveForceData
     public void AddWarPlan(WarPlanData warPlan)
     {
         warPlans.Add(warPlan);
-        GameLog.Info($"AddWarPlan forceId={warPlan.forceId} source={warPlan.sourceCityId} target={warPlan.targetCityId}");
+        GameLog.Info($"AddWarPlan");
     }
 
     public void ResetRoundState()

@@ -224,13 +224,7 @@ public static class AI
         
         var warPlan = new WarPlanData
         {
-            forceId = force.forceId,
-            sourceCityId = city.cityId,
-            targetCityId = targetCityId,
-            heroIds = heroIds,
-            foodCost = foodNeeded,
-            heroSoldierDict = heroSoldierDict,
-            heroArmsDict = new Dictionary<int, int>()
+
         };
         
         force.AddWarPlan(warPlan);

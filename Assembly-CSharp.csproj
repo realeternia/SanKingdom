@@ -87,6 +87,7 @@
     <Compile Include="Assets\Resources\Scripts\UIScripts\SideBarAlphaGradient.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitArea.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\PopResultPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\PO\TurnPhase.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityCellCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\SelectHeroControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityBattlePanelManager.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\Gismo\ArmsItemControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ForceConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\WarTeamData.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityDevNodeMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
@@ -261,8 +263,8 @@
     <Compile Include="Assets\Resources\Scripts\Panels\CityDevPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SideBar.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
-    <Compile Include="Assets\Resources\Scripts\SaveDatas\TurnPhaseData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\WarPlanData.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
     <Compile Include="Assets\Resources\Scripts\Tooltip.cs" />
   </ItemGroup>

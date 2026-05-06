@@ -273,7 +273,7 @@ public class PanelManager : MonoBehaviour
         systemPanel = null;
     }
 
-    public void ShowCityBattle()
+    public void ShowCityBattle(int forceId)
     {
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         if (cityBattlePanel == null)
@@ -283,7 +283,7 @@ public class PanelManager : MonoBehaviour
         }
         cityBattlePanel.SetActive(true);
         var cityBattlePanelManager = cityBattlePanel.GetComponent<CityBattlePanelManager>();
-        cityBattlePanelManager.Init();
+        cityBattlePanelManager.Init(forceId);
         cityBattlePanelManager.OnShow();
 
         ChangePanelCount(cityBattlePanel, true);

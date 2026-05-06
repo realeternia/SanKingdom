@@ -292,21 +292,21 @@ public class GameManager : MonoBehaviour
             
             foreach (var warPlan in force.warPlans)
             {
-                force.ExecuteCityBattleDev(
-                    warPlan.sourceCityId,
-                    CityDevConfig.ConfigList.FirstOrDefault(c => c.Prefab == "CityDevBattle")?.Id ?? 0,
-                    warPlan.heroIds,
-                    warPlan.foodCost,
-                    warPlan.targetCityId,
-                    true,
-                    warPlan.heroSoldierDict,
-                    warPlan.heroArmsDict
-                );
+                // force.ExecuteCityBattleDev(
+                //     warPlan.sourceCityId,
+                //     CityDevConfig.ConfigList.FirstOrDefault(c => c.Prefab == "CityDevBattle")?.Id ?? 0,
+                //     warPlan.heroIds,
+                //     warPlan.foodCost,
+                //     warPlan.targetCityId,
+                //     true,
+                //     warPlan.heroSoldierDict,
+                //     warPlan.heroArmsDict
+                // );
                 
-                while (BattleManager.Instance.IsBattleRunning)
-                {
-                    yield return new WaitForSeconds(0.1f);
-                }
+                // while (BattleManager.Instance.IsBattleRunning)
+                // {
+                //     yield return new WaitForSeconds(0.1f);
+                // }
             }
         }
         

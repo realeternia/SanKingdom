@@ -213,7 +213,8 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         {
             if (prefabName == "Battle")
             {
-                PanelManager.Instance.ShowCityBattle();
+                int forceId =  GameManager.Instance.GetCity(cityId).forceId;
+                PanelManager.Instance.ShowCityBattle(forceId);
             }
             else
             {

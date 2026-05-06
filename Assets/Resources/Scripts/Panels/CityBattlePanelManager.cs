@@ -9,109 +9,40 @@ using System;
 
 public class CityBattlePanelManager : MonoBehaviour
 {
-    private int cityId;
-    private int devId;
+    public ScrollRect scrollRectMain;
+    public GameObject itemRegionMain;   
 
-    public TMP_Text attrVal1Text;
-    public TMP_Text attrDesText;
-
-    public TMP_Text foodText;
     private int foodCount = SystemConst.Expedition.DEFAULT_FOOD_DAYS;
 
-    public Button destButton;
-    public SelectHeroArmyControl heroSelect;
-    public Button foodButton;
-    public Button runButton;
-
-    public TMP_Text foodCostText;
-
     private int selectedCityId;
+    public Button destButton;
+    
+
     public Button closeButton;
+
+    private List<GameObject> cityBattleItems = new List<GameObject>();
 
     void Start()
     {
-        runButton.onClick.AddListener(() =>
-        {
-            if (selectedCityId == 0)
-            {
-                SystemTip.Instance.ShowTip("请选择目标城市");
-                return;
-            }
-            if (heroSelect.heroIds.Length <= 0)
-            {
-                SystemTip.Instance.ShowTip("请选择至少一个英雄");
-                return;
-            }
-            var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
-            var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
-            var citySrc = GameManager.Instance.GetCity(cityId);
-            if(citySrc.food < foodCost)
-            {
-                SystemTip.Instance.ShowTip("粮食不足");
-                return;
-            }            
-
-            var devConfig = CityDevConfig.GetConfig(devId);
-            PanelManager.Instance.ShowPopResultPanel(devConfig.Cname, new List<PopResultPanelManager.AttrData>(), () =>
-            {
-                var heroList = heroSelect.heroIds;
-                if (heroList.Length <= 0)
-                    return;
-                OnRun(devId, heroList);
-            }, devConfig.Mp4);
-        });
-        heroSelect.onClick = () =>
-        {
-            UpdateFoodInfo();
-        };
         closeButton.onClick.AddListener(() =>
         {
             PanelManager.Instance.HideCityBattle();
         });
         destButton.onClick.AddListener(() =>
         {
-            PanelManager.Instance.ShowPopCitySelectPanel(cityId, true, (selectedCityId) =>
-            {
-                this.selectedCityId = selectedCityId;
-                if(selectedCityId == 0)
-                {
-                    attrVal1Text.text = "-";
-                    return;
-                }
-                var cityCfg = WorldConfig.GetConfig(selectedCityId);
-                attrVal1Text.text = cityCfg.Cname;
-            });
-        });
-        foodButton.onClick.AddListener(() =>
-        {
-            if(foodCount == SystemConst.Expedition.DEFAULT_FOOD_DAYS)
-            {
-                foodCount = SystemConst.Expedition.DEFAULT_SELECTED_FOOD_DAYS;
-            }
-            else if(foodCount == SystemConst.Expedition.DEFAULT_SELECTED_FOOD_DAYS)
-            {
-                foodCount = 30;
-            }
-            else if(foodCount == 30)
-            {
-                foodCount = SystemConst.Expedition.DEFAULT_FOOD_DAYS;
-            }
-
-            foodText.text = foodCount.ToString() + "日粮";
-            UpdateFoodInfo();
+            // PanelManager.Instance.ShowPopCitySelectPanel(cityId, true, (selectedCityId) =>
+            // {
+            //     this.selectedCityId = selectedCityId;
+            //     if(selectedCityId == 0)
+            //     {
+            //         attrVal1Text.text = "-";
+            //         return;
+            //     }
+            //     var cityCfg = WorldConfig.GetConfig(selectedCityId);
+            //     attrVal1Text.text = cityCfg.Cname;
+            // });
         });
 
-    }
-
-    private void UpdateFoodInfo()
-    {
-        if (heroSelect.heroIds.Length <= 0)
-            return;
-        var soldierTotal = GameManager.Instance.GetCity(cityId).GetAttr("soldier");
-        var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
-        var citySrc = GameManager.Instance.GetCity(cityId);
-        foodCostText.text = string.Format("{0} / {1}", foodCost, (int)citySrc.food);
-        foodCostText.color = foodCost <= citySrc.food ? Color.white : Color.red;
     }
 
     void Update()
@@ -119,32 +50,79 @@ public class CityBattlePanelManager : MonoBehaviour
         
     } 
 
-    public void Init()
+    public void Init(int forceId)
     {
-       
-        foodCount = SystemConst.Expedition.DEFAULT_SELECTED_FOOD_DAYS;
-        foodText.text = foodCount.ToString() + "日粮";
-        foodButton.gameObject.SetActive(true);
-        foodCostText.transform.parent.parent.gameObject.SetActive(true);
-        foodCostText.text = "待计算";
-
-        var devCfg = CityDevConfig.GetConfig(devId);
-        attrDesText.text = devCfg.Des;
-
-        heroSelect.SetDevId(cityId, devId);
+        CreateCityBattleItems(forceId);
     }
 
-    private void OnRun(int devId, int[] heroList)
+    private void CreateCityBattleItems(int forceId)
     {
-        var citySrc = GameManager.Instance.GetCity(cityId);
-        var force = citySrc.GetForce();
+        foreach (var item in cityBattleItems)
+        {
+            if (item != null)
+                Destroy(item);
+        }
+        cityBattleItems.Clear();
 
-        var soldierTotal = citySrc.GetAttr("soldier");
-        var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
+        var forceData = GameManager.Instance.GetForce(forceId);
 
-        PanelManager.Instance.HideCityDev();    
-        
-        force.ExecuteCityBattleDev(cityId, devId, heroList, foodCost, selectedCityId, false);
+        List<WarTeamData> allTeams = new List<WarTeamData>();
+        foreach (var warPlan in forceData.warPlans)
+        {
+            if (warPlan != null && warPlan.teams != null)
+            {
+                allTeams.AddRange(warPlan.teams);
+            }
+        }
+
+        if (allTeams.Count == 0) return;
+
+        var itemPrefab = Resources.Load<GameObject>("Prefabs/Panels/ListItem/CityBattleItem");
+
+        RectTransform containerRect = itemRegionMain.GetComponent<RectTransform>();
+        if (containerRect == null) return;
+
+        float itemWidth = 400f;
+        float itemHeight = 200f;
+        float spacing = 10f;
+        int itemsPerRow = 2;
+
+        float totalWidth = itemsPerRow * itemWidth + (itemsPerRow - 1) * spacing;
+        float startX = -totalWidth / 2f + itemWidth / 2f;
+
+        for (int i = 0; i < allTeams.Count; i++)
+        {
+            int row = i / itemsPerRow;
+            int col = i % itemsPerRow;
+
+            float posX = startX + col * (itemWidth + spacing);
+            float posY = -row * (itemHeight + spacing);
+
+            GameObject itemObj = Instantiate(itemPrefab, itemRegionMain.transform);
+            itemObj.transform.localScale = Vector3.one;
+
+            RectTransform rectTransform = itemObj.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                rectTransform.anchorMin = new Vector2(0.5f, 1f);
+                rectTransform.anchorMax = new Vector2(0.5f, 1f);
+                rectTransform.pivot = new Vector2(0.5f, 1f);
+                rectTransform.anchoredPosition = new Vector2(posX, posY);
+                rectTransform.sizeDelta = new Vector2(itemWidth, itemHeight);
+            }
+
+            CityBattleItem itemScript = itemObj.GetComponent<CityBattleItem>();
+            if (itemScript != null)
+            {
+                itemScript.Init(allTeams[i]);
+            }
+
+            cityBattleItems.Add(itemObj);
+        }
+
+        int totalRows = (allTeams.Count + itemsPerRow - 1) / itemsPerRow;
+        float contentHeight = totalRows * itemHeight + (totalRows - 1) * spacing + 20f;
+        containerRect.sizeDelta = new Vector2(containerRect.sizeDelta.x, contentHeight);
     }
 
     public void OnShow()
