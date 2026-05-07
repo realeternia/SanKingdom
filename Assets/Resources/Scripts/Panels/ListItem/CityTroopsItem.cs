@@ -5,19 +5,21 @@ using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
 
-public class CityBattleItem : MonoBehaviour
+public class CityTroopsItem : MonoBehaviour
 {
     public TMP_Text heroNameText;
     public TMP_Text armsText;
-    public TMP_Text targetCityText;
     public TMP_Text atkText;
     public TMP_Text defText;
-    public TMP_Text sodierCountText;
     public Image hero1IconImage;
     public Image hero2IconImage;
     public Image hero3IconImage;
 
     public Button editButton;
+    public Button dismissButton;
+
+    public Button newTroopsButton;
+    public GameObject coverNode;
 
     private WarTroopsData warTeamData;
 
@@ -55,18 +57,6 @@ public class CityBattleItem : MonoBehaviour
             }
         }
 
-        if (targetCityText != null)
-        {
-            if (warTeamData.cityId > 0)
-            {
-                targetCityText.text = ConfigNameHelper.GetCityName(warTeamData.cityId);
-            }
-            else
-            {
-                targetCityText.text = "准备中";
-            }
-        }
-
         if (atkText != null)
         {
             if (warTeamData.armsId > 0)
@@ -77,19 +67,6 @@ public class CityBattleItem : MonoBehaviour
             else
             {
                 atkText.text = "0";
-            }
-        }
-
-        if (defText != null)
-        {
-            if (warTeamData.armsId > 0)
-            {
-                var armsConfig = ArmsConfig.GetConfig(warTeamData.armsId);
-                defText.text = armsConfig.Def.ToString();
-            }
-            else
-            {
-                defText.text = "0";
             }
         }
 

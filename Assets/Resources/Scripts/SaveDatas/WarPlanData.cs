@@ -2,10 +2,10 @@ using System.Collections.Generic;
 
 public class WarPlanData
 {
-    public List<WarTeamData> teams;
+    public List<WarTroopsData> teams;
 
     public WarPlanData()
     {
-        teams = new List<WarTeamData>();
+        teams = new List<WarTroopsData>();
     }
 }

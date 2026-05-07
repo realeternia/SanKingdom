@@ -137,6 +137,7 @@
     <Compile Include="Assets\Resources\Scripts\SystemTool\ConfigNameHelper.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\SignalData.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityTroopsItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\BuffConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\HeroAttrTool.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\CityEvaluator.cs" />
@@ -221,10 +222,10 @@
     <Compile Include="Assets\Resources\Scripts\Panels\Gismo\ArmsItemControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ForceConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\SaveDatas\WarTeamData.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityDevNodeMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\WarTroopsData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidHeal.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSpeedDown.cs" />

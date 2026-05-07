@@ -214,22 +214,13 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         {
             if (prefabName == "Battle")
             {
-                int forceId;
-                if (cityId == SystemConst.City.KING_CITY_ID)
+                var cityData = GameManager.Instance.GetCity(cityId);
+                if (cityData == null)
                 {
-                    forceId = cityPanelManager.GetViewForceId();
+                    GameLog.Warn($"CityDevItem: 找不到城市数据 cityId={cityId}");
+                    return;
                 }
-                else
-                {
-                    var cityData = GameManager.Instance.GetCity(cityId);
-                    if (cityData == null)
-                    {
-                        GameLog.Warn($"CityDevItem: 找不到城市数据 cityId={cityId}");
-                        return;
-                    }
-                    forceId = cityData.forceId;
-                }
-                PanelManager.Instance.ShowCityBattle(forceId);
+                PanelManager.Instance.ShowCityBattle(cityData.forceId);
             }
             else
             {

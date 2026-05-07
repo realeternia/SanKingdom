@@ -17,11 +17,9 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     public TMP_Text cityAttrText;
     public Image cityImage;
 
-    public TMP_Text textExp;
-    public TMP_Text textGold;
-    public TMP_Text textFood;
-    public TMP_Text textSoldier;
-    public TMP_Text textWall;
+    public Button buttonDev;
+    public Button buttonKingAct;
+    public Button buttonTroops;
 
     public ScrollRect scrollRectCity;
     public GameObject rankRegionCity;
@@ -49,15 +47,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     
     private bool isViewOnly = false;
     private int viewForceId = 0;
+    private bool isKingActMode = false;
 
     public int GetViewForceId()
     {
         return viewForceId;
-    }
-
-    private bool IsKingCity()
-    {
-        return cityId == SystemConst.City.KING_CITY_ID;
     }
 
     void Start()
@@ -65,6 +59,18 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         closeBtn.onClick.AddListener(() =>
         {
             PanelManager.Instance.HideCity();
+        });
+
+        buttonDev.onClick.AddListener(() =>
+        {
+            isKingActMode = false;
+            CreateDevItems();
+        });
+
+        buttonKingAct.onClick.AddListener(() =>
+        {
+            isKingActMode = true;
+            CreateDevItems();
         });
 
         LoadCityCells();
@@ -94,16 +100,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             var cities = GameManager.Instance.GetCitiesByForce(viewForceId);
             int count = 0;
             CityCellCity currentCityCell = null;
-
-            if (!isViewOnly)
-            {
-                GameObject kingCell = Instantiate(rankCellCityPrefab, rankRegionCity.transform);
-                kingCell.transform.localScale = Vector3.one;
-                CityCellCity kingCellCity = kingCell.GetComponent<CityCellCity>();
-                kingCellCity.cityPanelManager = this;
-                kingCellCity.Init(SystemConst.City.KING_CITY_ID, "王城");
-                count++;
-            }
 
             foreach (var city in cities)
             {
@@ -158,16 +154,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         if (lastSelectedCity == null) return;
 
-        if (IsKingCity())
-        {
-            var heroRankRect = rankRegionHero.GetComponent<RectTransform>();
-            if (heroRankRect != null)
-            {
-                heroRankRect.sizeDelta = new Vector2(heroRankRect.sizeDelta.x, 0);
-            }
-            return;
-        }
-
         var heroes = GameManager.Instance.SaveData.heros.Where(h => h.cityId == lastSelectedCity.cityId).ToList();
         int count = 0;
         foreach (var heroData in heroes)
@@ -217,6 +203,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         cellCity.SetSelected(true);
         lastSelectedCity = cellCity;
         cityId = cellCity.cityId;
+        isKingActMode = false;
 
         UpdateCityInfo();
         CreateDevItems();
@@ -225,14 +212,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     private void UpdateCityInfo()
     {
-        if (IsKingCity())
-        {
-            cityName.text = "王城";
-            if (cityImage != null) cityImage.sprite = null;
-            UpdateCityAttrText();
-            return;
-        }
-
         var cityCfg = WorldConfig.GetConfig(cityId);
         var cityData = GameManager.Instance.GetCity(cityId);
 
@@ -242,30 +221,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             cityName.text = $"{cityCfg.Cname}({level}级)";
             cityImage.sprite = Resources.Load<Sprite>("Textures/CityView/" + cityCfg.ViewPrefab);
         }
-
-        UpdateCityAttrText();
-    }
-
-    private void UpdateCityAttrText()
-    {
-        if (IsKingCity())
-        {
-            if (textExp != null) textExp.text = "";
-            if (textGold != null) textGold.text = "";
-            if (textFood != null) textFood.text = "";
-            if (textSoldier != null) textSoldier.text = "";
-            if (textWall != null) textWall.text = "";
-            return;
-        }
-
-        var cityData = GameManager.Instance.GetCity(cityId);
-        if (cityData == null) return;
-
-        if (textExp != null) textExp.text = $"{cityData.exp}";
-        if (textGold != null) textGold.text = $"{(int)GameManager.Instance.GetForce(cityData.forceId).gold}";
-        if (textFood != null) textFood.text = $"{(int)cityData.food}";
-        if (textSoldier != null) textSoldier.text = $"{(int)cityData.soldier}";
-        if (textWall != null) textWall.text = $"{(int)cityData.wall}";
     }
 
     private void ClearAllDevNodeHeroes()
@@ -361,7 +316,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         var devPrefab = Resources.Load<GameObject>("Prefabs/Panels/Gismo/CityDevItem");
         if (devPrefab == null) return;
 
-        bool isKing = IsKingCity();
+        bool isKing = isKingActMode;
 
         float listWidth = devList.rect.width;
         int itemsPerRow = Mathf.Max(1, Mathf.FloorToInt((listWidth + devItemSpacing) / (devItemWidth + devItemSpacing)));
@@ -400,7 +355,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     private void LoadDevAssignmentsFromSave()
     {
-        if (IsKingCity()) return;
+        if (isKingActMode) return;
 
         var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData == null) return;
@@ -441,9 +396,9 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public bool AssignHeroToDevNode(int heroId, CityDevItem targetNode)
     {
-        if (IsKingCity())
+        if (isKingActMode)
         {
-            SystemTip.Instance.ShowTip("王城不能派遣武将");
+            SystemTip.Instance.ShowTip("王城指令下不能派遣武将");
             return false;
         }
 
@@ -583,8 +538,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         }
         resItemDict.Clear();
 
-        if (IsKingCity()) return;
-        
         var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData == null) return;
         
@@ -613,8 +566,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     private void UpdateAllResItemAddons()
     {
-        if (IsKingCity()) return;
-
         var cityData = GameManager.Instance.GetCity(cityId);
         var viewForce = GameManager.Instance.GetForce(viewForceId);
         

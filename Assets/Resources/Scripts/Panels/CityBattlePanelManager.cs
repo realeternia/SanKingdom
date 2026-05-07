@@ -68,7 +68,7 @@ public class CityBattlePanelManager : MonoBehaviour
 
         var forceData = GameManager.Instance.GetForce(forceId);
 
-        List<WarTeamData> allTeams = new List<WarTeamData>();
+        List<WarTroopsData> allTeams = new List<WarTroopsData>();
         foreach (var warPlan in forceData.warPlans)
         {
             if (warPlan != null && warPlan.teams != null)
