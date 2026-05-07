@@ -7,6 +7,7 @@ using CommonConfig;
 using System.Linq;
 using System;
 using UnityEngine.EventSystems;
+using Controls.Utils;
 
 public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
@@ -213,7 +214,21 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         {
             if (prefabName == "Battle")
             {
-                int forceId =  GameManager.Instance.GetCity(cityId).forceId;
+                int forceId;
+                if (cityId == SystemConst.City.KING_CITY_ID)
+                {
+                    forceId = cityPanelManager.GetViewForceId();
+                }
+                else
+                {
+                    var cityData = GameManager.Instance.GetCity(cityId);
+                    if (cityData == null)
+                    {
+                        GameLog.Warn($"CityDevItem: 找不到城市数据 cityId={cityId}");
+                        return;
+                    }
+                    forceId = cityData.forceId;
+                }
                 PanelManager.Instance.ShowCityBattle(forceId);
             }
             else
@@ -247,11 +262,6 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         if (cityPanelManager != null)
         {
             cityPanelManager.OnSelectDevNode(this);
-        }
-
-        if (!string.IsNullOrEmpty(prefabName))
-        {
-            PanelManager.Instance.ShowCityDev(cityId, devId);
         }
     }
 

@@ -50,6 +50,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     private bool isViewOnly = false;
     private int viewForceId = 0;
 
+    public int GetViewForceId()
+    {
+        return viewForceId;
+    }
+
     private bool IsKingCity()
     {
         return cityId == SystemConst.City.KING_CITY_ID;

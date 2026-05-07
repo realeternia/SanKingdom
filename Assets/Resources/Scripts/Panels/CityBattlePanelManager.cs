@@ -31,7 +31,7 @@ public class CityBattlePanelManager : MonoBehaviour
         destButton.onClick.AddListener(() =>
         {
             var cityIds = MapTool.GetAdjacentEnemyCityIds(forceId);
-            PanelManager.Instance.ShowPopCitySelectPanel(cityIds, (selectedCityId) =>
+            PanelManager.Instance.ShowPopCitySelectPanel(cityIds, selectedCityId, (selectedCityId) =>
             {
                 this.selectedCityId = selectedCityId;
                 if(selectedCityId == 0)

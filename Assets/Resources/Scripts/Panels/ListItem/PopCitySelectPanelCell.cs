@@ -17,19 +17,21 @@ public class PopCitySelectPanelCell : MonoBehaviour, IPointerClickHandler
     public TMP_Text textHeroCount;
     public Image backgroundImage;
     
-    private Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.8f); // 正常状态背景色
-    private Color selectedColor = new Color(0.5f, 0.5f, 0.1f, 0.8f); // 高光绿色选中状态
+    private Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+    private Color selectedColor = new Color(0.5f, 0.5f, 0.1f, 0.8f);
+    private bool isSelected = false;
 
-    // Start is called before the first frame update
     void Start()
     {
         cityName.raycastTarget = false;
         textOwner.raycastTarget = false;
         textSoldier.raycastTarget = false;
         textHeroCount.raycastTarget = false;
-        
-        // 初始化背景色为正常状态
-        OnSelect(false);
+
+        if (!isSelected)
+        {
+            OnSelect(false);
+        }
     }
 
     public void Init(int cityId)
@@ -47,6 +49,7 @@ public class PopCitySelectPanelCell : MonoBehaviour, IPointerClickHandler
 
     public void OnSelect(bool isSelect)
     {
+        isSelected = isSelect;
         if (backgroundImage != null)
         {
             backgroundImage.color = isSelect ? selectedColor : normalColor;

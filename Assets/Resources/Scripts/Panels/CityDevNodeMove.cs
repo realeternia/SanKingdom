@@ -67,7 +67,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         {
             var forceId = GameManager.Instance.GetCity(cityId).forceId;
             var cityIds = MapTool.GetOwnCityIds(forceId);
-            PanelManager.Instance.ShowPopCitySelectPanel(cityIds, (selectedCityId) =>
+            PanelManager.Instance.ShowPopCitySelectPanel(cityIds, selectedCityId, (selectedCityId) =>
             {
                 this.selectedCityId = selectedCityId;
                 if(selectedCityId == 0)

@@ -75,7 +75,7 @@ public class StrategicDecider
     {
         var result = new Dictionary<int, CityStrategyState>();
         var cities = force.GetCityList();
-        var frontlineCities = HeroDispatcher.GetFrontlineCities(force);
+        var frontlineCities = MapTool.GetFrontlineCityIds(force.forceId);
         
         foreach (var city in cities)
         {

@@ -30,9 +30,10 @@ public class PopCitySelectPanelManager : MonoBehaviour
         });
     }
 
-    private void Init(List<int> cityIds, System.Action<int> callback)
+    private void Init(List<int> cityIds, int currentCityId, System.Action<int> callback)
     {
         onSelectCallback = callback;
+        lastSelectedCell = null;
         foreach (Transform child in rankParent.transform)
         {
             Destroy(child.gameObject);
@@ -46,6 +47,11 @@ public class PopCitySelectPanelManager : MonoBehaviour
             PopCitySelectPanelCell cellInfo = cell.GetComponent<PopCitySelectPanelCell>();
             cellInfo.popCitySelectPanelManager = this;
             cellInfo.Init(id);
+            if (id == currentCityId)
+            {
+                cellInfo.OnSelect(true);
+                lastSelectedCell = cellInfo;
+            }
             itemCount++;
         }
 
@@ -73,9 +79,9 @@ public class PopCitySelectPanelManager : MonoBehaviour
         lastSelectedCell = cellInfo;
     }
 
-    public void OnShow(List<int> cityIds, System.Action<int> callback)
+    public void OnShow(List<int> cityIds, int currentCityId, System.Action<int> callback)
     {
-        Init(cityIds, callback);
+        Init(cityIds, currentCityId, callback);
     }
 
     public void OnHide()
