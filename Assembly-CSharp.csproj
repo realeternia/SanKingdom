@@ -210,6 +210,7 @@
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PickPanelCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />
+    <Compile Include="Assets\Resources\Scripts\UIScripts\IconLoader.cs" />
     <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\PopCitySelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIStrategyContext.cs" />

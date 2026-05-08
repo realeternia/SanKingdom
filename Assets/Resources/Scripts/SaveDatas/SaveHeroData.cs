@@ -65,6 +65,12 @@ public class SaveHeroData
 
     public int GetArmsId()
     {
+        var troop = GetTroop();
+        return troop != null ? troop.armsId : 0;
+    }
+
+    public WarTroopsData GetTroop()
+    {
         var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData != null)
         {
@@ -72,11 +78,11 @@ public class SaveHeroData
             {
                 if (troop.heroId1 == heroId || troop.heroId2 == heroId || troop.heroId3 == heroId)
                 {
-                    return troop.armsId;
+                    return troop;
                 }
             }
         }
-        return SystemConst.Hero.DEFAULT_ARMS_ID;
+        return null;
     }
 
     public static SaveHeroData CreateWildHero(int heroId, int cityId)

@@ -204,16 +204,8 @@ public class GameManager : MonoBehaviour
     public void NextRound()
     {
         SaveData.round++;
+        SaveData.OnRound();
         
-        foreach(var city in SaveData.cities)
-        {
-            city.OnRound();
-        }
-
-        ProcessHeros();
-        
-        foreach (var forceData in SaveData.forces)
-            forceData.ResetRoundState();
         SaveData.currentForceIndex = 0;
         SortForces();
         StartNextForceTurn();
@@ -384,45 +376,6 @@ public class GameManager : MonoBehaviour
         NextRound();
     }
     
-    private void ProcessHeros()
-    {
-        foreach (var hero in SaveData.heros)
-        {
-            if (hero.state == HeroState.Catched)
-            {
-                hero.loyalty -= SysFormula.Hero.CalculateCapturedLoyaltyDecay();
-                if (hero.loyalty < 0)
-                    hero.loyalty = 0;
-
-                var city = GetCity(hero.cityId);
-                if (SysFormula.Hero.CheckEscape())
-                {
-                    var destCityId = GetRandomForceCityId(hero.cityId, hero.forceId);
-                    if (destCityId > 0)
-                    {
-                        if (city != null)
-                        {
-                            city.RemoveDevAssignment(hero.heroId);
-                        }
-                        hero.state = HeroState.Normal;
-                        hero.cityId = destCityId;
-                    }
-                }
-            }
-            else if (hero.state == HeroState.Wild)
-            {
-                if (SysFormula.Hero.CheckWildHeroMove())
-                {
-                    var randomCityId = MapTool.GetRandomAdjacentCityId(hero.cityId);
-                    if (randomCityId != 0)
-                    {
-                        hero.cityId = randomCityId;
-                    }
-                }
-            }
-        }
-    }
-
     public int SeasonId
     {
         get
@@ -474,6 +427,7 @@ public class GameManager : MonoBehaviour
 
     public void SaveToFile()
     {
+        SaveData.BeforeSave();
         string savePath = Application.persistentDataPath + "/game_save.json";
         try
         {

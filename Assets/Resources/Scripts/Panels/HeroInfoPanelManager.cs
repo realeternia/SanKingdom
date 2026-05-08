@@ -37,8 +37,9 @@ public class HeroInfoPanelManager : MonoBehaviour
     public GameObject armsItemPrefab;
 
     public TMP_Text armsNameText;
-    public TMP_Text armsAttrText;
-    public Button armsChangeBtn;
+    public TMP_Text armsAttr1Text;
+    public TMP_Text armsAttr2Text;
+    public TMP_Text troopsText;
     
     private List<ArmsItemControl> armsItems = new List<ArmsItemControl>();
 
@@ -59,34 +60,6 @@ public class HeroInfoPanelManager : MonoBehaviour
         closeBtn.onClick.AddListener(() =>
         {      
             PanelManager.Instance.HideHeroInfoPanel();
-        });
-        
-        armsChangeBtn.onClick.AddListener(() =>
-        {
-            var heroData = GameManager.Instance.GetHero(heroId);
-            if (heroData == null) return;
-
-            var cityData = GameManager.Instance.GetCity(heroData.cityId);
-            if (cityData == null) return;
-
-            WarTroopsData heroTroop = null;
-            foreach (var troop in cityData.troops)
-            {
-                if (troop.heroId1 == heroId || troop.heroId2 == heroId || troop.heroId3 == heroId)
-                {
-                    heroTroop = troop;
-                    break;
-                }
-            }
-
-            if (heroTroop == null) return;
-
-            SideArmysSelector.SetContextForTroop(heroTroop.armsId, (newArmsId) =>
-            {
-                heroTroop.SetArmsId(newArmsId);
-                RefreshArmsBG();
-            });
-            PanelManager.Instance.ShowSideBar("SideArmsSelector");
         });
         
         InitTypeDropdown();
@@ -212,9 +185,10 @@ public class HeroInfoPanelManager : MonoBehaviour
     private int GetArmsLevel(int heroId)
     {
         var heroData = GameManager.Instance.GetHero(heroId);
-        if (heroData == null || heroData.GetArmsId() <= 0)
-            return 0;
-        var armsConfig = ArmsConfig.GetConfig(heroData.GetArmsId());
+        var troop = heroData.GetTroop();
+        if (troop == null)
+            return -1;
+        var armsConfig = ArmsConfig.GetConfig(troop.armsId);
         return armsConfig.Level;
     }
     
@@ -252,9 +226,10 @@ public class HeroInfoPanelManager : MonoBehaviour
         else if (sortKey == "Arms")
         {
             string armsName = "";
-            if (heroData != null && heroData.GetArmsId() > 0)
+            var troop = heroData != null ? heroData.GetTroop() : null;
+            if (troop != null)
             {
-                var armsConfig = ArmsConfig.GetConfig(heroData.GetArmsId());
+                var armsConfig = ArmsConfig.GetConfig(troop.armsId);
                 Color color = GetColorByArmsLevel(armsConfig.Level);
                 string colorHex = ColorUtility.ToHtmlStringRGB(color);
                 armsName = $"<color=#{colorHex}>{armsConfig.NameS}</color>";
@@ -455,23 +430,29 @@ public class HeroInfoPanelManager : MonoBehaviour
 
     private void UpdateArmsInfo(int armsId, SaveHeroData heroData)
     {
-        if (armsNameText == null || armsAttrText == null)
-            return;
+        var troop = heroData != null ? heroData.GetTroop() : null;
 
-        if (armsId <= 0)
+        if (troop == null)
         {
-            armsNameText.text = "无";
-            armsNameText.color = SystemConst.Arms.GetColorByLevel(0);
-            armsAttrText.text = "";
+            armsNameText.gameObject.SetActive(false);
+            troopsText.text = "无小队";
+            troopsText.color = Color.gray;
             return;
         }
+
+        armsNameText.gameObject.SetActive(true);
+
+        var mainHeroConfig = HeroConfig.GetConfig(troop.heroId1);
+        troopsText.text = mainHeroConfig.Name + "队";
+        troopsText.color = Color.white;
 
         var armsConfig = ArmsConfig.GetConfig(armsId);
         armsNameText.text = armsConfig.NameS;
         armsNameText.color = SystemConst.Arms.GetColorByLevel(armsConfig.Level);
         
         var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, armsId);
-        armsAttrText.text = $"攻{atk} 防{def}";
+        armsAttr1Text.text = atk.ToString();
+        armsAttr2Text.text = def.ToString();
     }
 
     private void RefreshArmsBG()
