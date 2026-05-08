@@ -182,6 +182,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\CityDevPanelCell.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModulePhysics2D.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\DevAssignmentData.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\TroopsHeroSlot.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />
     <Compile Include="Assets\Resources\Scripts\MainPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityDevItem.cs" />

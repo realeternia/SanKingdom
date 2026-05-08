@@ -190,6 +190,7 @@ public static class SystemConst
         /// </summary>
         public const int KING_OWNER_BONUS_SCORE = 9999;
         public const int KING_CITY_ID = -1;
+        public const int MAX_TROOPS = 5;
     }
 
     public static class Economy

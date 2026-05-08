@@ -15,14 +15,14 @@ public class SideArmysSelector : MonoBehaviour
     private SelectArmsItem selectedItem;
     public Button confirmButton;
 
-    private static int currentHeroId;
-    private static System.Action onArmsChanged;
+    private static int currentArmsIdForTroop;
+    private static System.Action<int> onArmsIdSelected;
 
-    public static void SetContext(int heroId, System.Action callback)
+    public static void SetContextForTroop(int armsId, System.Action<int> callback)
     {
-        currentHeroId = heroId;
-        onArmsChanged = callback;
-        GameLog.Info($"SideArmysSelector.SetContext: currentHeroId={heroId}");
+        currentArmsIdForTroop = armsId;
+        onArmsIdSelected = callback;
+        GameLog.Info($"SideArmysSelector.SetContextForTroop: armsId={armsId}");
     }
 
     void Start()
@@ -42,12 +42,7 @@ public class SideArmysSelector : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        int currentArmsId = 0;
-        var heroData = GameManager.Instance.GetHero(currentHeroId);
-        if (heroData != null)
-        {
-            currentArmsId = heroData.armsId;
-        }
+        int currentArmsId = currentArmsIdForTroop;
 
         selectedItem = null;
         int count = 0;
@@ -95,8 +90,6 @@ public class SideArmysSelector : MonoBehaviour
 
     void OnConfirm()
     {
-        GameLog.Info($"SideArmysSelector.OnConfirm: currentHeroId={currentHeroId}, selectedItem={selectedItem}");
-        
         if (selectedItem == null)
         {
             GameLog.Warn("SideArmysSelector.OnConfirm: selectedItem is null");
@@ -104,46 +97,7 @@ public class SideArmysSelector : MonoBehaviour
         }
 
         int newArmsId = selectedItem.GetArmsId();
-        GameLog.Info($"SideArmysSelector.OnConfirm: newArmsId={newArmsId}");
-        
-        var heroData = GameManager.Instance.GetHero(currentHeroId);
-        if (heroData == null)
-        {
-            GameLog.Warn($"SideArmysSelector.OnConfirm: heroData is null for heroId={currentHeroId}");
-            return;
-        }
-
-        GameLog.Info($"SideArmysSelector.OnConfirm: heroData.heroId={heroData.heroId}, heroData.armsId={heroData.armsId}, heroData.forceId={heroData.forceId}");
-
-        if (heroData.armsId == newArmsId)
-        {
-            PanelManager.Instance.HideSideBar();
-            return;
-        }
-
-        var force = GameManager.Instance.GetForce(heroData.forceId);
-        if (force == null)
-        {
-            GameLog.Warn($"SideArmysSelector.OnConfirm: force is null for forceId={heroData.forceId}");
-            return;
-        }
-
-        bool canAfford = force.CanAffordArms(newArmsId, currentHeroId);
-        GameLog.Info($"SideArmysSelector.OnConfirm: CanAffordArms={canAfford}");
-        
-        if (!canAfford)
-        {
-            SystemTip.Instance.ShowTip("资源不足");
-            return;
-        }
-
-        bool result = heroData.SetArmsId(newArmsId);
-        GameLog.Info($"SideArmysSelector.OnConfirm: SetArmsId result={result}, new armsId={heroData.armsId}");
-        
-        if (result)
-        {
-            onArmsChanged?.Invoke();
-            PanelManager.Instance.HideSideBar();
-        }
+        onArmsIdSelected?.Invoke(newArmsId);
+        PanelManager.Instance.HideSideBar();
     }
 }

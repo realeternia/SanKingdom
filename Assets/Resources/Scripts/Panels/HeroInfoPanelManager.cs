@@ -63,7 +63,29 @@ public class HeroInfoPanelManager : MonoBehaviour
         
         armsChangeBtn.onClick.AddListener(() =>
         {
-            SideArmysSelector.SetContext(heroId, () => RefreshArmsBG());
+            var heroData = GameManager.Instance.GetHero(heroId);
+            if (heroData == null) return;
+
+            var cityData = GameManager.Instance.GetCity(heroData.cityId);
+            if (cityData == null) return;
+
+            WarTroopsData heroTroop = null;
+            foreach (var troop in cityData.troops)
+            {
+                if (troop.heroId1 == heroId || troop.heroId2 == heroId || troop.heroId3 == heroId)
+                {
+                    heroTroop = troop;
+                    break;
+                }
+            }
+
+            if (heroTroop == null) return;
+
+            SideArmysSelector.SetContextForTroop(heroTroop.armsId, (newArmsId) =>
+            {
+                heroTroop.SetArmsId(newArmsId);
+                RefreshArmsBG();
+            });
             PanelManager.Instance.ShowSideBar("SideArmsSelector");
         });
         
@@ -190,9 +212,9 @@ public class HeroInfoPanelManager : MonoBehaviour
     private int GetArmsLevel(int heroId)
     {
         var heroData = GameManager.Instance.GetHero(heroId);
-        if (heroData == null || heroData.armsId <= 0)
+        if (heroData == null || heroData.GetArmsId() <= 0)
             return 0;
-        var armsConfig = ArmsConfig.GetConfig(heroData.armsId);
+        var armsConfig = ArmsConfig.GetConfig(heroData.GetArmsId());
         return armsConfig.Level;
     }
     
@@ -230,9 +252,9 @@ public class HeroInfoPanelManager : MonoBehaviour
         else if (sortKey == "Arms")
         {
             string armsName = "";
-            if (heroData != null && heroData.armsId > 0)
+            if (heroData != null && heroData.GetArmsId() > 0)
             {
-                var armsConfig = ArmsConfig.GetConfig(heroData.armsId);
+                var armsConfig = ArmsConfig.GetConfig(heroData.GetArmsId());
                 Color color = GetColorByArmsLevel(armsConfig.Level);
                 string colorHex = ColorUtility.ToHtmlStringRGB(color);
                 armsName = $"<color=#{colorHex}>{armsConfig.NameS}</color>";
@@ -407,7 +429,7 @@ public class HeroInfoPanelManager : MonoBehaviour
             return;
 
         var heroData = GameManager.Instance.GetHero(heroId);
-        int currentArmsId = heroData != null ? heroData.armsId : 0;
+        int currentArmsId = heroData != null ? heroData.GetArmsId() : 0;
 
         UpdateArmsInfo(currentArmsId, heroData);
 
@@ -455,7 +477,7 @@ public class HeroInfoPanelManager : MonoBehaviour
     private void RefreshArmsBG()
     {
         var heroData = GameManager.Instance.GetHero(heroId);
-        int currentArmsId = heroData != null ? heroData.armsId : 0;
+        int currentArmsId = heroData != null ? heroData.GetArmsId() : 0;
 
         UpdateArmsInfo(currentArmsId, heroData);
 

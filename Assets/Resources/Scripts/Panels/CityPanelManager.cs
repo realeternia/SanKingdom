@@ -48,10 +48,35 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     private bool isViewOnly = false;
     private int viewForceId = 0;
     private bool isKingActMode = false;
+    private bool isTroopsMode = false;
 
     public int GetViewForceId()
     {
         return viewForceId;
+    }
+
+    public bool IsCommander(int heroId)
+    {
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null) return false;
+
+        foreach (var troop in cityData.troops)
+        {
+            if (troop.heroId1 == heroId) return true;
+        }
+        return false;
+    }
+
+    public bool IsViceCommander(int heroId)
+    {
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null) return false;
+
+        foreach (var troop in cityData.troops)
+        {
+            if (troop.heroId2 == heroId || troop.heroId3 == heroId) return true;
+        }
+        return false;
     }
 
     void Start()
@@ -64,13 +89,22 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         buttonDev.onClick.AddListener(() =>
         {
             isKingActMode = false;
+            isTroopsMode = false;
             CreateDevItems();
         });
 
         buttonKingAct.onClick.AddListener(() =>
         {
             isKingActMode = true;
+            isTroopsMode = false;
             CreateDevItems();
+        });
+
+        buttonTroops.onClick.AddListener(() =>
+        {
+            isTroopsMode = true;
+            isKingActMode = false;
+            CreateTroopsItems();
         });
 
         LoadCityCells();
@@ -203,11 +237,18 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         cellCity.SetSelected(true);
         lastSelectedCity = cellCity;
         cityId = cellCity.cityId;
-        isKingActMode = false;
 
         UpdateCityInfo();
-        CreateDevItems();
         LoadHeroCells();
+
+        if (isTroopsMode)
+        {
+            CreateTroopsItems();
+        }
+        else
+        {
+            CreateDevItems();
+        }
     }
 
     private void UpdateCityInfo()
@@ -295,15 +336,12 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         }
     }
 
-    void CreateDevItems()
+    void ClearDevList()
     {
-        heroToDevNodeMap.Clear();
-        allDevNodes.Clear();
-
         List<GameObject> toDestroy = new List<GameObject>();
         foreach (Transform child in devList)
         {
-            if (child.GetComponent<CityDevItem>() != null)
+            if (child.GetComponent<CityDevItem>() != null || child.GetComponent<CityTroopsItem>() != null)
             {
                 toDestroy.Add(child.gameObject);
             }
@@ -312,6 +350,69 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         {
             Destroy(obj);
         }
+    }
+
+    public void CreateTroopsItems()
+    {
+        heroToDevNodeMap.Clear();
+        allDevNodes.Clear();
+        ClearDevList();
+
+        var troopsItemPrefab = Resources.Load<GameObject>("Prefabs/Panels/ListItem/CityTroopsItem");
+
+        var cityData = GameManager.Instance.GetCity(cityId);
+
+        float itemHeight = 150f;
+        float spacing = 10f;
+        int index = 0;
+
+        if (cityData != null)
+        {
+            foreach (var troop in cityData.troops)
+            {
+                var itemObj = Instantiate(troopsItemPrefab, devList);
+                var rectTransform = itemObj.GetComponent<RectTransform>();
+                rectTransform.anchorMin = new Vector2(0, 1);
+                rectTransform.anchorMax = new Vector2(0, 1);
+                rectTransform.pivot = new Vector2(0, 1);
+                rectTransform.anchoredPosition = new Vector2(0, -index * (itemHeight + spacing));
+
+                var troopsItem = itemObj.GetComponent<CityTroopsItem>();
+                if (troopsItem != null)
+                {
+                    troopsItem.SetCityPanelManager(this);
+                    troopsItem.Init(troop);
+                    troopsItem.SetCreateMode(false);
+                }
+                index++;
+            }
+        }
+
+        int troopCount = cityData != null ? cityData.troops.Count : 0;
+        if (troopCount < SystemConst.City.MAX_TROOPS)
+        {
+            var createObj = Instantiate(troopsItemPrefab, devList);
+            var createRect = createObj.GetComponent<RectTransform>();
+            createRect.anchorMin = new Vector2(0, 1);
+            createRect.anchorMax = new Vector2(0, 1);
+            createRect.pivot = new Vector2(0, 1);
+            createRect.anchoredPosition = new Vector2(0, -index * (itemHeight + spacing));
+
+            var createItem = createObj.GetComponent<CityTroopsItem>();
+            if (createItem != null)
+            {
+                createItem.SetCityPanelManager(this);
+                createItem.Init(null);
+                createItem.SetCreateMode(true);
+            }
+        }
+    }
+
+    void CreateDevItems()
+    {
+        heroToDevNodeMap.Clear();
+        allDevNodes.Clear();
+        ClearDevList();
 
         var devPrefab = Resources.Load<GameObject>("Prefabs/Panels/Gismo/CityDevItem");
         if (devPrefab == null) return;
@@ -402,6 +503,12 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             return false;
         }
 
+        if (IsCommander(heroId))
+        {
+            SystemTip.Instance.ShowTip("主将不能派遣到开发位置");
+            return false;
+        }
+
         if (isViewOnly)
         {
             SystemTip.Instance.ShowTip("查看模式下无法操作");
@@ -466,7 +573,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         return true;
     }
 
-    private void UpdateAllHeroWorkState()
+    public void UpdateAllHeroWorkState()
     {
         foreach (Transform child in rankRegionHero.transform)
         {

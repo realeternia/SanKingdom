@@ -210,8 +210,8 @@ public class BattleManager : MonoBehaviour
         var heroData = GameManager.Instance.GetHero(heroCardData.CardId);
         
         var id = idCounter++;
-        var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, heroData.armsId);
-        var action = new CreateChessAction(0, tickAdd, id, force.forceId, heroCardData.CardId, 1, heroCardData.SoldierNum, heroData.armsId, atk, def, heroData.str, heroData.leadShip, heroData.inte, spawnPoint);
+        var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, heroCardData.ArmsId);
+        var action = new CreateChessAction(0, tickAdd, id, force.forceId, heroCardData.CardId, 1, heroCardData.SoldierNum, heroCardData.ArmsId, atk, def, heroData.str, heroData.leadShip, heroData.inte, spawnPoint);
         AddChessAction(action);
     }
 

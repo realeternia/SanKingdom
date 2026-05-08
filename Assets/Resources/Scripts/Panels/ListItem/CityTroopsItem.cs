@@ -22,16 +22,233 @@ public class CityTroopsItem : MonoBehaviour
     public GameObject coverNode;
 
     private WarTroopsData warTeamData;
+    private bool isCreateMode = false;
+    private CityPanelManager cityPanelManager;
+    private TroopsHeroSlot slot1;
+    private TroopsHeroSlot slot2;
+    private TroopsHeroSlot slot3;
+
+    public void SetCityPanelManager(CityPanelManager manager)
+    {
+        cityPanelManager = manager;
+    }
 
     public void Init(WarTroopsData data)
     {
         warTeamData = data;
+        SetupSlots();
         RefreshUI();
+
+        if (dismissButton != null)
+        {
+            dismissButton.onClick.AddListener(OnDismiss);
+        }
+
+        if (editButton != null)
+        {
+            editButton.onClick.AddListener(OnEdit);
+        }
+
+        if (newTroopsButton != null)
+        {
+            newTroopsButton.onClick.AddListener(OnNewTroops);
+        }
+    }
+
+    private void SetupSlots()
+    {
+        slot1 = AddSlotToImage(hero1IconImage, 0);
+        slot2 = AddSlotToImage(hero2IconImage, 1);
+        slot3 = AddSlotToImage(hero3IconImage, 2);
+    }
+
+    private TroopsHeroSlot AddSlotToImage(Image iconImage, int index)
+    {
+        if (iconImage == null) return null;
+
+        iconImage.raycastTarget = true;
+
+        var existingSlot = iconImage.GetComponent<TroopsHeroSlot>();
+        if (existingSlot != null)
+        {
+            existingSlot.slotIndex = index;
+            existingSlot.troopsItem = this;
+            return existingSlot;
+        }
+
+        var slot = iconImage.gameObject.AddComponent<TroopsHeroSlot>();
+        slot.slotIndex = index;
+        slot.troopsItem = this;
+        return slot;
+    }
+
+    public void OnHeroDropped(int heroId, int slotIndex)
+    {
+        if (isCreateMode)
+        {
+            warTeamData = new WarTroopsData();
+            warTeamData.cityId = cityPanelManager.cityId;
+            SetHeroIdBySlot(warTeamData, slotIndex, heroId);
+
+            var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
+            if (cityData != null)
+            {
+                cityData.troops.Add(warTeamData);
+            }
+
+            if (slotIndex == 0)
+            {
+                RemoveHeroFromDev(heroId);
+            }
+
+            cityPanelManager.CreateTroopsItems();
+            cityPanelManager.UpdateAllHeroWorkState();
+            return;
+        }
+
+        if (warTeamData == null) return;
+
+        if (slotIndex > 0 && warTeamData.heroId1 <= 0)
+        {
+            SystemTip.Instance.ShowTip("请先设置主将");
+            return;
+        }
+
+        int existingSlot = FindHeroSlot(warTeamData, heroId);
+        if (existingSlot >= 0)
+        {
+            SetHeroIdBySlot(warTeamData, existingSlot, 0);
+        }
+
+        SetHeroIdBySlot(warTeamData, slotIndex, heroId);
+
+        if (slotIndex == 0)
+        {
+            RemoveHeroFromDev(heroId);
+        }
+
+        RefreshUI();
+        cityPanelManager.UpdateAllHeroWorkState();
+    }
+
+    private void RemoveHeroFromDev(int heroId)
+    {
+        var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
+        if (cityData == null) return;
+
+        var devId = cityData.GetDevIdByHeroId(heroId);
+        if (devId.HasValue)
+        {
+            cityData.RemoveDevAssignment(heroId);
+        }
+    }
+
+    private int FindHeroSlot(WarTroopsData data, int heroId)
+    {
+        if (data.heroId1 == heroId) return 0;
+        if (data.heroId2 == heroId) return 1;
+        if (data.heroId3 == heroId) return 2;
+        return -1;
+    }
+
+    private void SetHeroIdBySlot(WarTroopsData data, int slotIndex, int heroId)
+    {
+        switch (slotIndex)
+        {
+            case 0: data.heroId1 = heroId; break;
+            case 1: data.heroId2 = heroId; break;
+            case 2: data.heroId3 = heroId; break;
+        }
+    }
+
+    private void OnDismiss()
+    {
+        if (warTeamData == null || cityPanelManager == null) return;
+
+        var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
+        if (cityData != null)
+        {
+            cityData.troops.Remove(warTeamData);
+        }
+
+        warTeamData.ReleaseResources();
+
+        cityPanelManager.CreateTroopsItems();
+        cityPanelManager.UpdateAllHeroWorkState();
+    }
+
+    private void OnEdit()
+    {
+        if (warTeamData == null) return;
+
+        SideArmysSelector.SetContextForTroop(warTeamData.armsId, (newArmsId) =>
+        {
+            warTeamData.SetArmsId(newArmsId);
+            RefreshUI();
+        });
+        PanelManager.Instance.ShowSideBar("SideArmsSelector");
+    }
+
+    private void OnNewTroops()
+    {
+        if (cityPanelManager == null) return;
+
+        var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
+        if (cityData != null)
+        {
+            var newTroop = new WarTroopsData();
+            newTroop.cityId = cityPanelManager.cityId;
+            cityData.troops.Add(newTroop);
+        }
+
+        cityPanelManager.CreateTroopsItems();
+    }
+
+    public void SetCreateMode(bool isCreate)
+    {
+        isCreateMode = isCreate;
+        if (newTroopsButton != null)
+        {
+            newTroopsButton.gameObject.SetActive(isCreate);
+        }
+        if (coverNode != null)
+        {
+            coverNode.SetActive(isCreate);
+        }
+        if (editButton != null)
+        {
+            editButton.gameObject.SetActive(!isCreate);
+        }
+        if (dismissButton != null)
+        {
+            dismissButton.gameObject.SetActive(!isCreate);
+        }
     }
 
     private void RefreshUI()
     {
-        if (warTeamData == null) return;
+        if (warTeamData == null)
+        {
+            if (hero1IconImage != null)
+            {
+                hero1IconImage.gameObject.SetActive(true);
+                hero1IconImage.sprite = null;
+                hero1IconImage.color = Color.white;
+            }
+            if (hero2IconImage != null)
+            {
+                hero2IconImage.gameObject.SetActive(true);
+                hero2IconImage.sprite = null;
+                hero2IconImage.color = Color.white;
+            }
+            if (hero3IconImage != null)
+            {
+                hero3IconImage.gameObject.SetActive(true);
+                hero3IconImage.sprite = null;
+                hero3IconImage.color = Color.white;
+            }
+            return;
+        }
 
         if (heroNameText != null)
         {
@@ -39,7 +256,7 @@ public class CityTroopsItem : MonoBehaviour
             if (warTeamData.heroId1 > 0)
             {
                 var heroConfig = HeroConfig.GetConfig(warTeamData.heroId1);
-                heroName = heroConfig.Name;
+                heroName = heroConfig.Name + "队";
             }
             heroNameText.text = heroName;
         }
@@ -57,47 +274,50 @@ public class CityTroopsItem : MonoBehaviour
             }
         }
 
-        if (atkText != null)
+        if (atkText != null || defText != null)
         {
-            if (warTeamData.armsId > 0)
+            if (warTeamData.heroId1 > 0 && warTeamData.armsId > 0)
             {
-                var armsConfig = ArmsConfig.GetConfig(warTeamData.armsId);
-                atkText.text = armsConfig.Atk.ToString();
+                var heroData = GameManager.Instance.GetHero(warTeamData.heroId1);
+                if (heroData != null)
+                {
+                    var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, warTeamData.armsId);
+                    if (atkText != null) atkText.text = atk.ToString();
+                    if (defText != null) defText.text = def.ToString();
+                }
+                else
+                {
+                    if (atkText != null) atkText.text = "0";
+                    if (defText != null) defText.text = "0";
+                }
             }
             else
             {
-                atkText.text = "0";
+                if (atkText != null) atkText.text = "0";
+                if (defText != null) defText.text = "0";
             }
         }
 
-        if (hero1IconImage != null)
-        {
-            hero1IconImage.gameObject.SetActive(warTeamData.heroId1 > 0);
-            if (warTeamData.heroId1 > 0)
-            {
-                var heroConfig = HeroConfig.GetConfig(warTeamData.heroId1);
-                SetHeroIcon(hero1IconImage, heroConfig.Icon);
-            }
-        }
+        RefreshHeroSlot(hero1IconImage, warTeamData.heroId1);
+        RefreshHeroSlot(hero2IconImage, warTeamData.heroId2);
+        RefreshHeroSlot(hero3IconImage, warTeamData.heroId3);
+    }
 
-        if (hero2IconImage != null)
-        {
-            hero2IconImage.gameObject.SetActive(warTeamData.heroId2 > 0);
-            if (warTeamData.heroId2 > 0)
-            {
-                var heroConfig = HeroConfig.GetConfig(warTeamData.heroId2);
-                SetHeroIcon(hero2IconImage, heroConfig.Icon);
-            }
-        }
+    private void RefreshHeroSlot(Image iconImage, int heroId)
+    {
+        if (iconImage == null) return;
 
-        if (hero3IconImage != null)
+        iconImage.gameObject.SetActive(true);
+        iconImage.color = Color.white;
+
+        if (heroId > 0)
         {
-            hero3IconImage.gameObject.SetActive(warTeamData.heroId3 > 0);
-            if (warTeamData.heroId3 > 0)
-            {
-                var heroConfig = HeroConfig.GetConfig(warTeamData.heroId3);
-                SetHeroIcon(hero3IconImage, heroConfig.Icon);
-            }
+            var heroConfig = HeroConfig.GetConfig(heroId);
+            SetHeroIcon(iconImage, heroConfig.Icon);
+        }
+        else
+        {
+            iconImage.sprite = null;
         }
     }
 

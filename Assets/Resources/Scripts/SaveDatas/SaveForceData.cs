@@ -136,19 +136,20 @@ public class SaveForceData
         resUsedCache["wood"] = 0;
         resUsedCache["stone"] = 0;
         
-        var heroes = GameManager.Instance.GetHerosByForce(forceId);
-        foreach (var hero in heroes)
+        var cities = GetCityList();
+        foreach (var city in cities)
         {
-            if (hero.state != HeroState.Normal)
-                continue;
-            if (hero.armsId <= 0)
-                continue;
-            
-            var armsConfig = ArmsConfig.GetConfig(hero.armsId);
-            resUsedCache["horse"] += armsConfig.HorseCost;
-            resUsedCache["steel"] += armsConfig.SteelCost;
-            resUsedCache["wood"] += armsConfig.WoodCost;
-            resUsedCache["stone"] += armsConfig.StoneCost;
+            foreach (var troop in city.troops)
+            {
+                if (troop.armsId <= 0)
+                    continue;
+                
+                var armsConfig = ArmsConfig.GetConfig(troop.armsId);
+                resUsedCache["horse"] += armsConfig.HorseCost;
+                resUsedCache["steel"] += armsConfig.SteelCost;
+                resUsedCache["wood"] += armsConfig.WoodCost;
+                resUsedCache["stone"] += armsConfig.StoneCost;
+            }
         }
     }
 
@@ -162,7 +163,7 @@ public class SaveForceData
         return 0;
     }
 
-    public bool CanAffordArms(int armsId, int excludeHeroId = 0)
+    public bool CanAffordArms(int armsId, WarTroopsData excludeTroop = null)
     {
         var armsConfig = ArmsConfig.GetConfig(armsId);
         
@@ -171,17 +172,13 @@ public class SaveForceData
         int woodAvailable = GetAttr("wood") - GetResUsed("wood");
         int stoneAvailable = GetAttr("stone") - GetResUsed("stone");
         
-        if (excludeHeroId > 0)
+        if (excludeTroop != null && excludeTroop.armsId > 0)
         {
-            var excludeHero = GameManager.Instance.GetHero(excludeHeroId);
-            if (excludeHero != null && excludeHero.armsId > 0)
-            {
-                var excludeArmsConfig = ArmsConfig.GetConfig(excludeHero.armsId);
-                horseAvailable += excludeArmsConfig.HorseCost;
-                steelAvailable += excludeArmsConfig.SteelCost;
-                woodAvailable += excludeArmsConfig.WoodCost;
-                stoneAvailable += excludeArmsConfig.StoneCost;
-            }
+            var excludeArmsConfig = ArmsConfig.GetConfig(excludeTroop.armsId);
+            horseAvailable += excludeArmsConfig.HorseCost;
+            steelAvailable += excludeArmsConfig.SteelCost;
+            woodAvailable += excludeArmsConfig.WoodCost;
+            stoneAvailable += excludeArmsConfig.StoneCost;
         }
         
         if (armsConfig.HorseCost > horseAvailable)

@@ -17,6 +17,7 @@ public class SaveCityData
     public float food;
     public float wall;
     public List<DevAssignmentData> devAssignments = new List<DevAssignmentData>();    
+    public List<WarTroopsData> troops = new List<WarTroopsData>();
 
     public int ownerHeroId;
     [NonSerialized]
@@ -155,7 +156,7 @@ public class SaveCityData
             cardData.CardId = member;
             cardData.Level = hero.GetLevel();
             cardData.SoldierNum = Math.Max(1, heroSoldierDict.ContainsKey(member) ? heroSoldierDict[member] : 0);
-            cardData.ArmsId = (heroArmsDict != null && heroArmsDict.ContainsKey(member)) ? heroArmsDict[member] : (hero.armsId > 0 ? hero.armsId : SystemConst.Hero.DEFAULT_ARMS_ID);
+            cardData.ArmsId = (heroArmsDict != null && heroArmsDict.ContainsKey(member)) ? heroArmsDict[member] : hero.GetArmsId();
             battleList.Add(cardData);
         }
         return battleList;

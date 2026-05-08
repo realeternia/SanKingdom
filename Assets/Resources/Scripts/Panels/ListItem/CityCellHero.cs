@@ -13,7 +13,9 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
 
     public int heroId;
     public TMP_Text heroName;
-    public TMP_Text stateText;
+    public Image job1;
+    public Image job2;
+
     public Image heroIcon;
     public Image thumbIcon;
     public bool isSelect = false;
@@ -54,19 +56,91 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
 
     public void UpdateWorkState()
     {
-        if (stateText == null) return;
-
         var hero = GameManager.Instance.GetHero(heroId);
-        if (hero != null)
+        if (hero == null)
         {
-            var cityData = GameManager.Instance.GetCity(hero.cityId);
-            if (cityData != null && cityData.GetDevIdByHeroId(heroId).HasValue)
+            HideJobIcons();
+            return;
+        }
+
+        var cityData = GameManager.Instance.GetCity(hero.cityId);
+        bool isCommander = false;
+        bool isVice = false;
+
+        if (cityData != null)
+        {
+            foreach (var troop in cityData.troops)
             {
-                stateText.text = "工作中";
-                return;
+                if (troop.heroId1 == heroId)
+                {
+                    isCommander = true;
+                }
+                else if (troop.heroId2 == heroId || troop.heroId3 == heroId)
+                {
+                    isVice = true;
+                }
             }
         }
-        stateText.text = "";
+
+        int? devId = null;
+        if (cityData != null)
+        {
+            devId = cityData.GetDevIdByHeroId(heroId);
+        }
+
+        if (isCommander)
+        {
+            if (job1 != null)
+            {
+                job1.sprite = Resources.Load<Sprite>("Textures/Icons/citytroop1");
+                job1.gameObject.SetActive(true);
+            }
+        }
+        else if (devId.HasValue)
+        {
+            if (job1 != null)
+            {
+                var devCfg = CityDevConfig.GetConfig(devId.Value);
+                if (devCfg != null && !string.IsNullOrEmpty(devCfg.DevAttr1))
+                {
+                    var attrCfg = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower());
+                    if (attrCfg != null && !string.IsNullOrEmpty(attrCfg.Icon))
+                    {
+                        job1.sprite = Resources.Load<Sprite>("Textures/Icons/" + attrCfg.Icon);
+                    }
+                }
+                job1.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            if (job1 != null)
+            {
+                job1.gameObject.SetActive(false);
+            }
+        }
+
+        if (isVice)
+        {
+            if (job2 != null)
+            {
+                job2.sprite = Resources.Load<Sprite>("Textures/Icons/citytroop2");
+                job2.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            if (job2 != null)
+            {
+                job2.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private void HideJobIcons()
+    {
+        if (job1 != null) job1.gameObject.SetActive(false);
+        if (job2 != null) job2.gameObject.SetActive(false);
     }
 
     public void SetSelected(bool selected)
