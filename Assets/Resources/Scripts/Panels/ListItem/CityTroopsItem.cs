@@ -23,6 +23,7 @@ public class CityTroopsItem : MonoBehaviour
 
     private WarTroopsData warTeamData;
     private bool isCreateMode = false;
+    private bool isViewOnly = false;
     private CityPanelManager cityPanelManager;
     private TroopsHeroSlot slot1;
     private TroopsHeroSlot slot2;
@@ -31,6 +32,11 @@ public class CityTroopsItem : MonoBehaviour
     public void SetCityPanelManager(CityPanelManager manager)
     {
         cityPanelManager = manager;
+    }
+
+    public void SetViewOnly(bool viewOnly)
+    {
+        isViewOnly = viewOnly;
     }
 
     public void Init(WarTroopsData data)
@@ -84,6 +90,12 @@ public class CityTroopsItem : MonoBehaviour
 
     public void OnHeroDropped(int heroId, int slotIndex)
     {
+        if (isViewOnly)
+        {
+            SystemTip.Instance.ShowTip("查看模式下无法操作");
+            return;
+        }
+
         if (isCreateMode)
         {
             warTeamData = new WarTroopsData();
@@ -163,6 +175,12 @@ public class CityTroopsItem : MonoBehaviour
 
     private void OnDismiss()
     {
+        if (isViewOnly)
+        {
+            SystemTip.Instance.ShowTip("查看模式下无法操作");
+            return;
+        }
+
         if (warTeamData == null || cityPanelManager == null) return;
 
         var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
@@ -179,6 +197,12 @@ public class CityTroopsItem : MonoBehaviour
 
     private void OnEdit()
     {
+        if (isViewOnly)
+        {
+            SystemTip.Instance.ShowTip("查看模式下无法操作");
+            return;
+        }
+
         if (warTeamData == null) return;
 
         SideArmysSelector.SetContextForTroop(warTeamData.armsId, (newArmsId) =>
@@ -191,6 +215,12 @@ public class CityTroopsItem : MonoBehaviour
 
     private void OnNewTroops()
     {
+        if (isViewOnly)
+        {
+            SystemTip.Instance.ShowTip("查看模式下无法操作");
+            return;
+        }
+
         if (cityPanelManager == null) return;
 
         var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
@@ -209,19 +239,26 @@ public class CityTroopsItem : MonoBehaviour
         isCreateMode = isCreate;
         if (newTroopsButton != null)
         {
-            newTroopsButton.gameObject.SetActive(isCreate);
+            newTroopsButton.gameObject.SetActive(isCreate && !isViewOnly);
         }
         if (coverNode != null)
         {
             coverNode.SetActive(isCreate);
         }
+        UpdateButtonsState();
+    }
+
+    private void UpdateButtonsState()
+    {
+        bool hasCommander = warTeamData != null && warTeamData.heroId1 > 0;
+        
         if (editButton != null)
         {
-            editButton.gameObject.SetActive(!isCreate);
+            editButton.gameObject.SetActive(!isCreateMode && !isViewOnly && hasCommander);
         }
         if (dismissButton != null)
         {
-            dismissButton.gameObject.SetActive(!isCreate);
+            dismissButton.gameObject.SetActive(!isCreateMode && !isViewOnly && hasCommander);
         }
     }
 
@@ -247,6 +284,7 @@ public class CityTroopsItem : MonoBehaviour
                 hero3IconImage.sprite = null;
                 hero3IconImage.color = Color.white;
             }
+            UpdateButtonsState();
             return;
         }
 
@@ -301,6 +339,8 @@ public class CityTroopsItem : MonoBehaviour
         RefreshHeroSlot(hero1IconImage, warTeamData.heroId1);
         RefreshHeroSlot(hero2IconImage, warTeamData.heroId2);
         RefreshHeroSlot(hero3IconImage, warTeamData.heroId3);
+        
+        UpdateButtonsState();
     }
 
     private void RefreshHeroSlot(Image iconImage, int heroId)

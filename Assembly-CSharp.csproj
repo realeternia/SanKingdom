@@ -106,6 +106,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefPlantSkin.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuffArea.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ShopConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityDevItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackRunCrossPlus.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveBuffAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedBuff.cs" />
@@ -185,7 +186,6 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\TroopsHeroSlot.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />
     <Compile Include="Assets\Resources\Scripts\MainPanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\CityDevItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\BattleResultHeroCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityPanelManager.cs" />

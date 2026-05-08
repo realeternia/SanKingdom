@@ -18,6 +18,7 @@ namespace DesignCoder
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnRefresh = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -34,10 +35,6 @@ namespace DesignCoder
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.menuBatchFill = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuForeColor = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuBackColor = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuClearColors = new System.Windows.Forms.ToolStripMenuItem();
             this.menuAddColLeft = new System.Windows.Forms.ToolStripMenuItem();
             this.menuAddColRight = new System.Windows.Forms.ToolStripMenuItem();
             this.menuDeleteCol = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,6 +43,10 @@ namespace DesignCoder
             this.menuMoveColLeft = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMoveColRight = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewDistribution = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuBatchFill = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuForeColor = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuBackColor = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuClearColors = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripCell = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuDeleteRowCtx = new System.Windows.Forms.ToolStripMenuItem();
             this.menuCellBatchFill = new System.Windows.Forms.ToolStripMenuItem();
@@ -242,13 +243,13 @@ namespace DesignCoder
             this.dataGridView1.Size = new System.Drawing.Size(1215, 974);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
+            this.dataGridView1.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseDown);
             this.dataGridView1.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dataGridView1_CellPainting);
             this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
             this.dataGridView1.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.dataGridView1_ColumnWidthChanged);
             this.dataGridView1.CurrentCellDirtyStateChanged += new System.EventHandler(this.dataGridView1_CurrentCellDirtyStateChanged);
-            this.dataGridView1.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseDown);
-            this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
             this.dataGridView1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dataGridView1_Scroll);
+            this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
             this.dataGridView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyDown);
             // 
             // contextMenuStrip1
@@ -264,7 +265,7 @@ namespace DesignCoder
             this.menuMoveColRight,
             this.menuViewDistribution});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 136);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 180);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // menuAddColLeft
@@ -291,37 +292,65 @@ namespace DesignCoder
             // menuSetIndex
             // 
             this.menuSetIndex.Name = "menuSetIndex";
-            this.menuSetIndex.Size = new System.Drawing.Size(148, 22);
+            this.menuSetIndex.Size = new System.Drawing.Size(136, 22);
             this.menuSetIndex.Text = "设为索引列";
             this.menuSetIndex.Click += new System.EventHandler(this.menuSetIndex_Click);
             // 
             // menuCancelIndex
             // 
             this.menuCancelIndex.Name = "menuCancelIndex";
-            this.menuCancelIndex.Size = new System.Drawing.Size(148, 22);
+            this.menuCancelIndex.Size = new System.Drawing.Size(136, 22);
             this.menuCancelIndex.Text = "取消索引列";
             this.menuCancelIndex.Click += new System.EventHandler(this.menuCancelIndex_Click);
             // 
             // menuMoveColLeft
             // 
             this.menuMoveColLeft.Name = "menuMoveColLeft";
-            this.menuMoveColLeft.Size = new System.Drawing.Size(148, 22);
+            this.menuMoveColLeft.Size = new System.Drawing.Size(136, 22);
             this.menuMoveColLeft.Text = "左移列";
             this.menuMoveColLeft.Click += new System.EventHandler(this.menuMoveColLeft_Click);
             // 
             // menuMoveColRight
             // 
             this.menuMoveColRight.Name = "menuMoveColRight";
-            this.menuMoveColRight.Size = new System.Drawing.Size(148, 22);
+            this.menuMoveColRight.Size = new System.Drawing.Size(136, 22);
             this.menuMoveColRight.Text = "右移列";
             this.menuMoveColRight.Click += new System.EventHandler(this.menuMoveColRight_Click);
             // 
             // menuViewDistribution
             // 
             this.menuViewDistribution.Name = "menuViewDistribution";
-            this.menuViewDistribution.Size = new System.Drawing.Size(148, 22);
+            this.menuViewDistribution.Size = new System.Drawing.Size(136, 22);
             this.menuViewDistribution.Text = "查看分布";
             this.menuViewDistribution.Click += new System.EventHandler(this.menuViewDistribution_Click);
+            // 
+            // menuBatchFill
+            // 
+            this.menuBatchFill.Name = "menuBatchFill";
+            this.menuBatchFill.Size = new System.Drawing.Size(136, 22);
+            this.menuBatchFill.Text = "批量填充";
+            this.menuBatchFill.Click += new System.EventHandler(this.btnBatchFill_Click);
+            // 
+            // menuForeColor
+            // 
+            this.menuForeColor.Name = "menuForeColor";
+            this.menuForeColor.Size = new System.Drawing.Size(136, 22);
+            this.menuForeColor.Text = "设置前景色";
+            this.menuForeColor.Click += new System.EventHandler(this.btnForeColor_Click);
+            // 
+            // menuBackColor
+            // 
+            this.menuBackColor.Name = "menuBackColor";
+            this.menuBackColor.Size = new System.Drawing.Size(136, 22);
+            this.menuBackColor.Text = "设置背景色";
+            this.menuBackColor.Click += new System.EventHandler(this.btnBackColor_Click);
+            // 
+            // menuClearColors
+            // 
+            this.menuClearColors.Name = "menuClearColors";
+            this.menuClearColors.Size = new System.Drawing.Size(136, 22);
+            this.menuClearColors.Text = "清除颜色";
+            this.menuClearColors.Click += new System.EventHandler(this.btnClearColors_Click);
             // 
             // contextMenuStripCell
             // 
@@ -370,34 +399,6 @@ namespace DesignCoder
             this.menuCellClearColors.Text = "清除颜色";
             this.menuCellClearColors.Click += new System.EventHandler(this.btnClearColors_Click);
             // 
-            // menuBatchFill
-            // 
-            this.menuBatchFill.Name = "menuBatchFill";
-            this.menuBatchFill.Size = new System.Drawing.Size(136, 22);
-            this.menuBatchFill.Text = "批量填充";
-            this.menuBatchFill.Click += new System.EventHandler(this.btnBatchFill_Click);
-            // 
-            // menuForeColor
-            // 
-            this.menuForeColor.Name = "menuForeColor";
-            this.menuForeColor.Size = new System.Drawing.Size(136, 22);
-            this.menuForeColor.Text = "设置前景色";
-            this.menuForeColor.Click += new System.EventHandler(this.btnForeColor_Click);
-            // 
-            // menuBackColor
-            // 
-            this.menuBackColor.Name = "menuBackColor";
-            this.menuBackColor.Size = new System.Drawing.Size(136, 22);
-            this.menuBackColor.Text = "设置背景色";
-            this.menuBackColor.Click += new System.EventHandler(this.btnBackColor_Click);
-            // 
-            // menuClearColors
-            // 
-            this.menuClearColors.Name = "menuClearColors";
-            this.menuClearColors.Size = new System.Drawing.Size(136, 22);
-            this.menuClearColors.Text = "清除颜色";
-            this.menuClearColors.Click += new System.EventHandler(this.btnClearColors_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
@@ -407,6 +408,7 @@ namespace DesignCoder
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip1);
             this.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "ConfigCoder";
             this.Load += new System.EventHandler(this.Form1_Load);

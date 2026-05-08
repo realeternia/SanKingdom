@@ -27,6 +27,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
     private CityPanelManager cityPanelManager;
     private bool isSelected = false;
     private bool isRunType = false;
+    private bool isViewOnly = false;
     private Color normalBorderColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     private Color selectedBorderColor = Color.green;
     private Color grayColor = new Color(0.5f, 0.5f, 0.5f, 1f);
@@ -93,10 +94,26 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
     public void SetCityPanelManager(CityPanelManager manager)
     {
         this.cityPanelManager = manager;
+        if (manager != null)
+        {
+            isViewOnly = manager.IsViewOnly();
+            UpdateBtnRun();
+        }
+    }
+
+    public bool IsViewOnly()
+    {
+        return isViewOnly;
     }
 
     public void OnDrop(PointerEventData eventData)
     {
+        if (isViewOnly)
+        {
+            SystemTip.Instance.ShowTip("查看模式下无法操作");
+            return;
+        }
+
         CityCellHero draggedHero = eventData.pointerDrag?.GetComponent<CityCellHero>();
         if (draggedHero != null && cityPanelManager != null)
         {
@@ -208,7 +225,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
 
     private void UpdateBtnRun()
     {
-        btnRun.gameObject.SetActive(isRunType);
+        btnRun.gameObject.SetActive(isRunType && !isViewOnly);
         btnRun.onClick.RemoveAllListeners();
         btnRun.onClick.AddListener(() =>
         {

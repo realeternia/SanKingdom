@@ -55,6 +55,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         return viewForceId;
     }
 
+    public bool IsViewOnly()
+    {
+        return isViewOnly;
+    }
+
     public bool IsCommander(int heroId)
     {
         var cityData = GameManager.Instance.GetCity(cityId);
@@ -381,6 +386,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
                 if (troopsItem != null)
                 {
                     troopsItem.SetCityPanelManager(this);
+                    troopsItem.SetViewOnly(isViewOnly);
                     troopsItem.Init(troop);
                     troopsItem.SetCreateMode(false);
                 }
@@ -388,22 +394,26 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             }
         }
 
-        int troopCount = cityData != null ? cityData.troops.Count : 0;
-        if (troopCount < SystemConst.City.MAX_TROOPS)
+        if (!isViewOnly)
         {
-            var createObj = Instantiate(troopsItemPrefab, devList);
-            var createRect = createObj.GetComponent<RectTransform>();
-            createRect.anchorMin = new Vector2(0, 1);
-            createRect.anchorMax = new Vector2(0, 1);
-            createRect.pivot = new Vector2(0, 1);
-            createRect.anchoredPosition = new Vector2(0, -index * (itemHeight + spacing));
-
-            var createItem = createObj.GetComponent<CityTroopsItem>();
-            if (createItem != null)
+            int troopCount = cityData != null ? cityData.troops.Count : 0;
+            if (troopCount < SystemConst.City.MAX_TROOPS)
             {
-                createItem.SetCityPanelManager(this);
-                createItem.Init(null);
-                createItem.SetCreateMode(true);
+                var createObj = Instantiate(troopsItemPrefab, devList);
+                var createRect = createObj.GetComponent<RectTransform>();
+                createRect.anchorMin = new Vector2(0, 1);
+                createRect.anchorMax = new Vector2(0, 1);
+                createRect.pivot = new Vector2(0, 1);
+                createRect.anchoredPosition = new Vector2(0, -index * (itemHeight + spacing));
+
+                var createItem = createObj.GetComponent<CityTroopsItem>();
+                if (createItem != null)
+                {
+                    createItem.SetCityPanelManager(this);
+                    createItem.SetViewOnly(isViewOnly);
+                    createItem.Init(null);
+                    createItem.SetCreateMode(true);
+                }
             }
         }
     }
