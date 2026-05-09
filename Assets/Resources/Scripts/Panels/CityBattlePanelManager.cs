@@ -19,6 +19,7 @@ public class CityBattlePanelManager : MonoBehaviour
     public TMP_Text attrVal1Text;
 
     public Button closeButton;
+    public Button battleButton;
 
     private List<GameObject> cityBattleItems = new List<GameObject>();
 
@@ -37,13 +38,21 @@ public class CityBattlePanelManager : MonoBehaviour
                 if(selectedCityId == 0)
                 {
                     attrVal1Text.text = "-";
-                    return;
                 }
-                var cityCfg = WorldConfig.GetConfig(selectedCityId);
-                attrVal1Text.text = cityCfg.Cname;
+                else
+                {
+                    var cityCfg = WorldConfig.GetConfig(selectedCityId);
+                    attrVal1Text.text = cityCfg.Cname;
+                }
+                ClearAllSelections();
+                CreateCityBattleItems(forceId);
             });
         });
 
+        if (battleButton != null)
+        {
+            battleButton.onClick.AddListener(OnBattle);
+        }
     }
 
     void Update()
@@ -57,6 +66,117 @@ public class CityBattlePanelManager : MonoBehaviour
         CreateCityBattleItems(forceId);
     }
 
+    public bool CanSelectItem()
+    {
+        return selectedCityId > 0;
+    }
+
+    private void ClearAllSelections()
+    {
+        foreach (var itemObj in cityBattleItems)
+        {
+            if (itemObj == null) continue;
+            var itemScript = itemObj.GetComponent<CityBattleItem>();
+            if (itemScript != null)
+            {
+                itemScript.SetSelected(false);
+            }
+        }
+    }
+
+    private List<CityBattleItem> GetSelectedItems()
+    {
+        List<CityBattleItem> selected = new List<CityBattleItem>();
+        foreach (var itemObj in cityBattleItems)
+        {
+            if (itemObj == null) continue;
+            var itemScript = itemObj.GetComponent<CityBattleItem>();
+            if (itemScript != null && itemScript.IsSelected())
+            {
+                selected.Add(itemScript);
+            }
+        }
+        return selected;
+    }
+
+    private void OnBattle()
+    {
+        if (selectedCityId <= 0)
+        {
+            SystemTip.Instance.ShowTip("请选择目标城市");
+            return;
+        }
+
+        var selectedItems = GetSelectedItems();
+        if (selectedItems.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("请选择出战部队");
+            return;
+        }
+
+        Dictionary<int, int> heroSoldierDict = new Dictionary<int, int>();
+        Dictionary<int, int> heroArmsDict = new Dictionary<int, int>();
+        List<int> heroList = new List<int>();
+
+        foreach (var item in selectedItems)
+        {
+            var troop = item.GetWarTeamData();
+            if (troop == null) continue;
+
+            if (troop.heroId1 > 0)
+            {
+                heroList.Add(troop.heroId1);
+                if (troop.soldierCount > 0)
+                    heroSoldierDict[troop.heroId1] = troop.soldierCount;
+                if (troop.armsId > 0)
+                    heroArmsDict[troop.heroId1] = troop.armsId;
+            }
+            if (troop.heroId2 > 0)
+            {
+                heroList.Add(troop.heroId2);
+                if (troop.armsId > 0)
+                    heroArmsDict[troop.heroId2] = troop.armsId;
+            }
+            if (troop.heroId3 > 0)
+            {
+                heroList.Add(troop.heroId3);
+                if (troop.armsId > 0)
+                    heroArmsDict[troop.heroId3] = troop.armsId;
+            }
+        }
+
+        var srcCity = GameManager.Instance.GetCity(selectedItems[0].GetWarTeamData().cityId);
+        if (srcCity == null) return;
+
+        int totalSoldier = selectedItems.Sum(x =>
+        {
+            var t = x.GetWarTeamData();
+            return t != null ? t.soldierCount : 0;
+        });
+        int foodCost = totalSoldier * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
+
+        if (srcCity.food < foodCost)
+        {
+            SystemTip.Instance.ShowTip("粮草不足");
+            return;
+        }
+
+        PanelManager.Instance.ShowPopResultPanel("出征", new List<PopResultPanelManager.AttrData>(), () =>
+        {
+            OnRun(srcCity.cityId, heroList.ToArray(), foodCost, heroSoldierDict, heroArmsDict);
+        }, "atk2.mp4");
+    }
+
+    private void OnRun(int cityId, int[] heroList, int foodCost, Dictionary<int, int> heroSoldierDict, Dictionary<int, int> heroArmsDict)
+    {
+        var citySrc = GameManager.Instance.GetCity(cityId);
+        var force = citySrc.GetForce();
+
+        PanelManager.Instance.HideCityBattle();
+
+        force.ExecuteCityBattleDev(cityId, heroList, foodCost, selectedCityId, false, heroSoldierDict, heroArmsDict);
+    }
+
     private void CreateCityBattleItems(int forceId)
     {
         foreach (var item in cityBattleItems)
@@ -66,14 +186,26 @@ public class CityBattlePanelManager : MonoBehaviour
         }
         cityBattleItems.Clear();
 
-        var forceData = GameManager.Instance.GetForce(forceId);
+        var cities = GameManager.Instance.GetCitiesByForce(forceId);
+
+        HashSet<int> adjacentCityIds = null;
+        if (selectedCityId > 0)
+        {
+            adjacentCityIds = new HashSet<int>(MapTool.GetAdjacentCityIds(selectedCityId));
+        }
 
         List<WarTroopsData> allTeams = new List<WarTroopsData>();
-        foreach (var warPlan in forceData.warPlans)
+        foreach (var city in cities)
         {
-            if (warPlan != null && warPlan.teams != null)
+            if (adjacentCityIds != null && !adjacentCityIds.Contains(city.cityId))
+                continue;
+
+            foreach (var troop in city.troops)
             {
-                allTeams.AddRange(warPlan.teams);
+                if (troop.heroId1 > 0)
+                {
+                    allTeams.Add(troop);
+                }
             }
         }
 
@@ -84,8 +216,8 @@ public class CityBattlePanelManager : MonoBehaviour
         RectTransform containerRect = itemRegionMain.GetComponent<RectTransform>();
         if (containerRect == null) return;
 
-        float itemWidth = 400f;
-        float itemHeight = 200f;
+        float itemWidth = 750f;
+        float itemHeight = 120f;
         float spacing = 10f;
         int itemsPerRow = 2;
 

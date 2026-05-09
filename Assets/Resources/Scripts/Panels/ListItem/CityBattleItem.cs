@@ -9,7 +9,6 @@ public class CityBattleItem : MonoBehaviour
 {
     public TMP_Text heroNameText;
     public TMP_Text armsText;
-    public TMP_Text targetCityText;
     public TMP_Text atkText;
     public TMP_Text defText;
     public TMP_Text sodierCountText;
@@ -18,19 +17,82 @@ public class CityBattleItem : MonoBehaviour
     public Image hero3IconImage;
 
     public Button editButton;
+    public Image bgImage;
+    public Button itemButton;
 
     private WarTroopsData warTeamData;
+    private bool isSelected = false;
+
+    private static Color normalColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+    private static Color selectedColor = new Color(0.3f, 0.7f, 0.4f, 1f);
 
     public void Init(WarTroopsData data)
     {
         warTeamData = data;
+
+        if (editButton != null)
+        {
+            editButton.onClick.RemoveAllListeners();
+            editButton.onClick.AddListener(OnEdit);
+        }
+
+        if (itemButton != null)
+        {
+            itemButton.onClick.RemoveAllListeners();
+            itemButton.onClick.AddListener(OnItemClick);
+        }
+
+        isSelected = false;
+        UpdateBgColor();
         RefreshUI();
+    }
+
+    private void OnItemClick()
+    {
+        var panelManager = GetComponentInParent<CityBattlePanelManager>();
+        if (panelManager == null || !panelManager.CanSelectItem()) return;
+
+        isSelected = !isSelected;
+        UpdateBgColor();
+    }
+
+    private void UpdateBgColor()
+    {
+        if (bgImage != null)
+        {
+            bgImage.color = isSelected ? selectedColor : normalColor;
+        }
+    }
+
+    public bool IsSelected()
+    {
+        return isSelected;
+    }
+
+    public void SetSelected(bool selected)
+    {
+        isSelected = selected;
+        UpdateBgColor();
+    }
+
+    private void OnEdit()
+    {
+        PopArmySetManager.SetSoldierSetCallback((soldier) =>
+        {
+            warTeamData.soldierCount = soldier;
+            RefreshUI();
+        });
+
+        if (warTeamData.soldierCount > 0)
+        {
+            PopArmySetManager.SetAllocatedSoldier(warTeamData.heroId1, warTeamData.soldierCount);
+        }
+
+        PanelManager.Instance.ShowPopArmySetPanel(warTeamData.heroId1);
     }
 
     private void RefreshUI()
     {
-        if (warTeamData == null) return;
-
         if (heroNameText != null)
         {
             string heroName = "";
@@ -55,42 +117,33 @@ public class CityBattleItem : MonoBehaviour
             }
         }
 
-        if (targetCityText != null)
+        if (atkText != null || defText != null)
         {
-            if (warTeamData.cityId > 0)
+            if (warTeamData.heroId1 > 0 && warTeamData.armsId > 0)
             {
-                targetCityText.text = ConfigNameHelper.GetCityName(warTeamData.cityId);
+                var heroData = GameManager.Instance.GetHero(warTeamData.heroId1);
+                if (heroData != null)
+                {
+                    var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, warTeamData.armsId);
+                    if (atkText != null) atkText.text = atk.ToString();
+                    if (defText != null) defText.text = def.ToString();
+                }
+                else
+                {
+                    if (atkText != null) atkText.text = "0";
+                    if (defText != null) defText.text = "0";
+                }
             }
             else
             {
-                targetCityText.text = "准备中";
+                if (atkText != null) atkText.text = "0";
+                if (defText != null) defText.text = "0";
             }
         }
 
-        if (atkText != null)
+        if (sodierCountText != null)
         {
-            if (warTeamData.armsId > 0)
-            {
-                var armsConfig = ArmsConfig.GetConfig(warTeamData.armsId);
-                atkText.text = armsConfig.Atk.ToString();
-            }
-            else
-            {
-                atkText.text = "0";
-            }
-        }
-
-        if (defText != null)
-        {
-            if (warTeamData.armsId > 0)
-            {
-                var armsConfig = ArmsConfig.GetConfig(warTeamData.armsId);
-                defText.text = armsConfig.Def.ToString();
-            }
-            else
-            {
-                defText.text = "0";
-            }
+            sodierCountText.text = warTeamData.soldierCount.ToString();
         }
 
         if (hero1IconImage != null)

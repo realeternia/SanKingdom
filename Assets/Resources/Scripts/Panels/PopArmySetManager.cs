@@ -24,6 +24,17 @@ public class PopArmySetManager : MonoBehaviour
     private int maxSoldier;
 
     private static Dictionary<int, int> heroSoldierAllocations = new Dictionary<int, int>();
+    private static System.Action<int> onSoldierSetCallback;
+
+    public static void SetSoldierSetCallback(System.Action<int> callback)
+    {
+        onSoldierSetCallback = callback;
+    }
+
+    public static void SetAllocatedSoldier(int heroId, int soldier)
+    {
+        heroSoldierAllocations[heroId] = soldier;
+    }
 
     public static int GetAllocatedSoldier(int heroId)
     {
@@ -41,6 +52,7 @@ public class PopArmySetManager : MonoBehaviour
     {
         closeBtn.onClick.AddListener(() =>
         {
+            onSoldierSetCallback = null;
             PanelManager.Instance.HidePopArmySetPanel();
         });
         okBtn.onClick.AddListener(() =>
@@ -52,6 +64,8 @@ public class PopArmySetManager : MonoBehaviour
                 var change = soldier - currentAllocated;
                 heroSoldierAllocations[heroId] = soldier;
                 currentAllocated = soldier;
+                onSoldierSetCallback?.Invoke(soldier);
+                onSoldierSetCallback = null;
                 PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = 0 });
                 PanelManager.Instance.HidePopArmySetPanel();
             }

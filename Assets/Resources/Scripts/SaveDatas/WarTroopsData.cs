@@ -9,6 +9,7 @@ public class WarTroopsData
     public int heroId3;
     public int armsId;
     public int cityId;
+    public int soldierCount;
 
     public WarTroopsData()
     {
@@ -17,6 +18,7 @@ public class WarTroopsData
         heroId3 = 0;
         armsId = SystemConst.Hero.DEFAULT_ARMS_ID;
         cityId = 0;
+        soldierCount = 0;
     }
 
     public WarTroopsData(int heroId1, int heroId2, int heroId3, int armsId, int cityId)
@@ -26,6 +28,7 @@ public class WarTroopsData
         this.heroId3 = heroId3;
         this.armsId = armsId;
         this.cityId = cityId;
+        soldierCount = 0;
     }
 
     public bool SetArmsId(int newArmsId)

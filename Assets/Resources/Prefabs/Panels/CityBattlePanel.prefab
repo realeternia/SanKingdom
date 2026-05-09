@@ -629,7 +629,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u6267\u884C"
+  m_text: "\u51FA\u6218"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2c31971a758c934789077706967acc0d, type: 2}
   m_sharedMaterial: {fileID: -2551621216232197282, guid: 2c31971a758c934789077706967acc0d, type: 2}
@@ -997,7 +997,7 @@ GameObject:
   - component: {fileID: 2384546820131347816}
   - component: {fileID: 4542172148178130564}
   - component: {fileID: 4988707595862256370}
-  - component: {fileID: 8943013124576325311}
+  - component: {fileID: 2335178836667920491}
   m_Layer: 5
   m_Name: VerticalG
   m_TagString: Untagged
@@ -1062,7 +1062,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8943013124576325311
+--- !u!114 &2335178836667920491
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1071,7 +1071,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3949576956813282007}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
@@ -1080,14 +1080,12 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 750, y: 120}
+  m_Spacing: {x: 0, y: 0}
+  m_Constraint: 0
+  m_ConstraintCount: 2
 --- !u!1 &4565087269502821325
 GameObject:
   m_ObjectHideFlags: 0
@@ -1497,15 +1495,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollRectMain: {fileID: 4047515678318061556}
   itemRegionMain: {fileID: 3949576956813282007}
-  attrVal1Text: {fileID: 8574982883240986110}
-  attrDesText: {fileID: 0}
-  foodText: {fileID: 0}
   destButton: {fileID: 2669485495417206175}
-  heroSelect: {fileID: 0}
-  foodButton: {fileID: 0}
-  runButton: {fileID: 0}
-  foodCostText: {fileID: 7965546026937319396}
+  attrVal1Text: {fileID: 8574982883240986110}
   closeButton: {fileID: 3803804510460581846}
+  battleButton: {fileID: 3809562906122315540}
 --- !u!1 &6496971436850371667
 GameObject:
   m_ObjectHideFlags: 0

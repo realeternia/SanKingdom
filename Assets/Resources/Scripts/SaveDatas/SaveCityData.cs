@@ -156,7 +156,8 @@ public class SaveCityData
             cardData.CardId = member;
             cardData.Level = hero.GetLevel();
             cardData.SoldierNum = Math.Max(1, heroSoldierDict.ContainsKey(member) ? heroSoldierDict[member] : 0);
-            cardData.ArmsId = (heroArmsDict != null && heroArmsDict.ContainsKey(member)) ? heroArmsDict[member] : hero.GetArmsId();
+            int armsId = (heroArmsDict != null && heroArmsDict.ContainsKey(member)) ? heroArmsDict[member] : hero.GetArmsId();
+            cardData.ArmsId = armsId > 0 ? armsId : SystemConst.Hero.DEFAULT_ARMS_ID;
             battleList.Add(cardData);
         }
         return battleList;
