@@ -255,11 +255,46 @@ public class SaveCityData
         return MapTool.CalculateCityDistance(cityId, destCityId);
     }
 
+    public void MoveTroopsFromSourceCities(List<int> heroIds)
+    {
+        var heroIdSet = new HashSet<int>(heroIds);
+        var heroCityGroups = heroIds
+            .Select(id => GameManager.Instance.GetHero(id))
+            .Where(h => h != null)
+            .GroupBy(h => h.cityId)
+            .Where(g => g.Key != cityId);
+
+        foreach (var group in heroCityGroups)
+        {
+            var srcCity = GameManager.Instance.GetCity(group.Key);
+            if (srcCity == null) continue;
+
+            var movedHeroIds = new HashSet<int>();
+            var troopsToMove = srcCity.troops
+                .Where(t => heroIdSet.Contains(t.heroId1))
+                .ToList();
+
+            foreach (var troop in troopsToMove)
+            {
+                srcCity.troops.Remove(troop);
+                troops.Add(troop);
+                if (troop.heroId1 > 0) movedHeroIds.Add(troop.heroId1);
+                if (troop.heroId2 > 0) movedHeroIds.Add(troop.heroId2);
+                if (troop.heroId3 > 0) movedHeroIds.Add(troop.heroId3);
+            }
+
+            srcCity.RecalculateHeros();
+        }
+    }
+
     public void Occupy(int forceWin, List<int> winHeroIds, int forceLose, List<int> failHeroIds)
     {
         forceId = forceWin;
 
+        troops.Clear();
         ClearDevAssignments();
+
+        MoveTroopsFromSourceCities(winHeroIds);
 
         var catchedHeroList = GetCatchedHeroList();
         foreach (var heroId in catchedHeroList)

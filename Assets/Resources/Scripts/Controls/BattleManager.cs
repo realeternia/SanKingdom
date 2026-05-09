@@ -62,7 +62,7 @@ public class BattleManager : MonoBehaviour
     public bool showUI = true;
 
     [NonSerialized]
-    private Action<BattleResult, Dictionary<int, int>> battleEndCallback;
+    private Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> battleEndCallback;
 
 
 
@@ -91,7 +91,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private Coroutine currentBattleCoroutine = null;
     
-    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<WarTroopsData> troops1, List<WarTroopsData> troops2, int cityId, Action<BattleResult, Dictionary<int, int>> callback = null)
+    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<WarTroopsData> troops1, List<WarTroopsData> troops2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
     {
         if (IsBattleRunning)
         {
@@ -222,7 +222,7 @@ public class BattleManager : MonoBehaviour
 
         int totalStr = heroData1.str;
         int totalLeadShip = heroData1.leadShip;
-        int totalInte = heroData1.inte;
+        int totalInte = Math.Max(heroData1.inte, heroData2?.inte ?? 0, heroData3?.inte ?? 0); //智力取最高值
 
         int avgStr = totalStr / heroCount;
         int avgLeadShip = totalLeadShip / heroCount;
@@ -360,15 +360,23 @@ public class BattleManager : MonoBehaviour
         // 调用战斗结束回调
         if (battleEndCallback != null)
         {
-            var result = new Dictionary<int, int>();
+            var attackerResult = new Dictionary<int, int>();
+            var defenderResult = new Dictionary<int, int>();
+            int attackerForceId = playerInfoList[0].forceId;
+            int defenderForceId = playerInfoList[1].forceId;
             for (int i = 0; i < chessList.Count; i++)
             {
                 var chess = chessList[i];
                 if (chess.isHero)
-                    result.Add(chess.heroId, chess.hp);
+                {
+                    if (chess.forceId == attackerForceId)
+                        attackerResult.Add(chess.heroId, chess.hp);
+                    else if (chess.forceId == defenderForceId)
+                        defenderResult.Add(chess.heroId, chess.hp);
+                }
             }
 
-            battleEndCallback(battleResult, result);
+            battleEndCallback(battleResult, attackerResult, defenderResult);
         }
 
         if(!replay)

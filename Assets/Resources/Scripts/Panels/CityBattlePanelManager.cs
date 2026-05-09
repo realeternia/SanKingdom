@@ -119,10 +119,16 @@ public class CityBattlePanelManager : MonoBehaviour
         {
             var troop = item.GetWarTeamData();
             if (troop == null) continue;
-            if (troop.heroId1 > 0)
+            if (troop.heroId1 > 0 && troop.soldierCount > 0)
             {
                 attackTroops.Add(troop);
             }
+        }
+
+        if (attackTroops.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("出战部队士兵数不能为0");
+            return;
         }
 
         PanelManager.Instance.ShowPopResultPanel("出征", new List<PopResultPanelManager.AttrData>(), () =>
@@ -131,14 +137,18 @@ public class CityBattlePanelManager : MonoBehaviour
         }, "atk2.mp4");
     }
 
-    private void OnRun(int cityId, List<WarTroopsData> attackTroops)
+    private void OnRun(int targetCityId, List<WarTroopsData> attackTroops)
     {
-        var citySrc = GameManager.Instance.GetCity(cityId);
-        var force = citySrc.GetForce();
+        var sourceCityIds = attackTroops
+            .Where(t => t.heroId1 > 0)
+            .Select(t => GameManager.Instance.GetHero(t.heroId1).cityId)
+            .Distinct()
+            .ToList();
+        var force = GameManager.Instance.GetForce(forceId);
 
         PanelManager.Instance.HideCityBattle();
 
-        force.ExecuteCityBattleDev(cityId, attackTroops, selectedCityId, false);
+        force.ExecuteBattle(sourceCityIds, attackTroops, targetCityId, false);
     }
 
     private void CreateCityBattleItems(int forceId)

@@ -269,8 +269,8 @@ public class GameManager : MonoBehaviour
             {
                 var citySrc = GetCity(warPlan.sourceCityId);
                 var attackTroops = TroopsBuilder.BuildAttackTroopsFromHeroList(citySrc, warPlan.heroIds, warPlan.heroSoldierDict, warPlan.heroArmsDict);
-                force.ExecuteCityBattleDev(
-                    warPlan.sourceCityId,
+                force.ExecuteBattle(
+                    new List<int> { warPlan.sourceCityId },
                     attackTroops,
                     warPlan.targetCityId,
                     !force.isPlayer

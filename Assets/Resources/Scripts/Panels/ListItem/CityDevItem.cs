@@ -232,11 +232,6 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
             if (prefabName == "Battle")
             {
                 var cityData = GameManager.Instance.GetCity(cityId);
-                if (cityData == null)
-                {
-                    GameLog.Warn($"CityDevItem: 找不到城市数据 cityId={cityId}");
-                    return;
-                }
                 PanelManager.Instance.ShowCityBattle(cityData.forceId);
             }
             else

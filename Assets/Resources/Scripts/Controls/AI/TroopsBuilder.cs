@@ -31,6 +31,7 @@ public static class TroopsBuilder
         List<WarTroopsData> defenceTroops = new List<WarTroopsData>();
         
         int citySoldier = (int)Math.Floor(city.soldier);
+        int cityForceId = city.forceId;
         
         foreach (var troop in city.troops)
         {
@@ -57,7 +58,7 @@ public static class TroopsBuilder
         {
             var availableHeroes = city.GetNormalHeroList()
                 .Select(id => GameManager.Instance.GetHero(id))
-                .Where(h => h != null && !defenceTroops.Any(t => t.heroId1 == h.heroId || t.heroId2 == h.heroId || t.heroId3 == h.heroId))
+                .Where(h => h != null && h.forceId == cityForceId && !defenceTroops.Any(t => t.heroId1 == h.heroId || t.heroId2 == h.heroId || t.heroId3 == h.heroId))
                 .ToList();
 
             var balancedHeroes = availableHeroes

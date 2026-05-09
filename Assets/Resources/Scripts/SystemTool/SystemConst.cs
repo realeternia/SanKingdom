@@ -80,9 +80,7 @@ public static class SystemConst
         /// <summary>
         /// 每个英雄最大士兵数
         /// </summary>
-        public const int MAX_SOLDIER_PER_HERO = 1000;
-        /// <summary>
-        /// 登用野外英雄基础概率
+        public const int MAX_SOLDIER_PER_HERO = 100;
         /// </summary>
         public const int RECRUIT_WILD_BASE_RATE = 30;
         /// <summary>
@@ -538,7 +536,7 @@ public static class SystemConst
         /// <summary>
         /// 每个英雄最大士兵数
         /// </summary>
-        public const int MAX_SOLDIER_PER_HERO = 1000;
+        public const int MAX_SOLDIER_PER_HERO = 100;
         /// <summary>
         /// AI最小攻击士兵数
         /// </summary>

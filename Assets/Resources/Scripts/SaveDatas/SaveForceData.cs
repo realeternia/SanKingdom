@@ -441,9 +441,8 @@ public class SaveForceData
         return addon;
     }
 
-    public void ExecuteCityBattleDev(int cityId, List<WarTroopsData> attackTroops, int targetCityId, bool isAI)
+    public void ExecuteBattle(List<int> srcCityIds, List<WarTroopsData> attackTroops, int targetCityId, bool isAI)
     {
-        var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
 
         if (isAI)
@@ -451,61 +450,63 @@ public class SaveForceData
         else
             BattleManager.Instance.SetMode(false, true);
 
-        citySrc.AddAttr("food", -100);
-        int defenceFood = (int)cityDest.food;
+        foreach (var srcCityId in srcCityIds)
+        {
+            var citySrc = GameManager.Instance.GetCity(srcCityId);
+            citySrc.AddAttr("food", -100);
+        }
         cityDest.food = 0;
-        int srcForceId = citySrc.forceId;
+        int srcForceId = forceId;
         int destForceId = cityDest.forceId;
         
         var defenceTroops = TroopsBuilder.BuildDefenceTroops(cityDest);
         
-        BattleManager.Instance.BattleBegin(citySrc.GetForce(), cityDest.GetForce(), attackTroops, defenceTroops, targetCityId,
-            (result, soldierCount) => OnBattleEnd(result, soldierCount, cityId, targetCityId, attackTroops, srcForceId, destForceId));
+        BattleManager.Instance.BattleBegin(this, cityDest.GetForce(), attackTroops, defenceTroops, targetCityId,
+            (result, attackerSoldierCount, defenderSoldierCount) => OnBattleEnd(result, attackerSoldierCount, defenderSoldierCount, srcCityIds, targetCityId, srcForceId, destForceId));
     }
 
-    private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, int cityId, int targetCityId, List<WarTroopsData> attackTroops, int srcForceId, int destForceId)
+    private void OnBattleEnd(BattleResult result, Dictionary<int, int> attackerSoldierCount, Dictionary<int, int> defenderSoldierCount, List<int> srcCityIds, int targetCityId, int srcForceId, int destForceId)
     {
         var destCity = GameManager.Instance.GetCity(targetCityId);
-        var srcCity = GameManager.Instance.GetCity(cityId);
-
-        int srcRemaining = 0;
-        int destRemaining = 0;
-        foreach (var item in soldierCount)
-        {
-            var hero = GameManager.Instance.GetHero(item.Key);
-            if (hero != null)
-            {
-                if (hero.forceId == srcForceId)
-                    srcRemaining += item.Value;
-                else if (hero.forceId == destForceId)
-                    destRemaining += item.Value;
-            }
-        }
-        srcCity.AddAttr("soldier", srcRemaining);
-        destCity.AddAttr("soldier", destRemaining);
 
         if (result == BattleResult.Win)
         {
-            var attackHeroList = new List<int>();
-            foreach (var troop in attackTroops)
-            {
-                if (troop.heroId1 > 0) attackHeroList.Add(troop.heroId1);
-                if (troop.heroId2 > 0) attackHeroList.Add(troop.heroId2);
-                if (troop.heroId3 > 0) attackHeroList.Add(troop.heroId3);
-            }
-            
-            var defenceHeroList = new List<int>();
-            var destTroops = TroopsBuilder.BuildDefenceTroops(destCity);
-            foreach (var troop in destTroops)
-            {
-                if (troop.heroId1 > 0) defenceHeroList.Add(troop.heroId1);
-                if (troop.heroId2 > 0) defenceHeroList.Add(troop.heroId2);
-                if (troop.heroId3 > 0) defenceHeroList.Add(troop.heroId3);
-            }
+            var attackHeroList = attackerSoldierCount.Keys.ToList();
+            var defenceHeroList = defenderSoldierCount.Keys.ToList();
             
             destCity.Occupy(forceId, attackHeroList, destForceId, defenceHeroList);
-            srcCity.RecalculateHeros();
         }
+
+        foreach (var kvp in attackerSoldierCount)
+        {
+            var hero = GameManager.Instance.GetHero(kvp.Key);
+            if (hero != null && hero.state == HeroState.Normal)
+            {
+                var heroCity = GameManager.Instance.GetCity(hero.cityId);
+                if (heroCity != null)
+                    heroCity.AddAttr("soldier", kvp.Value);
+            }
+        }
+
+        foreach (var kvp in defenderSoldierCount)
+        {
+            var hero = GameManager.Instance.GetHero(kvp.Key);
+            if (hero != null && hero.state == HeroState.Normal)
+            {
+                var heroCity = GameManager.Instance.GetCity(hero.cityId);
+                if (heroCity != null)
+                    heroCity.AddAttr("soldier", kvp.Value);
+            }
+        }
+
+        foreach (var srcCityId in srcCityIds)
+        {
+            var srcCity = GameManager.Instance.GetCity(srcCityId);
+            if (srcCity != null)
+                srcCity.RecalculateHeros();
+        }
+        
+        destCity.RecalculateHeros();
     }
 
     public void MoveHeroToCity(int srcCityId, int destCityId, int[] heroIds)
