@@ -8,7 +8,6 @@ public class WarTroopsData
     public int heroId2;
     public int heroId3;
     public int armsId;
-    public int cityId;
     public int soldierCount;
 
     public WarTroopsData()
@@ -17,17 +16,15 @@ public class WarTroopsData
         heroId2 = 0;
         heroId3 = 0;
         armsId = SystemConst.Hero.DEFAULT_ARMS_ID;
-        cityId = 0;
         soldierCount = 0;
     }
 
-    public WarTroopsData(int heroId1, int heroId2, int heroId3, int armsId, int cityId)
+    public WarTroopsData(int heroId1, int heroId2, int heroId3, int armsId)
     {
         this.heroId1 = heroId1;
         this.heroId2 = heroId2;
         this.heroId3 = heroId3;
         this.armsId = armsId;
-        this.cityId = cityId;
         soldierCount = 0;
     }
 
@@ -43,8 +40,6 @@ public class WarTroopsData
         if (forceId <= 0) return false;
 
         var force = GameManager.Instance.GetForce(forceId);
-        if (force == null) return false;
-
         if (!force.CanAffordArms(newArmsId, this))
         {
             SystemTip.Instance.ShowTip("资源不足");
@@ -88,14 +83,7 @@ public class WarTroopsData
 
     private int GetForceId()
     {
-        var cityData = GameManager.Instance.GetCity(cityId);
-        if (cityData != null) return cityData.forceId;
-
-        if (heroId1 > 0)
-        {
-            var hero = GameManager.Instance.GetHero(heroId1);
-            if (hero != null) return hero.forceId;
-        }
-        return 0;
+        var hero = GameManager.Instance.GetHero(heroId1);
+        return hero.forceId;
     }
 }

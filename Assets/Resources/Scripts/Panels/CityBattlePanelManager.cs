@@ -145,36 +145,20 @@ public class CityBattlePanelManager : MonoBehaviour
             }
         }
 
-        var srcCity = GameManager.Instance.GetCity(selectedItems[0].GetWarTeamData().cityId);
-        if (srcCity == null) return;
-
-        int totalSoldier = selectedItems.Sum(x =>
-        {
-            var t = x.GetWarTeamData();
-            return t != null ? t.soldierCount : 0;
-        });
-        int foodCost = totalSoldier * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
-
-        if (srcCity.food < foodCost)
-        {
-            SystemTip.Instance.ShowTip("粮草不足");
-            return;
-        }
-
         PanelManager.Instance.ShowPopResultPanel("出征", new List<PopResultPanelManager.AttrData>(), () =>
         {
-            OnRun(srcCity.cityId, heroList.ToArray(), foodCost, heroSoldierDict, heroArmsDict);
+            OnRun(selectedCityId, heroList.ToArray(), heroSoldierDict, heroArmsDict);
         }, "atk2.mp4");
     }
 
-    private void OnRun(int cityId, int[] heroList, int foodCost, Dictionary<int, int> heroSoldierDict, Dictionary<int, int> heroArmsDict)
+    private void OnRun(int cityId, int[] heroList, Dictionary<int, int> heroSoldierDict, Dictionary<int, int> heroArmsDict)
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
         var force = citySrc.GetForce();
 
         PanelManager.Instance.HideCityBattle();
 
-        force.ExecuteCityBattleDev(cityId, heroList, foodCost, selectedCityId, false, heroSoldierDict, heroArmsDict);
+        force.ExecuteCityBattleDev(cityId, heroList, selectedCityId, false, heroSoldierDict, heroArmsDict);
     }
 
     private void CreateCityBattleItems(int forceId)

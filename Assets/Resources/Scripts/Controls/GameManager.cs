@@ -270,7 +270,6 @@ public class GameManager : MonoBehaviour
                 force.ExecuteCityBattleDev(
                     warPlan.sourceCityId,
                     warPlan.heroIds,
-                    warPlan.foodCost,
                     warPlan.targetCityId,
                     !force.isPlayer,
                     warPlan.heroSoldierDict,

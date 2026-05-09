@@ -99,7 +99,6 @@ public class CityTroopsItem : MonoBehaviour
         if (isCreateMode)
         {
             warTeamData = new WarTroopsData();
-            warTeamData.cityId = cityPanelManager.cityId;
             SetHeroIdBySlot(warTeamData, slotIndex, heroId);
 
             var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
@@ -203,8 +202,6 @@ public class CityTroopsItem : MonoBehaviour
             return;
         }
 
-        if (warTeamData == null) return;
-
         SideArmysSelector.SetContextForTroop(warTeamData.armsId, (newArmsId) =>
         {
             warTeamData.SetArmsId(newArmsId);
@@ -227,7 +224,6 @@ public class CityTroopsItem : MonoBehaviour
         if (cityData != null)
         {
             var newTroop = new WarTroopsData();
-            newTroop.cityId = cityPanelManager.cityId;
             cityData.troops.Add(newTroop);
         }
 

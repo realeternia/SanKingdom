@@ -441,7 +441,7 @@ public class SaveForceData
         return addon;
     }
 
-    public void ExecuteCityBattleDev(int cityId, int[] heroList, int foodUse, int targetCityId, bool isAI, Dictionary<int, int> heroSoldierDict = null, Dictionary<int, int> heroArmsDict = null)
+    public void ExecuteCityBattleDev(int cityId, int[] heroList, int targetCityId, bool isAI, Dictionary<int, int> heroSoldierDict = null, Dictionary<int, int> heroArmsDict = null)
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
@@ -452,13 +452,13 @@ public class SaveForceData
             BattleManager.Instance.SetMode(false, true);
 
         var destForceData = GameManager.Instance.GetForce(cityDest.forceId);
-        citySrc.AddAttr("food", -foodUse);
+        citySrc.AddAttr("food", -100);
         int defenceFood = (int)cityDest.food;
         cityDest.food = 0;
         int srcForceId = citySrc.forceId;
         int destForceId = cityDest.forceId;
         var battleHeroListSrc = citySrc.GetBattleHeroList(heroList, heroSoldierDict, heroArmsDict);
-        BattleManager.Instance.BattleBegin(citySrc.GetForce(), cityDest.GetForce(), battleHeroListSrc, cityDest.GetBattleHeroList(), foodUse, defenceFood, targetCityId,
+        BattleManager.Instance.BattleBegin(citySrc.GetForce(), cityDest.GetForce(), battleHeroListSrc, cityDest.GetBattleHeroList(), 100, defenceFood, targetCityId,
             (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, cityId, targetCityId, battleHeroListSrc.Select(x => x.CardId).ToArray(), srcForceId, destForceId));
     }
 
