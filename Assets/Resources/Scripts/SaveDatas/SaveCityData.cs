@@ -139,30 +139,6 @@ public class SaveCityData
         return heroIds;
     }
 
-    public List<BattleCardData> GetBattleHeroList(int[] filterHeroList = null, Dictionary<int, int> heroSoldierDict = null, Dictionary<int, int> heroArmsDict = null)
-    {
-        if (heroSoldierDict == null)
-            heroSoldierDict = DistributeSoldierDefault(filterHeroList ?? GetNormalHeroList().ToArray());
-
-        var heroList = GetNormalHeroList();
-        List<BattleCardData> battleList = new List<BattleCardData>();
-        foreach (var member in heroList)
-        {
-            if (filterHeroList != null && !Array.Exists(filterHeroList, x => x == member))
-                continue;
-
-            var hero = GameManager.Instance.GetHero(member);
-            var cardData = new BattleCardData();
-            cardData.CardId = member;
-            cardData.Level = hero.GetLevel();
-            cardData.SoldierNum = Math.Max(1, heroSoldierDict.ContainsKey(member) ? heroSoldierDict[member] : 0);
-            int armsId = (heroArmsDict != null && heroArmsDict.ContainsKey(member)) ? heroArmsDict[member] : hero.GetArmsId();
-            cardData.ArmsId = armsId > 0 ? armsId : SystemConst.Hero.DEFAULT_ARMS_ID;
-            battleList.Add(cardData);
-        }
-        return battleList;
-    }
-
     public Dictionary<int, int> DistributeSoldierDefault(int[] heroIds, int maxPerHero = SystemConst.Hero.MAX_SOLDIER_PER_HERO)
     {
         var result = new Dictionary<int, int>();

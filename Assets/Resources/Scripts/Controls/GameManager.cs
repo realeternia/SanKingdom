@@ -267,13 +267,13 @@ public class GameManager : MonoBehaviour
             
             foreach (var warPlan in force.warPlans)
             {
+                var citySrc = GetCity(warPlan.sourceCityId);
+                var attackTroops = TroopsBuilder.BuildAttackTroopsFromHeroList(citySrc, warPlan.heroIds, warPlan.heroSoldierDict, warPlan.heroArmsDict);
                 force.ExecuteCityBattleDev(
                     warPlan.sourceCityId,
-                    warPlan.heroIds,
+                    attackTroops,
                     warPlan.targetCityId,
-                    !force.isPlayer,
-                    warPlan.heroSoldierDict,
-                    warPlan.heroArmsDict
+                    !force.isPlayer
                 );
 
                 while (BattleManager.Instance.IsBattleRunning)

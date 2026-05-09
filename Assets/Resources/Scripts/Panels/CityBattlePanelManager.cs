@@ -114,51 +114,31 @@ public class CityBattlePanelManager : MonoBehaviour
             return;
         }
 
-        Dictionary<int, int> heroSoldierDict = new Dictionary<int, int>();
-        Dictionary<int, int> heroArmsDict = new Dictionary<int, int>();
-        List<int> heroList = new List<int>();
-
+        List<WarTroopsData> attackTroops = new List<WarTroopsData>();
         foreach (var item in selectedItems)
         {
             var troop = item.GetWarTeamData();
             if (troop == null) continue;
-
             if (troop.heroId1 > 0)
             {
-                heroList.Add(troop.heroId1);
-                if (troop.soldierCount > 0)
-                    heroSoldierDict[troop.heroId1] = troop.soldierCount;
-                if (troop.armsId > 0)
-                    heroArmsDict[troop.heroId1] = troop.armsId;
-            }
-            if (troop.heroId2 > 0)
-            {
-                heroList.Add(troop.heroId2);
-                if (troop.armsId > 0)
-                    heroArmsDict[troop.heroId2] = troop.armsId;
-            }
-            if (troop.heroId3 > 0)
-            {
-                heroList.Add(troop.heroId3);
-                if (troop.armsId > 0)
-                    heroArmsDict[troop.heroId3] = troop.armsId;
+                attackTroops.Add(troop);
             }
         }
 
         PanelManager.Instance.ShowPopResultPanel("出征", new List<PopResultPanelManager.AttrData>(), () =>
         {
-            OnRun(selectedCityId, heroList.ToArray(), heroSoldierDict, heroArmsDict);
+            OnRun(selectedCityId, attackTroops);
         }, "atk2.mp4");
     }
 
-    private void OnRun(int cityId, int[] heroList, Dictionary<int, int> heroSoldierDict, Dictionary<int, int> heroArmsDict)
+    private void OnRun(int cityId, List<WarTroopsData> attackTroops)
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
         var force = citySrc.GetForce();
 
         PanelManager.Instance.HideCityBattle();
 
-        force.ExecuteCityBattleDev(cityId, heroList, selectedCityId, false, heroSoldierDict, heroArmsDict);
+        force.ExecuteCityBattleDev(cityId, attackTroops, selectedCityId, false);
     }
 
     private void CreateCityBattleItems(int forceId)

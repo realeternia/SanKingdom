@@ -17,11 +17,9 @@ public enum BattleResult
 public class BattleManager : MonoBehaviour
 {
     [Serializable]
-    public class FoodInfo
+    public class BattlePlayerINfo
     {
         public int forceId;
-        public int food;
-        public int maxFood;
 
         public int soldierNumInit;
     }
@@ -37,7 +35,7 @@ public class BattleManager : MonoBehaviour
     public int cityId;
 
 
-    public List<FoodInfo> playerInfoList = new List<FoodInfo>();
+    public List<BattlePlayerINfo> playerInfoList = new List<BattlePlayerINfo>();
 
     public List<Chess> chessList = new List<Chess>(); // 所有棋子
     public List<Missile> missileList = new List<Missile>(); // 所有导弹
@@ -54,7 +52,7 @@ public class BattleManager : MonoBehaviour
     private BattleResult battleResult;
     public int idCounter = 100;
     public int tickIndex = 1;
-    public int lastFoodDeductionTick = 0;
+    public int lastFoodDeductionTick = 0;    
     public int round = 0;
     public const int MaxRound = SystemConst.Battle.MAX_ROUND;
 
@@ -64,14 +62,14 @@ public class BattleManager : MonoBehaviour
     public bool showUI = true;
 
     [NonSerialized]
-    private Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> battleEndCallback;
+    private Action<BattleResult, Dictionary<int, int>> battleEndCallback;
 
 
 
     [NonSerialized]
-    private List<BattleCardData> cards1;
+    private List<WarTroopsData> attackTroops;
     [NonSerialized]
-    private List<BattleCardData> cards2;
+    private List<WarTroopsData> defenderTroops;
 
     [NonSerialized]
     private bool isDoingAction = false;
@@ -93,7 +91,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private Coroutine currentBattleCoroutine = null;
     
-    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<BattleCardData> cards1, List<BattleCardData> cards2, int food1, int food2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
+    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<WarTroopsData> troops1, List<WarTroopsData> troops2, int cityId, Action<BattleResult, Dictionary<int, int>> callback = null)
     {
         if (IsBattleRunning)
         {
@@ -106,14 +104,14 @@ public class BattleManager : MonoBehaviour
         battleEndCallback = callback;
         this.cityId = cityId;
         playerInfoList.Clear();
-        playerInfoList.Add(new FoodInfo() { forceId = force1.forceId, food = food1, maxFood = food1, soldierNumInit = cards1.Sum(x => x.SoldierNum) });
-        playerInfoList.Add(new FoodInfo() { forceId = force2.forceId, food = food2, maxFood = food2, soldierNumInit = cards2.Sum(x => x.SoldierNum) });
+        playerInfoList.Add(new BattlePlayerINfo() { forceId = force1.forceId, soldierNumInit = GetTotalSoldierCount(troops1) });
+        playerInfoList.Add(new BattlePlayerINfo() { forceId = force2.forceId, soldierNumInit = GetTotalSoldierCount(troops2) });
 
         chessList.Clear();
         missileList.Clear();
         actions.Clear();
         idCounter = 100;
-        lastFoodDeductionTick = 0;
+        lastFoodDeductionTick = 0;        
         battleId = GameManager.Instance.SaveData.battleStatManager.OnNewBattle();
         SkillManager.isReplay = false;
 
@@ -121,14 +119,23 @@ public class BattleManager : MonoBehaviour
         round = 0;
 
         InitUI(force1, force2);
-        //对cards1和card2都按HeroConfig的Range排序，确保远程在后面
-        cards1.Sort((a, b) => ArmsConfig.GetConfig(a.ArmsId).Range.CompareTo(ArmsConfig.GetConfig(b.ArmsId).Range));
-        cards2.Sort((a, b) => ArmsConfig.GetConfig(a.ArmsId).Range.CompareTo(ArmsConfig.GetConfig(b.ArmsId).Range));
-
-        this.cards1 = cards1;
-        this.cards2 = cards2;    
+        
+        attackTroops = troops1;
+        defenderTroops = troops2;          
+        attackTroops.Sort((a, b) => ArmsConfig.GetConfig(a.armsId).Range.CompareTo(ArmsConfig.GetConfig(b.armsId).Range));
+        defenderTroops.Sort((a, b) => ArmsConfig.GetConfig(a.armsId).Range.CompareTo(ArmsConfig.GetConfig(b.armsId).Range));
 
         currentBattleCoroutine = StartCoroutine(GameUpdate());
+    }
+
+    private int GetTotalSoldierCount(List<WarTroopsData> troops)
+    {
+        int total = 0;
+        foreach (var troop in troops)
+        {
+            total += troop.soldierCount;
+        }
+        return total;
     }
 
     private void InitUI(SaveForceData force1, SaveForceData force2)
@@ -162,11 +169,6 @@ public class BattleManager : MonoBehaviour
         
         LoadFromFile("battlereplayer" + replayBattleId + ".json");
         SkillManager.isReplay = true;
-
-        foreach (var playerInfo in playerInfoList)
-        {
-            playerInfo.food = playerInfo.maxFood;
-        }
 
         chessList.Clear();
         missileList.Clear();
@@ -205,13 +207,35 @@ public class BattleManager : MonoBehaviour
         return id;
     }
 
-    private void SpawnHerosForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, BattleCardData heroCardData)
+    private void SpawnTroopForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, WarTroopsData troop)
     {
-        var heroData = GameManager.Instance.GetHero(heroCardData.CardId);
+        if (troop.heroId1 <= 0)
+            return;
+
+        var heroData1 = GameManager.Instance.GetHero(troop.heroId1);
+        var heroData2 = troop.heroId2 > 0 ? GameManager.Instance.GetHero(troop.heroId2) : null;
+        var heroData3 = troop.heroId3 > 0 ? GameManager.Instance.GetHero(troop.heroId3) : null;
+
+        int heroCount = 1;
+        if (heroData2 != null) heroCount++;
+        if (heroData3 != null) heroCount++;
+
+        int totalStr = heroData1.str;
+        int totalLeadShip = heroData1.leadShip;
+        int totalInte = heroData1.inte;
+
+        int avgStr = totalStr / heroCount;
+        int avgLeadShip = totalLeadShip / heroCount;
+        int avgInte = totalInte / heroCount;
+
+        var mainHero = heroData1;
+        var (atk, def) = SysFormula.Battle.CalculateCombatAttr(mainHero, troop.armsId);
         
         var id = idCounter++;
-        var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, heroCardData.ArmsId);
-        var action = new CreateChessAction(0, tickAdd, id, force.forceId, heroCardData.CardId, 1, heroCardData.SoldierNum, heroCardData.ArmsId, atk, def, heroData.str, heroData.leadShip, heroData.inte, spawnPoint);
+        var action = new CreateChessAction(0, tickAdd, id, force.forceId, 
+            troop.heroId1, troop.heroId2, troop.heroId3, 
+            heroData1.GetLevel(), 
+            troop.soldierCount, troop.armsId, atk, def, avgStr, avgLeadShip, avgInte, spawnPoint);
         AddChessAction(action);
     }
 
@@ -231,7 +255,7 @@ public class BattleManager : MonoBehaviour
 
         var waitTick = GetTickFromTime(SystemConst.Battle.WAIT_TIME);
         var battleBeginTick = GetTickFromTime(SystemConst.Battle.BATTLE_BEGIN_TIME);
-        var foodDeductionTick = GetTickFromTime(SystemConst.Battle.FOOD_DEDUCTION_INTERVAL);
+        var foodDeductionTick = GetTickFromTime(SystemConst.Battle.FOOD_DEDUCTION_INTERVAL);        
 
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var magicHelperUnitId = SpawnUnitsForRegion(player1, SystemConst.Battle.MAGIC_HELPER_UNIT_ID, new Vector3(1, 7, 1), 10);
@@ -278,7 +302,7 @@ public class BattleManager : MonoBehaviour
                                 SkillManager.CheckAddSkill(chess);  
                             foreach (var chess in chessList.ToArray()) //防止召唤
                                 SkillManager.BattleBegin(chess);
-                            lastFoodDeductionTick = tickIndex;
+                            lastFoodDeductionTick = tickIndex;                                
                             battleBeginTick = 0;
                         }
                     }
@@ -298,23 +322,7 @@ public class BattleManager : MonoBehaviour
                         // 每个回合结束，玩家消耗食物
                         if (tickIndex - lastFoodDeductionTick >= foodDeductionTick)
                         {
-                            foreach (var foodInfo in playerInfoList)
-                            {
-                                var soldierNum = GetUnitsByForceId(foodInfo.forceId).Where(x => x.isHero).Sum(x => x.hp);
-                                var costAmount = SysFormula.Battle.CalculateFoodCost(soldierNum);
-
-                                var action = new FoodCostAction(0, tickIndex, foodInfo.forceId, costAmount);
-                                AddChessAction(action);
-
-                                if(foodInfo.food < costAmount)
-                                {
-                                    var units = GetUnitsByForceId(foodInfo.forceId);
-                                    foreach (var unit in units)
-                                        unit.LackFood((float)(costAmount - foodInfo.food) / costAmount);
-                                }
-
-                            }
-                            lastFoodDeductionTick = tickIndex;
+                            lastFoodDeductionTick = tickIndex;                            
                             var roundAction = new RoundUpdateAction(0, tickIndex, round + 1);
                             AddChessAction(roundAction);
                             if (round >= MaxRound)
@@ -359,26 +367,21 @@ public class BattleManager : MonoBehaviour
                 if (chess.isHero)
                     result.Add(chess.heroId, chess.hp);
             }
-            var result2 = new Dictionary<int, int>();
-            result2[playerInfoList[0].forceId] = playerInfoList[0].food;
-            result2[playerInfoList[1].forceId] = playerInfoList[1].food;
-            battleEndCallback(battleResult, result, result2);
+
+            battleEndCallback(battleResult, result);
         }
 
         if(!replay)
         {
             var soldierLoss1 = playerInfoList[0].soldierNumInit - chessList.Where(x => x.forceId == playerInfoList[0].forceId && x.isHero).Sum(x => Math.Max(0, x.hp));
             var soldierLoss2 = playerInfoList[1].soldierNumInit - chessList.Where(x => x.forceId == playerInfoList[1].forceId && x.isHero).Sum(x => Math.Max(0, x.hp));
-            var foodCost1 = playerInfoList[0].maxFood - playerInfoList[0].food;
-            var foodCost2 = playerInfoList[1].maxFood - playerInfoList[1].food;
             
             GameManager.Instance.SaveData.battleStatManager.SaveCurrentBattle(
                 cityId,
                 playerInfoList[0].forceId, playerInfoList[1].forceId,
                 battleResult,
                 round,
-                soldierLoss1, soldierLoss2,
-                foodCost1, foodCost2);
+                soldierLoss1, soldierLoss2);
             
             LogBattleResult();
             SaveToFile("battlereplayer" + battleId + ".json");
@@ -393,25 +396,25 @@ public class BattleManager : MonoBehaviour
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var player2 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
 
-        int count = Math.Min(cards2.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
+        int count = Math.Min(defenderTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++)
         {
             var tick = tickIndex + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(2, i), "SoftFireBigRed", 0.7f);
             AddChessAction(eff);
-            SpawnHerosForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(2, i), cards2[i]);
+            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(2, i), defenderTroops[i]);
         }
 
-        count = Math.Min(cards1.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
+        count = Math.Min(attackTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++) 
         {
             var tick = tickIndex + SystemConst.Battle.ATTACKER_SPAWN_DELAY_TICKS + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(1, i), "LightningExplosionBlue", 0.7f);
             AddChessAction(eff);
-            SpawnHerosForRegion(player1, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(1, i), cards1[i]);
+            SpawnTroopForRegion(player1, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(1, i), attackTroops[i]);
         }
 
-        GameLog.Info($"InitSummon {player1.Name} {cards1.Count} {player2.Name} {cards2.Count}");
+        GameLog.Info($"InitSummon {player1.Name} {attackTroops.Count} {player2.Name} {defenderTroops.Count}");
     }
 
     public int GetTickFromTime(float time)
@@ -653,11 +656,6 @@ public class BattleManager : MonoBehaviour
         return unitsInRange;
     }
 
-    public FoodInfo GetFoodInfo(int forceId)
-    {
-        return playerInfoList.Find(foodInfo => foodInfo.forceId == forceId);
-    }
-
     public void AddBattleText(string text, UnityEngine.Vector3 worldPos, UnityEngine.Vector2 speed, Color color, int duration)
     {
         if(showUI&&!quickMode)
@@ -707,13 +705,11 @@ public class BattleManager : MonoBehaviour
 
     private void LogBattleResult()
     {
-        if (cards1 == null || cards2 == null) return;
-        
         var attackerForceId = playerInfoList[0].forceId;
         var defenderForceId = playerInfoList[1].forceId;
         
-        var attackerHeroNames = string.Join(",", cards1.Select(c => ConfigNameHelper.GetHeroName(c.CardId)));
-        var defenderHeroNames = string.Join(",", cards2.Select(c => ConfigNameHelper.GetHeroName(c.CardId)));
+        var attackerHeroNames = string.Join(",", attackTroops.Select(c => ConfigNameHelper.GetHeroName(c.heroId1)));
+        var defenderHeroNames = string.Join(",", defenderTroops.Select(c => ConfigNameHelper.GetHeroName(c.heroId1)));
         
         string resultStr = battleResult switch
         {

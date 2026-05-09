@@ -441,7 +441,7 @@ public class SaveForceData
         return addon;
     }
 
-    public void ExecuteCityBattleDev(int cityId, int[] heroList, int targetCityId, bool isAI, Dictionary<int, int> heroSoldierDict = null, Dictionary<int, int> heroArmsDict = null)
+    public void ExecuteCityBattleDev(int cityId, List<WarTroopsData> attackTroops, int targetCityId, bool isAI)
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
         var cityDest = GameManager.Instance.GetCity(targetCityId);
@@ -451,18 +451,19 @@ public class SaveForceData
         else
             BattleManager.Instance.SetMode(false, true);
 
-        var destForceData = GameManager.Instance.GetForce(cityDest.forceId);
         citySrc.AddAttr("food", -100);
         int defenceFood = (int)cityDest.food;
         cityDest.food = 0;
         int srcForceId = citySrc.forceId;
         int destForceId = cityDest.forceId;
-        var battleHeroListSrc = citySrc.GetBattleHeroList(heroList, heroSoldierDict, heroArmsDict);
-        BattleManager.Instance.BattleBegin(citySrc.GetForce(), cityDest.GetForce(), battleHeroListSrc, cityDest.GetBattleHeroList(), 100, defenceFood, targetCityId,
-            (result, soldierCount, foodCount) => OnBattleEnd(result, soldierCount, cityId, targetCityId, battleHeroListSrc.Select(x => x.CardId).ToArray(), srcForceId, destForceId));
+        
+        var defenceTroops = TroopsBuilder.BuildDefenceTroops(cityDest);
+        
+        BattleManager.Instance.BattleBegin(citySrc.GetForce(), cityDest.GetForce(), attackTroops, defenceTroops, targetCityId,
+            (result, soldierCount) => OnBattleEnd(result, soldierCount, cityId, targetCityId, attackTroops, srcForceId, destForceId));
     }
 
-    private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, int cityId, int targetCityId, int[] attackHeroList, int srcForceId, int destForceId)
+    private void OnBattleEnd(BattleResult result, Dictionary<int, int> soldierCount, int cityId, int targetCityId, List<WarTroopsData> attackTroops, int srcForceId, int destForceId)
     {
         var destCity = GameManager.Instance.GetCity(targetCityId);
         var srcCity = GameManager.Instance.GetCity(cityId);
@@ -485,7 +486,24 @@ public class SaveForceData
 
         if (result == BattleResult.Win)
         {
-            destCity.Occupy(forceId, attackHeroList.ToList(), destForceId, destCity.GetBattleHeroList().Select(x => x.CardId).ToList());
+            var attackHeroList = new List<int>();
+            foreach (var troop in attackTroops)
+            {
+                if (troop.heroId1 > 0) attackHeroList.Add(troop.heroId1);
+                if (troop.heroId2 > 0) attackHeroList.Add(troop.heroId2);
+                if (troop.heroId3 > 0) attackHeroList.Add(troop.heroId3);
+            }
+            
+            var defenceHeroList = new List<int>();
+            var destTroops = TroopsBuilder.BuildDefenceTroops(destCity);
+            foreach (var troop in destTroops)
+            {
+                if (troop.heroId1 > 0) defenceHeroList.Add(troop.heroId1);
+                if (troop.heroId2 > 0) defenceHeroList.Add(troop.heroId2);
+                if (troop.heroId3 > 0) defenceHeroList.Add(troop.heroId3);
+            }
+            
+            destCity.Occupy(forceId, attackHeroList, destForceId, defenceHeroList);
             srcCity.RecalculateHeros();
         }
     }

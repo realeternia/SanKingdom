@@ -28,8 +28,6 @@ public class BattleStatManager
         public int year;
         public int soldierLoss1;
         public int soldierLoss2;
-        public int foodCost1;
-        public int foodCost2;
         public List<BattleStat> battleStats = new List<BattleStat>();
     }
 
@@ -172,7 +170,7 @@ public class BattleStatManager
         }
     }
 
-    public void SaveCurrentBattle(int cityId, int forceId1, int forceId2, BattleResult result, int rounds, int soldierLoss1, int soldierLoss2, int foodCost1, int foodCost2)
+    public void SaveCurrentBattle(int cityId, int forceId1, int forceId2, BattleResult result, int rounds, int soldierLoss1, int soldierLoss2)
     {
         if (currentBattleStats == null || currentBattleId == 0 || isReplayMode)
             return;
@@ -192,8 +190,6 @@ public class BattleStatManager
             year = GameManager.Instance.SaveData.round,
             soldierLoss1 = soldierLoss1,
             soldierLoss2 = soldierLoss2,
-            foodCost1 = foodCost1,
-            foodCost2 = foodCost2,
             battleStats = currentBattleStats.Values.ToList()
         };
         

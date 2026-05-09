@@ -11,6 +11,8 @@ public class CreateChessAction : ChessAction
     public UnityEngine.Vector3 SpawnPos;
     public bool IsHero;
     public int HeroId;
+    public int HeroId2;
+    public int HeroId3;
     public int Level;
     public int SoldierNum;
     public int ArmsId;
@@ -27,6 +29,26 @@ public class CreateChessAction : ChessAction
     public Action<int> CallBack;
 
 
+    public CreateChessAction(int sourceId, int tick, int id, int forceId, int heroId, int heroId2, int heroId3, int level, int soldierNum, int armsId, int atk, int def, int str, int leadShip, int inte, UnityEngine.Vector3 spawnPos)
+        : base(sourceId, tick)
+    {
+        Id = id;
+        ForceId = forceId;
+        SpawnPos = spawnPos;
+        IsHero = true;
+        HeroId = heroId;
+        HeroId2 = heroId2;
+        HeroId3 = heroId3;
+        Level = level;
+        SoldierNum = soldierNum;
+        ArmsId = armsId;
+        Atk = atk;
+        Def = def;
+        Str = str;
+        LeadShip = leadShip;
+        Inte = inte;
+    }
+    
     public CreateChessAction(int sourceId, int tick, int id, int forceId, int heroId, int level, int soldierNum, int armsId, int atk, int def, int str, int leadShip, int inte, UnityEngine.Vector3 spawnPos)
         : base(sourceId, tick)
     {
@@ -82,6 +104,8 @@ public class CreateChessAction : ChessAction
         {
             chessObj.isHero = true;
             chessObj.heroId = HeroId;
+            chessObj.heroId2 = HeroId2;
+            chessObj.heroId3 = HeroId3;
             chessObj.level = Level;
         }
         else

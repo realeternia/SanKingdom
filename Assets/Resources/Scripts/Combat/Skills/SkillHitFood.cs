@@ -14,15 +14,6 @@ public class SkillHitFood : Skill
     {
         if (CheckBurst(defender))
         {
-            var foodInfo = BattleManager.Instance.GetFoodInfo(defender.forceId);
-            var sub = foodInfo.food -= skillCfg.StrengthInt;
-            if (sub > 0)
-            {
-                SkillManager.AddSkillAction(owner, defender, id, sub);
-                owner.PlayerAnim(skillCfg.Action);
-                foodInfo.food += sub;
-
-            }
         }
     }
     public override void OnPlaySkill(Chess target, int parm1)

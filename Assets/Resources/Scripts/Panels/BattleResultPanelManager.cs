@@ -20,10 +20,8 @@ public class BattleResultPanelManager : MonoBehaviour
     public TMP_Text textTitle;
     public TMP_Text textForceLeft;
     public TMP_Text textSoldierLeft;
-    public TMP_Text textFoodLeft;
     public TMP_Text textForceRight;
     public TMP_Text textSoldierRight;
-    public TMP_Text textFoodRight;    
 
     public GameObject cellPrefab;
     
@@ -76,9 +74,6 @@ public class BattleResultPanelManager : MonoBehaviour
         
         textSoldierLeft.text = "损失: " + record.soldierLoss1;
         textSoldierRight.text = "损失: " + record.soldierLoss2;
-        
-        textFoodLeft.text = "粮耗: " + record.foodCost1;
-        textFoodRight.text = "粮耗: " + record.foodCost2;
 
         ClearCells(rankRegionLeft);
         ClearCells(rankRegionRight);

@@ -23,6 +23,8 @@ public class Chess : SceneObj
     public bool isShadow;
 
     public int heroId;
+    public int heroId2;
+    public int heroId3;
     public int battleUnitId;
     
     public int armsId;
@@ -110,7 +112,6 @@ public class Chess : SceneObj
 
     public int regeTickCount; //1s回复一次
     public int regeHp; //回复血量
-    public int lackIndex;
 
     public Chess(int id)
     {
@@ -131,12 +132,12 @@ public class Chess : SceneObj
             GameLog.Info("Init Hero" + heroId);
 
             var heroCfg = HeroConfig.GetConfig(heroId);
-            // 初始化技能
             if (heroCfg.Skills != null)
             {
                 foreach (var skillId in heroCfg.Skills)
                     skills.Add(SkillManager.CreateSkill(skillId, this));
             }
+
         }
 
         // 创建UI
@@ -320,14 +321,6 @@ public class Chess : SceneObj
     {
         targetChessId = target1.id;
         // lastTargetUpdateTick = BattleManager.Instance.time;
-    }
-
-    public void LackFood(float lackRate)
-    {
-        var changeVal = -SysFormula.Battle.CalculateLackFoodDamage(lackIndex, lackRate);
-        var action = new ChessChangeHpAction(id, BattleManager.Instance.tickIndex, changeVal);
-        BattleManager.Instance.AddChessAction(action);
-        lackIndex++;
     }
 
     // 寻找side不等于自己的单位

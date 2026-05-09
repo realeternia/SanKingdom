@@ -28,14 +28,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4749144538699207148}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 0.99126774, z: -0.13186494, w: 0}
+  m_LocalPosition: {x: 0, y: -1.5557275, z: 1.7076063}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3405850965564341876}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 15.155, y: 180, z: 0}
 --- !u!33 &2758410172255111738
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -127,12 +127,14 @@ MonoBehaviour:
     isFakeHero: 0
     isShadow: 0
     heroId: 0
+    heroId2: 0
+    heroId3: 0
     battleUnitId: 0
     armsId: 0
-    targetChessId: 0
-    inte: 0
     str: 0
     leadShip: 0
+    inte: 0
+    targetChessId: 0
     level: 0
     dodgeRate: 0
     critRate: 0

@@ -67,7 +67,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackSpeedAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\MissileViewObj.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\NLCoroutineManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\PO\BattleCardData.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\NLDropDownItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveMissileAction.cs" />
@@ -158,7 +157,6 @@
     <Compile Include="Assets\Resources\Scripts\Panels\SystemPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysRandom.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefSkillDamageReduce.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\FoodCostAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefFeedback.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\PopHeroBattleSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\PanelEvent.cs" />
@@ -170,6 +168,7 @@
     <Compile Include="Assets\Resources\Scripts\UIScripts\NLDropDown.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveForceData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffCoolDown.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\TroopsBuilder.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAddDamage.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\MoveAction.cs" />
