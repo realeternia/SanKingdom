@@ -91,7 +91,7 @@ public class PanelManager : MonoBehaviour
             if (!attrConfig.IsForceAttr) continue;
             
             GameLog.Debug($"PanelManager.InitTopNodeResItems creating ResItem for {attrConfig.name}");
-            var resBasePrefab = Resources.Load<GameObject>(ResPath.Prefab.ResBase());
+            var resBasePrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.ResBase());
             var resObj = Instantiate(resBasePrefab, topNode.transform);
             resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(240 * index, 0);
             var resItem = resObj.GetComponent<ResItem>();
@@ -193,7 +193,7 @@ public class PanelManager : MonoBehaviour
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         if (cityPanel == null)
         {
-            var cityPanelPrefab = Resources.Load<GameObject>(ResPath.Prefab.Panel("CityPanel"));
+            var cityPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityPanel"));
             cityPanel = Instantiate(cityPanelPrefab, transform);
         }
         cityPanel.SetActive(true);
@@ -226,7 +226,7 @@ public class PanelManager : MonoBehaviour
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         if (cityDevPanel == null)
         {
-            var cityDevPanelPrefab = Resources.Load<GameObject>(ResPath.Prefab.Panel("CityDevPanel"));
+            var cityDevPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityDevPanel"));
             cityDevPanel = Instantiate(cityDevPanelPrefab, transform);
         }
         cityDevPanel.SetActive(true);
@@ -252,7 +252,7 @@ public class PanelManager : MonoBehaviour
     {
         if (systemPanel == null)
         {
-            var systemPanelPrefab = Resources.Load<GameObject>(ResPath.Prefab.Panel("SystemInfoPanel"));
+            var systemPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("SystemInfoPanel"));
             systemPanel = Instantiate(systemPanelPrefab, transform);
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
@@ -278,7 +278,7 @@ public class PanelManager : MonoBehaviour
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         if (cityBattlePanel == null)
         {
-            var cityBattlePanelPrefab = Resources.Load<GameObject>(ResPath.Prefab.Panel("CityBattlePanel"));
+            var cityBattlePanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityBattlePanel"));
             cityBattlePanel = Instantiate(cityBattlePanelPrefab, transform);
         }
         cityBattlePanel.SetActive(true);
@@ -307,7 +307,7 @@ public class PanelManager : MonoBehaviour
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         if (rankPanel == null)
         {
-            var rankPanelPrefab = Resources.Load<GameObject>(ResPath.Prefab.Panel("RankInfoPanel"));
+            var rankPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("RankInfoPanel"));
             rankPanel = Instantiate(rankPanelPrefab, transform);
         }        
         rankPanel.SetActive(true);
@@ -333,7 +333,7 @@ public class PanelManager : MonoBehaviour
         //  BGMPlayer.Instance.PlaySound("Sounds/deck");
         if (pickPanel == null)
         {
-            var pickPanelPrefab = Resources.Load<GameObject>(ResPath.Prefab.Panel("PickPanel"));
+            var pickPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PickPanel"));
             pickPanel = Instantiate(pickPanelPrefab, transform);
         }
         pickPanel.SetActive(true);
@@ -354,7 +354,7 @@ public class PanelManager : MonoBehaviour
     {
         if (popCitySelectPanel == null)
         {
-            popCitySelectPanel = Instantiate(Resources.Load<GameObject>(ResPath.Prefab.Panel("PopCitySelectPanel")), transform);
+            popCitySelectPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PopCitySelectPanel")), transform);
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popCitySelectPanel.SetActive(true);
@@ -378,7 +378,7 @@ public class PanelManager : MonoBehaviour
     {
         if (popHeroSelectPanel == null)
         {
-            popHeroSelectPanel = Instantiate(Resources.Load<GameObject>(ResPath.Prefab.Panel("PopHeroSelectPanel")), transform);
+            popHeroSelectPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PopHeroSelectPanel")), transform);
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popHeroSelectPanel.SetActive(true);
@@ -402,7 +402,7 @@ public class PanelManager : MonoBehaviour
     {
         if (popHeroBattleSelectPanel == null)
         {
-            popHeroBattleSelectPanel = Instantiate(Resources.Load<GameObject>(ResPath.Prefab.Panel("PopHeroBattleSelectPanel")), transform);
+            popHeroBattleSelectPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PopHeroBattleSelectPanel")), transform);
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popHeroBattleSelectPanel.SetActive(true);
@@ -426,7 +426,7 @@ public class PanelManager : MonoBehaviour
     {
         if (popResultPanel == null)
         {
-            popResultPanel = Instantiate(Resources.Load<GameObject>(ResPath.Prefab.Panel("PopResultPanel")), transform);
+            popResultPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PopResultPanel")), transform);
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popResultPanel.SetActive(true);
@@ -449,7 +449,7 @@ public class PanelManager : MonoBehaviour
     {
         if (popArmySetPanel == null)
         {
-            popArmySetPanel = Instantiate(Resources.Load<GameObject>(ResPath.Prefab.Panel("PopArmySetPanel")), transform);
+            popArmySetPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PopArmySetPanel")), transform);
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popArmySetPanel.SetActive(true);
@@ -471,7 +471,7 @@ public class PanelManager : MonoBehaviour
     {
         if (heroInfoPanel == null)
         {
-            heroInfoPanel = Instantiate(Resources.Load<GameObject>(ResPath.Prefab.Panel("HeroInfoPanel")), transform);
+            heroInfoPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("HeroInfoPanel")), transform);
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         heroInfoPanel.SetActive(true);
@@ -496,7 +496,7 @@ public class PanelManager : MonoBehaviour
     {
         if (battleResultPanel == null)
         {
-            battleResultPanel = Instantiate(Resources.Load<GameObject>(ResPath.Prefab.Panel("BattleResultPanel")), transform);
+            battleResultPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("BattleResultPanel")), transform);
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         battleResultPanel.SetActive(true);
@@ -520,7 +520,7 @@ public class PanelManager : MonoBehaviour
     {
         if (replayPanel == null)
         {
-            replayPanel = Instantiate(Resources.Load<GameObject>(ResPath.Prefab.Panel("ReplayPanel")), transform);
+            replayPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("ReplayPanel")), transform);
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         replayPanel.SetActive(true);

@@ -189,7 +189,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         GameLog.Info($"MoveToPlayerCapital: 城市名称 = {cityConfig.Cname}, X = {cityConfig.X}, Y = {cityConfig.Y}");
         
         string texturePath = ResPath.Texture.MapTexture(cityConfig.Name);
-        Texture2D texture = Resources.Load<Texture2D>(texturePath);
+        Texture2D texture = ResourceCache.LoadUI<Texture2D>(texturePath);
         if (texture == null)
         {
             GameLog.Warn($"MoveToPlayerCapital: 未找到纹理, path = {texturePath}");
@@ -227,13 +227,13 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 string texturePath = ResPath.Texture.MapTexture(worldConfig.Name);
                 
                 // 加载图片资源
-                Texture2D texture = Resources.Load<Texture2D>(texturePath);
+                Texture2D texture = ResourceCache.LoadUI<Texture2D>(texturePath);
 
                 // 创建精灵
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
                 
                 // 从Prefabs/WorldPiece加载预设体
-                GameObject worldPiecePrefab = Resources.Load<GameObject>(ResPath.Prefab.WorldPiece());
+                GameObject worldPiecePrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.WorldPiece());
                 
                 // 实例化预设体
                 GameObject mapPiece = Instantiate(worldPiecePrefab, bgPanel.transform, false);

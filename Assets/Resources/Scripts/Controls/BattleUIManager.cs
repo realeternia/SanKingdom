@@ -46,7 +46,7 @@ public class BattleUIManager : MonoBehaviour
 
     public void CreateCastleHUD(SaveForceData force, Vector3 castleSpawn)
     {
-        GameObject hudPrefab = Resources.Load<GameObject>(ResPath.Prefab.HudCastle());
+        GameObject hudPrefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.HudCastle());
 
         GameObject hudObj = Instantiate(hudPrefab, HudNode.transform);
         hudObj.name = "CastleHUD";
@@ -103,7 +103,7 @@ public class BattleUIManager : MonoBehaviour
 
     public void AddBattleText(string text, Vector3 worldPos, Vector2 speed, Color color, int duration)
     {
-        var prefab = Resources.Load<GameObject>(ResPath.Prefab.BattleTxt());
+        var prefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.BattleTxt());
         var battleText = Instantiate(prefab, BattleTextNode.transform);
 
         // 将世界坐标转换为屏幕坐标

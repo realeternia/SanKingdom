@@ -144,7 +144,7 @@ public class BattleManager : MonoBehaviour
         {
             var startTime = Time.realtimeSinceStartup;
             var newMapId = 1;
-            var mapNode = Resources.Load<GameObject>(ResPath.Prefab.BattleMap(newMapId));
+            var mapNode = ResourceCache.LoadPrefabBattle(ResPath.Prefab.BattleMap(newMapId));
             if (mapObj != null)
                 UnityEngine.Object.Destroy(mapObj);
 
@@ -394,7 +394,8 @@ public class BattleManager : MonoBehaviour
             LogBattleResult();
             SaveToFile("battlereplayer" + battleId + ".json");
         }
-        
+
+        ResourceCache.ClearBattleCache();
         IsBattleRunning = false;
         currentBattleCoroutine = null;
     }

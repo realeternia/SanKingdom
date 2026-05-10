@@ -22,7 +22,7 @@ public class BGMPlayer : MonoBehaviour
         if (lastBGMPath != path)
         {
             lastBGMPath = path;
-            lastBGMClip = Resources.Load<AudioClip>(path);
+            lastBGMClip = ResourceCache.LoadUI<AudioClip>(path);
             if (lastBGMClip != null)
             {
                 audioSource.clip = lastBGMClip;
@@ -62,7 +62,7 @@ public class BGMPlayer : MonoBehaviour
         if (lastPath != path)
         {
             lastPath = path;
-            lastClip = Resources.Load<AudioClip>(path);
+            lastClip = ResourceCache.LoadUI<AudioClip>(path);
             if (lastClip != null)
             {
                 audioSource.clip = lastClip;

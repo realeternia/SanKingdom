@@ -105,7 +105,7 @@ public class PopArmySetManager : MonoBehaviour
 
         var heroCfg = HeroConfig.GetConfig(heroId);
 
-        heroPic.sprite = Resources.Load<Sprite>(ResPath.Texture.HeroIcon(heroCfg.Icon));
+        heroPic.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg.Icon));
         textHeroName.text = heroCfg.Name;
 
         int otherAllocated = GetOtherAllocated();

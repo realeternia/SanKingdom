@@ -51,7 +51,7 @@ public class HeroInfoGroup : MonoBehaviour
         heroInfo.transform.localPosition = new Vector3(0, -47 - 91 * count, 0);
         var heroCfg = HeroConfig.GetConfig(heroId);
 
-        heroInfo.heroImage.sprite = Resources.Load<Sprite>(ResPath.Texture.HeroIcon(heroCfg.Icon));
+        heroInfo.heroImage.sprite = ResourceCache.LoadSpriteBattle(ResPath.Texture.HeroIcon(heroCfg.Icon));
 
         heroInfo.heroName.text = heroCfg.Name;
         heroInfo.heroLevelTxt.text = level.ToString();

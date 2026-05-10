@@ -218,7 +218,7 @@ public class CityBattlePanelManager : MonoBehaviour
             }
         }
 
-        var itemPrefab = Resources.Load<GameObject>(ResPath.Prefab.PanelListItem("CityBattleItem"));
+        var itemPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelListItem("CityBattleItem"));
 
         RectTransform containerRect = itemRegionMain.GetComponent<RectTransform>();
         if (containerRect == null) return;

@@ -108,7 +108,7 @@ public class BattleInfoTop : MonoBehaviour
         
         // 加载图片
         string imgPath = ResPath.Texture.HeroIcon(heroConfig.Icon);
-        Sprite sprite = Resources.Load<Sprite>(imgPath);
+        Sprite sprite = ResourceCache.LoadSpriteBattle(imgPath);
         if (sprite != null)
         {
             image.sprite = sprite;

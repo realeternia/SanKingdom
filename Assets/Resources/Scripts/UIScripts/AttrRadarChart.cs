@@ -134,7 +134,7 @@ public class AttrRadarChart : MonoBehaviour
             labelObj.transform.localScale = Vector3.one;
 
             TMP_Text labelText = labelObj.AddComponent<TextMeshProUGUI>();
-            TMP_FontAsset font = Resources.Load<TMP_FontAsset>(ResPath.Font.HeiTiSDF());
+            TMP_FontAsset font = ResourceCache.LoadUI<TMP_FontAsset>(ResPath.Font.HeiTiSDF());
             labelText.font = font != null ? font : TMP_Settings.defaultFontAsset;
             labelText.text = attrNames[i] + "\n" + values[i].ToString();
             labelText.fontSize = fontSize;

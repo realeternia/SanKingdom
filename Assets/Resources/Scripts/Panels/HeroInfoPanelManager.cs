@@ -329,7 +329,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         
         heroNameText.text = heroConfig.Name;
         string imgPath = ResPath.Texture.HeroBigIcon(heroConfig.Icon);
-        Sprite sprite = Resources.Load<Sprite>(imgPath);
+        Sprite sprite = ResourceCache.LoadSpriteUI(imgPath);
         heroImage.sprite = sprite;
         
         int age = (int)GameManager.Instance.GetCurrentYear() - heroConfig.BornYear;

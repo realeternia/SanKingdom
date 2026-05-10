@@ -349,7 +349,7 @@ public class CityTroopsItem : MonoBehaviour
     {
         if (iconImage == null || string.IsNullOrEmpty(iconName)) return;
         string iconPath = ResPath.Texture.HeroIcon(iconName);
-        Sprite sprite = Resources.Load<Sprite>(iconPath);
+        Sprite sprite = ResourceCache.LoadSpriteUI(iconPath);
         if (sprite != null)
         {
             iconImage.sprite = sprite;

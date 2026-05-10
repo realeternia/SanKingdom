@@ -98,16 +98,16 @@ public class Missile : SceneObj
     
         if(!BattleManager.Instance.quickMode && BattleManager.Instance.showUI)
         {
-            var missilePrefab = Resources.Load<MissileViewObj>(ResPath.Prefab.MissileCom());
+            var missilePrefab = ResourceCache.LoadBattle<MissileViewObj>(ResPath.Prefab.MissileCom());
             viewObj = UnityEngine.Object.Instantiate(missilePrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
 
-            var effPrefab = Resources.Load<GameObject>(ResPath.Prefab.MissileEffect(effectName));
+            var effPrefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.MissileEffect(effectName));
             if (effPrefab == null)
-                effPrefab = Resources.Load<GameObject>(ResPath.Prefab.Effect(effectName));
+                effPrefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.Effect(effectName));
             if (effPrefab == null)
             {
                 GameLog.Error($"Missile effect not found: {effectName}, skillId: {skillId}, using fallback");
-                effPrefab = Resources.Load<GameObject>(ResPath.Prefab.MissileDefaultEffect());
+                effPrefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.MissileDefaultEffect());
             }
             GameObject missileEffect = UnityEngine.Object.Instantiate(effPrefab, position, effPrefab.transform.rotation, viewObj.transform);
             viewObj.transform.position = position;

@@ -642,4 +642,15 @@ public static class SystemConst
         /// </summary>
         public const int NEED_WEIGHT = 30;
     }
+
+    public static class ResourceCache
+    {
+        public const int UI_CACHE_MAX_COUNT = 200;
+        public const int UI_CACHE_MAX_MEMORY_MB = 100;
+        public const int BATTLE_CACHE_MAX_COUNT = 100;
+        public const int BATTLE_CACHE_MAX_MEMORY_MB = 50;
+
+        public static long UI_CACHE_MAX_MEMORY_BYTES => UI_CACHE_MAX_MEMORY_MB * 1024L * 1024L;
+        public static long BATTLE_CACHE_MAX_MEMORY_BYTES => BATTLE_CACHE_MAX_MEMORY_MB * 1024L * 1024L;
+    }
 }

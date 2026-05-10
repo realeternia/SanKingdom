@@ -185,6 +185,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\TroopsHeroSlot.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\PrefabSpawner.cs" />
     <Compile Include="Assets\Resources\Scripts\MainPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\LFUCache.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\BattleResultHeroCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityPanelManager.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\ResourceCache.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PickPanelCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\IconLoader.cs" />

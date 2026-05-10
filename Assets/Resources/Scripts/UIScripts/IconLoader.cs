@@ -10,7 +10,7 @@ public class IconLoader : MonoBehaviour
         if (!string.IsNullOrEmpty(iconPath))
         {
             string path = ResPath.Texture.AttrIcon(iconPath);
-            Sprite sprite = Resources.Load<Sprite>(path);
+            Sprite sprite = ResourceCache.LoadSpriteUI(path);
             if (sprite != null)
             {
                 Image image = GetComponent<Image>();

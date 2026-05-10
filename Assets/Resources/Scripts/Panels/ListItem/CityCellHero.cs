@@ -49,7 +49,7 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
         this.heroId = heroId;
         var heroCfg = HeroConfig.GetConfig(heroId);
         heroName.text = heroCfg.Name;
-        heroIcon.sprite = Resources.Load<Sprite>(ResPath.Texture.HeroIcon(heroCfg.Icon));
+        heroIcon.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg.Icon));
 
         UpdateWorkState();
     }
@@ -77,7 +77,7 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
         {
             if (job1 != null)
             {
-                job1.sprite = Resources.Load<Sprite>(ResPath.Texture.AttrIcon("citytroop1"));
+                job1.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon("citytroop1"));
                 job1.gameObject.SetActive(true);
             }
         }
@@ -91,7 +91,7 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
                     var attrCfg = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower());
                     if (attrCfg != null && !string.IsNullOrEmpty(attrCfg.Icon))
                     {
-                        job1.sprite = Resources.Load<Sprite>(ResPath.Texture.AttrIcon(attrCfg.Icon));
+                        job1.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(attrCfg.Icon));
                     }
                 }
                 job1.gameObject.SetActive(true);
@@ -109,7 +109,7 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
         {
             if (job2 != null)
             {
-                job2.sprite = Resources.Load<Sprite>(ResPath.Texture.AttrIcon("citytroop2"));
+                job2.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon("citytroop2"));
                 job2.gameObject.SetActive(true);
             }
         }

@@ -119,7 +119,7 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     {
         heroData.InitAttrsFromConfig();
         var heroConfig = HeroConfig.GetConfig(heroData.heroId);
-        heroPic.sprite = Resources.Load<Sprite>(ResPath.Texture.HeroIcon(heroConfig.Icon));
+        heroPic.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroConfig.Icon));
         heroPicContainer = heroPic.gameObject;
 
         heroName.text = heroConfig.Name;

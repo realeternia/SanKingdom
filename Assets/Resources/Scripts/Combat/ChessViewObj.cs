@@ -36,7 +36,7 @@ public class ChessViewObj : MonoBehaviour
         var chessName = chessUnit.chessName;
         originalMaterial = rend.sharedMaterial;
         material = new Material(rend.sharedMaterial);
-        originalTexture = Resources.Load<Texture>(ResPath.Texture.HeroIcon(chessName));
+        originalTexture = ResourceCache.LoadBattle<Texture>(ResPath.Texture.HeroIcon(chessName));
         if (!string.IsNullOrEmpty(chessName))
         {
             material.mainTexture = originalTexture;
@@ -45,7 +45,7 @@ public class ChessViewObj : MonoBehaviour
         if (chessUnit.isHero)
         {
             materialFlag = new Material(rendFlag.sharedMaterial);
-            materialFlag.mainTexture = Resources.Load<Texture>(ResPath.Texture.HeroIcon(chessName));
+            materialFlag.mainTexture = ResourceCache.LoadBattle<Texture>(ResPath.Texture.HeroIcon(chessName));
             materialFlag.SetColor("_OutlineColor", c);
             rendFlag.material = materialFlag;
         }
@@ -60,7 +60,7 @@ public class ChessViewObj : MonoBehaviour
     private void CreateHUD()
     {
         // 加载Hud预制体
-        GameObject hudPrefab = Resources.Load<GameObject>(chessUnit.isHero || chessUnit.isFakeHero ? ResPath.Prefab.Hud() : ResPath.Prefab.HudSmall());
+        GameObject hudPrefab = ResourceCache.LoadPrefabBattle(chessUnit.isHero || chessUnit.isFakeHero ? ResPath.Prefab.Hud() : ResPath.Prefab.HudSmall());
 
         // 实例化HUD对象
         GameObject hudObj = Instantiate(hudPrefab, BattleManager.Instance.battleUIManager.HudNode.transform);
@@ -192,7 +192,7 @@ public class ChessViewObj : MonoBehaviour
         string sodType = armsConfig.Model;
         int modelCountFactor = armsConfig.ModelCountFactor;
         
-        GameObject soldierPrefab = Resources.Load<GameObject>(ResPath.Prefab.Arms(sodType));
+        GameObject soldierPrefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.Arms(sodType));
         if (soldierPrefab == null)
         {
             GameLog.Warn(sodType + " prefab not found!");
@@ -314,7 +314,7 @@ public class ChessViewObj : MonoBehaviour
         switch (materialName)
         {
             case "gold":
-                baseMat = Resources.Load<Material>(ResPath.Material.GoldChess());
+                baseMat = ResourceCache.LoadBattle<Material>(ResPath.Material.GoldChess());
                 targetColor = new Color(1f, 0.843f, 0f, 1f);
                 emissionColor = new Color(1f, 0.7f, 0f, 1f);
                 outlineColor = new Color(0.9f, 0.7f, 0.1f, 1f);
@@ -324,7 +324,7 @@ public class ChessViewObj : MonoBehaviour
                 emissionStrength = 0.5f;
                 break;
             case "silver":
-                baseMat = Resources.Load<Material>(ResPath.Material.SilverChess());
+                baseMat = ResourceCache.LoadBattle<Material>(ResPath.Material.SilverChess());
                 targetColor = new Color(0.753f, 0.753f, 0.753f, 1f);
                 emissionColor = new Color(0.4f, 0.4f, 0.45f, 1f);
                 outlineColor = new Color(0.6f, 0.6f, 0.65f, 1f);

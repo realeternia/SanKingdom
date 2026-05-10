@@ -61,7 +61,7 @@ public class SelectArmsItem : MonoBehaviour
         {
             IconCost1.gameObject.SetActive(true);
             Cost1Text.gameObject.SetActive(true);
-            Sprite sprite1 = Resources.Load<Sprite>(ResPath.Texture.AttrIcon(costs[0].icon));
+            Sprite sprite1 = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(costs[0].icon));
             if (sprite1 != null)
                 IconCost1.sprite = sprite1;
             Cost1Text.text = costs[0].cost.ToString();
@@ -76,7 +76,7 @@ public class SelectArmsItem : MonoBehaviour
         {
             IconCost2.gameObject.SetActive(true);
             Cost2Text.gameObject.SetActive(true);
-            Sprite sprite2 = Resources.Load<Sprite>(ResPath.Texture.AttrIcon(costs[1].icon));
+            Sprite sprite2 = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(costs[1].icon));
             if (sprite2 != null)
                 IconCost2.sprite = sprite2;
             Cost2Text.text = costs[1].cost.ToString();

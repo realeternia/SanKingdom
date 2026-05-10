@@ -151,7 +151,7 @@ public class PopHeroSelectPanelManager : MonoBehaviour
             if (id < heroHeads.Length)
             {
                 heroHeads[id].gameObject.SetActive(true);
-                heroHeads[id].sprite = Resources.Load<Sprite>(ResPath.Texture.HeroIcon(icon));
+                heroHeads[id].sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(icon));
             }
             id++;
         }

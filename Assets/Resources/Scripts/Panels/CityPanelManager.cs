@@ -252,7 +252,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         {
             int level = cityData != null ? cityData.level : 1;
             cityName.text = $"{cityCfg.Cname}({level}级)";
-            cityImage.sprite = Resources.Load<Sprite>(ResPath.Texture.CityView(cityCfg.ViewPrefab));
+            cityImage.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.CityView(cityCfg.ViewPrefab));
         }
     }
 
@@ -350,7 +350,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         allDevNodes.Clear();
         ClearDevList();
 
-        var troopsItemPrefab = Resources.Load<GameObject>(ResPath.Prefab.PanelListItem("CityTroopsItem"));
+        var troopsItemPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelListItem("CityTroopsItem"));
 
         var cityData = GameManager.Instance.GetCity(cityId);
 
@@ -411,7 +411,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         allDevNodes.Clear();
         ClearDevList();
 
-        var devPrefab = Resources.Load<GameObject>(ResPath.Prefab.PanelGismo("CityDevItem"));
+        var devPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelGismo("CityDevItem"));
         if (devPrefab == null) return;
 
         bool isKing = isKingActMode;
@@ -654,7 +654,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
                 continue;
             
             GameLog.Debug($"InitTopNodeResItems creating ResItem for {attrConfig.name}");
-            var resBasePrefab = Resources.Load<GameObject>(ResPath.Prefab.ResBase());
+            var resBasePrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.ResBase());
             var resObj = Instantiate(resBasePrefab, topNode.transform);
             resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(240 * index, 0);
             var resItem = resObj.GetComponent<ResItem>();

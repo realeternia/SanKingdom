@@ -94,7 +94,7 @@ public class SelectHeroControl : MonoBehaviour
                 {
                     heroHeads[i].gameObject.SetActive(true);
                     var heroCfg = HeroConfig.GetConfig(selectedHeroIds[i]);
-                    heroHeads[i].sprite = Resources.Load<Sprite>(ResPath.Texture.HeroIcon(heroCfg.Icon));
+                    heroHeads[i].sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg.Icon));
                 }
                 else
                 {
@@ -104,7 +104,7 @@ public class SelectHeroControl : MonoBehaviour
             if (heroIds.Length == 0)
             {
                 heroHeads[0].gameObject.SetActive(true);
-                heroHeads[0].sprite = Resources.Load<Sprite>(ResPath.Texture.HeroDefaultIcon());
+                heroHeads[0].sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroDefaultIcon());
             }
             
             if (OnHeroCountChange != null)
@@ -137,7 +137,7 @@ public class SelectHeroControl : MonoBehaviour
             heroHeads[i].gameObject.SetActive(false);
         }
         heroHeads[0].gameObject.SetActive(true);
-        heroHeads[0].sprite = Resources.Load<Sprite>(ResPath.Texture.HeroDefaultIcon());
+        heroHeads[0].sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroDefaultIcon());
 
         heroIds = new int[0];
         
