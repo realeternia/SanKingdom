@@ -139,7 +139,7 @@ public class SaveForceData
         var cities = GetCityList();
         foreach (var city in cities)
         {
-            foreach (var troop in city.troops)
+            foreach (var troop in SaveTroopsData.GetTroopsByCity(city.cityId))
             {
                 if (troop.armsId <= 0)
                     continue;
@@ -163,7 +163,7 @@ public class SaveForceData
         return 0;
     }
 
-    public bool CanAffordArms(int armsId, WarTroopsData excludeTroop = null)
+    public bool CanAffordArms(int armsId, SaveTroopsData excludeTroop = null)
     {
         var armsConfig = ArmsConfig.GetConfig(armsId);
         
@@ -441,7 +441,7 @@ public class SaveForceData
         return addon;
     }
 
-    public void ExecuteBattle(List<int> srcCityIds, List<WarTroopsData> attackTroops, int targetCityId, bool isAI)
+    public void ExecuteBattle(List<int> srcCityIds, List<SaveTroopsData> attackTroops, int targetCityId, bool isAI)
     {
         var cityDest = GameManager.Instance.GetCity(targetCityId);
 

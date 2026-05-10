@@ -64,23 +64,8 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
         }
 
         var cityData = GameManager.Instance.GetCity(hero.cityId);
-        bool isCommander = false;
-        bool isVice = false;
-
-        if (cityData != null)
-        {
-            foreach (var troop in cityData.troops)
-            {
-                if (troop.heroId1 == heroId)
-                {
-                    isCommander = true;
-                }
-                else if (troop.heroId2 == heroId || troop.heroId3 == heroId)
-                {
-                    isVice = true;
-                }
-            }
-        }
+        bool isCommander = SaveTroopsData.IsHeroCommander(heroId, hero.cityId);
+        bool isVice = SaveTroopsData.IsHeroViceCommander(heroId, hero.cityId);
 
         int? devId = null;
         if (cityData != null)

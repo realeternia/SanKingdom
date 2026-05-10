@@ -17,7 +17,6 @@ public class SaveCityData
     public float food;
     public float wall;
     public List<DevAssignmentData> devAssignments = new List<DevAssignmentData>();    
-    public List<WarTroopsData> troops = new List<WarTroopsData>();
 
     public int ownerHeroId;
     [NonSerialized]
@@ -266,24 +265,15 @@ public class SaveCityData
 
         foreach (var group in heroCityGroups)
         {
-            var srcCity = GameManager.Instance.GetCity(group.Key);
-            if (srcCity == null) continue;
-
-            var movedHeroIds = new HashSet<int>();
-            var troopsToMove = srcCity.troops
+            var troopsToMove = SaveTroopsData.GetTroopsByCity(group.Key)
                 .Where(t => heroIdSet.Contains(t.heroId1))
                 .ToList();
 
-            foreach (var troop in troopsToMove)
-            {
-                srcCity.troops.Remove(troop);
-                troops.Add(troop);
-                if (troop.heroId1 > 0) movedHeroIds.Add(troop.heroId1);
-                if (troop.heroId2 > 0) movedHeroIds.Add(troop.heroId2);
-                if (troop.heroId3 > 0) movedHeroIds.Add(troop.heroId3);
-            }
+            SaveTroopsData.MoveTroopsToCity(troopsToMove, cityId);
 
-            srcCity.RecalculateHeros();
+            var srcCity = GameManager.Instance.GetCity(group.Key);
+            if (srcCity != null)
+                srcCity.RecalculateHeros();
         }
     }
 
@@ -291,7 +281,7 @@ public class SaveCityData
     {
         forceId = forceWin;
 
-        troops.Clear();
+        SaveTroopsData.RemoveAllTroopsByCity(cityId);
         ClearDevAssignments();
 
         MoveTroopsFromSourceCities(winHeroIds);

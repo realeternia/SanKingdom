@@ -62,26 +62,12 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     public bool IsCommander(int heroId)
     {
-        var cityData = GameManager.Instance.GetCity(cityId);
-        if (cityData == null) return false;
-
-        foreach (var troop in cityData.troops)
-        {
-            if (troop.heroId1 == heroId) return true;
-        }
-        return false;
+        return SaveTroopsData.IsHeroCommander(heroId, cityId);
     }
 
     public bool IsViceCommander(int heroId)
     {
-        var cityData = GameManager.Instance.GetCity(cityId);
-        if (cityData == null) return false;
-
-        foreach (var troop in cityData.troops)
-        {
-            if (troop.heroId2 == heroId || troop.heroId3 == heroId) return true;
-        }
-        return false;
+        return SaveTroopsData.IsHeroViceCommander(heroId, cityId);
     }
 
     void Start()
@@ -373,7 +359,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         if (cityData != null)
         {
-            foreach (var troop in cityData.troops)
+            foreach (var troop in SaveTroopsData.GetTroopsByCity(cityId))
             {
                 var itemObj = Instantiate(troopsItemPrefab, devList);
                 var rectTransform = itemObj.GetComponent<RectTransform>();
@@ -396,7 +382,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         if (!isViewOnly)
         {
-            int troopCount = cityData != null ? cityData.troops.Count : 0;
+            int troopCount = cityData != null ? SaveTroopsData.GetTroopsCountByCity(cityId) : 0;
             if (troopCount < SystemConst.City.MAX_TROOPS)
             {
                 var createObj = Instantiate(troopsItemPrefab, devList);

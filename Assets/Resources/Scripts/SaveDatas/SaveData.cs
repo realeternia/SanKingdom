@@ -7,6 +7,7 @@ public class SaveData
     public List<SaveForceData> forces = new List<SaveForceData>();
     public List<SaveCityData> cities = new List<SaveCityData>();
     public List<SaveHeroData> heros = new List<SaveHeroData>();
+    public List<SaveTroopsData> troops = new List<SaveTroopsData>();
     public BattleStatManager battleStatManager = new BattleStatManager();
     public int round;
     public int currentForceIndex;
@@ -72,9 +73,6 @@ public class SaveData
 
     private void CleanupTroopsWithoutCommander()
     {
-        foreach (var city in cities)
-        {
-            city.troops.RemoveAll(t => t.heroId1 <= 0);
-        }
+        troops.RemoveAll(t => t.heroId1 <= 0);
     }
 }

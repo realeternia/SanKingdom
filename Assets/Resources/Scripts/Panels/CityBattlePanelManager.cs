@@ -114,7 +114,7 @@ public class CityBattlePanelManager : MonoBehaviour
             return;
         }
 
-        List<WarTroopsData> attackTroops = new List<WarTroopsData>();
+        List<SaveTroopsData> attackTroops = new List<SaveTroopsData>();
         foreach (var item in selectedItems)
         {
             var troop = item.GetWarTeamData();
@@ -137,7 +137,7 @@ public class CityBattlePanelManager : MonoBehaviour
         }, "atk2.mp4");
     }
 
-    private void OnRun(int targetCityId, List<WarTroopsData> attackTroops)
+    private void OnRun(int targetCityId, List<SaveTroopsData> attackTroops)
     {
         var sourceCityIds = attackTroops
             .Where(t => t.heroId1 > 0)
@@ -168,13 +168,13 @@ public class CityBattlePanelManager : MonoBehaviour
             adjacentCityIds = new HashSet<int>(MapTool.GetAdjacentCityIds(selectedCityId));
         }
 
-        List<WarTroopsData> allTeams = new List<WarTroopsData>();
+        List<SaveTroopsData> allTeams = new List<SaveTroopsData>();
         foreach (var city in cities)
         {
             if (adjacentCityIds != null && !adjacentCityIds.Contains(city.cityId))
                 continue;
 
-            foreach (var troop in city.troops)
+            foreach (var troop in SaveTroopsData.GetTroopsByCity(city.cityId))
             {
                 if (troop.heroId1 > 0)
                 {

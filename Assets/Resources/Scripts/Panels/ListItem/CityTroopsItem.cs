@@ -21,7 +21,7 @@ public class CityTroopsItem : MonoBehaviour
     public Button newTroopsButton;
     public GameObject coverNode;
 
-    private WarTroopsData warTeamData;
+    private SaveTroopsData warTeamData;
     private bool isCreateMode = false;
     private bool isViewOnly = false;
     private CityPanelManager cityPanelManager;
@@ -39,7 +39,7 @@ public class CityTroopsItem : MonoBehaviour
         isViewOnly = viewOnly;
     }
 
-    public void Init(WarTroopsData data)
+    public void Init(SaveTroopsData data)
     {
         warTeamData = data;
         SetupSlots();
@@ -98,14 +98,10 @@ public class CityTroopsItem : MonoBehaviour
 
         if (isCreateMode)
         {
-            warTeamData = new WarTroopsData();
+            warTeamData = new SaveTroopsData();
             SetHeroIdBySlot(warTeamData, slotIndex, heroId);
 
-            var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
-            if (cityData != null)
-            {
-                cityData.troops.Add(warTeamData);
-            }
+            SaveTroopsData.AddTroopToCity(warTeamData, cityPanelManager.cityId);
 
             if (slotIndex == 0)
             {
@@ -154,7 +150,7 @@ public class CityTroopsItem : MonoBehaviour
         }
     }
 
-    private int FindHeroSlot(WarTroopsData data, int heroId)
+    private int FindHeroSlot(SaveTroopsData data, int heroId)
     {
         if (data.heroId1 == heroId) return 0;
         if (data.heroId2 == heroId) return 1;
@@ -162,7 +158,7 @@ public class CityTroopsItem : MonoBehaviour
         return -1;
     }
 
-    private void SetHeroIdBySlot(WarTroopsData data, int slotIndex, int heroId)
+    private void SetHeroIdBySlot(SaveTroopsData data, int slotIndex, int heroId)
     {
         switch (slotIndex)
         {
@@ -182,11 +178,7 @@ public class CityTroopsItem : MonoBehaviour
 
         if (warTeamData == null || cityPanelManager == null) return;
 
-        var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
-        if (cityData != null)
-        {
-            cityData.troops.Remove(warTeamData);
-        }
+        SaveTroopsData.RemoveTroopFromCity(warTeamData);
 
         warTeamData.ReleaseResources();
 
@@ -220,12 +212,8 @@ public class CityTroopsItem : MonoBehaviour
 
         if (cityPanelManager == null) return;
 
-        var cityData = GameManager.Instance.GetCity(cityPanelManager.cityId);
-        if (cityData != null)
-        {
-            var newTroop = new WarTroopsData();
-            cityData.troops.Add(newTroop);
-        }
+        var newTroop = new SaveTroopsData();
+        SaveTroopsData.AddTroopToCity(newTroop, cityPanelManager.cityId);
 
         cityPanelManager.CreateTroopsItems();
     }
@@ -368,7 +356,7 @@ public class CityTroopsItem : MonoBehaviour
         }
     }
 
-    public WarTroopsData GetWarTeamData()
+    public SaveTroopsData GetWarTeamData()
     {
         return warTeamData;
     }

@@ -1,17 +1,21 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using CommonConfig;
 
 [Serializable]
-public class WarTroopsData
+public class SaveTroopsData
 {
+    public int cityId;
     public int heroId1;
     public int heroId2;
     public int heroId3;
     public int armsId;
     public int soldierCount;
 
-    public WarTroopsData()
+    public SaveTroopsData()
     {
+        cityId = 0;
         heroId1 = 0;
         heroId2 = 0;
         heroId3 = 0;
@@ -19,8 +23,9 @@ public class WarTroopsData
         soldierCount = 0;
     }
 
-    public WarTroopsData(int heroId1, int heroId2, int heroId3, int armsId)
+    public SaveTroopsData(int heroId1, int heroId2, int heroId3, int armsId)
     {
+        this.cityId = 0;
         this.heroId1 = heroId1;
         this.heroId2 = heroId2;
         this.heroId3 = heroId3;
@@ -85,5 +90,61 @@ public class WarTroopsData
     {
         var hero = GameManager.Instance.GetHero(heroId1);
         return hero.forceId;
+    }
+
+    public static SaveTroopsData FindByHeroId(int heroId)
+    {
+        return GameManager.Instance.SaveData.troops.FirstOrDefault(t =>
+            t.heroId1 == heroId || t.heroId2 == heroId || t.heroId3 == heroId);
+    }
+
+    public static List<SaveTroopsData> GetTroopsByCity(int cityId)
+    {
+        return GameManager.Instance.SaveData.troops.Where(t => t.cityId == cityId).ToList();
+    }
+
+    public static void AddTroopToCity(SaveTroopsData troop, int cityId)
+    {
+        troop.cityId = cityId;
+        GameManager.Instance.SaveData.troops.Add(troop);
+    }
+
+    public static void RemoveTroopFromCity(SaveTroopsData troop)
+    {
+        GameManager.Instance.SaveData.troops.Remove(troop);
+    }
+
+    public static void RemoveAllTroopsByCity(int cityId)
+    {
+        GameManager.Instance.SaveData.troops.RemoveAll(t => t.cityId == cityId);
+    }
+
+    public static int GetTroopsCountByCity(int cityId)
+    {
+        return GameManager.Instance.SaveData.troops.Count(t => t.cityId == cityId);
+    }
+
+    public static void MoveTroopsToCity(List<SaveTroopsData> troopsToMove, int destCityId)
+    {
+        foreach (var troop in troopsToMove)
+        {
+            troop.cityId = destCityId;
+        }
+    }
+
+    public static bool IsHeroCommander(int heroId, int cityId)
+    {
+        return GameManager.Instance.SaveData.troops.Any(t => t.cityId == cityId && t.heroId1 == heroId);
+    }
+
+    public static bool IsHeroViceCommander(int heroId, int cityId)
+    {
+        return GameManager.Instance.SaveData.troops.Any(t => t.cityId == cityId && (t.heroId2 == heroId || t.heroId3 == heroId));
+    }
+
+    public static bool IsHeroInTroop(int heroId, int cityId)
+    {
+        return GameManager.Instance.SaveData.troops.Any(t =>
+            t.cityId == cityId && (t.heroId1 == heroId || t.heroId2 == heroId || t.heroId3 == heroId));
     }
 }

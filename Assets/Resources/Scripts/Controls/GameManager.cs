@@ -98,6 +98,11 @@ public class GameManager : MonoBehaviour
         return SaveData.cities.Where(c => c.forceId == forceId).ToList();
     }
 
+    public List<SaveTroopsData> GetTroopsByCity(int cityId)
+    {
+        return SaveData.troops.Where(t => t.cityId == cityId).ToList();
+    }
+
 
     public int GetRandomForceCityId(int fromCityId, int forceId)
     {

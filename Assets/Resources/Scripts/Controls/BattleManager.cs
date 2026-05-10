@@ -67,9 +67,9 @@ public class BattleManager : MonoBehaviour
 
 
     [NonSerialized]
-    private List<WarTroopsData> attackTroops;
+    private List<SaveTroopsData> attackTroops;
     [NonSerialized]
-    private List<WarTroopsData> defenderTroops;
+    private List<SaveTroopsData> defenderTroops;
 
     [NonSerialized]
     private bool isDoingAction = false;
@@ -91,7 +91,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private Coroutine currentBattleCoroutine = null;
     
-    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<WarTroopsData> troops1, List<WarTroopsData> troops2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
+    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<SaveTroopsData> troops1, List<SaveTroopsData> troops2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
     {
         if (IsBattleRunning)
         {
@@ -128,7 +128,7 @@ public class BattleManager : MonoBehaviour
         currentBattleCoroutine = StartCoroutine(GameUpdate());
     }
 
-    private int GetTotalSoldierCount(List<WarTroopsData> troops)
+    private int GetTotalSoldierCount(List<SaveTroopsData> troops)
     {
         int total = 0;
         foreach (var troop in troops)
@@ -207,7 +207,7 @@ public class BattleManager : MonoBehaviour
         return id;
     }
 
-    private void SpawnTroopForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, WarTroopsData troop)
+    private void SpawnTroopForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, SaveTroopsData troop)
     {
         if (troop.heroId1 <= 0)
             return;
@@ -222,7 +222,7 @@ public class BattleManager : MonoBehaviour
 
         int totalStr = heroData1.str;
         int totalLeadShip = heroData1.leadShip;
-        int totalInte = Math.Max(heroData1.inte, heroData2?.inte ?? 0, heroData3?.inte ?? 0); //智力取最高值
+        int totalInte = Math.Max(Math.Max(heroData1.inte, heroData2?.inte ?? 0), heroData3?.inte ?? 0); //智力取最高值
 
         int avgStr = totalStr / heroCount;
         int avgLeadShip = totalLeadShip / heroCount;

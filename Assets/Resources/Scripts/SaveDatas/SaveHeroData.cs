@@ -69,20 +69,9 @@ public class SaveHeroData
         return troop != null ? troop.armsId : 0;
     }
 
-    public WarTroopsData GetTroop()
+    public SaveTroopsData GetTroop()
     {
-        var cityData = GameManager.Instance.GetCity(cityId);
-        if (cityData != null)
-        {
-            foreach (var troop in cityData.troops)
-            {
-                if (troop.heroId1 == heroId || troop.heroId2 == heroId || troop.heroId3 == heroId)
-                {
-                    return troop;
-                }
-            }
-        }
-        return null;
+        return SaveTroopsData.FindByHeroId(heroId);
     }
 
     public static SaveHeroData CreateWildHero(int heroId, int cityId)

@@ -20,13 +20,13 @@ public class CityBattleItem : MonoBehaviour
     public Image bgImage;
     public Button itemButton;
 
-    private WarTroopsData warTeamData;
+    private SaveTroopsData warTeamData;
     private bool isSelected = false;
 
     private static Color normalColor = new Color(0.2f, 0.2f, 0.2f, 1f);
     private static Color selectedColor = new Color(0.3f, 0.7f, 0.4f, 1f);
 
-    public void Init(WarTroopsData data)
+    public void Init(SaveTroopsData data)
     {
         warTeamData = data;
 
@@ -188,7 +188,7 @@ public class CityBattleItem : MonoBehaviour
         }
     }
 
-    public WarTroopsData GetWarTeamData()
+    public SaveTroopsData GetWarTeamData()
     {
         return warTeamData;
     }

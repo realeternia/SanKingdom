@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public class WarPlanData
 {
-    public List<WarTroopsData> teams;
+    public List<SaveTroopsData> teams;
     public int targetCityId;
     public int sourceCityId;
     public int[] heroIds;
@@ -12,7 +12,7 @@ public class WarPlanData
 
     public WarPlanData()
     {
-        teams = new List<WarTroopsData>();
+        teams = new List<SaveTroopsData>();
         targetCityId = 0;
         sourceCityId = 0;
         heroIds = new int[0];

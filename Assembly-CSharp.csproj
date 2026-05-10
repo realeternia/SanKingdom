@@ -198,6 +198,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\PickPanelControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuff.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveTroopsData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffLock.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\AttrRadarChart.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ReplayPanelManager.cs" />
@@ -226,7 +227,6 @@
     <Compile Include="Assets\Resources\Scripts\Panels\CityDevNodeMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
-    <Compile Include="Assets\Resources\Scripts\SaveDatas\WarTroopsData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidHeal.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSpeedDown.cs" />
