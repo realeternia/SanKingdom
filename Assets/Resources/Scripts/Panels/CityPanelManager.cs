@@ -230,6 +230,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         cityId = cellCity.cityId;
 
         UpdateCityInfo();
+        InitTopNodeResItems();
         LoadHeroCells();
 
         if (isTroopsMode)

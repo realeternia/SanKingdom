@@ -456,6 +456,8 @@ public class SaveForceData
             int totalSoldiers = attackTroops
                 .Where(t => t.heroId1 > 0 && GameManager.Instance.GetHero(t.heroId1).cityId == srcCityId)
                 .Sum(t => t.soldierCount);
+            GameLog.Info($"ExecuteBattle 扣除士兵和粮食 cityId={srcCityId} totalSoldiers={totalSoldiers}");
+            citySrc.AddAttr("soldier", -totalSoldiers);
             citySrc.AddAttr("food", -totalSoldiers);
         }
         int srcForceId = forceId;
@@ -470,6 +472,7 @@ public class SaveForceData
     private void OnBattleEnd(BattleResult result, Dictionary<int, int> attackerSoldierCount, Dictionary<int, int> defenderSoldierCount, List<int> srcCityIds, int targetCityId, int srcForceId, int destForceId)
     {
         var destCity = GameManager.Instance.GetCity(targetCityId);
+        GameLog.Info($"OnBattleEnd result={result} attackerCount={attackerSoldierCount.Count} defenderCount={defenderSoldierCount.Count}");
 
         if (result == BattleResult.Win)
         {
@@ -481,23 +484,45 @@ public class SaveForceData
 
         foreach (var kvp in attackerSoldierCount)
         {
-            var hero = GameManager.Instance.GetHero(kvp.Key);
-            if (hero != null && hero.state == HeroState.Normal)
+            if (kvp.Value > 0)
             {
-                var heroCity = GameManager.Instance.GetCity(hero.cityId);
-                if (heroCity != null)
-                    heroCity.AddAttr("soldier", kvp.Value);
+                var troop = SaveTroopsData.FindByHeroId(kvp.Key);
+                if (troop != null)
+                {
+                    var hero = GameManager.Instance.GetHero(kvp.Key);
+                    if (hero != null && hero.state == HeroState.Normal)
+                    {
+                        var heroCity = GameManager.Instance.GetCity(hero.cityId);
+                        if (heroCity != null)
+                        {
+                            heroCity.AddAttr("soldier", kvp.Value);
+                            GameLog.Info($"OnBattleEnd 攻击方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
+                        }
+                    }
+                    troop.soldierCount = 0;
+                }
             }
         }
 
         foreach (var kvp in defenderSoldierCount)
         {
-            var hero = GameManager.Instance.GetHero(kvp.Key);
-            if (hero != null && hero.state == HeroState.Normal)
+            if (kvp.Value > 0)
             {
-                var heroCity = GameManager.Instance.GetCity(hero.cityId);
-                if (heroCity != null)
-                    heroCity.AddAttr("soldier", kvp.Value);
+                var troop = SaveTroopsData.FindByHeroId(kvp.Key);
+                if (troop != null)
+                {
+                    var hero = GameManager.Instance.GetHero(kvp.Key);
+                    if (hero != null && hero.state == HeroState.Normal)
+                    {
+                        var heroCity = GameManager.Instance.GetCity(hero.cityId);
+                        if (heroCity != null)
+                        {
+                            heroCity.AddAttr("soldier", kvp.Value);
+                            GameLog.Info($"OnBattleEnd 防守方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
+                        }
+                    }
+                    troop.soldierCount = 0;
+                }
             }
         }
 

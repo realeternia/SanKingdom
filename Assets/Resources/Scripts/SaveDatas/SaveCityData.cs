@@ -297,14 +297,23 @@ public class SaveCityData
             }
         }
 
+        var allDefenceHeroIds = new HashSet<int>(failHeroIds);
+        foreach (var hero in GameManager.Instance.SaveData.heros)
+        {
+            if (hero.cityId == cityId && hero.forceId == forceLose && hero.state == HeroState.Normal)
+            {
+                allDefenceHeroIds.Add(hero.heroId);
+            }
+        }
+
         List<SaveCityData> loseForceCities = GameManager.Instance.GetCitiesByForce(forceLose);
 
-        GameLog.Info($"Occupy cityId={cityId} winforceId: {forceWin} loseforceId: {forceLose} citycount: {loseForceCities.Count}");
+        GameLog.Info($"Occupy cityId={cityId} winforceId: {forceWin} loseforceId: {forceLose} citycount: {loseForceCities.Count} defenceHeroes: {allDefenceHeroIds.Count}");
         if (loseForceCities.Count > 0)
         {
             var kingHeroId = ForceConfig.GetConfig(forceLose).HeroId;
             var destCityIds = new HashSet<int>();
-            foreach (var heroId in failHeroIds)
+            foreach (var heroId in allDefenceHeroIds)
             {
                 var hero = GameManager.Instance.GetHero(heroId);
                 if (hero != null)
@@ -339,7 +348,7 @@ public class SaveCityData
         }
         else
         {
-            foreach (var heroId in failHeroIds)
+            foreach (var heroId in allDefenceHeroIds)
             {
                 var hero = GameManager.Instance.GetHero(heroId);
                 if (hero != null)

@@ -168,15 +168,6 @@ public class CityBattlePanelManager : MonoBehaviour
             .Distinct()
             .ToList();
 
-        foreach (var srcCityId in sourceCityIds)
-        {
-            var citySrc = GameManager.Instance.GetCity(srcCityId);
-            int totalSoldiers = attackTroops
-                .Where(t => t.heroId1 > 0 && GameManager.Instance.GetHero(t.heroId1).cityId == srcCityId)
-                .Sum(t => t.soldierCount);
-            citySrc.AddAttr("soldier", -totalSoldiers);
-        }
-
         var force = GameManager.Instance.GetForce(forceId);
 
         PanelManager.Instance.HideCityBattle();
@@ -282,5 +273,6 @@ public class CityBattlePanelManager : MonoBehaviour
 
     public void OnHide()
     {
+        heroSoldierAllocations.Clear();
     }
 }
