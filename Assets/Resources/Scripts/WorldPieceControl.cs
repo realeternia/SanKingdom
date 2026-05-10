@@ -225,7 +225,7 @@ public class WorldPieceControl : MonoBehaviour
             var infoImage = new GameObject($"Info_{info.Key}");
             infoImage.transform.SetParent(infoNode.transform, false);
             var infoImageComp = infoImage.AddComponent<Image>();
-            infoImageComp.sprite = Resources.Load<Sprite>($"Textures/{info.Key}");
+            infoImageComp.sprite = Resources.Load<Sprite>(ResPath.Texture.TextureByName(info.Key));
             if(info.Value > 5)
                 infoImageComp.color = Color.red;
             else if(info.Value >= 3)

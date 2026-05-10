@@ -36,7 +36,7 @@ public class BattleResultHeroCellControl : MonoBehaviour
         playerMark1.text = "杀:" + battleStat.damage.ToString("F0");
         playerMark2.text = "死:" + battleStat.beDamaged.ToString("F0");
 
-        heroIcon.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
+        heroIcon.sprite = Resources.Load<Sprite>(ResPath.Texture.HeroIcon(heroCfg.Icon));
         if (battleStat.isDead)
             heroIcon.color = new Color(0.3f, 0.3f, 0.3f, 1f);
         else

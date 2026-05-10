@@ -144,7 +144,7 @@ public class BattleManager : MonoBehaviour
         {
             var startTime = Time.realtimeSinceStartup;
             var newMapId = 1;
-            var mapNode = Resources.Load<GameObject>("Prefabs/BattleMaps/Map" + newMapId);
+            var mapNode = Resources.Load<GameObject>(ResPath.Prefab.BattleMap(newMapId));
             if (mapObj != null)
                 UnityEngine.Object.Destroy(mapObj);
 

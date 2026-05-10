@@ -328,7 +328,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         if (heroData != null) heroData.InitAttrsFromConfig();
         
         heroNameText.text = heroConfig.Name;
-        string imgPath = "Textures/SkinsBig/" + heroConfig.Icon;
+        string imgPath = ResPath.Texture.HeroBigIcon(heroConfig.Icon);
         Sprite sprite = Resources.Load<Sprite>(imgPath);
         heroImage.sprite = sprite;
         

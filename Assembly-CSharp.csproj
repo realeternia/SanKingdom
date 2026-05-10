@@ -135,6 +135,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\EffectManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\ConfigNameHelper.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\ResPath.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\SignalData.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityTroopsItem.cs" />

@@ -188,7 +188,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         }
         GameLog.Info($"MoveToPlayerCapital: 城市名称 = {cityConfig.Cname}, X = {cityConfig.X}, Y = {cityConfig.Y}");
         
-        string texturePath = "Textures/Maps/" + cityConfig.Name;
+        string texturePath = ResPath.Texture.MapTexture(cityConfig.Name);
         Texture2D texture = Resources.Load<Texture2D>(texturePath);
         if (texture == null)
         {
@@ -224,7 +224,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             // try
             // {
                 // 构建图片路径（Resources/Textures/Maps/下的图片）
-                string texturePath = "Textures/Maps/" + worldConfig.Name;
+                string texturePath = ResPath.Texture.MapTexture(worldConfig.Name);
                 
                 // 加载图片资源
                 Texture2D texture = Resources.Load<Texture2D>(texturePath);
@@ -233,7 +233,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
                 
                 // 从Prefabs/WorldPiece加载预设体
-                GameObject worldPiecePrefab = Resources.Load<GameObject>("Prefabs/WorldPiece");
+                GameObject worldPiecePrefab = Resources.Load<GameObject>(ResPath.Prefab.WorldPiece());
                 
                 // 实例化预设体
                 GameObject mapPiece = Instantiate(worldPiecePrefab, bgPanel.transform, false);

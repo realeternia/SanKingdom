@@ -21,7 +21,7 @@ public class ArmsItemControl : MonoBehaviour
 
         if (itemIcon != null && !string.IsNullOrEmpty(attrConfig.Icon))
         {
-            string iconPath = "Textures/Icons/" + attrConfig.Icon;
+            string iconPath = ResPath.Texture.AttrIcon(attrConfig.Icon);
             Sprite sprite = Resources.Load<Sprite>(iconPath);
             if (sprite != null)
             {

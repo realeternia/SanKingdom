@@ -71,6 +71,25 @@ SanKingdom 是一款基于 Unity 引擎的三国题材策略游戏，采用 C# �
 - 禁止在业务代码中出现魔法数字，必须提取到 `SystemConst`
 - 禁止在业务代码中内联计算公式，必须提取到 `SysFormula`
 
+### 资源路径管理 - ResPath
+
+所有 `Resources.Load` 的路径字符串必须通过 `ResPath` 静态工具类获取，禁止硬编码路径。
+
+- **工具类位置**: `SystemTool/ResPath.cs`，`static class`
+- **嵌套分类**: `ResPath.Texture`（纹理）、`ResPath.Prefab`（预制体）、`ResPath.Material`（材质）、`ResPath.Font`（字体）
+- **使用方式**: `Resources.Load<Sprite>(ResPath.Texture.HeroIcon(heroCfg.Icon))`
+
+主要方法：
+- `ResPath.Texture.HeroIcon(icon)` — 英雄头像 `"Textures/Skins/"`
+- `ResPath.Texture.HeroDefaultIcon()` — 默认头像 `"Textures/Skins/moren"`
+- `ResPath.Texture.HeroBigIcon(icon)` — 大头像 `"Textures/SkinsBig/"`
+- `ResPath.Texture.AttrIcon(icon)` — 属性图标 `"Textures/Icons/"`
+
+新增路径时：
+1. 在 `ResPath` 对应嵌套类中添加静态方法
+2. 方法应接受可变部分作为参数，固定前缀封装在方法内
+3. 仅当路径完全固定（无参数）时才使用无参方法
+
 ### 回合系统
 
 - 回合阶段：`TurnPhase.None` → `Planning` → `Execution` → `Battle` → 回合结束
@@ -126,4 +145,5 @@ SignalData (基类, Name 字段)
 - 不要在业务代码中硬编码数值，必须提取到 `SystemConst`
 - 不要在业务代码中内联计算逻辑，必须提取到 `SysFormula`
 - 不要使用 `UnityEngine.Debug.Log`，统一使用 `GameLog`
+- 不要在 `Resources.Load` 中硬编码路径字符串，必须使用 `ResPath` 工具类
 - 不要新增 `.cs` 文件后忘记在 `Assembly-CSharp.csproj` 中添加 `<Compile Include>` 条目

@@ -165,7 +165,7 @@ public class Chess : SceneObj
             SaveForceData force = GameManager.Instance.GetForce(forceId);
             if (isHero)
             {
-                GameObject heroPrefab = Resources.Load<GameObject>("Prefabs/UnitHero");
+                GameObject heroPrefab = Resources.Load<GameObject>(ResPath.Prefab.UnitModel("UnitHero"));
                 GameObject unitModel = UnityEngine.Object.Instantiate(heroPrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
                 unitModel.name = $"Hero_{forceId}_{id}";
                 unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
@@ -183,7 +183,7 @@ public class Chess : SceneObj
             else
             {
                 var battleUnitConfig = BattleUnitConfig.GetConfig(battleUnitId);
-                GameObject unitPrefab = Resources.Load<GameObject>("Prefabs/" + battleUnitConfig.Model);
+                GameObject unitPrefab = Resources.Load<GameObject>(ResPath.Prefab.UnitModel(battleUnitConfig.Model));
                 GameObject unitModel = UnityEngine.Object.Instantiate(unitPrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
                 unitModel.name = $"UnitBing_{forceId}_{id}";
                 unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);

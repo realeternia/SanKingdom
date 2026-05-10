@@ -69,7 +69,7 @@ public class SideBar : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        var prefab = Resources.Load<GameObject>($"Prefabs/Panels/{panelName}");
+        var prefab = Resources.Load<GameObject>(ResPath.Prefab.Panel(panelName));
         var panelObj = Instantiate(prefab, subRegionNode.transform);
         var rectTransform = panelObj.GetComponent<RectTransform>();
         if (rectTransform != null)

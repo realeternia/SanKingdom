@@ -62,7 +62,7 @@ public class HeroInfo : MonoBehaviour
         if (highestAttr != "")
         {
             // 根据最高属性加载对应图片
-            classImg.sprite = Resources.Load<Sprite>("Textures/" + highestAttr);
+            classImg.sprite = Resources.Load<Sprite>(ResPath.Texture.TextureByName(highestAttr));
             if (total >= 270)
             {
                 classImg.color = Color.red;

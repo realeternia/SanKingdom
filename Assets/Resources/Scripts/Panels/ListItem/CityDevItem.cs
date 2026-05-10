@@ -52,7 +52,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         this.devId = devId;
         var devCfg = CityDevConfig.GetConfig(devId);
         nameText.text = devCfg.Cname;
-        cityImg.sprite = Resources.Load<Sprite>("Textures/Buildings/" + devCfg.Icon);
+        cityImg.sprite = Resources.Load<Sprite>(ResPath.Texture.BuildingIcon(devCfg.Icon));
         isRunType = devCfg.Type == "run";
         prefabName = devCfg.Prefab;
 
@@ -82,7 +82,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
                 return;
             }
 
-            attrImg.sprite = Resources.Load<Sprite>("Textures/Icons/" + attrCfg.Icon);
+            attrImg.sprite = Resources.Load<Sprite>(ResPath.Texture.AttrIcon(attrCfg.Icon));
             attrImg.gameObject.SetActive(true);
         }
         catch
@@ -196,7 +196,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
             {
                 var heroCfg = HeroConfig.GetConfig(currentHeroIds[0]);
                 heroImg.enabled = true;
-                heroImg.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
+                heroImg.sprite = Resources.Load<Sprite>(ResPath.Texture.HeroIcon(heroCfg.Icon));
             }
             else
             {

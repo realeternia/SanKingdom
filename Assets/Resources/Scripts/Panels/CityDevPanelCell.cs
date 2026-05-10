@@ -33,7 +33,7 @@ public class CityDevPanelCell : MonoBehaviour, IPointerClickHandler
     {
         this.devId = devId;
         var cfg = CityDevConfig.GetConfig(devId);
-        devIcon.sprite = Resources.Load<Sprite>("Textures/Buildings/" + cfg.Icon);
+        devIcon.sprite = Resources.Load<Sprite>(ResPath.Texture.BuildingIcon(cfg.Icon));
         devNameText.text = cfg.Cname;
     }
 

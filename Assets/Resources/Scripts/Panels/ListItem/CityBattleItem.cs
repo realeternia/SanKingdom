@@ -180,7 +180,7 @@ public class CityBattleItem : MonoBehaviour
     private void SetHeroIcon(Image iconImage, string iconName)
     {
         if (iconImage == null || string.IsNullOrEmpty(iconName)) return;
-        string iconPath = "Textures/Skins/" + iconName;
+        string iconPath = ResPath.Texture.HeroIcon(iconName);
         Sprite sprite = Resources.Load<Sprite>(iconPath);
         if (sprite != null)
         {

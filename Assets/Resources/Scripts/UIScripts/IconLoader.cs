@@ -9,7 +9,7 @@ public class IconLoader : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(iconPath))
         {
-            string path = "Textures/Icons/" + iconPath;
+            string path = ResPath.Texture.AttrIcon(iconPath);
             Sprite sprite = Resources.Load<Sprite>(path);
             if (sprite != null)
             {

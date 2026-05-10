@@ -172,14 +172,14 @@ public class RankPanelManager : MonoBehaviour
             prefabName = "RankCellMain"; // 显示武将列表
 
         // 实例化RankCellInfoHeader
-        var rankCellInfoHeaderPrefab = Resources.Load<GameObject>("Prefabs/Panels/ListItem/" + prefabName);
+        var rankCellInfoHeaderPrefab = Resources.Load<GameObject>(ResPath.Prefab.PanelListItem(prefabName));
         var obj = Instantiate(rankCellInfoHeaderPrefab, rankRegionMainHeader.transform);
         var newHeader = obj.GetComponent<IRankDetailInfoHeader>();
         newHeader.SetManager(this);
         newHeader.SetMode(true);
         rankHeader = newHeader;
         
-        var rankCellInfoPrefab = Resources.Load<GameObject>("Prefabs/Panels/ListItem/" + prefabName);
+        var rankCellInfoPrefab = Resources.Load<GameObject>(ResPath.Prefab.PanelListItem(prefabName));
 
         int count = 0;
         if (prefabName == "RankCellMain")

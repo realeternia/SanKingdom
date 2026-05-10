@@ -33,7 +33,7 @@ public class ResItem : MonoBehaviour
             return;
         this.attrName = name;
         this.config = item;
-        this.itemImg.sprite = Resources.Load<Sprite>("Textures/Icons/" + item.Icon);
+        this.itemImg.sprite = Resources.Load<Sprite>(ResPath.Texture.AttrIcon(item.Icon));
     }
 
     public void UpdateNum(int num)
