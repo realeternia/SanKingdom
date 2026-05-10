@@ -795,21 +795,14 @@ public class SaveForceData
         foreach (var city in cities)
         {
             var assignments = city.GetDevAssignments();
-            GameLog.Debug($"CalculateForceAttrAddons cityId={city.cityId} assignments={assignments.Count}");
             
             foreach (var assignment in assignments)
             {
                 var devCfg = CityDevConfig.GetConfig(assignment.devId);
                 var heroData = GameManager.Instance.GetHero(assignment.heroId);
                 
-                GameLog.Debug($"CalculateForceAttrAddons devId={assignment.devId} DevAttr1={devCfg.DevAttr1} DevAttr2={devCfg.DevAttr2}");
                 CalculateForceAttrAddonsForAssignment(devCfg, heroData, city, attrAddons);
             }
-        }
-        
-        foreach (var kvp in attrAddons)
-        {
-            GameLog.Debug($"CalculateForceAttrAddons result: {kvp.Key}={kvp.Value}");
         }
         
         return attrAddons;
@@ -866,7 +859,6 @@ public class SaveForceData
         if (addon > remaining)
             addon = Math.Max(0, remaining);
         
-        GameLog.Debug($"CalculateForceDevAddonByTier attrName={attrName} tierValue={tierValue} currentVal={currentVal} valMax={valMax} addon={addon}");
         return addon;
     }
 }

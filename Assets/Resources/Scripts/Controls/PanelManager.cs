@@ -558,8 +558,6 @@ public class PanelManager : MonoBehaviour
 
     public void SendSignal(SignalData data)
     {
-        GameLog.Debug($"PanelManager SendSignal {data.Name}");
-
         if (data.Name == "ForceResChange")
         {
             var signal = data as ForceResChangeSignal;
@@ -572,10 +570,8 @@ public class PanelManager : MonoBehaviour
         }
         foreach (var panel in openPanelList)
         {
-            GameLog.Debug($"PanelManager SendSignal {panel.name} {data.Name}");
             if (panel.TryGetComponent<IPanelEvent>(out IPanelEvent p))
             {
-                GameLog.Debug($"PanelManager SendSignal2 {panel.name} {data.Name}");
                 p.SendSignal(data);
             }
         }

@@ -303,7 +303,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
     public void SendSignal(SignalData data)
     {
-        GameLog.Debug($"WorldManager SendSignal {data.Name}");
         cityDetail.SendSignal(data);
 
         if(data.Name == "PhaseChange")
