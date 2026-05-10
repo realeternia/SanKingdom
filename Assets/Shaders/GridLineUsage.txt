@@ -1,0 +1,33 @@
+GridLine Shader 使用说明
+========================
+
+Shader文件位置: Assets/Shaders/GridLine.shader
+
+功能特性:
+- 在Plane上绘制方格线
+- 线的颜色可配置（默认白色）
+- 线的厚度可配置
+- 方格宽度可配置
+- 除了横竖线以外都是透明的
+
+材质参数:
+1. Line Color (线颜色) - 默认白色 (1,1,1,1)
+2. Grid Size (方格大小) - 默认1.0，控制方格的宽度
+3. Line Thickness (线厚度) - 默认0.02，范围0.001-0.1
+
+使用步骤:
+1. 在Unity中右键点击 Project 窗口
+2. 选择 Create -> Material
+3. 将新材质命名为 "GridLine"
+4. 在材质的 Shader 下拉菜单中选择 "Custom/GridLine"
+5. 调整材质参数:
+   - Line Color: 设置线的颜色
+   - Grid Size: 设置方格大小（数值越大，方格越大）
+   - Line Thickness: 设置线的粗细
+6. 将材质拖拽到Plane上即可看到效果
+
+注意事项:
+- 材质使用透明渲染队列，确保正确显示透明效果
+- Grid Size 影响方格的整体大小
+- Line Thickness 控制线的粗细程度
+- 线的颜色支持透明度设置（Alpha通道）
