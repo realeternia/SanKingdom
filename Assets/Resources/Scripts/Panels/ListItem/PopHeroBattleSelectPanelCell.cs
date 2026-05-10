@@ -65,8 +65,8 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
         var attIntlVal = heroData.GetAttr("inte");
         textAttrIntl.text = attIntlVal.ToString();
         textAttrIntl.color = attIntlVal >= 95 ? Color.red : (attIntlVal >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
-        textAttrSoldier.text = PopArmySetManager.GetAllocatedSoldier(heroData.heroId).ToString();
-        textAttrSoldier.color = PopArmySetManager.GetAllocatedSoldier(heroData.heroId) == 0 ? Color.gray : Color.white;
+        textAttrSoldier.text = CityBattlePanelManager.GetAllocatedSoldier(heroData.heroId).ToString();
+        textAttrSoldier.color = CityBattlePanelManager.GetAllocatedSoldier(heroData.heroId) == 0 ? Color.gray : Color.white;
 
         isAvailable = true;
     }
@@ -74,8 +74,8 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
     public void UpdateAttr()
     {
         var heroData = GameManager.Instance.GetHero(heroId);
-        textAttrSoldier.text = PopArmySetManager.GetAllocatedSoldier(heroId).ToString();
-        textAttrSoldier.color = PopArmySetManager.GetAllocatedSoldier(heroId) == 0 ? Color.gray : Color.white;
+        textAttrSoldier.text = CityBattlePanelManager.GetAllocatedSoldier(heroId).ToString();
+        textAttrSoldier.color = CityBattlePanelManager.GetAllocatedSoldier(heroId) == 0 ? Color.gray : Color.white;
     }
 
     public void OnSelect(bool isSelect)

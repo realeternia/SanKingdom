@@ -11,8 +11,6 @@ public class CityBattlePanelManager : MonoBehaviour
     public ScrollRect scrollRectMain;
     public GameObject itemRegionMain;
 
-    private int foodCount = SystemConst.Expedition.DEFAULT_FOOD_DAYS;
-
     private int forceId;
     private int selectedCityId;
     public Button destButton;
@@ -22,6 +20,30 @@ public class CityBattlePanelManager : MonoBehaviour
     public Button battleButton;
 
     private List<GameObject> cityBattleItems = new List<GameObject>();
+
+    private static Dictionary<int, int> heroSoldierAllocations = new Dictionary<int, int>();
+
+    public static void SetAllocatedSoldier(int heroId, int soldier)
+    {
+        heroSoldierAllocations[heroId] = soldier;
+    }
+
+    public static int GetAllocatedSoldier(int heroId)
+    {
+        if (heroSoldierAllocations.ContainsKey(heroId))
+            return heroSoldierAllocations[heroId];
+        return 0;
+    }
+
+    public static void ClearAllocations()
+    {
+        heroSoldierAllocations.Clear();
+    }
+
+    public static Dictionary<int, int> GetAllocations()
+    {
+        return heroSoldierAllocations;
+    }
 
     void Start()
     {
@@ -63,6 +85,7 @@ public class CityBattlePanelManager : MonoBehaviour
     public void Init(int forceId)
     {
         this.forceId = forceId;
+        heroSoldierAllocations.Clear();
         CreateCityBattleItems(forceId);
     }
 
@@ -144,10 +167,20 @@ public class CityBattlePanelManager : MonoBehaviour
             .Select(t => GameManager.Instance.GetHero(t.heroId1).cityId)
             .Distinct()
             .ToList();
+
+        foreach (var srcCityId in sourceCityIds)
+        {
+            var citySrc = GameManager.Instance.GetCity(srcCityId);
+            int totalSoldiers = attackTroops
+                .Where(t => t.heroId1 > 0 && GameManager.Instance.GetHero(t.heroId1).cityId == srcCityId)
+                .Sum(t => t.soldierCount);
+            citySrc.AddAttr("soldier", -totalSoldiers);
+        }
+
         var force = GameManager.Instance.GetForce(forceId);
 
         PanelManager.Instance.HideCityBattle();
-
+        heroSoldierAllocations.Clear();
         force.ExecuteBattle(sourceCityIds, attackTroops, targetCityId, false);
     }
 
@@ -184,6 +217,15 @@ public class CityBattlePanelManager : MonoBehaviour
         }
 
         if (allTeams.Count == 0) return;
+
+        heroSoldierAllocations.Clear();
+        foreach (var team in allTeams)
+        {
+            if (team.heroId1 > 0 && team.soldierCount > 0)
+            {
+                heroSoldierAllocations[team.heroId1] = team.soldierCount;
+            }
+        }
 
         var itemPrefab = Resources.Load<GameObject>("Prefabs/Panels/ListItem/CityBattleItem");
 

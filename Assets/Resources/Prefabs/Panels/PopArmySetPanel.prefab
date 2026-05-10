@@ -1591,8 +1591,8 @@ MonoBehaviour:
   closeBtn: {fileID: 2368050340277966420}
   okBtn: {fileID: 7829557648192618446}
   maxBtn: {fileID: 537718017652227074}
-  textSoldierCity: {fileID: 2340447329167157315}
-  textSoldier: {fileID: 4948667668002199754}
+  textSoldier: {fileID: 2340447329167157315}
+  textFood: {fileID: 4948667668002199754}
   slider1: {fileID: 7963131802410200670}
   textHeroName: {fileID: 7679491908333001719}
   heroPic: {fileID: 7762829820070589351}

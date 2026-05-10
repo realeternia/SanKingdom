@@ -16,14 +16,13 @@ public class PopArmySetManager : MonoBehaviour
     public Button closeBtn;
     public Button okBtn;
     public Button maxBtn;
-    public TMP_Text textSoldierCity;
     public TMP_Text textSoldier;
+    public TMP_Text textFood;
     public Slider slider1;
     public TMP_Text textHeroName;
     public Image heroPic;
     private int maxSoldier;
 
-    private static Dictionary<int, int> heroSoldierAllocations = new Dictionary<int, int>();
     private static System.Action<int> onSoldierSetCallback;
 
     public static void SetSoldierSetCallback(System.Action<int> callback)
@@ -31,21 +30,25 @@ public class PopArmySetManager : MonoBehaviour
         onSoldierSetCallback = callback;
     }
 
-    public static void SetAllocatedSoldier(int heroId, int soldier)
+    private int GetOtherAllocated()
     {
-        heroSoldierAllocations[heroId] = soldier;
+        int otherAllocated = 0;
+        foreach (var kvp in CityBattlePanelManager.GetAllocations())
+        {
+            if (kvp.Key != heroId)
+            {
+                var h = GameManager.Instance.GetHero(kvp.Key);
+                if (h != null && h.cityId == cityId)
+                    otherAllocated += kvp.Value;
+            }
+        }
+        return otherAllocated;
     }
 
-    public static int GetAllocatedSoldier(int heroId)
+    private void UpdateDisplay(int soldier, int remainingSoldier, int remainingFood)
     {
-        if (heroSoldierAllocations.ContainsKey(heroId))
-            return heroSoldierAllocations[heroId];
-        return 0;
-    }
-
-    public static void ClearAllocations()
-    {
-        heroSoldierAllocations.Clear();
+        textSoldier.text = $"{soldier}/{remainingSoldier}";
+        textFood.text = $"{soldier}/{remainingFood}";
     }
 
     void Start()
@@ -61,8 +64,7 @@ public class PopArmySetManager : MonoBehaviour
             if (cityId > 0)
             {
                 var soldier = (int)(maxSoldier * slider1.value);
-                var change = soldier - currentAllocated;
-                heroSoldierAllocations[heroId] = soldier;
+                CityBattlePanelManager.SetAllocatedSoldier(heroId, soldier);
                 currentAllocated = soldier;
                 onSoldierSetCallback?.Invoke(soldier);
                 onSoldierSetCallback = null;
@@ -79,20 +81,11 @@ public class PopArmySetManager : MonoBehaviour
             if (cityId > 0)
             {
                 var soldier = (int)(maxSoldier * slider1.value);
-                textSoldier.text = $"{soldier}";
-                var change = soldier - currentAllocated;
                 var cityData = GameManager.Instance.GetCity(cityId);
-                int otherAllocated = 0;
-                foreach (var kvp in heroSoldierAllocations)
-                {
-                    if (kvp.Key != heroId)
-                    {
-                        var h = GameManager.Instance.GetHero(kvp.Key);
-                        if (h != null && h.cityId == cityId)
-                            otherAllocated += kvp.Value;
-                    }
-                }
-                textSoldierCity.text = $"{(int)cityData.soldier - otherAllocated - soldier}";
+                int otherAllocated = GetOtherAllocated();
+                int remainingSoldier = (int)cityData.soldier - otherAllocated;
+                int remainingFood = (int)cityData.food - otherAllocated;
+                UpdateDisplay(soldier, remainingSoldier, remainingFood);
             }
         });
     }
@@ -108,17 +101,21 @@ public class PopArmySetManager : MonoBehaviour
         this.cityId = heroData.cityId;
         var cityData = GameManager.Instance.GetCity(cityId);
 
-        currentAllocated = GetAllocatedSoldier(heroId);
-        textSoldierCity.text = $"{cityData.soldier}";
-        textSoldier.text = $"{currentAllocated}";
+        currentAllocated = CityBattlePanelManager.GetAllocatedSoldier(heroId);
 
         var heroCfg = HeroConfig.GetConfig(heroId);
 
         heroPic.sprite = Resources.Load<Sprite>("Textures/Skins/" + heroCfg.Icon);
         textHeroName.text = heroCfg.Name;
 
-        maxSoldier = Math.Min(SystemConst.Hero.MAX_SOLDIER_PER_HERO, (int)(cityData.soldier) + currentAllocated);
+        int otherAllocated = GetOtherAllocated();
+        int remainingSoldier = (int)cityData.soldier - otherAllocated;
+        int remainingFood = (int)cityData.food - otherAllocated;
+
+        maxSoldier = Math.Min(SystemConst.Hero.MAX_SOLDIER_PER_HERO, Math.Min(remainingSoldier, remainingFood));
         slider1.value = maxSoldier > 0 ? (float)currentAllocated / maxSoldier : 0;
+
+        UpdateDisplay(currentAllocated, remainingSoldier, remainingFood);
     }
 
     public void OnHide()

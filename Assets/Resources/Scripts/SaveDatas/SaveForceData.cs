@@ -453,9 +453,11 @@ public class SaveForceData
         foreach (var srcCityId in srcCityIds)
         {
             var citySrc = GameManager.Instance.GetCity(srcCityId);
-            citySrc.AddAttr("food", -100);
+            int totalSoldiers = attackTroops
+                .Where(t => t.heroId1 > 0 && GameManager.Instance.GetHero(t.heroId1).cityId == srcCityId)
+                .Sum(t => t.soldierCount);
+            citySrc.AddAttr("food", -totalSoldiers);
         }
-        cityDest.food = 0;
         int srcForceId = forceId;
         int destForceId = cityDest.forceId;
         

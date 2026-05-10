@@ -85,7 +85,7 @@ public class CityBattleItem : MonoBehaviour
 
         if (warTeamData.soldierCount > 0)
         {
-            PopArmySetManager.SetAllocatedSoldier(warTeamData.heroId1, warTeamData.soldierCount);
+            CityBattlePanelManager.SetAllocatedSoldier(warTeamData.heroId1, warTeamData.soldierCount);
         }
 
         PanelManager.Instance.ShowPopArmySetPanel(warTeamData.heroId1);
