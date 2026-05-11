@@ -141,8 +141,8 @@ public class CityBattlePanelManager : MonoBehaviour
         foreach (var item in selectedItems)
         {
             var troop = item.GetWarTeamData();
-            if (troop == null) continue;
-            if (troop.heroId1 > 0 && troop.soldierCount > 0)
+
+            if (troop.heroId1 > 0 && GetAllocatedSoldier(troop.heroId1) > 0)
             {
                 attackTroops.Add(troop);
             }
@@ -168,11 +168,20 @@ public class CityBattlePanelManager : MonoBehaviour
             .Distinct()
             .ToList();
 
+        Dictionary<int, int> attackSoldierMap = new Dictionary<int, int>();
+        foreach (var troop in attackTroops)
+        {
+            if (troop.heroId1 > 0 && heroSoldierAllocations.ContainsKey(troop.heroId1))
+            {
+                attackSoldierMap[troop.heroId1] = heroSoldierAllocations[troop.heroId1];
+            }
+        }
+
         var force = GameManager.Instance.GetForce(forceId);
 
         PanelManager.Instance.HideCityBattle();
         heroSoldierAllocations.Clear();
-        force.ExecuteBattle(sourceCityIds, attackTroops, targetCityId, false);
+        force.ExecuteBattle(sourceCityIds, attackTroops, attackSoldierMap, targetCityId, false);
     }
 
     private void CreateCityBattleItems(int forceId)
@@ -210,13 +219,6 @@ public class CityBattlePanelManager : MonoBehaviour
         if (allTeams.Count == 0) return;
 
         heroSoldierAllocations.Clear();
-        foreach (var team in allTeams)
-        {
-            if (team.heroId1 > 0 && team.soldierCount > 0)
-            {
-                heroSoldierAllocations[team.heroId1] = team.soldierCount;
-            }
-        }
 
         var itemPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelListItem("CityBattleItem"));
 

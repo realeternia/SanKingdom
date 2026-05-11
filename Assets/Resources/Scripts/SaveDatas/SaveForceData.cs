@@ -441,7 +441,7 @@ public class SaveForceData
         return addon;
     }
 
-    public void ExecuteBattle(List<int> srcCityIds, List<SaveTroopsData> attackTroops, int targetCityId, bool isAI)
+    public void ExecuteBattle(List<int> srcCityIds, List<SaveTroopsData> attackTroops, Dictionary<int, int> attackSoldierMap, int targetCityId, bool isAI)
     {
         var cityDest = GameManager.Instance.GetCity(targetCityId);
 
@@ -455,7 +455,7 @@ public class SaveForceData
             var citySrc = GameManager.Instance.GetCity(srcCityId);
             int totalSoldiers = attackTroops
                 .Where(t => t.heroId1 > 0 && GameManager.Instance.GetHero(t.heroId1).cityId == srcCityId)
-                .Sum(t => t.soldierCount);
+                .Sum(t => attackSoldierMap.ContainsKey(t.heroId1) ? attackSoldierMap[t.heroId1] : 0);
             GameLog.Info($"ExecuteBattle 扣除士兵和粮食 cityId={srcCityId} totalSoldiers={totalSoldiers}");
             citySrc.AddAttr("soldier", -totalSoldiers);
             citySrc.AddAttr("food", -totalSoldiers);
@@ -463,9 +463,9 @@ public class SaveForceData
         int srcForceId = forceId;
         int destForceId = cityDest.forceId;
         
-        var defenceTroops = TroopsBuilder.BuildDefenceTroops(cityDest);
+        var (defenceTroops, defenceSoldierMap) = TroopsBuilder.BuildDefenceTroops(cityDest);
         
-        BattleManager.Instance.BattleBegin(this, cityDest.GetForce(), attackTroops, defenceTroops, targetCityId,
+        BattleManager.Instance.BattleBegin(this, cityDest.GetForce(), attackTroops, defenceTroops, attackSoldierMap, defenceSoldierMap, targetCityId,
             (result, attackerSoldierCount, defenderSoldierCount) => OnBattleEnd(result, attackerSoldierCount, defenderSoldierCount, srcCityIds, targetCityId, srcForceId, destForceId));
     }
 
@@ -499,7 +499,6 @@ public class SaveForceData
                             GameLog.Info($"OnBattleEnd 攻击方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
                         }
                     }
-                    troop.soldierCount = 0;
                 }
             }
         }
@@ -521,7 +520,6 @@ public class SaveForceData
                             GameLog.Info($"OnBattleEnd 防守方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
                         }
                     }
-                    troop.soldierCount = 0;
                 }
             }
         }

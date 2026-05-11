@@ -11,7 +11,6 @@ public class SaveTroopsData
     public int heroId2;
     public int heroId3;
     public int armsId;
-    public int soldierCount;
 
     public SaveTroopsData()
     {
@@ -20,7 +19,6 @@ public class SaveTroopsData
         heroId2 = 0;
         heroId3 = 0;
         armsId = SystemConst.Hero.DEFAULT_ARMS_ID;
-        soldierCount = 0;
     }
 
     public SaveTroopsData(int heroId1, int heroId2, int heroId3, int armsId)
@@ -30,7 +28,6 @@ public class SaveTroopsData
         this.heroId2 = heroId2;
         this.heroId3 = heroId3;
         this.armsId = armsId;
-        soldierCount = 0;
     }
 
     public bool SetArmsId(int newArmsId)

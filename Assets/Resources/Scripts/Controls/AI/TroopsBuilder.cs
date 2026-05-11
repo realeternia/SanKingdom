@@ -4,12 +4,13 @@ using System.Linq;
 
 public static class TroopsBuilder
 {
-    public static List<SaveTroopsData> BuildAttackTroopsFromHeroList(SaveCityData city, int[] heroList, Dictionary<int, int> heroSoldierDict, Dictionary<int, int> heroArmsDict)
+    public static (List<SaveTroopsData>, Dictionary<int, int>) BuildAttackTroopsFromHeroList(SaveCityData city, int[] heroList, Dictionary<int, int> heroSoldierDict, Dictionary<int, int> heroArmsDict)
     {
         List<SaveTroopsData> troops = new List<SaveTroopsData>();
+        Dictionary<int, int> soldierMap = new Dictionary<int, int>();
         
         if (heroList == null || heroList.Length == 0)
-            return troops;
+            return (troops, soldierMap);
 
         if (heroSoldierDict == null)
             heroSoldierDict = city.DistributeSoldierDefault(heroList);
@@ -18,17 +19,18 @@ public static class TroopsBuilder
         {
             var troop = new SaveTroopsData();
             troop.heroId1 = heroId;
-            troop.soldierCount = heroSoldierDict.ContainsKey(heroId) ? heroSoldierDict[heroId] : 0;
+            soldierMap[heroId] = heroSoldierDict.ContainsKey(heroId) ? heroSoldierDict[heroId] : 0;
             troop.armsId = (heroArmsDict != null && heroArmsDict.ContainsKey(heroId)) ? heroArmsDict[heroId] : SystemConst.Hero.DEFAULT_ARMS_ID;
             troops.Add(troop);
         }
 
-        return troops;
+        return (troops, soldierMap);
     }
 
-    public static List<SaveTroopsData> BuildDefenceTroops(SaveCityData city)
+    public static (List<SaveTroopsData>, Dictionary<int, int>) BuildDefenceTroops(SaveCityData city)
     {
         List<SaveTroopsData> defenceTroops = new List<SaveTroopsData>();
+        Dictionary<int, int> soldierMap = new Dictionary<int, int>();
         
         int citySoldier = (int)Math.Floor(city.soldier);
         int cityForceId = city.forceId;
@@ -47,8 +49,8 @@ public static class TroopsBuilder
             if (troop.heroId3 > 0) heroCount++;
             
             int totalMaxSoldier = maxSoldier * heroCount;
-            int soldierToFill = Math.Min(totalMaxSoldier - troop.soldierCount, citySoldier);
-            filledTroop.soldierCount = troop.soldierCount + soldierToFill;
+            int soldierToFill = Math.Min(totalMaxSoldier, citySoldier);
+            soldierMap[filledTroop.heroId1] = soldierToFill;
             citySoldier -= soldierToFill;
             
             defenceTroops.Add(filledTroop);
@@ -75,7 +77,7 @@ public static class TroopsBuilder
                 {
                     var troop = new SaveTroopsData();
                     troop.heroId1 = hero.heroId;
-                    troop.soldierCount = soldier;
+                    soldierMap[troop.heroId1] = soldier;
                     troop.armsId = hero.GetArmsId() > 0 ? hero.GetArmsId() : SystemConst.Hero.DEFAULT_ARMS_ID;
                     defenceTroops.Add(troop);
                     citySoldier -= soldier;
@@ -121,7 +123,7 @@ public static class TroopsBuilder
                 
                 if (troop.heroId1 > 0)
                 {
-                    troop.soldierCount = totalSoldier;
+                    soldierMap[troop.heroId1] = totalSoldier;
                     defenceTroops.Add(troop);
                 }
             }
@@ -137,7 +139,7 @@ public static class TroopsBuilder
                 {
                     var troop = new SaveTroopsData();
                     troop.heroId1 = hero.heroId;
-                    troop.soldierCount = soldier;
+                    soldierMap[troop.heroId1] = soldier;
                     troop.armsId = hero.GetArmsId() > 0 ? hero.GetArmsId() : SystemConst.Hero.DEFAULT_ARMS_ID;
                     defenceTroops.Add(troop);
                     citySoldier -= soldier;
@@ -145,6 +147,6 @@ public static class TroopsBuilder
             }
         }
 
-        return defenceTroops;
+        return (defenceTroops, soldierMap);
     }
 }

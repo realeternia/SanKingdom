@@ -187,7 +187,6 @@ public static class SystemConst
         /// 君主担任太守的评分加成
         /// </summary>
         public const int KING_OWNER_BONUS_SCORE = 9999;
-        public const int KING_CITY_ID = -1;
         public const int MAX_TROOPS = 5;
     }
 
@@ -542,29 +541,9 @@ public static class SystemConst
         /// </summary>
         public const int AI_MIN_ATTACK_SOLDIER = 500;
         /// <summary>
-        /// AI攻击优势比率
-        /// </summary>
-        public const float AI_ATTACK_ADVANTAGE_RATIO = 0.7f;
-        /// <summary>
         /// AI粮草需求除数
         /// </summary>
         public const int AI_FOOD_NEED_DIVISOR = 2;
-        /// <summary>
-        /// AI购买粮草最小金币
-        /// </summary>
-        public const int AI_BUY_FOOD_MIN_GOLD = 300;
-        /// <summary>
-        /// AI褒奖忠诚度阈值
-        /// </summary>
-        public const int AI_PRAISE_LOYALTY_THRESHOLD = 80;
-        /// <summary>
-        /// AI登用敌方忠诚度阈值
-        /// </summary>
-        public const int AI_RECRUIT_ENEMY_LOYALTY_THRESHOLD = 80;
-        /// <summary>
-        /// AI最小留守英雄数
-        /// </summary>
-        public const int AI_MIN_STAY_HEROES = 3;
         /// <summary>
         /// 前线战斗英雄目标数
         /// </summary>

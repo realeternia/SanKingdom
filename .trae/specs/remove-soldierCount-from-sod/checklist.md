@@ -1,0 +1,17 @@
+- [x] SaveTroopsData 中 soldierCount 字段已移除，构造函数中相关初始化已移除
+- [x] TroopsBuilder.BuildAttackTroopsFromHeroList 返回 (List<SaveTroopsData>, Dictionary<int, int>) 元组，不再设置 troop.soldierCount
+- [x] TroopsBuilder.BuildDefenceTroops 返回 (List<SaveTroopsData>, Dictionary<int, int>) 元组，不再设置 troop.soldierCount
+- [x] CityBattlePanelManager.CreateCityBattleItems 从城市士兵池分配默认兵力到 heroSoldierAllocations
+- [x] CityBattlePanelManager.OnBattle 从 heroSoldierAllocations 构建 soldierMap，不再检查 troop.soldierCount
+- [x] CityBattlePanelManager.OnRun 将 soldierMap 传递给 ExecuteBattle
+- [x] CityBattleItem.OnEdit 使用 CityBattlePanelManager.SetAllocatedSoldier() 替代 warTeamData.soldierCount
+- [x] CityBattleItem.RefreshUI 使用 CityBattlePanelManager.GetAllocatedSoldier() 替代 warTeamData.soldierCount
+- [x] BattleManager.BattleBegin 签名包含 soldierMap1, soldierMap2 参数
+- [x] BattleManager.GetTotalSoldierCount 从 soldierMap 计算总兵力
+- [x] BattleManager.SpawnTroopForRegion 接受 soldierCount 参数
+- [x] BattleManager.InitSummon 调用 SpawnTroopForRegion 时传入 soldierCount
+- [x] SaveForceData.ExecuteBattle 签名包含 attackSoldierMap 参数，传递给 BattleBegin
+- [x] SaveForceData.OnBattleEnd 不再设置 troop.soldierCount = 0
+- [x] GameManager 中 TroopsBuilder 调用适配新返回值
+- [x] GameManager 中 force.ExecuteBattle 调用传递 soldierMap
+- [x] 所有 soldierCount 引用已清理（grep 确认无残留，仅 BattleManager 的 int soldierCount 参数合法存在）

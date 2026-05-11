@@ -91,7 +91,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private Coroutine currentBattleCoroutine = null;
     
-    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<SaveTroopsData> troops1, List<SaveTroopsData> troops2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
+    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<SaveTroopsData> troops1, List<SaveTroopsData> troops2, Dictionary<int, int> soldierMap1, Dictionary<int, int> soldierMap2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
     {
         if (IsBattleRunning)
         {
@@ -104,8 +104,8 @@ public class BattleManager : MonoBehaviour
         battleEndCallback = callback;
         this.cityId = cityId;
         playerInfoList.Clear();
-        playerInfoList.Add(new BattlePlayerINfo() { forceId = force1.forceId, soldierNumInit = GetTotalSoldierCount(troops1) });
-        playerInfoList.Add(new BattlePlayerINfo() { forceId = force2.forceId, soldierNumInit = GetTotalSoldierCount(troops2) });
+        playerInfoList.Add(new BattlePlayerINfo() { forceId = force1.forceId, soldierNumInit = GetTotalSoldierCount(soldierMap1) });
+        playerInfoList.Add(new BattlePlayerINfo() { forceId = force2.forceId, soldierNumInit = GetTotalSoldierCount(soldierMap2) });
 
         chessList.Clear();
         missileList.Clear();
@@ -121,19 +121,19 @@ public class BattleManager : MonoBehaviour
         InitUI(force1, force2);
         
         attackTroops = troops1;
-        defenderTroops = troops2;          
+        defenderTroops = troops2;
         attackTroops.Sort((a, b) => ArmsConfig.GetConfig(a.armsId).Range.CompareTo(ArmsConfig.GetConfig(b.armsId).Range));
         defenderTroops.Sort((a, b) => ArmsConfig.GetConfig(a.armsId).Range.CompareTo(ArmsConfig.GetConfig(b.armsId).Range));
 
-        currentBattleCoroutine = StartCoroutine(GameUpdate());
+        currentBattleCoroutine = StartCoroutine(GameUpdate(soldierMap1, soldierMap2));
     }
 
-    private int GetTotalSoldierCount(List<SaveTroopsData> troops)
+    private int GetTotalSoldierCount(Dictionary<int, int> soldierMap)
     {
         int total = 0;
-        foreach (var troop in troops)
+        foreach (var kvp in soldierMap)
         {
-            total += troop.soldierCount;
+            total += kvp.Value;
         }
         return total;
     }
@@ -180,7 +180,7 @@ public class BattleManager : MonoBehaviour
         
         InitUI(player1, player2);
 
-        currentBattleCoroutine = StartCoroutine(GameUpdate(true));
+        currentBattleCoroutine = StartCoroutine(GameUpdate(null, null, true));
     }
 
     private Vector3 GetSpawnPosition(int side, int indx)
@@ -207,7 +207,7 @@ public class BattleManager : MonoBehaviour
         return id;
     }
 
-    private void SpawnTroopForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, SaveTroopsData troop)
+    private void SpawnTroopForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, SaveTroopsData troop, int soldierCount)
     {
         if (troop.heroId1 <= 0)
             return;
@@ -235,13 +235,13 @@ public class BattleManager : MonoBehaviour
         var action = new CreateChessAction(0, tickAdd, id, force.forceId, 
             troop.heroId1, troop.heroId2, troop.heroId3, 
             heroData1.GetLevel(), 
-            troop.soldierCount, troop.armsId, atk, def, avgStr, avgLeadShip, avgInte, spawnPoint);
+            soldierCount, troop.armsId, atk, def, avgStr, avgLeadShip, avgInte, spawnPoint);
         AddChessAction(action);
     }
 
     public static float tickTimeReal = 0.1f; //加速功能
     
-    private IEnumerator GameUpdate(bool replay = false)
+    private IEnumerator GameUpdate(Dictionary<int, int> attackSoldierMap, Dictionary<int, int> defenderSoldierMap, bool replay = false)
     {
         yield return new WaitForSeconds(0.5f);
 
@@ -290,7 +290,7 @@ public class BattleManager : MonoBehaviour
                 {
                     if(waitTick > 0 && tickIndex >= waitTick)
                     {
-                        InitSummon(magicHelperUnitId);
+                        InitSummon(magicHelperUnitId, attackSoldierMap, defenderSoldierMap);
                         waitTick = 0;
                     }
 
@@ -400,7 +400,7 @@ public class BattleManager : MonoBehaviour
         currentBattleCoroutine = null;
     }
 
-    private void InitSummon(int magicHelperUnitId)
+    private void InitSummon(int magicHelperUnitId, Dictionary<int, int> attackSoldierMap, Dictionary<int, int> defenderSoldierMap)
     {
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var player2 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
@@ -411,7 +411,7 @@ public class BattleManager : MonoBehaviour
             var tick = tickIndex + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(2, i), "SoftFireBigRed", 0.7f);
             AddChessAction(eff);
-            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(2, i), defenderTroops[i]);
+            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(2, i), defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0);
         }
 
         count = Math.Min(attackTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
@@ -420,7 +420,7 @@ public class BattleManager : MonoBehaviour
             var tick = tickIndex + SystemConst.Battle.ATTACKER_SPAWN_DELAY_TICKS + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(1, i), "LightningExplosionBlue", 0.7f);
             AddChessAction(eff);
-            SpawnTroopForRegion(player1, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(1, i), attackTroops[i]);
+            SpawnTroopForRegion(player1, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(1, i), attackTroops[i], attackSoldierMap.ContainsKey(attackTroops[i].heroId1) ? attackSoldierMap[attackTroops[i].heroId1] : 0);
         }
 
         GameLog.Info($"InitSummon {player1.Name} {attackTroops.Count} {player2.Name} {defenderTroops.Count}");

@@ -79,14 +79,9 @@ public class CityBattleItem : MonoBehaviour
     {
         PopArmySetManager.SetSoldierSetCallback((soldier) =>
         {
-            warTeamData.soldierCount = soldier;
+            CityBattlePanelManager.SetAllocatedSoldier(warTeamData.heroId1, soldier);
             RefreshUI();
         });
-
-        if (warTeamData.soldierCount > 0)
-        {
-            CityBattlePanelManager.SetAllocatedSoldier(warTeamData.heroId1, warTeamData.soldierCount);
-        }
 
         PanelManager.Instance.ShowPopArmySetPanel(warTeamData.heroId1);
     }
@@ -143,7 +138,7 @@ public class CityBattleItem : MonoBehaviour
 
         if (sodierCountText != null)
         {
-            sodierCountText.text = warTeamData.soldierCount.ToString();
+            sodierCountText.text = CityBattlePanelManager.GetAllocatedSoldier(warTeamData.heroId1).ToString();
         }
 
         if (hero1IconImage != null)
