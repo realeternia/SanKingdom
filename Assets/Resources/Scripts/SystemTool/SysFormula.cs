@@ -61,11 +61,6 @@ public static class SysFormula
             return (minDamage, maxDamage);
         }
 
-        public static int CalculateLackFoodDamage(int lackIndex, float lackRate)
-        {
-            return (int)((SystemConst.Battle.LACK_FOOD_BASE_DAMAGE + lackIndex * SystemConst.Battle.LACK_FOOD_DAMAGE_INCREMENT) * lackRate);
-        }
-
         public static float CalculateTargetScore(bool targetIsHero, float distance, float attackRange,
             int damageEstimate, int myLevel, int targetLevel, float targetHpRate)
         {

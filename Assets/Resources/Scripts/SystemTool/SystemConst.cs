@@ -289,14 +289,6 @@ public static class SystemConst
         /// </summary>
         public const int REGE_INTERVAL_TICKS = 10;
         /// <summary>
-        /// 缺粮基础伤害
-        /// </summary>
-        public const int LACK_FOOD_BASE_DAMAGE = 15;
-        /// <summary>
-        /// 缺粮伤害递增值
-        /// </summary>
-        public const int LACK_FOOD_DAMAGE_INCREMENT = 5;
-        /// <summary>
         /// 目标更新间隔帧数
         /// </summary>
         public const int TARGET_UPDATE_INTERVAL_TICKS = 30;
@@ -327,43 +319,43 @@ public static class SystemConst
         /// <summary>
         /// 最小攻击伤害
         /// </summary>
-        public const int MIN_ATTACK_DAMAGE = 10;
+        public const int MIN_ATTACK_DAMAGE = 3;
         /// <summary>
         /// 最大攻击伤害
         /// </summary>
-        public const int MAX_ATTACK_DAMAGE = 60;
+        public const int MAX_ATTACK_DAMAGE = 30;
         /// <summary>
         /// 等级差最小伤害下限
         /// </summary>
-        public const int LEVEL_DIFF_MIN_DAMAGE_MIN = 8;
+        public const int LEVEL_DIFF_MIN_DAMAGE_MIN = 2;
         /// <summary>
         /// 等级差最小伤害上限
         /// </summary>
-        public const int LEVEL_DIFF_MIN_DAMAGE_MAX = 20;
+        public const int LEVEL_DIFF_MIN_DAMAGE_MAX = 8;
         /// <summary>
         /// 等级差最大伤害因子
         /// </summary>
-        public const int LEVEL_DIFF_MAX_DAMAGE_FACTOR = 4;
+        public const int LEVEL_DIFF_MAX_DAMAGE_FACTOR = 2;
         /// <summary>
         /// 等级差最大伤害下限
         /// </summary>
-        public const int LEVEL_DIFF_MAX_DAMAGE_MIN = 40;
+        public const int LEVEL_DIFF_MAX_DAMAGE_MIN = 15;
         /// <summary>
         /// 等级差最大伤害上限
         /// </summary>
-        public const int LEVEL_DIFF_MAX_DAMAGE_MAX = 80;
+        public const int LEVEL_DIFF_MAX_DAMAGE_MAX = 35;
         /// <summary>
         /// 血量转攻击除数
         /// </summary>
-        public const int HP_TO_ATK_DIVISOR = 50;
+        public const int HP_TO_ATK_DIVISOR = 5;
         /// <summary>
         /// 基础伤害
         /// </summary>
-        public const int BASE_DAMAGE = 30;
+        public const int BASE_DAMAGE = 8;
         /// <summary>
         /// 伤害战力差除数
         /// </summary>
-        public const int DAMAGE_POWER_DIFF_DIVISOR = 2;
+        public const int DAMAGE_POWER_DIFF_DIVISOR = 5;
         /// <summary>
         /// 战斗中帧数阈值
         /// </summary>
@@ -371,15 +363,15 @@ public static class SystemConst
         /// <summary>
         /// 被攻击buff最小伤害
         /// </summary>
-        public const int ATTACKED_BUFF_MIN_DAMAGE = 10;
+        public const int ATTACKED_BUFF_MIN_DAMAGE = 3;
         /// <summary>
         /// Buff最小伤害阈值
         /// </summary>
-        public const int BUFF_MIN_DAMAGE_THRESHOLD = 10;
+        public const int BUFF_MIN_DAMAGE_THRESHOLD = 3;
         /// <summary>
         /// Buff最小伤害值
         /// </summary>
-        public const int BUFF_MIN_DAMAGE_VALUE = 13;
+        public const int BUFF_MIN_DAMAGE_VALUE = 5;
         /// <summary>
         /// 盾牌属性压制比率
         /// </summary>

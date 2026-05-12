@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,33 +10,57 @@ namespace CommonConfig
         {
             public string fieldName;
             public string fieldType;
-            public FieldMetaInfo(string name, string type)
+            public int fieldWidth;
+            public string fieldRule;
+            public bool fieldIndex;
+            public FieldMetaInfo(string name, string type, int width = 0, string rule = "", bool index = false)
             {
                 fieldName = name;
                 fieldType = type;
+                fieldWidth = width;
+                fieldRule = rule;
+                fieldIndex = index;
+            }
+        }
+
+        public class CellMeta
+        {
+            public int row;
+            public int col;
+            public int? foreColor;
+            public int? backColor;
+            public CellMeta(int row, int col, int? foreColor, int? backColor)
+            {
+                this.row = row;
+                this.col = col;
+                this.foreColor = foreColor;
+                this.backColor = backColor;
             }
         }
 
         private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
         {
-            {"Id", new FieldMetaInfo("序列", "int")},
-            {"Name", new FieldMetaInfo("名字", "string")},
-            {"Cname", new FieldMetaInfo("中文名", "string")},
-            {"X", new FieldMetaInfo("x", "int")},
-            {"Y", new FieldMetaInfo("y", "int")},
-            {"Width", new FieldMetaInfo("是否正面", "int")},
-            {"Height", new FieldMetaInfo("hit", "int")},
-            {"ForceId", new FieldMetaInfo("force", "int")},
-            {"Level", new FieldMetaInfo("等级", "int")},
-            {"Food", new FieldMetaInfo("粮食", "int")},
-            {"Soldier", new FieldMetaInfo("士兵", "int")},
-            {"Wall", new FieldMetaInfo("防御", "int")},
-            {"WorldNearIds", new FieldMetaInfo("相邻", "int[]")},
-            {"MiniMapOffsets", new FieldMetaInfo("Mini地图偏移", "int[]")},
-            {"ViewPrefab", new FieldMetaInfo("view位置", "string")},
+            {"Id", new FieldMetaInfo("序列", "int", 0)},
+            {"Name", new FieldMetaInfo("名字", "string", 0)},
+            {"Cname", new FieldMetaInfo("中文名", "string", 0)},
+            {"X", new FieldMetaInfo("x", "int", 0)},
+            {"Y", new FieldMetaInfo("y", "int", 0)},
+            {"Width", new FieldMetaInfo("是否正面", "int", 0)},
+            {"Height", new FieldMetaInfo("hit", "int", 0)},
+            {"ForceId", new FieldMetaInfo("force", "int", 0)},
+            {"Level", new FieldMetaInfo("等级", "int", 0)},
+            {"Food", new FieldMetaInfo("粮食", "int", 0)},
+            {"Soldier", new FieldMetaInfo("士兵", "int", 0)},
+            {"Wall", new FieldMetaInfo("防御", "int", 0)},
+            {"WorldNearIds", new FieldMetaInfo("相邻", "int[]", 0)},
+            {"MiniMapOffsets", new FieldMetaInfo("Mini地图偏移", "int[]", 0)},
+            {"ViewPrefab", new FieldMetaInfo("view位置", "string", 0)},
         };
 
         public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
+        private static List<CellMeta> cellMeta = new List<CellMeta>();
+        public static List<CellMeta> CellMetas { get { return cellMeta; } }
 
         /// <summary>
         ///序列
@@ -117,7 +141,6 @@ namespace CommonConfig
             this.WorldNearIds = WorldNearIds;
             this.MiniMapOffsets = MiniMapOffsets;
             this.ViewPrefab = ViewPrefab;
-
         }
 
         public WorldConfig() { }
@@ -132,27 +155,28 @@ namespace CommonConfig
         {
             config.Clear();
             config = dict;
+            RebuildIndex();
         }
 
         public static void Load()
         {
             config.Clear();
-            config[10001] = new WorldConfig(10001, "xinye", "新野", 789, 1022, 261, 177, 1, 1, 100, 100, 100, new int[]{10028,10005,10038,10004,10029}, null, "xinye");
+            config[10001] = new WorldConfig(10001, "xinye", "新野", 789, 1022, 261, 177, 1, 1, 100, 100, 100, new int[]{10028,10005,10038,10004,10029}, new int[0], "xinye");
             config[10002] = new WorldConfig(10002, "chenliu", "陈留", 987, 698, 305, 247, 2, 2, 100, 100, 100, new int[]{10003,10039,10004,10020,10007}, new int[]{-10,-10}, "chengdu");
             config[10003] = new WorldConfig(10003, "puyang", "濮阳", 1085, 618, 398, 196, 2, 2, 100, 100, 100, new int[]{10002,10006,10007,10016,10019}, new int[]{-15,-10}, "chengdu");
             config[10004] = new WorldConfig(10004, "xuchang", "许昌", 932, 868, 325, 208, 2, 5, 100, 100, 100, new int[]{10002,10038,10001,10005,10020}, new int[]{-20,0}, "changan");
             config[10005] = new WorldConfig(10005, "wan", "宛", 670, 851, 276, 223, 2, 3, 100, 100, 100, new int[]{10036,10001,10028,10004,10020,10021}, new int[]{5,-5}, "chengdu");
-            config[10006] = new WorldConfig(10006, "beihai", "北海", 1441, 494, 341, 213, 2, 3, 100, 100, 100, new int[]{10003,10008,10016}, null, "chengdu");
+            config[10006] = new WorldConfig(10006, "beihai", "北海", 1441, 494, 341, 213, 2, 3, 100, 100, 100, new int[]{10003,10008,10016}, new int[0], "chengdu");
             config[10007] = new WorldConfig(10007, "xiaopei", "小沛", 1279, 701, 248, 193, 2, 1, 100, 100, 100, new int[]{10002,10003,10008,10039}, new int[]{8,-8}, "chengdu");
             config[10008] = new WorldConfig(10008, "xiapi", "下邳", 1457, 672, 286, 297, 2, 1, 100, 100, 100, new int[]{10039,10006,10007,10012,10013}, new int[]{15,15}, "chengdu");
-            config[10009] = new WorldConfig(10009, "guiyang", "桂阳", 837, 1693, 432, 348, 3, 1, 100, 100, 100, new int[]{10026,10015}, null, "xinye");
+            config[10009] = new WorldConfig(10009, "guiyang", "桂阳", 837, 1693, 432, 348, 3, 1, 100, 100, 100, new int[]{10026,10015}, new int[0], "xinye");
             config[10010] = new WorldConfig(10010, "lujiang", "庐江", 1257, 1046, 309, 341, 3, 2, 100, 100, 100, new int[]{10039,10029,10013,10014}, new int[]{17,7}, "chengdu");
-            config[10011] = new WorldConfig(10011, "kuaiji", "会稽", 1505, 1194, 506, 413, 3, 3, 100, 100, 100, new int[]{10012,10013,10014}, null, "jianye");
+            config[10011] = new WorldConfig(10011, "kuaiji", "会稽", 1505, 1194, 506, 413, 3, 3, 100, 100, 100, new int[]{10012,10013,10014}, new int[0], "jianye");
             config[10012] = new WorldConfig(10012, "wu", "吴", 1617, 831, 314, 404, 3, 4, 100, 100, 100, new int[]{10008,10011,10013}, new int[]{20,0}, "xinye");
             config[10013] = new WorldConfig(10013, "jianye", "建业", 1469, 925, 277, 498, 3, 6, 100, 100, 100, new int[]{10039,10010,10011,10012,10014,10008}, new int[]{12,0}, "jianye");
             config[10014] = new WorldConfig(10014, "caisang", "柴桑", 1111, 1265, 452, 503, 3, 3, 100, 100, 100, new int[]{10027,10010,10029,10013,10015,10011}, new int[]{-20,40}, "jianye");
             config[10015] = new WorldConfig(10015, "changsha", "长沙", 928, 1440, 379, 323, 3, 3, 100, 100, 100, new int[]{10025,10027,10009,10014}, new int[]{-15,5}, "changsha");
-            config[10016] = new WorldConfig(10016, "pingyuan", "平原", 1228, 514, 229, 173, 4, 2, 100, 100, 100, new int[]{10003,10006,10019,10017}, null, "xinye");
+            config[10016] = new WorldConfig(10016, "pingyuan", "平原", 1228, 514, 229, 173, 4, 2, 100, 100, 100, new int[]{10003,10006,10019,10017}, new int[0], "xinye");
             config[10017] = new WorldConfig(10017, "nanpi", "南皮", 1229, 325, 273, 211, 4, 4, 100, 100, 100, new int[]{10016,10019,10040,10041}, new int[]{-5,-5}, "chengdu");
             config[10018] = new WorldConfig(10018, "jinyang", "晋阳", 679, 235, 498, 384, 4, 1, 100, 100, 100, new int[]{10019,10020,10021,10041}, new int[]{25,0}, "xinye");
             config[10019] = new WorldConfig(10019, "ye", "邺", 902, 356, 336, 357, 4, 4, 100, 100, 100, new int[]{10003,10017,10018,10016,10041,10020}, new int[]{26,-20}, "beiping");
@@ -171,17 +195,24 @@ namespace CommonConfig
             config[10032] = new WorldConfig(10032, "jianning", "建宁", 45, 1555, 499, 345, 8, 1, 100, 100, 100, new int[]{10031,10033,10034}, new int[]{25,15}, "xinye");
             config[10033] = new WorldConfig(10033, "chengdu", "成都", 40, 1203, 378, 437, 8, 5, 100, 100, 100, new int[]{10031,10032,10035}, new int[]{-30,0}, "chengdu");
             config[10034] = new WorldConfig(10034, "yunnan", "云南", 42, 1646, 444, 395, 8, 1, 100, 100, 100, new int[]{10032}, new int[]{-40,-23}, "xinye");
-            config[10035] = new WorldConfig(10035, "zitong", "梓潼", 43, 1004, 506, 274, 8, 2, 100, 100, 100, new int[]{10030,10033,10037,10036}, null, "xinye");
+            config[10035] = new WorldConfig(10035, "zitong", "梓潼", 43, 1004, 506, 274, 8, 2, 100, 100, 100, new int[]{10030,10033,10037,10036}, new int[0], "xinye");
             config[10036] = new WorldConfig(10036, "shangyong", "上庸", 493, 909, 241, 233, 9, 1, 100, 100, 100, new int[]{10030,10035,10037,10028,10005,10021}, new int[]{-10,15}, "xinye");
             config[10037] = new WorldConfig(10037, "hanzhong", "汉中", 145, 770, 348, 311, 9, 3, 100, 100, 100, new int[]{10035,10036,10021,10023}, new int[]{5,0}, "chengdu");
             config[10038] = new WorldConfig(10038, "runan", "汝南", 1027, 940, 273, 231, 10, 4, 100, 100, 100, new int[]{10001,10029,10004,10039,10010}, new int[]{7,-10}, "xinye");
             config[10039] = new WorldConfig(10039, "shouchun", "寿春", 1264, 876, 297, 248, 10, 4, 100, 100, 100, new int[]{10038,10002,10007,10008,10010,10029,10013}, new int[]{0,5}, "chengdu");
-            config[10040] = new WorldConfig(10040, "beiping", "北平", 1351, 54, 288, 317, 11, 2, 100, 100, 100, new int[]{10041,10042,10017}, null, "beiping");
+            config[10040] = new WorldConfig(10040, "beiping", "北平", 1351, 54, 288, 317, 11, 2, 100, 100, 100, new int[]{10041,10042,10017}, new int[0], "beiping");
             config[10041] = new WorldConfig(10041, "ji", "蓟", 980, 105, 397, 280, 11, 3, 100, 100, 100, new int[]{10017,10019,10018,10040}, new int[]{30,0}, "beiping");
             config[10042] = new WorldConfig(10042, "xiangping", "襄平", 1558, 13, 317, 357, 12, 2, 100, 100, 100, new int[]{10040}, new int[]{20,0}, "chengdu");
 
+            RebuildIndex();
 
+        }
 
+        private static void RebuildIndex()
+        {
+            foreach (var kv in config)
+            {
+            }
         }
 
         public static WorldConfig GetConfig(int id)
@@ -193,7 +224,6 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表WorldConfig不存在id={0}", id));
         }
-
 
 
         public static bool HasConfig(int id)
