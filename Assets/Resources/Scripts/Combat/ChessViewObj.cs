@@ -315,20 +315,20 @@ public class ChessViewObj : MonoBehaviour
         {
             case "gold":
                 baseMat = ResourceCache.LoadBattle<Material>(ResPath.Material.GoldChess());
-                targetColor = new Color(1f, 0.843f, 0f, 1f);
-                emissionColor = new Color(1f, 0.7f, 0f, 1f);
-                outlineColor = new Color(0.9f, 0.7f, 0.1f, 1f);
-                specColor = new Color(1f, 0.9f, 0.5f, 1f);
+                targetColor = SysColor.Chess.GoldMain;
+                emissionColor = SysColor.Chess.GoldEmission;
+                outlineColor = SysColor.Chess.GoldOutline;
+                specColor = SysColor.Chess.GoldSpec;
                 metallic = 1f;
                 glossiness = 0.85f;
                 emissionStrength = 0.5f;
                 break;
             case "silver":
                 baseMat = ResourceCache.LoadBattle<Material>(ResPath.Material.SilverChess());
-                targetColor = new Color(0.753f, 0.753f, 0.753f, 1f);
-                emissionColor = new Color(0.4f, 0.4f, 0.45f, 1f);
-                outlineColor = new Color(0.6f, 0.6f, 0.65f, 1f);
-                specColor = new Color(1f, 1f, 1f, 1f);
+                targetColor = SysColor.Chess.SilverMain;
+                emissionColor = SysColor.Chess.SilverEmission;
+                outlineColor = SysColor.Chess.SilverOutline;
+                specColor = SysColor.Chess.SilverSpec;
                 metallic = 1f;
                 glossiness = 0.9f;
                 emissionStrength = 0.3f;

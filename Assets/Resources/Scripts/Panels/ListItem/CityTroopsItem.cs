@@ -288,7 +288,8 @@ public class CityTroopsItem : MonoBehaviour
             if (warTeamData.armsId > 0)
             {
                 var armsConfig = ArmsConfig.GetConfig(warTeamData.armsId);
-                armsText.text = armsConfig.NameS;
+                string armsColorHex = ColorUtility.ToHtmlStringRGB(SysColor.GetArmsLevelColor(armsConfig.Level));
+                armsText.text = $"<color=#{armsColorHex}>{armsConfig.NameS}</color>";
             }
             else
             {

@@ -11,9 +11,6 @@ public class ArmsItemControl : MonoBehaviour
     public TMP_Text itemName;
     public Image BG;
 
-    private static readonly Color matchColor = new Color(0.3f, 0.7f, 0.3f, 1f);
-    private static readonly Color defaultColor = Color.black;
-
     public void Init(HeroAttrConfig attrConfig, HeroConfig heroConfig, int armsId)
     {
         if (attrConfig == null || heroConfig == null)
@@ -33,7 +30,7 @@ public class ArmsItemControl : MonoBehaviour
         {
             int attrValue = GetHeroArmsAttrValue(heroConfig, attrConfig.name);
             string displayText = HeroAttrTool.GetTextByValue(attrConfig.name, attrValue);
-            Color color = HeroAttrTool.GetColorByValue(attrConfig.name, attrValue);
+            Color color = SysColor.GetColorByValue(attrConfig.name, attrValue);
             string colorHex = ColorUtility.ToHtmlStringRGB(color);
             itemName.text = $"<color=#{colorHex}>{displayText}</color>";
         }
@@ -53,7 +50,7 @@ public class ArmsItemControl : MonoBehaviour
             isMatch = armsConfig.Type.ToString() == attrConfig.name;
         }
 
-        BG.color = isMatch ? matchColor : defaultColor;
+        BG.color = isMatch ? SysColor.UI.MatchColor : SysColor.Theme.CellNormal;
     }
 
     private int GetHeroArmsAttrValue(HeroConfig heroConfig, string attrName)

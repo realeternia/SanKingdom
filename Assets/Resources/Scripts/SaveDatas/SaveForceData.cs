@@ -207,9 +207,7 @@ public class SaveForceData
     {
         get
         {
-            var forceCfg = ForceConfig.GetConfig(forceId);
-            Color color;
-            return ColorUtility.TryParseHtmlString(forceCfg.Color, out color) ? color : Color.white;
+            return SysColor.GetForceColor(forceId);
         }
     }
 

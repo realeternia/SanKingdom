@@ -12,10 +12,7 @@ public class NLDropDownItem : MonoBehaviour
     private int index;
     private bool isSelected = false;
     
-    private static readonly Color normalColor = new Color(0.2f, 0.2f, 0.25f, 0.9f);
-    private static readonly Color selectedColor = new Color(0.3f, 0.5f, 0.7f, 1f);
-    private static readonly Color hoverColor = new Color(0.35f, 0.35f, 0.4f, 0.95f);
-    
+
     private void Start()
     {
         if (itemButton != null)
@@ -63,7 +60,7 @@ public class NLDropDownItem : MonoBehaviour
     {
         if (backgroundImage != null)
         {
-            backgroundImage.color = isSelected ? selectedColor : normalColor;
+            backgroundImage.color = isSelected ? SysColor.UI.DropDownSelected : SysColor.UI.DropDownNormal;
         }
     }
     
@@ -71,7 +68,7 @@ public class NLDropDownItem : MonoBehaviour
     {
         if (!isSelected && backgroundImage != null)
         {
-            backgroundImage.color = hoverColor;
+            backgroundImage.color = SysColor.UI.DropDownHover;
         }
     }
     
@@ -79,7 +76,7 @@ public class NLDropDownItem : MonoBehaviour
     {
         if (!isSelected && backgroundImage != null)
         {
-            backgroundImage.color = normalColor;
+            backgroundImage.color = SysColor.UI.DropDownNormal;
         }
     }
 }

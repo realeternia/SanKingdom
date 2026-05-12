@@ -63,22 +63,7 @@ public class BattleHeroInfo : MonoBehaviour
     private void SetText(TMP_Text text, int val)
     {
         text.text = val.ToString();
-        if (val >= 95)
-        {
-            text.color = Color.red;
-        }
-        else if (val >= 90)
-        {
-            text.color = new Color(1, 0.5f, 0);
-        }
-        else if (val >= 80)
-        {
-            text.color = Color.yellow;
-        }
-        else if (val >= 70)
-        {
-            text.color = Color.green;
-        }
+        text.color = SysColor.GetColorByValue(text.name, val);
     }
 
     public void SetHpRate(int hp, int maxHp)
@@ -93,12 +78,12 @@ public class BattleHeroInfo : MonoBehaviour
         if (hpRate <= 0)
         {
             errorImg.gameObject.SetActive(true);
-            heroName.color = Color.gray;
-            heroLevelTxt.color = Color.gray;
+            heroName.color = SysColor.Battle.DeadColor;
+            heroLevelTxt.color = SysColor.Battle.DeadColor;
         }
         else if(hpRate <= 0.5)
-            healthImg.color = new Color(0.4f, .33f, 0);
+            healthImg.color = SysColor.Battle.HealthLowColor;
         else
-            healthImg.color = new Color(0f, .4f, .1f);
+            healthImg.color = SysColor.Battle.HealthNormalColor;
     }
 }

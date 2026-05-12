@@ -131,14 +131,13 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         charm = heroData.charm;
 
         var bg = GetComponent<Image>();
-        var forceCfg = ForceConfig.GetConfig(heroData.forceId);
-        bg.color = ColorUtility.TryParseHtmlString(forceCfg.Color, out var wColor) ? wColor : Color.white;
+        bg.color = SysColor.GetForceColor(heroData.forceId);
 
-        heroStr.text = HeroAttrTool.GetColoredText("str", heroData.str);
-        heroInte.text = HeroAttrTool.GetColoredText("inte", heroData.inte);
-        heroLeadShip.text = HeroAttrTool.GetColoredText("leadShip", heroData.leadShip);
-        heroFair.text = HeroAttrTool.GetColoredText("fair", heroData.fair);
-        heroCharm.text = HeroAttrTool.GetColoredText("charm", heroData.charm);      
+        heroStr.text = SysColor.GetColoredText("str", heroData.str);
+        heroInte.text = SysColor.GetColoredText("inte", heroData.inte);
+        heroLeadShip.text = SysColor.GetColoredText("leadShip", heroData.leadShip);
+        heroFair.text = SysColor.GetColoredText("fair", heroData.fair);
+        heroCharm.text = SysColor.GetColoredText("charm", heroData.charm);      
         heroPic.gameObject.SetActive(false);
 
         if (heroData.cityId > 0)

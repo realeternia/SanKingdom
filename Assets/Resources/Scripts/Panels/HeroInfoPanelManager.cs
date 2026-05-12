@@ -247,12 +247,12 @@ public class HeroInfoPanelManager : MonoBehaviour
 
     private Color GetColorByArmsLevel(int level)
     {
-        return SystemConst.Arms.GetColorByLevel(level);
+        return SysColor.GetArmsLevelColor(level);
     }
     
     private string GetColoredAttrValue(string attrName, int value)
     {
-        return HeroAttrTool.GetColoredText(attrName, value);
+        return SysColor.GetColoredText(attrName, value);
     }
 
     public void Init(int[] heroList, int targetHeroId)
@@ -436,7 +436,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         {
             armsNameText.gameObject.SetActive(false);
             troopsText.text = "无小队";
-            troopsText.color = Color.gray;
+            troopsText.color = SysColor.Battle.DeadColor;
             return;
         }
 
@@ -448,7 +448,7 @@ public class HeroInfoPanelManager : MonoBehaviour
 
         var armsConfig = ArmsConfig.GetConfig(armsId);
         armsNameText.text = armsConfig.NameS;
-        armsNameText.color = SystemConst.Arms.GetColorByLevel(armsConfig.Level);
+        armsNameText.color = SysColor.GetArmsLevelColor(armsConfig.Level);
         
         var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, armsId);
         armsAttr1Text.text = atk.ToString();

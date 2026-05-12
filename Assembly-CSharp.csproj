@@ -267,6 +267,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRepeat.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\AttrInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityDevPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\SysColor.cs" />
     <Compile Include="Assets\Resources\Scripts\SideBar.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />

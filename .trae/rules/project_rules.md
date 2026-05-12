@@ -58,6 +58,13 @@ Unity (C#) | JsonUtility | UGUI | TextMeshPro
 - 战略层：`LoadUI<T>` / `LoadPrefabUI` / `LoadSpriteUI`
 - 战斗层：`LoadBattle<T>` / `LoadPrefabBattle` / `LoadSpriteBattle`
 
+### 颜色系统 - SysColor
+
+禁止硬编码颜色，使用 `SysColor` 静态类（`SystemTool/SysColor.cs`）：
+- 兵种等级颜色：`SysColor.GetArmsLevelColor(level)` 返回 `Color`，配合 `ColorUtility.ToHtmlStringRGB` 生成富文本 hex
+- 势力颜色：`SysColor.GetForceColor(forceId)`
+- 属性值颜色：`SysColor.GetColorByValue(attrName, value)` / `GetColoredText` / `GetColoredTextWithRule`
+
 ### 回合系统
 
 `TurnPhase.None` → `Planning` → `Execution` → `Battle` → 回合结束
@@ -86,6 +93,7 @@ Unity (C#) | JsonUtility | UGUI | TextMeshPro
 - 禁止 `UnityEngine.Debug.Log`，用 `GameLog`
 - 禁止硬编码资源路径，用 `ResPath`
 - 禁止直接 `Resources.Load`，用 `ResourceCache`
+- 禁止硬编码颜色，用 `SysColor`
 - 新增 `.cs` 文件必须在 `Assembly-CSharp.csproj` 添加 `<Compile Include>`
 - 禁止静默 null check return，必须记录日志
 

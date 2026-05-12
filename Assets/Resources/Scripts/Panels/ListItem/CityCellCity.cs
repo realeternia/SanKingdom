@@ -14,8 +14,6 @@ public class CityCellCity : MonoBehaviour, IPointerDownHandler
     public TMP_Text cityName;
     public bool isSelect = false;
     public Image backgroundImage;
-    public Color normalColor = Color.black;
-    public Color selectedColor = Color.green;
     public Image crownIcon;
 
     void Start()
@@ -77,7 +75,7 @@ public class CityCellCity : MonoBehaviour, IPointerDownHandler
     {
         if (backgroundImage != null)
         {
-            backgroundImage.color = isSelect ? selectedColor : normalColor;
+            backgroundImage.color = isSelect ? SysColor.Theme.CellSelected : SysColor.Theme.CellNormal;
         }
     }
 

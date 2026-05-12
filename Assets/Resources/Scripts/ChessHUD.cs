@@ -58,9 +58,9 @@ public class ChessHUD : MonoBehaviour
         {
             healthImg.gameObject.transform.parent.gameObject.SetActive(true);
             if(chessUnit.hp < chessUnit.maxHp * 0.5)
-                healthImg.color = Color.yellow;
+                healthImg.color = SysColor.Battle.HealthWarningColor;
             else
-                healthImg.color = Color.green;
+                healthImg.color = SysColor.Battle.HealthNormalColor;
         }
 
         if (healthImg != null)

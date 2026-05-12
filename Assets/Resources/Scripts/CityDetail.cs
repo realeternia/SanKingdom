@@ -29,7 +29,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         textComponent.text = val.ToString();
         var cfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
 
-        textComponent.color = Color.gray;
+        textComponent.color = SysColor.Battle.DeadColor;
     }
 
     private void SetTextAndColor(TMP_Text textComponent, SaveForceData force, string attrName)
@@ -46,7 +46,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
         textComponent.text = val.ToString();
         var cfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
 
-        textComponent.color = Color.gray;
+        textComponent.color = SysColor.Battle.DeadColor;
     }
 
     private void AddOverlay(GameObject parent, Color color)
@@ -101,7 +101,7 @@ public class CityDetail : MonoBehaviour, IPanelEvent
             textLeader.text = HeroConfig.GetConfig(owner).Name;
         else
             textLeader.text = "无";
-        textLeader.color = Color.gray;
+        textLeader.color = SysColor.Battle.DeadColor;
         
         var heroList = city.GetNormalHeroList();
         var wildList = city.GetHeroList(false, true);
@@ -142,8 +142,8 @@ public class CityDetail : MonoBehaviour, IPanelEvent
                 var img = heroHead.GetComponent<Image>();
                 img.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg.Icon));
 
-                AddOverlay(heroHead, new Color(0, 0, 0, 0.92f));
-                AddBorder(heroHead, Color.yellow);
+                AddOverlay(heroHead, SysColor.City.HeroOverlayColor);
+                AddBorder(heroHead, SysColor.City.WildHeroBorderColor);
             }
         }
         baseIdx += wildList.Count;
@@ -163,8 +163,8 @@ public class CityDetail : MonoBehaviour, IPanelEvent
                 var img = heroHead.GetComponent<Image>();
                 img.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg.Icon));
 
-                AddOverlay(heroHead, new Color(0, 0, 0, 0.92f));
-                AddBorder(heroHead, Color.red);
+                AddOverlay(heroHead, SysColor.City.HeroOverlayColor);
+                AddBorder(heroHead, SysColor.City.CapturedHeroBorderColor);
             }
         }
 

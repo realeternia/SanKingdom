@@ -20,8 +20,6 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     public Image thumbIcon;
     public bool isSelect = false;
     public Image backgroundImage;
-    public Color normalColor = Color.black;
-    public Color selectedColor = Color.green;
 
     private Canvas dragCanvas;
     private GameObject dragGhost;
@@ -138,7 +136,7 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     {
         if (backgroundImage != null)
         {
-            backgroundImage.color = isSelect ? selectedColor : normalColor;
+            backgroundImage.color = isSelect ? SysColor.Theme.CellSelected : SysColor.Theme.CellNormal;
         }
     }
 
@@ -306,7 +304,7 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
             weightedValue = firstAttr * (2f / 3f) + secondAttr * (1f / 3f);
         }
 
-        Color color = HeroAttrTool.GetColorByValue("weightedAttr", (int)weightedValue);
+        Color color = SysColor.GetColorByValue("weightedAttr", (int)weightedValue);
         if (color == Color.white)
         {
             thumbIcon.gameObject.SetActive(false);

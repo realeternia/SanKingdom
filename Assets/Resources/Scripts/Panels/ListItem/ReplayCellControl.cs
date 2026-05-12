@@ -68,9 +68,7 @@ public class ReplayCellControl : MonoBehaviour
             var sprite1 = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg1.Icon));
             if (sprite1 != null)
                 force1Icon.sprite = sprite1;
-            Color color1;
-            if (ColorUtility.TryParseHtmlString(forceCfg1.Color, out color1))
-                force1Name.color = color1;
+            force1Name.color = SysColor.GetForceColor(record.forceId1);
         }
         if (forceCfg2 != null)
         {
@@ -78,20 +76,18 @@ public class ReplayCellControl : MonoBehaviour
             var sprite2 = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg2.Icon));
             if (sprite2 != null)
                 force2Icon.sprite = sprite2;
-            Color color2;
-            if (ColorUtility.TryParseHtmlString(forceCfg2.Color, out color2))
-                force2Name.color = color2;
+            force2Name.color = SysColor.GetForceColor(record.forceId2);
         }
 
         if (record.result == BattleResult.Win)
         {
             resultText.text = "攻城成功";
-            resultText.color = Color.red;
+            resultText.color = SysColor.Battle.AttackSuccessColor;
         }
         else
         {
             resultText.text = "攻城失败";
-            resultText.color = Color.green;
+            resultText.color = SysColor.Battle.AttackFailColor;
         }
     }
 

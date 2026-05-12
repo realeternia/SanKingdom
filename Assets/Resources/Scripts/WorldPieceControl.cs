@@ -149,15 +149,10 @@ public class WorldPieceControl : MonoBehaviour
         }
 
        // GameLog.Debug($"设置颜色为{forceConfig.Color}");
-        defaultColor = ColorUtility.TryParseHtmlString(forceConfig.Color, out var wColor) ? wColor : Color.white;
+        defaultColor = SysColor.GetForceColor(forceId);
 
         pieceImage.color = defaultColor;
-        // 使用标准亮度公式：亮度 = 0.299 * R + 0.587 * G + 0.114 * B
-        float brightness = 0.299f * defaultColor.r + 0.587f * defaultColor.g + 0.114f * defaultColor.b;
-        if (brightness > 0.65f)
-            pieceName.color = new Color(0.4f, 0.4f, 0.4f, 1);
-        else
-            pieceName.color = Color.white;
+        pieceName.color = SysColor.GetTextColorOnBackground(defaultColor);
     }
 
     public void SetExtraMode(int mode = 0)
@@ -185,7 +180,7 @@ public class WorldPieceControl : MonoBehaviour
         if(mode == 2)
         {
             extraText.text = $"兵{GetTextByInt(city.GetAttr("soldier"))}";
-            extraText.color = Color.red;
+            extraText.color = SysColor.Battle.FoodLossColor;
         }
         else if(mode == 3)
         {

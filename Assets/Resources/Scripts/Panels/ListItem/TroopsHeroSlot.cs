@@ -23,7 +23,7 @@ public class TroopsHeroSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler,
     {
         if (eventData.pointerDrag != null && eventData.pointerDrag.GetComponent<CityCellHero>() != null)
         {
-            SetColor(Color.green);
+            SetColor(SysColor.UI.DragHighlightColor);
         }
     }
 
@@ -43,6 +43,6 @@ public class TroopsHeroSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler,
 
     public void ResetColor()
     {
-        SetColor(Color.white);
+        SetColor(SysColor.UI.DragResetColor);
     }
 }

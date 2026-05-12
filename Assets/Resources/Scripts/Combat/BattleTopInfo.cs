@@ -91,8 +91,8 @@ public class BattleInfoTop : MonoBehaviour
         leftImg.rectTransform.anchoredPosition =  new Vector2(-availableWidth / 2 - imgWidth, leftImg.rectTransform.anchoredPosition.y);
         rightImg.rectTransform.anchoredPosition = new Vector2(availableWidth / 2, rightImg.rectTransform.anchoredPosition.y);   
 
-        leftTopBar.forceImg.color = ColorUtility.TryParseHtmlString(ForceConfig.GetConfig(leftForceId).Color, out var wColor) ? wColor : Color.green;
-        rightTopBar.forceImg.color = ColorUtility.TryParseHtmlString(ForceConfig.GetConfig(rightForceId).Color, out var wColor2) ? wColor2 : Color.green;
+        leftTopBar.forceImg.color = SysColor.GetForceColor(leftForceId);
+        rightTopBar.forceImg.color = SysColor.GetForceColor(rightForceId);
 
         leftTopBar.SetRate(1);
         rightTopBar.SetRate(1);

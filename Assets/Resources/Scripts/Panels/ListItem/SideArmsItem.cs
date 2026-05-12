@@ -16,8 +16,6 @@ public class SelectArmsItem : MonoBehaviour
     public TMP_Text Cost1Text;
     public TMP_Text Cost2Text;
 
-    private Color normalColor = Color.black;
-    private Color selectedColor = new Color(0.3f, 0.7f, 0.3f, 1);
     private bool isSelected = false;
 
     public Button button;
@@ -105,7 +103,7 @@ public class SelectArmsItem : MonoBehaviour
         isSelected = selected;
         if (BG != null)
         {
-            BG.color = isSelected ? selectedColor : normalColor;
+            BG.color = isSelected ? SysColor.UI.MatchColor : SysColor.Theme.CellNormal;
         }
     }
 
@@ -121,6 +119,6 @@ public class SelectArmsItem : MonoBehaviour
 
     private static Color GetColorByLevel(int level)
     {
-        return SystemConst.Arms.GetColorByLevel(level);
+        return SysColor.GetArmsLevelColor(level);
     }
 }

@@ -14,8 +14,6 @@ public class RankCellForce : MonoBehaviour, IPointerDownHandler
     public TMP_Text forceName;
     public bool isSelect = false;
     public Image backgroundImage;
-    public Color normalColor = Color.black;
-    public Color selectedColor = Color.green;
 
     // Start is called before the first frame update
     void Start()
@@ -51,7 +49,7 @@ public class RankCellForce : MonoBehaviour, IPointerDownHandler
     {
         if (backgroundImage != null)
         {
-            backgroundImage.color = isSelect ? selectedColor : normalColor;
+            backgroundImage.color = isSelect ? SysColor.Theme.CellSelected : SysColor.Theme.CellNormal;
         }
     }
 

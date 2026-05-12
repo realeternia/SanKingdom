@@ -16,8 +16,6 @@ public class HeroInfoCell : MonoBehaviour, IPointerDownHandler
     public TMP_Text heroNameText;
     public bool isSelect = false;
     public Image backgroundImage;
-    public Color normalColor = Color.black;
-    public Color selectedColor = Color.blue;
 
     // Start is called before the first frame update
     void Start()
@@ -47,7 +45,7 @@ public class HeroInfoCell : MonoBehaviour, IPointerDownHandler
     {
         if (backgroundImage != null)
         {
-            backgroundImage.color = isSelect ? selectedColor : normalColor;
+            backgroundImage.color = isSelect ? SysColor.Theme.CellSelected : SysColor.Theme.CellNormal;
         }
     }
 

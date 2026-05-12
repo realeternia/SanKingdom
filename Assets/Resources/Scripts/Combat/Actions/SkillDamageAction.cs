@@ -39,7 +39,7 @@ public class SkillDamageAction : ChessAction
             if(targetChess.isHero && actualDamage > 0)
                 BattleStatManager.AddBeDamaged(targetChess.forceId, targetChess.heroId, actualDamage);
 
-            BattleManager.Instance.AddBattleText("-" + (Damage).ToString(), targetChess.position, new UnityEngine.Vector2(0, 60), new Color(1, 0, 0), 7);
+            BattleManager.Instance.AddBattleText("-" + (Damage).ToString(), targetChess.position, new UnityEngine.Vector2(0, 60), SysColor.Battle.DamageColor, 7);
 
             targetChess.OnHpChanged();
         }

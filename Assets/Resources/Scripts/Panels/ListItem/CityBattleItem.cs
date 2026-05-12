@@ -23,9 +23,6 @@ public class CityBattleItem : MonoBehaviour
     private SaveTroopsData warTeamData;
     private bool isSelected = false;
 
-    private static Color normalColor = new Color(0.2f, 0.2f, 0.2f, 1f);
-    private static Color selectedColor = new Color(0.3f, 0.7f, 0.4f, 1f);
-
     public void Init(SaveTroopsData data)
     {
         warTeamData = data;
@@ -60,7 +57,7 @@ public class CityBattleItem : MonoBehaviour
     {
         if (bgImage != null)
         {
-            bgImage.color = isSelected ? selectedColor : normalColor;
+            bgImage.color = isSelected ? SysColor.Theme.CellSelected : SysColor.Theme.CellNormal;
         }
     }
 
@@ -104,7 +101,14 @@ public class CityBattleItem : MonoBehaviour
             if (warTeamData.armsId > 0)
             {
                 var armsConfig = ArmsConfig.GetConfig(warTeamData.armsId);
-                armsText.text = armsConfig.NameS;
+                string armsColorHex = ColorUtility.ToHtmlStringRGB(SysColor.GetArmsLevelColor(armsConfig.Level));
+                string cityName = "";
+                if (warTeamData.cityId > 0)
+                {
+                    var cityConfig = WorldConfig.GetConfig(warTeamData.cityId);
+                    cityName = cityConfig.Cname;
+                }
+                armsText.text = $"<color=green>{cityName}</color>--<color=#{armsColorHex}>{armsConfig.NameS}</color>";
             }
             else
             {

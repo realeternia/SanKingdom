@@ -6,7 +6,7 @@ namespace CommonConfig
 {
     public class HeroConfig
     {
-                                        public class FieldMetaInfo
+        public class FieldMetaInfo
         {
             public string fieldName;
             public string fieldType;

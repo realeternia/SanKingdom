@@ -1,6 +1,5 @@
 using UnityEngine;
 using CommonConfig;
-using System.Collections.Generic;
 using Controls.Utils;
 
 public static class HeroAttrTool
@@ -15,23 +14,6 @@ public static class HeroAttrTool
         return attrName;
     }
 
-    public static Color GetColorByValue(string attrName, int value)
-    {
-        var cfg = HeroAttrConfig.GetConfigByname(attrName);
-        if (cfg == null || string.IsNullOrEmpty(cfg.ColorRule))
-        {
-            return Color.white;
-        }
-        return ParseColorRule(cfg.ColorRule, value);
-    }
-
-    public static string GetColoredText(string attrName, int value)
-    {
-        Color color = GetColorByValue(attrName, value);
-        string colorHex = ColorUtility.ToHtmlStringRGB(color);
-        return $"<color=#{colorHex}>{value}</color>";
-    }
-
     public static string GetTextByValue(string attrName, int value)
     {
         GameLog.Info($"GetTextByValue: {attrName}, {value}");
@@ -42,14 +24,6 @@ public static class HeroAttrTool
         }
         GameLog.Info($"GetTextByValue: {attrName}, {value}, {cfg.TextRule}");
         return ParseTextRule(cfg.TextRule, value);
-    }
-
-    public static string GetColoredTextWithRule(string attrName, int value)
-    {
-        string text = GetTextByValue(attrName, value);
-        Color color = GetColorByValue(attrName, value);
-        string colorHex = ColorUtility.ToHtmlStringRGB(color);
-        return $"<color=#{colorHex}>{text}</color>";
     }
 
     private static string ParseTextRule(string rule, int value)
@@ -78,37 +52,6 @@ public static class HeroAttrTool
         }
 
         return value.ToString();
-    }
-
-    private static Color ParseColorRule(string rule, int value)
-    {
-        if (string.IsNullOrEmpty(rule))
-        {
-            return Color.white;
-        }
-
-        string[] rules = rule.Split(',');
-        foreach (string r in rules)
-        {
-            string[] parts = r.Split(':');
-            if (parts.Length != 2)
-            {
-                continue;
-            }
-
-            string thresholdStr = parts[0].Trim();
-            string colorStr = parts[1].Trim();
-
-            if (TryMatchThreshold(thresholdStr, value))
-            {
-                if (ColorUtility.TryParseHtmlString(colorStr, out Color color))
-                {
-                    return color;
-                }
-            }
-        }
-
-        return Color.white;
     }
 
     private static bool TryMatchThreshold(string thresholdStr, int value)

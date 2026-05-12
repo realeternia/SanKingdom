@@ -1,0 +1,17 @@
+- [x] SysColor.cs 已创建，包含 GetArmsLevelColor、GetForceColor、GetColorByValue、GetColoredText、GetColoredTextWithRule、GetTextColorOnBackground 方法
+- [x] SysColor.UI 嵌套类包含 NormalColor、SelectedColor、DisabledColor、DropDownNormal、DropDownSelected、DropDownHover、ListItemSelected、ListItemNormal、BorderColor、BorderSelectedColor 常量
+- [x] SysColor.Battle 嵌套类包含 DamageColor、FoodLossColor、FoodGainColor、DeadColor、HealthLowColor、HealthNormalColor、AttackFailColor、AttackSuccessColor 常量
+- [x] SysColor.Chess 嵌套类包含 GoldMain、GoldEmission、GoldOutline、GoldSpec、SilverMain、SilverEmission、SilverOutline、SilverSpec 常量
+- [x] SysColor.City 嵌套类包含 HeroOverlayColor、WildHeroBorderColor、CapturedHeroBorderColor 常量
+- [x] Assembly-CSharp.csproj 已添加 SysColor.cs 的 Compile Include
+- [x] SystemConst.Arms 嵌套类已删除，所有引用已改为 SysColor.GetArmsLevelColor
+- [x] HeroAttrTool 中颜色方法已删除，所有引用已改为 SysColor 对应方法
+- [x] 势力颜色解析（6+ 处重复代码）已统一替换为 SysColor.GetForceColor
+- [x] BattleHeroInfo.cs 硬编码属性值颜色已改为 SysColor.GetColorByValue
+- [x] PopHeroBattleSelectPanelCell.cs 硬编码属性值颜色已改为 SysColor.GetColorByValue
+- [x] 所有面板/列表项的 UI 状态颜色常量已改为引用 SysColor.UI
+- [x] 所有战斗层颜色常量已改为引用 SysColor.Battle
+- [x] ChessViewObj.cs 金色/银色材质颜色已改为引用 SysColor.Chess
+- [x] WorldPieceControl.cs 亮度自适应逻辑已改为 SysColor.GetTextColorOnBackground
+- [x] CityDetail.cs 覆盖层/描边颜色已改为引用 SysColor.City
+- [x] 项目可正常编译，无编译错误（需 Unity 编辑器验证）

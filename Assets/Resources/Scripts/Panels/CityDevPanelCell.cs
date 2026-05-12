@@ -14,9 +14,6 @@ public class CityDevPanelCell : MonoBehaviour, IPointerClickHandler
     public TMP_Text devNameText;
     public Image backgroundImage;
 
-    private Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.8f); // 正常状态背景色
-    private Color selectedColor = new Color(0.5f, 0.5f, 0.1f, 0.8f); // 高光绿色选中状态
-
     // Start is called before the first frame update
     void Start()
     {
@@ -41,7 +38,7 @@ public class CityDevPanelCell : MonoBehaviour, IPointerClickHandler
     {
         if (backgroundImage != null)
         {
-            backgroundImage.color = isSelect ? selectedColor : normalColor;
+            backgroundImage.color = isSelect ? SysColor.Theme.CellSelected : SysColor.Theme.CellNormal;
         }
     }
     

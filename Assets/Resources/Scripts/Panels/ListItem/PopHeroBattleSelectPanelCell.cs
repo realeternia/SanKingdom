@@ -25,10 +25,6 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
     public Button changeButton;
 
-    private Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.8f); // 正常状态背景色
-    private Color selectedColor = new Color(0.5f, 0.5f, 0.1f, 0.8f); // 高光绿色选中状态
-    private Color disabledColor = new Color(0.1f, 0.1f, 0.1f, 0.5f); // 灰色不可用状态
-
     // Start is called before the first frame update
     void Start()
     {
@@ -58,15 +54,15 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
         attr1Val = heroData.GetAttr("leadShip");
         var attLeadVal = heroData.GetAttr("leadShip");
         textAttrLead.text = attLeadVal.ToString();
-        textAttrLead.color = attLeadVal >= 95 ? Color.red : (attLeadVal >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+        textAttrLead.color = SysColor.GetColorByValue("leadShip", attLeadVal);
         var attStrVal = heroData.GetAttr("str");
         textAttrStr.text = attStrVal.ToString();
-        textAttrStr.color = attStrVal >= 95 ? Color.red : (attStrVal >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+        textAttrStr.color = SysColor.GetColorByValue("str", attStrVal);
         var attIntlVal = heroData.GetAttr("inte");
         textAttrIntl.text = attIntlVal.ToString();
-        textAttrIntl.color = attIntlVal >= 95 ? Color.red : (attIntlVal >= 90 ? new Color(0.8f, 0.5f, 0, 1) : Color.white);
+        textAttrIntl.color = SysColor.GetColorByValue("inte", attIntlVal);
         textAttrSoldier.text = CityBattlePanelManager.GetAllocatedSoldier(heroData.heroId).ToString();
-        textAttrSoldier.color = CityBattlePanelManager.GetAllocatedSoldier(heroData.heroId) == 0 ? Color.gray : Color.white;
+        textAttrSoldier.color = CityBattlePanelManager.GetAllocatedSoldier(heroData.heroId) == 0 ? SysColor.Battle.DeadColor : Color.white;
 
         isAvailable = true;
     }
@@ -75,7 +71,7 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
     {
         var heroData = GameManager.Instance.GetHero(heroId);
         textAttrSoldier.text = CityBattlePanelManager.GetAllocatedSoldier(heroId).ToString();
-        textAttrSoldier.color = CityBattlePanelManager.GetAllocatedSoldier(heroId) == 0 ? Color.gray : Color.white;
+        textAttrSoldier.color = CityBattlePanelManager.GetAllocatedSoldier(heroId) == 0 ? SysColor.Battle.DeadColor : Color.white;
     }
 
     public void OnSelect(bool isSelect)
@@ -88,11 +84,11 @@ public class PopHeroBattleSelectPanelCell : MonoBehaviour, IPointerClickHandler
             // 只有可用的英雄才能改变选中状态的背景色
             if (isAvailable)
             {
-                backgroundImage.color = isSelect ? selectedColor : normalColor;
+                backgroundImage.color = isSelect ? SysColor.Theme.CellSelected : SysColor.Theme.CellNormal;
             }
             else
             {
-                backgroundImage.color = disabledColor;
+                backgroundImage.color = SysColor.Theme.CellDisabled;
             }
         }
     }

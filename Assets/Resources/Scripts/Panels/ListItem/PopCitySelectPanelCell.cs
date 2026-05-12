@@ -17,8 +17,6 @@ public class PopCitySelectPanelCell : MonoBehaviour, IPointerClickHandler
     public TMP_Text textHeroCount;
     public Image backgroundImage;
     
-    private Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.8f);
-    private Color selectedColor = new Color(0.5f, 0.5f, 0.1f, 0.8f);
     private bool isSelected = false;
 
     void Start()
@@ -52,7 +50,7 @@ public class PopCitySelectPanelCell : MonoBehaviour, IPointerClickHandler
         isSelected = isSelect;
         if (backgroundImage != null)
         {
-            backgroundImage.color = isSelect ? selectedColor : normalColor;
+            backgroundImage.color = isSelect ? SysColor.Theme.CellSelected : SysColor.Theme.CellNormal;
         }
     }
     

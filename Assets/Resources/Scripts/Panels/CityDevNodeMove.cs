@@ -109,7 +109,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
         var citySrc = GameManager.Instance.GetCity(cityId);
         foodCostText.text = string.Format("{0} / {1}", foodCost, (int)citySrc.food);
-        foodCostText.color = foodCost <= citySrc.food ? Color.white : Color.red;
+        foodCostText.color = foodCost <= citySrc.food ? Color.white : SysColor.Battle.FoodLossColor;
     }
 
     void Update()

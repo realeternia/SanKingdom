@@ -204,7 +204,7 @@ public class PickPanelControl : MonoBehaviour
                 // 设置英雄名称
                 cellControl.heroName.text = heroCfg.Name;
 
-                cellControl.bgImg.GetComponent<Image>().color = ColorUtility.TryParseHtmlString(forceCfg.Color, out var wColor) ? wColor : Color.white;
+                cellControl.bgImg.GetComponent<Image>().color = SysColor.GetForceColor(forceCfg.Id);
             }
             if (target == null)
             {

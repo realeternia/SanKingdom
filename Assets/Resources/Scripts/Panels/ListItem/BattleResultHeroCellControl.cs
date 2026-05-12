@@ -38,7 +38,7 @@ public class BattleResultHeroCellControl : MonoBehaviour
 
         heroIcon.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg.Icon));
         if (battleStat.isDead)
-            heroIcon.color = new Color(0.3f, 0.3f, 0.3f, 1f);
+            heroIcon.color = SysColor.Battle.DeadColor;
         else
             heroIcon.color = Color.white;
 
@@ -49,7 +49,7 @@ public class BattleResultHeroCellControl : MonoBehaviour
                 heroOutline = heroIcon.gameObject.AddComponent<Outline>();
                 heroOutline.effectDistance = new Vector2(3, -3);
             }
-            heroOutline.effectColor = Color.red;
+            heroOutline.effectColor = SysColor.Battle.CapturedOutlineColor;
             heroOutline.enabled = true;
         }
         else

@@ -25,10 +25,6 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
 
     public Button viewButton;
 
-    private Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.8f); // 正常状态背景色
-    private Color selectedColor = new Color(0.5f, 0.5f, 0.1f, 0.8f); // 高光绿色选中状态
-    private Color disabledColor = new Color(0.1f, 0.1f, 0.1f, 0.5f); // 灰色不可用状态
-
     // Start is called before the first frame update
     void Start()
     {
@@ -56,32 +52,32 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
         var att1Val = heroData.GetAttr(attrs[0]);
         this.attr1Val = att1Val;
         textAttr1.text = att1Val.ToString();
-        textAttr1.color = HeroAttrTool.GetColorByValue(attrs[0], att1Val);
+        textAttr1.color = SysColor.GetColorByValue(attrs[0], att1Val);
         if(attrs.Length > 1)
         {
             var att2Val = heroData.GetAttr(attrs[1]);
             textAttr2.text = att2Val.ToString();
-            textAttr2.color = HeroAttrTool.GetColorByValue(attrs[1], att2Val);
+            textAttr2.color = SysColor.GetColorByValue(attrs[1], att2Val);
         }
         else
             textAttr2.text = "";
 
         textLoyalty.text = heroData.loyalty.ToString();
-        textLoyalty.color = HeroAttrTool.GetColorByValue("loyalty", heroData.loyalty);
+        textLoyalty.color = SysColor.GetColorByValue("loyalty", heroData.loyalty);
 
         switch (heroData.state)
         {
             case HeroState.Normal:
                 textState.text = "正常";
-                textState.color = Color.white;
+                textState.color = SysColor.Hero.StateNormalColor;
                 break;
             case HeroState.Wild:
                 textState.text = "在野";
-                textState.color = Color.yellow;
+                textState.color = SysColor.Hero.StateWildColor;
                 break;
             case HeroState.Catched:
                 textState.text = "俘虏";
-                textState.color = Color.red;
+                textState.color = SysColor.Hero.StateCapturedColor;
                 break;
         }
 
@@ -99,11 +95,11 @@ public class PopHeroSelectPanelCell : MonoBehaviour, IPointerClickHandler
             // 只有可用的英雄才能改变选中状态的背景色
             if (isAvailable)
             {
-                backgroundImage.color = isSelect ? selectedColor : normalColor;
+                backgroundImage.color = isSelect ? SysColor.Theme.CellSelected : SysColor.Theme.CellNormal;
             }
             else
             {
-                backgroundImage.color = disabledColor;
+                backgroundImage.color = SysColor.Theme.CellDisabled;
             }
         }
     }

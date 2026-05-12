@@ -28,9 +28,6 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
     private bool isSelected = false;
     private bool isRunType = false;
     private bool isViewOnly = false;
-    private Color normalBorderColor = new Color(0.5f, 0.5f, 0.5f, 1f);
-    private Color selectedBorderColor = Color.green;
-    private Color grayColor = new Color(0.5f, 0.5f, 0.5f, 1f);
 
     void Start()
     {
@@ -245,7 +242,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
     {
         if (borderImage != null)
         {
-            borderImage.color = isSelected ? selectedBorderColor : normalBorderColor;
+            borderImage.color = isSelected ? SysColor.UI.BorderSelectedColor : SysColor.UI.BorderColor;
         }
     }
 
@@ -275,14 +272,14 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
 
         if (currentHeroIds.Count == 0)
         {
-            heroImgBG.color = grayColor;
+            heroImgBG.color = SysColor.UI.BorderColor;
             return;
         }
 
         var devCfg = CityDevConfig.GetConfig(devId);
         if (devCfg == null || devCfg.Attrs == null || devCfg.Attrs.Length == 0)
         {
-            heroImgBG.color = grayColor;
+            heroImgBG.color = SysColor.UI.BorderColor;
             return;
         }
 
@@ -300,19 +297,19 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
 
         if (tier == 0)
         {
-            heroImgBG.color = Color.red;
+            heroImgBG.color = SysColor.Hero.TierHighColor;
         }
         else if (tier == 1)
         {
-            heroImgBG.color = Color.yellow;
+            heroImgBG.color = SysColor.Hero.TierMediumColor;
         }
         else if (tier == 2)
         {
-            heroImgBG.color = Color.green;
+            heroImgBG.color = SysColor.Hero.TierLowColor;
         }
         else
         {
-            heroImgBG.color = grayColor;
+            heroImgBG.color = SysColor.UI.BorderColor;
         }
     }
 
