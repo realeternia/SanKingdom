@@ -216,12 +216,7 @@ public class BattleManager : MonoBehaviour
         var heroData2 = troop.heroId2 > 0 ? GameManager.Instance.GetHero(troop.heroId2) : null;
         var heroData3 = troop.heroId3 > 0 ? GameManager.Instance.GetHero(troop.heroId3) : null;
 
-        int heroCount = 1;
-        if (heroData2 != null) heroCount++;
-        if (heroData3 != null) heroCount++;
-
-        int totalInte = Math.Max(Math.Max(heroData1.inte, heroData2?.inte ?? 0), heroData3?.inte ?? 0);
-        int avgInte = totalInte / heroCount;
+        int inte = Math.Max(Math.Max(heroData1.inte, heroData2?.inte ?? 0), heroData3?.inte ?? 0);
 
         var mainHero = heroData1;
         var (atk, def) = SysFormula.Battle.CalculateCombatAttr(mainHero, troop.armsId);
@@ -230,7 +225,7 @@ public class BattleManager : MonoBehaviour
         var action = new CreateChessAction(0, tickAdd, id, force.forceId, 
             troop.heroId1, troop.heroId2, troop.heroId3, 
             heroData1.GetLevel(), 
-            soldierCount, troop.armsId, atk, def, avgInte, spawnPoint);
+            soldierCount, troop.armsId, atk, def, inte, spawnPoint);
         AddChessAction(action);
     }
 
