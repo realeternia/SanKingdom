@@ -220,12 +220,7 @@ public class BattleManager : MonoBehaviour
         if (heroData2 != null) heroCount++;
         if (heroData3 != null) heroCount++;
 
-        int totalStr = heroData1.str;
-        int totalLeadShip = heroData1.leadShip;
-        int totalInte = Math.Max(Math.Max(heroData1.inte, heroData2?.inte ?? 0), heroData3?.inte ?? 0); //智力取最高值
-
-        int avgStr = totalStr / heroCount;
-        int avgLeadShip = totalLeadShip / heroCount;
+        int totalInte = Math.Max(Math.Max(heroData1.inte, heroData2?.inte ?? 0), heroData3?.inte ?? 0);
         int avgInte = totalInte / heroCount;
 
         var mainHero = heroData1;
@@ -235,7 +230,7 @@ public class BattleManager : MonoBehaviour
         var action = new CreateChessAction(0, tickAdd, id, force.forceId, 
             troop.heroId1, troop.heroId2, troop.heroId3, 
             heroData1.GetLevel(), 
-            soldierCount, troop.armsId, atk, def, avgStr, avgLeadShip, avgInte, spawnPoint);
+            soldierCount, troop.armsId, atk, def, avgInte, spawnPoint);
         AddChessAction(action);
     }
 

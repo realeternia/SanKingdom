@@ -13,7 +13,7 @@ public class Chess : SceneObj
     [NonSerialized]
     public ChessViewObj viewObj;
     [NonSerialized]
-    public HeroInfo heroInfo;
+    public BattleHeroInfo heroInfo;
 
     public int forceId;
 
@@ -57,9 +57,7 @@ public class Chess : SceneObj
     public float moveSpeed = 5f;
     [NonSerialized]
     public float attackRange = 10f;
-    [NonSerialized]
     public int atk;
-    [NonSerialized]
     public int def;
     [NonSerialized]
     public string hitEffect;
@@ -173,8 +171,7 @@ public class Chess : SceneObj
                 viewObj = unitModel.GetComponent<ChessViewObj>();
                 viewObj.Init(this, force.LineColor);
 
-                var heroInfo = BattleManager.Instance.battleUIManager.heroInfoGroup.AddHero(forceId, heroId, level);
-                heroInfo.SetAttr(inte, str, leadShip);
+                var heroInfo = BattleManager.Instance.battleUIManager.heroInfoGroup.AddHero(forceId, heroId, level, heroId2, heroId3, inte, atk, def);
                 heroInfo.SetHpRate(maxHp, maxHp);
                 this.heroInfo = heroInfo;
 

@@ -1,85 +1,63 @@
 using System.Collections;
 using System.Collections.Generic;
+using CommonConfig;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Controls.Utils;
 
-public class HeroInfo : MonoBehaviour
+public class BattleHeroInfo : MonoBehaviour
 {
     public TMP_Text heroName;
     public TMP_Text heroLevelTxt;
     public TMP_Text heroHpTxt;
     public Image heroImage;
+    public Image hero2Image;
+    public Image hero3Image;
     public Image healthImg;
     public Image errorImg;
-    public Image classImg;
 
     public TMP_Text heroInteTxt;
-    public TMP_Text heroStrTxt;
-    public TMP_Text heroLeadTxt;
+    public TMP_Text heroAtkTxt;
+    public TMP_Text heroDefTxt;
 
-    // Start is called before the first frame update
     void Start()
     {
-        errorImg.gameObject.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Init(int heroId, int level, int heroId2, int heroId3, int inte, int atk, int def)
     {
-        
+        errorImg.gameObject.SetActive(false);
+        heroImage.gameObject.SetActive(true);
+        var heroCfg = HeroConfig.GetConfig(heroId);
+        var iconPath = ResPath.Texture.HeroIcon(heroCfg.Icon);
+        var sprite = ResourceCache.LoadSpriteBattle(iconPath);
+        GameLog.Info($"BattleHeroInfo.Init heroId={heroId} icon={heroCfg.Icon} path={iconPath} sprite={sprite}");
+        heroImage.sprite = sprite;
+        heroName.text = heroCfg.Name;
+        heroLevelTxt.text = level.ToString();
+        SetViceHeroImage(hero2Image, heroId2);
+        SetViceHeroImage(hero3Image, heroId3);
+        SetAttr(inte, atk, def);
     }
 
-    public void SetAttr(int inte, int str, int leadShip)
+    public void SetAttr(int inte, int atk, int def)
     {
         SetText(heroInteTxt, inte);
-        SetText(heroStrTxt, str);
-        SetText(heroLeadTxt, leadShip);
+        SetText(heroAtkTxt, atk);
+        SetText(heroDefTxt, def);
+    }
 
-        // 确定英雄的最高属性
-        string highestAttr = "";
-
-        var total = inte + leadShip + str;
-        if (inte >= leadShip && inte >= str)
+    private void SetViceHeroImage(Image image, int heroId)
+    {
+        if (heroId <= 0)
         {
-            highestAttr = "attrinte";
+            image.gameObject.SetActive(false);
+            return;
         }
-        else if (leadShip >= inte && leadShip >= str)
-        {
-            highestAttr = "attrlead";
-
-        }
-        else if (str >= inte && str >= leadShip)
-        {
-            highestAttr = "attrstr";
-
-        }
-        else if (total >= 235)
-        {
-            highestAttr = "attrshield";
-        }
-
-        if (highestAttr != "")
-        {
-            // 根据最高属性加载对应图片
-            classImg.sprite = ResourceCache.LoadSpriteBattle(ResPath.Texture.TextureByName(highestAttr));
-            if (total >= 270)
-            {
-                classImg.color = Color.red;
-            }
-            else if (total >= 250)
-            {
-                classImg.color = new Color(1, 0.5f, 0);
-            }
-            else if (total >= 220)
-            {
-                classImg.color = Color.yellow;
-            }
-            else if (total >= 180)
-            {
-                classImg.color = Color.green;
-            }
-        }
+        image.gameObject.SetActive(true);
+        var heroCfg = HeroConfig.GetConfig(heroId);
+        image.sprite = ResourceCache.LoadSpriteBattle(ResPath.Texture.HeroIcon(heroCfg.Icon));
     }
 
     private void SetText(TMP_Text text, int val)
@@ -103,7 +81,6 @@ public class HeroInfo : MonoBehaviour
         }
     }
 
-
     public void SetHpRate(int hp, int maxHp)
     {
         if (maxHp <= 0)
@@ -123,6 +100,5 @@ public class HeroInfo : MonoBehaviour
             healthImg.color = new Color(0.4f, .33f, 0);
         else
             healthImg.color = new Color(0f, .4f, .1f);
-
     }
 }

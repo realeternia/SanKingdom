@@ -21,7 +21,8 @@ public static class ResourceCache
 
     public static T LoadUI<T>(string path) where T : UnityEngine.Object
     {
-        var cached = UICache.Get(path);
+        string key = typeof(T).Name + ":" + path;
+        var cached = UICache.Get(key);
         if (cached != null)
         {
             return cached as T;
@@ -30,14 +31,15 @@ public static class ResourceCache
         var resource = Resources.Load<T>(path);
         if (resource != null)
         {
-            UICache.Add(path, resource);
+            UICache.Add(key, resource);
         }
         return resource;
     }
 
     public static T LoadBattle<T>(string path) where T : UnityEngine.Object
     {
-        var cached = BattleCache.Get(path);
+        string key = typeof(T).Name + ":" + path;
+        var cached = BattleCache.Get(key);
         if (cached != null)
         {
             return cached as T;
@@ -46,7 +48,7 @@ public static class ResourceCache
         var resource = Resources.Load<T>(path);
         if (resource != null)
         {
-            BattleCache.Add(path, resource);
+            BattleCache.Add(key, resource);
         }
         return resource;
     }

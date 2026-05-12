@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CommonConfig;
-using TMPro;
 using Controls.Utils;
 
 public class HeroInfoGroup : MonoBehaviour
@@ -40,21 +38,16 @@ public class HeroInfoGroup : MonoBehaviour
         GameLog.Debug("Reset " + heroInfoRectSide1.transform.childCount + " " + heroInfoRectSide2.transform.childCount);
     }
 
-    public HeroInfo AddHero(int forceId, int heroId, int level)
+    public BattleHeroInfo AddHero(int forceId, int heroId, int level, int heroId2, int heroId3, int inte, int atk, int def)
     {
         var attackerForceId = BattleManager.Instance.playerInfoList[0].forceId;
         bool isSide1 = forceId == attackerForceId;
         int count = isSide1 ? countSide1 : countSide2;
         GameObject heroInfoRect = isSide1 ? heroInfoRectSide1 : heroInfoRectSide2;
         
-        HeroInfo heroInfo = Instantiate(heroPrefab, heroInfoRect.transform).GetComponent<HeroInfo>();
-        heroInfo.transform.localPosition = new Vector3(0, -47 - 91 * count, 0);
-        var heroCfg = HeroConfig.GetConfig(heroId);
-
-        heroInfo.heroImage.sprite = ResourceCache.LoadSpriteBattle(ResPath.Texture.HeroIcon(heroCfg.Icon));
-
-        heroInfo.heroName.text = heroCfg.Name;
-        heroInfo.heroLevelTxt.text = level.ToString();
+        BattleHeroInfo heroInfo = Instantiate(heroPrefab, heroInfoRect.transform).GetComponent<BattleHeroInfo>();
+        heroInfo.transform.localPosition = new Vector3(0, -60 - 120 * count, 0);
+        heroInfo.Init(heroId, level, heroId2, heroId3, inte, atk, def);
 
         if(isSide1)
         {
@@ -65,7 +58,7 @@ public class HeroInfoGroup : MonoBehaviour
             countSide2++;
         }
 
-        heroInfoRect.GetComponent<RectTransform>().sizeDelta = new Vector2(heroInfoRect.GetComponent<RectTransform>().sizeDelta.x, 91 * count + 3);
+        heroInfoRect.GetComponent<RectTransform>().sizeDelta = new Vector2(heroInfoRect.GetComponent<RectTransform>().sizeDelta.x, 120 * count + 3);
 
         return heroInfo;
     }
