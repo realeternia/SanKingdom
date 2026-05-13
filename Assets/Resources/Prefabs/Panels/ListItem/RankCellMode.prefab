@@ -226,6 +226,4 @@ MonoBehaviour:
   rankPanelManager: {fileID: 0}
   modeName: {fileID: 6171851270967164799}
   isSelect: 0
-  backgroundImage: {fileID: 0}
-  normalColor: {r: 0, g: 0, b: 0, a: 1}
-  selectedColor: {r: 0, g: 1, b: 0, a: 1}
+  backgroundImage: {fileID: 3714927046249769316}

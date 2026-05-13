@@ -224,4 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rankPanelManager: {fileID: 0}
+  forceId: 0
   forceName: {fileID: 6171851270967164799}
+  isSelect: 0
+  backgroundImage: {fileID: 3714927046249769316}

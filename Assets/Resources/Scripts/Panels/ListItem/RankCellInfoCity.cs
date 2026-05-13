@@ -14,14 +14,16 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
     public TMP_Text cityName;
 
     public TMP_Text cityLevel;
-    public TMP_Text cityExp;
     public TMP_Text citySoldier;
+    public TMP_Text cityFood;
     public TMP_Text cityWall;
+    public TMP_Text cityHappy;
 
     public Button btnLevel;
-    public Button btnExp;
+    public Button btnFood;
     public Button btnSoldier;
-    public Button btnWall;    
+    public Button btnWall;
+    public Button btnHappy;    
 
     public GameObject nodeHeader;
     public GameObject nodeRow;
@@ -33,9 +35,10 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
     {
         cityName.raycastTarget = false;
         cityLevel.raycastTarget = false;
-        cityExp.raycastTarget = false;
+        cityFood.raycastTarget = false;
         citySoldier.raycastTarget = false;
         cityWall.raycastTarget = false;
+        cityHappy.raycastTarget = false;
     }
 
     public void SetManager(RankPanelManager rankPanelManager)
@@ -53,9 +56,9 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
             {
                 rankPanelManager.SortItems("Level");
             });
-            btnExp.onClick.AddListener(() =>
+            btnFood.onClick.AddListener(() =>
             {
-                rankPanelManager.SortItems("Exp");
+                rankPanelManager.SortItems("Food");
             });
             btnSoldier.onClick.AddListener(() =>
             {
@@ -64,6 +67,10 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
             btnWall.onClick.AddListener(() =>
             {
                 rankPanelManager.SortItems("Wall");
+            });
+            btnHappy.onClick.AddListener(() =>
+            {
+                rankPanelManager.SortItems("Happy");
             });
         }
         else
@@ -79,12 +86,14 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
         {
             case "Level":
                 return int.Parse(cityLevel.text);
-            case "Exp":
-                return int.Parse(cityExp.text);
+            case "Food":
+                return int.Parse(cityFood.text);
             case "Soldier":
                 return int.Parse(citySoldier.text);
             case "Wall":
                 return int.Parse(cityWall.text);
+            case "Happy":
+                return int.Parse(cityHappy.text);
             default:
                 return 0;
         }
@@ -96,10 +105,11 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
         var cityData = GameManager.Instance.GetCity(cityId);
         cityName.text = WorldConfig.GetConfig(cityId).Cname;
         cityLevel.text = cityData.level.ToString();
-        cityExp.text = cityData.exp.ToString();
+        cityFood.text = cityData.food.ToString();
         citySoldier.text = cityData.soldier.ToString();
         cityWall.text = cityData.wall.ToString();
-       
+        cityHappy.text = cityData.happy.ToString();
+        
     }
 
     // Update is called once per frame

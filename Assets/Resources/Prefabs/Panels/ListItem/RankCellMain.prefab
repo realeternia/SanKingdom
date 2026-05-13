@@ -93,7 +93,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rankPanelManager: {fileID: 0}
   heroPic: {fileID: 3912954952888409584}
-  heroPicContainer: {fileID: 0}
+  heroPicContainer: {fileID: 76827737818314668}
   viewButton: {fileID: 1619910987993348249}
   heroName: {fileID: 4939478911074581863}
   heroStr: {fileID: 1415345999452329535}
