@@ -1,7 +1,5 @@
 using UnityEngine;
 using CommonConfig;
-using Controls.Utils;
-
 public static class HeroAttrTool
 {
     public static string GetCName(string attrName)

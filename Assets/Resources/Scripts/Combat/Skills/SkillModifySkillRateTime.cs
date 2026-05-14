@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 using System.Linq;
-using Controls.Utils;
-
 public class SkillModifySkillRateTime : Skill
 {
     public SkillModifySkillRateTime(int id, Chess unit) : base(id, unit)

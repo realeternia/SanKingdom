@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 using System.Linq;
-using Controls.Utils;
-
 public enum BattleResult
 {
     Win,

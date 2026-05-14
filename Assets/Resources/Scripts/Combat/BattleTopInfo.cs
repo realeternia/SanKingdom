@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
-using Controls.Utils;
-
 public class BattleInfoTop : MonoBehaviour
 {
     public static BattleInfoTop Instance;

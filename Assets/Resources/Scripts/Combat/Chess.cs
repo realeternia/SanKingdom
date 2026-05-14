@@ -5,8 +5,6 @@ using CommonConfig;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Controls.Utils;
-
 [Serializable]
 public class Chess : SceneObj
 {

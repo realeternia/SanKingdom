@@ -4,8 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
-using Controls.Utils;
-
 public class SkillAidShockWave : Skill
 {
     public SkillAidShockWave(int id, Chess unit) : base(id, unit)

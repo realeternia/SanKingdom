@@ -1,6 +1,4 @@
 using UnityEngine;
-using Controls.Utils;
-
 [System.Serializable]
 public class RemoveChessAction : ChessAction
 {

@@ -6,9 +6,6 @@ using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
 using System;
-using Controls.Utils;
-
-
 public class PopResultPanelManager : MonoBehaviour
 {
     [System.Serializable]

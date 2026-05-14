@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
-using Controls.Utils;
-
 public class PickPanelControl : MonoBehaviour
 {
     public GameObject pickPanelCellPrefab; // 引用PickPanelCell预制体

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
-using Controls.Utils;
-
 public class SideArmysSelector : MonoBehaviour
 {
     public ScrollRect scrollRectMain;

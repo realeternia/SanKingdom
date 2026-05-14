@@ -6,8 +6,6 @@ using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
 using System;
-using Controls.Utils;
-
 public class VideoPanelManager : MonoBehaviour
 {
     public VideoPlayer videoPlayer;

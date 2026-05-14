@@ -5,9 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using CommonConfig;
-using Controls.Utils;
-
-
 public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IRankDetailInfo, IRankDetailInfoHeader
 {
     public RankPanelManager rankPanelManager;

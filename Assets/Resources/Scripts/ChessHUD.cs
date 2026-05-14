@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Controls.Utils;
-
 public class ChessHUD : MonoBehaviour
 {
     public Chess chessUnit;

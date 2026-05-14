@@ -7,8 +7,6 @@ using CommonConfig;
 using System.Linq;
 using System;
 using UnityEngine.EventSystems;
-using Controls.Utils;
-
 public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     private int cityId;

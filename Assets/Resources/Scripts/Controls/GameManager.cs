@@ -5,8 +5,6 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using CommonConfig;
-using Controls.Utils;
-
 public class GameManager : MonoBehaviour
 {   
     public static GameManager Instance;

@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
-using Controls.Utils;
-
 public class SkillAttackSpeedAttack : Skill
 {
     public SkillAttackSpeedAttack(int id, Chess unit) : base(id, unit)

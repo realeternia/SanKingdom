@@ -1,7 +1,5 @@
 using System;
 using CommonConfig;
-using Controls.Utils;
-
 [System.Serializable]
 public class CreateChessAction : ChessAction
 {

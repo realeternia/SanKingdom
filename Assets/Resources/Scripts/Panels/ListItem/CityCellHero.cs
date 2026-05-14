@@ -5,8 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using CommonConfig;
-using Controls.Utils;
-
 public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public CityPanelManager cityPanelManager;

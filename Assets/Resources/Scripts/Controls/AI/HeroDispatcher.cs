@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
-using Controls.Utils;
-
 public enum HeroType
 {
     Combat,

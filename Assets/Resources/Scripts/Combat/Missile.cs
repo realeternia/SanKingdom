@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
-using Controls.Utils;
-
 [Serializable]
 public class Missile : SceneObj
 {

@@ -5,8 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using CommonConfig;
-using Controls.Utils;
-
 public class PopArmySetManager : MonoBehaviour
 {
     private int cityId;

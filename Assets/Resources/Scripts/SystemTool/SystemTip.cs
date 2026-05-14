@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using Controls.Utils;
-
 public class SystemTip : MonoBehaviour
 {
     public static SystemTip Instance;

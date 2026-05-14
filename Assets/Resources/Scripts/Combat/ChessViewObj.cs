@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using CommonConfig;
 using System.Linq;
 using UnityEngine;
-using Controls.Utils;
-
 public class ChessViewObj : MonoBehaviour
 {     
     public Chess chessUnit;

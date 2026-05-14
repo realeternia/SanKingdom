@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using CommonConfig;
-using Controls.Utils;
-
 public static class SkillManager
 {
     public static bool isReplay = false;

@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
 using System;
-using Controls.Utils;
 using System.Linq;
 
 public class MainPanelManager : MonoBehaviour, IPanelEvent

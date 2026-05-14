@@ -5,8 +5,6 @@ using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
 using System;
-using Controls.Utils;
-
 public class WorldPieceControl : MonoBehaviour
 {
     private const float MAP_SCALE_FACTOR = SystemConst.WorldMap.MAP_SCALE_FACTOR;

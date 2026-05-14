@@ -4,8 +4,6 @@ using CommonConfig;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Controls.Utils;
-
 public class BattleHeroInfo : MonoBehaviour
 {
     public TMP_Text heroName;

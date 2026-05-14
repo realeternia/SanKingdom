@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Controls.Utils;
-
 public class HeroInfoGroup : MonoBehaviour
 {
     public GameObject heroInfoRectSide1;

@@ -4,8 +4,6 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using CommonConfig;
-using Controls.Utils;
-
 public class CastleHUD : MonoBehaviour
 {
     public TMP_Text castleName;

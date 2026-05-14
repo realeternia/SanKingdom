@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 using UnityEngine.UI;
-using Controls.Utils;
-
 public class SelectHeroControl : MonoBehaviour
 {
     private int cityId;

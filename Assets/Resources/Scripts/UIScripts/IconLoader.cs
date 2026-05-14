@@ -1,8 +1,6 @@
 using CommonConfig;
 using UnityEngine;
 using UnityEngine.UI;
-using Controls.Utils;
-
 public enum IconSourceType
 {
     Path,

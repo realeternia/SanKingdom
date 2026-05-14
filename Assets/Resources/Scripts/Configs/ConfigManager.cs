@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
 using UnityEngine;
-using Controls.Utils;
-
 public static class ConfigManager
 {
     private static Dictionary<string, SkillConfig> skillDict = new Dictionary<string, SkillConfig>();

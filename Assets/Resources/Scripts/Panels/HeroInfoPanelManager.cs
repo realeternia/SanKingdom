@@ -4,8 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
-using Controls.Utils;
-
 public class HeroInfoPanelManager : MonoBehaviour
 {
     public int heroId;

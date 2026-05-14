@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using Controls.Utils;
-
 [RequireComponent(typeof(Renderer))]
 public class GlowBeamController : MonoBehaviour
 {
