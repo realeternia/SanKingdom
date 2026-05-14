@@ -67,6 +67,16 @@ public class IconLoaderEditor : Editor
         };
     }
 
+    private void RefreshAttrData()
+    {
+        cityAttrIds = null;
+        cityAttrDisplayNames = null;
+        cityAttrIndex = -1;
+        heroAttrIds = null;
+        heroAttrDisplayNames = null;
+        heroAttrIndex = -1;
+    }
+
     private void EnsureCityAttrData()
     {
         if (cityAttrIds != null) return;
@@ -153,6 +163,15 @@ public class IconLoaderEditor : Editor
         IconLoader loader = (IconLoader)target;
 
         DrawHeader();
+
+        GUILayout.Space(2);
+        Rect refreshRect = GUILayoutUtility.GetRect(0, 22);
+        refreshRect.x += EditorGUIUtility.labelWidth;
+        refreshRect.width -= EditorGUIUtility.labelWidth;
+        if (GUI.Button(refreshRect, "\u21BB  \u5237\u65B0\u914D\u7F6E"))
+        {
+            RefreshAttrData();
+        }
 
         SerializedProperty sourceTypeProp = serializedObject.FindProperty("sourceType");
 

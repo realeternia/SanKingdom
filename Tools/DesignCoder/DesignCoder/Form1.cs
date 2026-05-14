@@ -73,6 +73,8 @@ namespace DesignCoder
         {
             if (listView1.SelectedItems.Count == 0) return;
 
+            SaveCurrentEditingData();
+
             string selectedName = listView1.SelectedItems[0].Text.TrimEnd('*');
             string filePath = Path.Combine(ConfigDir, selectedName + "_s.cs");
 
@@ -82,16 +84,43 @@ namespace DesignCoder
             LoadConfigFile(filePath, selectedName);
         }
 
+        private void SaveCurrentEditingData()
+        {
+            if (dataGridView1 == null || dataTable == null || currentConfig == null) return;
+            
+            dataGridView1.EndEdit();
+            
+            var cm = (CurrencyManager)BindingContext[dataTable];
+            if (cm != null)
+            {
+                cm.EndCurrentEdit();
+            }
+            
+            foreach (DataRow row in dataTable.Rows)
+            {
+                if (row["_RowTag_"] == DBNull.Value || string.IsNullOrEmpty(row["_RowTag_"] as string))
+                {
+                    row["_RowTag_"] = "Data";
+                    MarkCurrentConfigModified();
+                }
+            }
+            
+            SyncDataTableToConfig();
+        }
+
         private void LoadConfigFile(string filePath, string configName)
         {
             isLoading = true;
             try
             {
-                string source = File.ReadAllText(filePath, Encoding.UTF8);
-                currentConfig = ConfigData.Parse(source);
-                
-                if (!loadedConfigs.ContainsKey(configName))
+                if (loadedConfigs.ContainsKey(configName) && modifiedConfigs.Contains(configName))
                 {
+                    currentConfig = loadedConfigs[configName];
+                }
+                else
+                {
+                    string source = File.ReadAllText(filePath, Encoding.UTF8);
+                    currentConfig = ConfigData.Parse(source);
                     loadedConfigs[configName] = currentConfig;
                     originalSources[configName] = source;
                 }
@@ -379,6 +408,8 @@ namespace DesignCoder
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            SaveCurrentEditingData();
+
             if (modifiedConfigs.Count == 0)
             {
                 MessageBox.Show("没有需要保存的修改", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);

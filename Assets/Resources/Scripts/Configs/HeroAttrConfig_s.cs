@@ -40,7 +40,7 @@ namespace CommonConfig
         private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
         {
             {"Id", new FieldMetaInfo("序列", "int", 60)},
-            {"name", new FieldMetaInfo("名字", "string", 0, "", true)},
+            {"name", new FieldMetaInfo("名字", "string", 101, "", true)},
             {"Cname", new FieldMetaInfo("中文名", "string", 0)},
             {"TextRule", new FieldMetaInfo("输出规则", "string", 345)},
             {"ColorRule", new FieldMetaInfo("颜色规则", "string", 371)},
@@ -100,12 +100,15 @@ namespace CommonConfig
             config[4] = new HeroAttrConfig(4, "charm", "魅力", "", "95:#FF0000,90:#FFFF00,0:#FFFFFF", "herocharm", false);
             config[5] = new HeroAttrConfig(5, "leadShip", "统帅", "", "95:#FF0000,90:#FFFF00,0:#FFFFFF", "herolead", false);
             config[6] = new HeroAttrConfig(6, "loyalty", "忠诚度", "", "80:#FFFFFF,50:#FFA500,0:#FF0000", "", false);
-            config[7] = new HeroAttrConfig(7, "weightedAttr", "加权属性", "", "90:#FF0000,80:#FFFF00,70:#00FF00,0:#FFFFFF", "", false);
+            config[7] = new HeroAttrConfig(7, "weightedAttr", "加权属性2", "", "90:#FF0000,80:#FFFF00,70:#00FF00,0:#FFFFFF", "", false);
             config[8] = new HeroAttrConfig(8, "SodWalk", "步兵驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms1", true);
             config[9] = new HeroAttrConfig(9, "SodHorse", "骑兵驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms2", true);
             config[10] = new HeroAttrConfig(10, "SodBow", "弓兵驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms3", true);
             config[11] = new HeroAttrConfig(11, "SodWater", "水军驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms4", true);
             config[12] = new HeroAttrConfig(12, "SodTank", "车炮驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms5", true);
+            config[13] = new HeroAttrConfig(13, "atk", "攻击", "", "", "armsatk", false);
+            config[14] = new HeroAttrConfig(14, "def", "防御", "", "", "armsdef", false);
+            config[15] = new HeroAttrConfig(15, "sodnum", "士兵数", "", "", "armscount", false);
 
             RebuildIndex();
 
