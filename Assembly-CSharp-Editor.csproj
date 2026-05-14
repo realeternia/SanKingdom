@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\Editor\ObjUVGenerator.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\Editor\CustomRampGeneratorEditor.cs" />
+    <Compile Include="Assets\Editor\IconLoaderEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\DOTween\Editor\DOTweenEditor.dll" />

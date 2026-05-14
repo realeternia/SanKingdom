@@ -6,7 +6,7 @@ namespace CommonConfig
 {
     public class CityAttrConfig
     {
-                public class FieldMetaInfo
+        public class FieldMetaInfo
         {
             public string fieldName;
             public string fieldType;
@@ -116,24 +116,24 @@ namespace CommonConfig
             RebuildIndex();
         }
 
-public static void Load()
-{
-config.Clear();
-config[1] = new CityAttrConfig(1, "level", "等级", false, false, 99, 0, "");
-config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, 999, 0, "citydev");
-config[5] = new CityAttrConfig(5, "food", "粮食", false, false, 999, 0, "cityfood");
-config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, 999, 0, "citysod");
-config[7] = new CityAttrConfig(7, "happy", "民心", false, false, 999, 0, "cityheart");
-config[8] = new CityAttrConfig(8, "wall", "城墙", false, false, 999, 0, "citywall");
-config[12] = new CityAttrConfig(12, "gold", "金钱", true, false, 0, 999, "citygold");
-config[13] = new CityAttrConfig(13, "steel", "铁", true, true, 0, 999, "citysteel");
-config[14] = new CityAttrConfig(14, "horse", "马", true, true, 0, 999, "cityhorse");
-config[15] = new CityAttrConfig(15, "wood", "木材", true, true, 0, 999, "citywood");
-config[16] = new CityAttrConfig(16, "stone", "石料", true, true, 0, 999, "citystone");
+        public static void Load()
+        {
+            config.Clear();
+            config[1] = new CityAttrConfig(1, "level", "等级", false, false, 99, 0, "");
+            config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, 999, 0, "citydev");
+            config[5] = new CityAttrConfig(5, "food", "粮食", false, false, 999, 0, "cityfood");
+            config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, 999, 0, "armscount");
+            config[7] = new CityAttrConfig(7, "happy", "民心", false, false, 999, 0, "cityheart");
+            config[8] = new CityAttrConfig(8, "wall", "城墙", false, false, 999, 0, "citywall");
+            config[12] = new CityAttrConfig(12, "gold", "金钱", true, false, 0, 999, "citygold");
+            config[13] = new CityAttrConfig(13, "steel", "铁", true, true, 0, 999, "citysteel");
+            config[14] = new CityAttrConfig(14, "horse", "马", true, true, 0, 999, "cityhorse");
+            config[15] = new CityAttrConfig(15, "wood", "木材", true, true, 0, 999, "citywood");
+            config[16] = new CityAttrConfig(16, "stone", "石料", true, true, 0, 999, "citystone");
 
-RebuildIndex();
+            RebuildIndex();
 
-}
+        }
 
         private static void RebuildIndex()
         {
@@ -155,8 +155,10 @@ RebuildIndex();
         }
 
         private static Dictionary<string, int> idxname = new Dictionary<string, int>();
-        public static CityAttrConfig GetConfigByname(string val)        {
-            return GetConfig(idxname[val]);        }
+        public static CityAttrConfig GetConfigByname(string val)
+        {
+            return GetConfig(idxname[val]);
+        }
 
 
         public static bool HasConfig(int id)

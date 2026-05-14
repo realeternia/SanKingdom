@@ -43,9 +43,9 @@ public class BattleHeroInfo : MonoBehaviour
 
     public void SetAttr(int inte, int atk, int def)
     {
-        SetText(heroInteTxt, inte);
-        SetText(heroAtkTxt, atk);
-        SetText(heroDefTxt, def);
+        SetText(heroInteTxt, "str", inte);
+        SetText(heroAtkTxt, "str", atk);
+        SetText(heroDefTxt, "str", def);
     }
 
     private void SetViceHeroImage(Image image, int heroId)
@@ -60,10 +60,10 @@ public class BattleHeroInfo : MonoBehaviour
         image.sprite = ResourceCache.LoadSpriteBattle(ResPath.Texture.HeroIcon(heroCfg.Icon));
     }
 
-    private void SetText(TMP_Text text, int val)
+    private void SetText(TMP_Text text, string attrName, int val)
     {
         text.text = val.ToString();
-        text.color = SysColor.GetColorByValue(text.name, val);
+        text.color = SysColor.GetColorByValue(attrName, val);
     }
 
     public void SetHpRate(int hp, int maxHp)

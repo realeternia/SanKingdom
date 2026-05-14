@@ -1572,4 +1572,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cf1fd426d206fc4dbe8530548ec6031, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconPath: armsdef
+  iconPath: armscount
