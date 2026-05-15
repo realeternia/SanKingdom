@@ -44,24 +44,22 @@ public class SelectArmsItem : MonoBehaviour
         AtkText.text = config.Atk.ToString();
         DefText.text = config.Def.ToString();
 
-        List<(string icon, int cost)> costs = new List<(string, int)>();
+        List<(int attrId, int cost)> costs = new List<(int, int)>();
         
         if (config.HorseCost > 0)
-            costs.Add(("cityhorse", config.HorseCost));
+            costs.Add((14, config.HorseCost));
         if (config.SteelCost > 0)
-            costs.Add(("citysteel", config.SteelCost));
+            costs.Add((13, config.SteelCost));
         if (config.WoodCost > 0)
-            costs.Add(("citywood", config.WoodCost));
+            costs.Add((15, config.WoodCost));
         if (config.StoneCost > 0)
-            costs.Add(("citystone", config.StoneCost));
+            costs.Add((16, config.StoneCost));
 
         if (costs.Count > 0)
         {
             IconCost1.gameObject.SetActive(true);
             Cost1Text.gameObject.SetActive(true);
-            Sprite sprite1 = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(costs[0].icon));
-            if (sprite1 != null)
-                IconCost1.sprite = sprite1;
+            IconCost1.gameObject.GetComponent<IconLoader>().SetId(costs[0].attrId);
             Cost1Text.text = costs[0].cost.ToString();
         }
         else
@@ -74,9 +72,7 @@ public class SelectArmsItem : MonoBehaviour
         {
             IconCost2.gameObject.SetActive(true);
             Cost2Text.gameObject.SetActive(true);
-            Sprite sprite2 = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(costs[1].icon));
-            if (sprite2 != null)
-                IconCost2.sprite = sprite2;
+            IconCost2.gameObject.GetComponent<IconLoader>().SetId(costs[1].attrId);
             Cost2Text.text = costs[1].cost.ToString();
         }
         else

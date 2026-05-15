@@ -172,6 +172,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAddDamage.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\MoveAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\TipItem\ResTipItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityLevelConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Effects\DissolveEffect.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleManager.cs" />

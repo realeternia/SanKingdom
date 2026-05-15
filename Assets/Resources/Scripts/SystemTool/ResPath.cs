@@ -125,6 +125,11 @@ public static class ResPath
             return "Prefabs/ResBase";
         }
 
+        public static string TipItem()
+        {
+            return "Prefabs/Panels/TipItem/ResTipItem";
+        }
+
         public static string WorldPiece()
         {
             return "Prefabs/WorldPiece";

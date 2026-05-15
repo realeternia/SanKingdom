@@ -12,7 +12,7 @@ public class PanelManager : MonoBehaviour
         Instance = this;
     }
 
-    public GameObject rankPanel;
+    private GameObject rankPanel;
     private GameObject pickPanel;
     public GameObject worldPanel;
     private GameObject cityPanel;
@@ -30,7 +30,9 @@ public class PanelManager : MonoBehaviour
     private GameObject replayPanel;
     public GameObject sideBarPanel;
 
-    public GameObject topNode;
+    public GameObject topNode; //显示顶部资源
+    public GameObject tipNode; //显示tooltip
+    private GameObject currentTip;
     private Dictionary<string, ResItem> forceResItemDict = new Dictionary<string, ResItem>();
 
     public List<GameObject> openPanelList;
@@ -572,6 +574,74 @@ public class PanelManager : MonoBehaviour
             {
                 p.SendSignal(data);
             }
+        }
+    }
+
+    public GameObject ShowTip(string tipName, Vector2 screenPosition)
+    {
+        HideTip();
+
+        if (tipNode == null)
+        {
+            GameLog.Error("PanelManager tipNode为空");
+            return null;
+        }
+
+        GameObject tipPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.TipItem());
+        if (tipPrefab == null)
+        {
+            GameLog.Error("PanelManager ResTipItem预制体加载失败");
+            return null;
+        }
+
+        currentTip = Instantiate(tipPrefab, tipNode.transform);
+        ResTipItem resTipItem = currentTip.GetComponent<ResTipItem>();
+        if (resTipItem != null)
+        {
+            resTipItem.SetName(tipName);
+        }
+
+        RectTransform tipRect = currentTip.GetComponent<RectTransform>();
+        if (tipRect != null)
+        {
+            Canvas canvas = tipNode.GetComponentInParent<Canvas>();
+            Camera uiCamera = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? canvas.worldCamera : null;
+
+            float tipHeight = tipRect.rect.height;
+            float tipOffset = 60f;
+            bool showAbove = screenPosition.y + tipOffset + tipHeight <= Screen.height;
+
+            Vector2 adjustedScreenPos = screenPosition;
+            adjustedScreenPos.y += showAbove ? tipOffset : -tipOffset;
+
+            Vector2 localPos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                tipNode.transform as RectTransform,
+                adjustedScreenPos,
+                uiCamera,
+                out localPos);
+
+            if (showAbove)
+            {
+                localPos.y += tipHeight * 0.5f;
+            }
+            else
+            {
+                localPos.y -= tipHeight * 0.5f;
+            }
+
+            tipRect.anchoredPosition = localPos;
+        }
+
+        return currentTip;
+    }
+
+    public void HideTip()
+    {
+        if (currentTip != null)
+        {
+            Destroy(currentTip);
+            currentTip = null;
         }
     }
 

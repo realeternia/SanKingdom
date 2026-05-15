@@ -534,6 +534,7 @@ GameObject:
   - component: {fileID: 2723852788881732445}
   - component: {fileID: 1807335898396606786}
   - component: {fileID: 8216350244310506955}
+  - component: {fileID: 8646151440414176154}
   m_Layer: 5
   m_Name: ImageAtk
   m_TagString: Untagged
@@ -559,7 +560,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 652.9, y: -40}
-  m_SizeDelta: {x: 35, y: 35}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1807335898396606786
 CanvasRenderer:
@@ -589,7 +590,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e2f0c899b6c125c47a069c929bfac8dc, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -599,6 +600,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8646151440414176154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2977147200964305440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cf1fd426d206fc4dbe8530548ec6031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sourceType: 2
+  iconPath: 
+  configId: 13
+  image: {fileID: 0}
 --- !u!1 &3061585296618398746
 GameObject:
   m_ObjectHideFlags: 0
@@ -1664,6 +1681,7 @@ GameObject:
   - component: {fileID: 536432170798122740}
   - component: {fileID: 5980294994298689280}
   - component: {fileID: 8081632684991001411}
+  - component: {fileID: 3433627230146441744}
   m_Layer: 5
   m_Name: ImageDef
   m_TagString: Untagged
@@ -1689,7 +1707,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 801.9, y: -40}
-  m_SizeDelta: {x: 35, y: 35}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5980294994298689280
 CanvasRenderer:
@@ -1719,7 +1737,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2708a00fe4eabae4aaab35ff76278f82, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1729,6 +1747,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3433627230146441744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7733574793108966198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cf1fd426d206fc4dbe8530548ec6031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sourceType: 2
+  iconPath: 
+  configId: 14
+  image: {fileID: 0}
 --- !u!1 &8090762001966776553
 GameObject:
   m_ObjectHideFlags: 0

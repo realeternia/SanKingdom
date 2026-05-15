@@ -16,15 +16,7 @@ public class ArmsItemControl : MonoBehaviour
         if (attrConfig == null || heroConfig == null)
             return;
 
-        if (itemIcon != null && !string.IsNullOrEmpty(attrConfig.Icon))
-        {
-            string iconPath = ResPath.Texture.AttrIcon(attrConfig.Icon);
-            Sprite sprite = ResourceCache.LoadSpriteUI(iconPath);
-            if (sprite != null)
-            {
-                itemIcon.sprite = sprite;
-            }
-        }
+        GetComponent<IconLoader>().SetId(attrConfig.Id);
 
         if (itemName != null)
         {

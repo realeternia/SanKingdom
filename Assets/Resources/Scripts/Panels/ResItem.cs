@@ -7,7 +7,6 @@ using CommonConfig;
 
 public class ResItem : MonoBehaviour
 {
-    public Image itemImg;
     public TMP_Text itemNum;
     public string attrName;
 
@@ -33,7 +32,8 @@ public class ResItem : MonoBehaviour
             return;
         this.attrName = name;
         this.config = item;
-        this.itemImg.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(item.Icon));
+
+        GetComponent<IconLoader>().SetId(item.Id);
     }
 
     public void UpdateNum(int num)
