@@ -50,3 +50,15 @@ public class CityAttrChangeSignal : SignalData
     public CityAttrChangeSignal() { Name = "CityAttrChange"; }
     public int CityId;
 }
+
+public class CityHeroChangeSignal : SignalData
+{
+    public CityHeroChangeSignal() { Name = "CityHeroChange"; }
+    public int CityId;
+}
+
+public class CityLevelChangeSignal : SignalData
+{
+    public CityLevelChangeSignal() { Name = "CityLevelChange"; }
+    public int CityId;
+}

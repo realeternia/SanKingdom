@@ -137,13 +137,23 @@ public class WorldPieceControl : MonoBehaviour
 
     public void UpdateDisplay()
     {
-        var pieceCfg = WorldConfig.GetConfig(pieceId);
         var city = GameManager.Instance.GetCity(pieceId);
 
         string levelHex = ColorUtility.ToHtmlStringRGB(SysColor.City.LevelColor);
-        pieceName.text = $"<color=#{levelHex}>({city.level})</color>{pieceCfg.Cname}";
+        pieceName.text = $"<color=#{levelHex}>({city.level})</color>{WorldConfig.GetConfig(pieceId).Cname}";
 
-        UpdateResImages(pieceCfg);
+        UpdateHeroImages(city);
+    }
+
+    public void RefreshCityDisplay()
+    {
+        var city = GameManager.Instance.GetCity(pieceId);
+
+        SetColor(city.forceId);
+
+        string levelHex = ColorUtility.ToHtmlStringRGB(SysColor.City.LevelColor);
+        pieceName.text = $"<color=#{levelHex}>({city.level})</color>{WorldConfig.GetConfig(pieceId).Cname}";
+
         UpdateHeroImages(city);
     }
 

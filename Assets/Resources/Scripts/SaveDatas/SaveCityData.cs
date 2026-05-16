@@ -210,6 +210,9 @@ public class SaveCityData
         if (PanelManager.Instance != null)
         {
             PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = type.ToLower(), Value = GetAttr(type.ToLower()) });
+
+            if (type.ToLower() == "level")
+                PanelManager.Instance.SendSignal(new CityLevelChangeSignal { CityId = cityId });
         }
     }
 
@@ -381,6 +384,8 @@ public class SaveCityData
     {
         ownerHeroId = 0;
         SelectOwner();
+
+        PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = cityId });
     }
 
     public void SelectOwner()

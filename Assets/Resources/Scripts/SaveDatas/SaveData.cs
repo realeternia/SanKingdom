@@ -48,12 +48,16 @@ public class SaveData
                     var destCityId = GameManager.Instance.GetRandomForceCityId(hero.cityId, hero.forceId);
                     if (destCityId > 0)
                     {
+                        int oldCityId = hero.cityId;
                         if (city != null)
                         {
                             city.RemoveDevAssignment(hero.heroId);
                         }
                         hero.state = HeroState.Normal;
                         hero.cityId = destCityId;
+
+                            PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = oldCityId });
+                            PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = destCityId });
                     }
                 }
             }
@@ -64,7 +68,11 @@ public class SaveData
                     var randomCityId = MapTool.GetRandomAdjacentCityId(hero.cityId);
                     if (randomCityId != 0)
                     {
+                        int oldCityId = hero.cityId;
                         hero.cityId = randomCityId;
+
+                            PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = oldCityId });
+                            PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = randomCityId });
                     }
                 }
             }

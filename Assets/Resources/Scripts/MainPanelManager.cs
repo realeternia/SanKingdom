@@ -293,7 +293,23 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         else if(data.Name == "CityForceChange")
         {
             var signal = data as CityForceChangeSignal;
-            worldPieces.Find(x => x.pieceId == signal.CityId).SetColor(GameManager.Instance.GetCity(signal.CityId).forceId);
+            var piece = worldPieces.Find(x => x.pieceId == signal.CityId);
+            if (piece != null)
+                piece.RefreshCityDisplay();
+        }
+        else if(data.Name == "CityHeroChange")
+        {
+            var signal = data as CityHeroChangeSignal;
+            var piece = worldPieces.Find(x => x.pieceId == signal.CityId);
+            if (piece != null)
+                piece.RefreshCityDisplay();
+        }
+        else if(data.Name == "CityLevelChange")
+        {
+            var signal = data as CityLevelChangeSignal;
+            var piece = worldPieces.Find(x => x.pieceId == signal.CityId);
+            if (piece != null)
+                piece.RefreshCityDisplay();
         }
         else if(data.Name == "RoundChange")
         {
