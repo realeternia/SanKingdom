@@ -11,7 +11,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 {
     private const float MAP_SCALE_FACTOR = 1.25f;
     
-    public CityDetail cityDetail;
     public Button btnSystem;
     public Button btnRoundNext;
     public Button btnMode;
@@ -27,7 +26,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     // Start is called before the first frame update
     void Start()
     {
-        cityDetail.gameObject.SetActive(false);
         LoadMapPieces();
         InitDragHandler();
 
@@ -272,9 +270,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             return;
         }
 
-        cityDetail.gameObject.SetActive(true);
-        cityDetail.SetCityDetail(pieceId);
-
         var cityData = GameManager.Instance.GetCity(pieceId);
         bool isPlayerCity = GameManager.Instance.GetForce(cityData.forceId).isPlayer;
         
@@ -291,8 +286,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
     public void SendSignal(SignalData data)
     {
-        cityDetail.SendSignal(data);
-
         if(data.Name == "PhaseChange")
         {
             UpdateRoundNextButton();
