@@ -1,97 +1,106 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
 using TMPro;
-using System;
+
 public class WorldPieceControl : MonoBehaviour
 {
     private const float MAP_SCALE_FACTOR = SystemConst.WorldMap.MAP_SCALE_FACTOR;
-    
+
     private static WorldPieceControl currentActivePiece;
-    
+
     public int pieceId;
     public Image pieceImage;
     public MainPanelManager worldManager;
     public TMP_Text pieceName;
-    public GameObject infoNode;
-    public TMP_Text extraText;
     public Button enterButton;
+    public Image[] heroImage;
+    public Image[] resImage;
 
-    private int extraMode = 1;
+    private Color defaultColor;
+    private Vector2[] heroOrigPositions;
+    private Vector2[] resOrigPositions;
+    private bool positionsRecorded;
 
-    private Dictionary<string, int> infos = new Dictionary<string, int>();
-
-    // Start is called before the first frame update
     void Start()
     {
         if (pieceImage != null)
         {
             pieceImage.raycastTarget = true;
             pieceImage.alphaHitTestMinimumThreshold = 0.1f;
-            
+
             Button button = pieceImage.GetComponent<Button>();
             if (button == null)
             {
                 button = pieceImage.gameObject.AddComponent<Button>();
             }
-            
+
             button.onClick.AddListener(OnPieceClicked);
         }
-        
+
         enterButton.onClick.AddListener(OnEnterButtonClick);
         enterButton.gameObject.SetActive(false);
-        
-        infoNode.SetActive(false);
-        extraText.gameObject.SetActive(false);
     }
-    
+
     private void OnPieceClicked()
     {
         worldManager.OnPieceClick(pieceId);
-        
+
         if (currentActivePiece != null && currentActivePiece != this)
         {
             currentActivePiece.enterButton.gameObject.SetActive(false);
+            currentActivePiece.ShowResImages(true);
         }
-        
+
         var cityData = GameManager.Instance.GetCity(pieceId);
         var forceData = GameManager.Instance.GetForce(cityData.forceId);
         bool isPlayerCity = forceData.isPlayer;
-        
+
         if (isPlayerCity)
         {
-            var cityCfg = WorldConfig.GetConfig(pieceId);
             enterButton.image.color = Color.green;
             enterButton.GetComponentInChildren<TMP_Text>().text = "进入";
             enterButton.gameObject.SetActive(true);
+            ShowResImages(false);
             currentActivePiece = this;
         }
         else if (SysSwitch.CanViewOtherForceCity)
         {
-            var cityCfg = WorldConfig.GetConfig(pieceId);
             enterButton.image.color = Color.yellow;
             enterButton.GetComponentInChildren<TMP_Text>().text = "查看";
             enterButton.gameObject.SetActive(true);
+            ShowResImages(false);
             currentActivePiece = this;
         }
         else
         {
             enterButton.gameObject.SetActive(false);
+            ShowResImages(true);
             if (currentActivePiece == this)
             {
                 currentActivePiece = null;
             }
         }
     }
-    
+
+    private void ShowResImages(bool show)
+    {
+        foreach (var img in resImage)
+        {
+            if (img == null) continue;
+            if (show)
+                img.gameObject.SetActive(img.sprite != null);
+            else
+                img.gameObject.SetActive(false);
+        }
+    }
+
     private void OnEnterButtonClick()
     {
         PanelManager.Instance.ShowCity(pieceId);
     }
 
-    private Color defaultColor;
     public void Shine(bool isShine)
     {
         if (isShine)
@@ -101,44 +110,153 @@ public class WorldPieceControl : MonoBehaviour
         else
         {
             pieceImage.color = defaultColor;
-        }   
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        }
     }
 
     public void InitForce()
     {
-        // 获取颜色字符串（格式为"R,G,B"）
+        RecordPositions();
+
         var pieceCfg = WorldConfig.GetConfig(pieceId);
         var city = GameManager.Instance.GetCity(pieceId);
         SetColor(city.forceId);
 
-        // 设置名称
-        pieceName.text = pieceCfg.Cname;
-        if(pieceCfg.MiniMapOffsets != null && pieceCfg.MiniMapOffsets.Length >= 2)
+        string levelHex = ColorUtility.ToHtmlStringRGB(SysColor.City.LevelColor);
+        pieceName.text = $"<color=#{levelHex}>({city.level})</color>{pieceCfg.Cname}";
+
+        if (pieceCfg.MiniMapOffsets != null && pieceCfg.MiniMapOffsets.Length >= 2)
         {
             float offsetX = pieceCfg.MiniMapOffsets[0] * MAP_SCALE_FACTOR;
             float offsetY = pieceCfg.MiniMapOffsets[1] * MAP_SCALE_FACTOR;
             pieceName.rectTransform.anchoredPosition += new Vector2(offsetX, offsetY);
-            extraText.rectTransform.anchoredPosition += new Vector2(offsetX, offsetY);
-            infoNode.GetComponent<RectTransform>().anchoredPosition += new Vector2(offsetX, offsetY);
         }
+
+        UpdateResImages(pieceCfg);
+        UpdateHeroImages(city);
+    }
+
+    public void UpdateDisplay()
+    {
+        var pieceCfg = WorldConfig.GetConfig(pieceId);
+        var city = GameManager.Instance.GetCity(pieceId);
+
+        string levelHex = ColorUtility.ToHtmlStringRGB(SysColor.City.LevelColor);
+        pieceName.text = $"<color=#{levelHex}>({city.level})</color>{pieceCfg.Cname}";
+
+        UpdateResImages(pieceCfg);
+        UpdateHeroImages(city);
+    }
+
+    private void RecordPositions()
+    {
+        if (positionsRecorded) return;
+
+        heroOrigPositions = new Vector2[heroImage.Length];
+        for (int i = 0; i < heroImage.Length; i++)
+            heroOrigPositions[i] = heroImage[i].rectTransform.anchoredPosition;
+
+        resOrigPositions = new Vector2[resImage.Length];
+        for (int i = 0; i < resImage.Length; i++)
+            resOrigPositions[i] = resImage[i].rectTransform.anchoredPosition;
+
+        positionsRecorded = true;
+    }
+
+    private void LayoutVisibleImages(Image[] images, Vector2[] origPositions)
+    {
+        int visibleCount = 0;
+        foreach (var img in images)
+            if (img != null && img.gameObject.activeSelf)
+                visibleCount++;
+
+        if (visibleCount == 0 || origPositions.Length == 0) return;
+
+        Vector2 center = (origPositions[0] + origPositions[origPositions.Length - 1]) / 2f;
+        float spacing = origPositions.Length > 1
+            ? (origPositions[origPositions.Length - 1].x - origPositions[0].x) / (origPositions.Length - 1)
+            : 0f;
+
+        float startX = center.x - (visibleCount - 1) * spacing / 2f;
+
+        int visIdx = 0;
+        for (int i = 0; i < images.Length; i++)
+        {
+            if (images[i] != null && images[i].gameObject.activeSelf)
+            {
+                var pos = origPositions[i];
+                pos.x = startX + visIdx * spacing;
+                images[i].rectTransform.anchoredPosition = pos;
+                visIdx++;
+            }
+            else if (images[i] != null)
+            {
+                images[i].rectTransform.anchoredPosition = origPositions[i];
+            }
+        }
+    }
+
+    private void UpdateResImages(WorldConfig pieceCfg)
+    {
+        var resAddon = pieceCfg.ResAddon;
+        for (int i = 0; i < resImage.Length; i++)
+        {
+            if (resAddon != null && i < resAddon.Length)
+            {
+                var attrCfg = CityAttrConfig.GetConfig(resAddon[i]);
+                resImage[i].sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(attrCfg.Icon));
+                resImage[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                resImage[i].sprite = null;
+                resImage[i].gameObject.SetActive(false);
+            }
+        }
+        LayoutVisibleImages(resImage, resOrigPositions);
+    }
+
+    private void UpdateHeroImages(SaveCityData city)
+    {
+        var heroIds = city.GetNormalHeroList();
+        var displayHeroes = new List<int>();
+
+        foreach (var hid in heroIds)
+        {
+            var heroCfg = HeroConfig.GetConfig(hid);
+            if (hid == city.ownerHeroId || heroCfg.StarHero)
+            {
+                displayHeroes.Add(hid);
+            }
+        }
+
+        displayHeroes.Sort((a, b) => HeroConfig.GetConfig(b).Total.CompareTo(HeroConfig.GetConfig(a).Total));
+
+        int count = Mathf.Min(displayHeroes.Count, heroImage.Length, 3);
+        for (int i = 0; i < heroImage.Length; i++)
+        {
+            if (i < count)
+            {
+                var heroCfg = HeroConfig.GetConfig(displayHeroes[i]);
+                heroImage[i].sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg.Icon));
+                heroImage[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                heroImage[i].sprite = null;
+                heroImage[i].gameObject.SetActive(false);
+            }
+        }
+        LayoutVisibleImages(heroImage, heroOrigPositions);
     }
 
     public void SetColor(int forceId)
     {
-        // 添加空值检查，确保代码健壮性
         if (pieceImage == null)
         {
             GameLog.Error("pieceImage is null");
             return;
         }
 
-        // 获取force配置并检查是否为null
         var forceConfig = ForceConfig.GetConfig(forceId);
         if (forceConfig == null)
         {
@@ -146,87 +264,8 @@ public class WorldPieceControl : MonoBehaviour
             return;
         }
 
-       // GameLog.Debug($"设置颜色为{forceConfig.Color}");
         defaultColor = SysColor.GetForceColor(forceId);
-
         pieceImage.color = defaultColor;
         pieceName.color = SysColor.GetTextColorOnBackground(defaultColor);
-    }
-
-    public void SetExtraMode(int mode = 0)
-    {
-        extraMode = mode;
-        if(mode == 0)
-        {
-            infoNode.SetActive(false);
-            extraText.gameObject.SetActive(false);
-            return;
-        }
-
-        if(mode == 1)
-        {
-            infoNode.SetActive(true);
-            extraText.gameObject.SetActive(false);
-            UpdateInfoIcons();
-            return;
-        }
-
-        infoNode.SetActive(false);
-        extraText.gameObject.SetActive(true);
-        var city = GameManager.Instance.GetCity(pieceId);
-
-        if(mode == 2)
-        {
-            extraText.text = $"兵{GetTextByInt(city.GetAttr("soldier"))}";
-            extraText.color = SysColor.Battle.FoodLossColor;
-        }
-        else if(mode == 3)
-        {
-            extraText.text = $"金{GetTextByInt(city.GetAttr("gold"))}";
-            extraText.color = Color.yellow;
-        }
-    }
-
-    private string GetTextByInt(int count)
-    {
-        if(count < 300)
-            return " 空虚";
-        else if(count < 1000)
-            return " 少量";
-        else if(count < 1000000)
-            return $"{count / 1000.0:F1}K";
-        else
-            return $"{count / 1000000.0:F1}M";
-    }
-
-    public void OnRound(Dictionary<string, int> infos)
-    {
-        this.infos = infos;
-        SetExtraMode(extraMode); // update
-    }
-
-    private void UpdateInfoIcons()
-    {
-        foreach (Transform child in infoNode.transform)
-        {
-            Destroy(child.gameObject);
-        }
-        int index = 0;
-        foreach (var info in infos)
-        {
-            //创建GameObject，并添加组件Image
-            var infoImage = new GameObject($"Info_{info.Key}");
-            infoImage.transform.SetParent(infoNode.transform, false);
-            var infoImageComp = infoImage.AddComponent<Image>();
-            infoImageComp.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.TextureByName(info.Key));
-            if(info.Value > 5)
-                infoImageComp.color = Color.red;
-            else if(info.Value >= 3)
-                infoImageComp.color = Color.yellow;
-
-            infoImageComp.transform.localPosition = new Vector3(index * 32 + 16 - infos.Count * 16, 0, 0);   
-            infoImageComp.rectTransform.sizeDelta = new Vector2(32, 32);
-            index++;
-        }
     }
 }

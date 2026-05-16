@@ -49,7 +49,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         });
         btnMode.onClick.AddListener(() =>
         {
-            SetMode();
             PanelManager.Instance.ShowSideBar("SideArmsSelector");
         });
         
@@ -290,16 +289,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         }
     }
 
-    private int extraMode = 0;
-    public void SetMode()
-    {
-        extraMode = (extraMode + 1) % 4;
-        foreach (var piece in worldPieces)
-        {
-            piece.SetExtraMode(extraMode);
-        }
-    }
-
     public void SendSignal(SignalData data)
     {
         cityDetail.SendSignal(data);
@@ -323,19 +312,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
             for (int i = 0; i < worldPieces.Count; i++)
             {
-                var piece = worldPieces[i];
-                var cityData = GameManager.Instance.GetCity(piece.pieceId);
-                var infosCount = new Dictionary<string, int>();
-                foreach (var actionId in cityData.actions)
-                {
-                    var actionConfig = CityDevConfig.GetConfig(actionId.Key);
-                    if (actionConfig.ActionName == "")
-                        continue;
-
-                    infosCount[actionConfig.ActionName] = actionId.Value;
-                }
-                GameLog.Debug($"CityForceChange {cityData.forceId} {cityData.actions.Count} {infosCount.Count}");
-                piece.OnRound(infosCount);
+                worldPieces[i].UpdateDisplay();
             }
 
             if(seasonCfg.Video != "")

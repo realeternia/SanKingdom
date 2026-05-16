@@ -162,5 +162,6 @@ public static class SysColor
         public static readonly Color HeroOverlayColor = new Color(0f, 0f, 0f, 0.92f);
         public static readonly Color WildHeroBorderColor = Color.yellow;
         public static readonly Color CapturedHeroBorderColor = Color.red;
+        public static readonly Color LevelColor = new Color(0.56f, 0.93f, 0.56f, 1f);
     }
 }
