@@ -122,7 +122,7 @@ public class WorldPieceControl : MonoBehaviour
         SetColor(city.forceId);
 
         string levelHex = ColorUtility.ToHtmlStringRGB(SysColor.City.LevelColor);
-        pieceName.text = $"<color=#{levelHex}>({city.level})</color>{pieceCfg.Cname}";
+        pieceName.text = $"<color=#{levelHex}>({city.GetLevel()})</color>{pieceCfg.Cname}";
 
         if (pieceCfg.MiniMapOffsets != null && pieceCfg.MiniMapOffsets.Length >= 2)
         {
@@ -140,7 +140,7 @@ public class WorldPieceControl : MonoBehaviour
         var city = GameManager.Instance.GetCity(pieceId);
 
         string levelHex = ColorUtility.ToHtmlStringRGB(SysColor.City.LevelColor);
-        pieceName.text = $"<color=#{levelHex}>({city.level})</color>{WorldConfig.GetConfig(pieceId).Cname}";
+        pieceName.text = $"<color=#{levelHex}>({city.GetLevel()})</color>{WorldConfig.GetConfig(pieceId).Cname}";
 
         UpdateHeroImages(city);
     }
@@ -152,7 +152,7 @@ public class WorldPieceControl : MonoBehaviour
         SetColor(city.forceId);
 
         string levelHex = ColorUtility.ToHtmlStringRGB(SysColor.City.LevelColor);
-        pieceName.text = $"<color=#{levelHex}>({city.level})</color>{WorldConfig.GetConfig(pieceId).Cname}";
+        pieceName.text = $"<color=#{levelHex}>({city.GetLevel()})</color>{WorldConfig.GetConfig(pieceId).Cname}";
 
         UpdateHeroImages(city);
     }

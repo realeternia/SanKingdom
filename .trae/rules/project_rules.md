@@ -40,6 +40,7 @@ Unity (C#) | JsonUtility | UGUI | TextMeshPro
 - 获取配置：`XxxConfig.GetConfig(id)` / `XxxConfig.ConfigList`
 - GetConfig/GetConfigByname 后无需 null 检查
 - 配置类只存数据，定制逻辑放 `SystemTool/` 目录
+- 禁止在配置类（`XxxConfig_s.cs`）中添加业务方法，配置类仅保留数据定义、Load、GetConfig、HasConfig、Refresh、Add、Remove、Assign 等基础方法
 
 ### 公式与常量
 
@@ -88,6 +89,7 @@ Unity (C#) | JsonUtility | UGUI | TextMeshPro
 
 - 禁止 `UnityEngine.Random`，用 `BattleRandom` 或 `SysRandom`
 - 禁止配置类使用属性，用公共字段
+- 禁止在配置类（`XxxConfig_s.cs`）中添加业务方法，仅保留数据定义、Load、GetConfig、HasConfig、Refresh、Add、Remove、Assign 等基础方法
 - 禁止硬编码数值，提取到 `SystemConst`
 - 禁止内联计算公式，提取到 `SysFormula`
 - 禁止 `UnityEngine.Debug.Log`，用 `GameLog`

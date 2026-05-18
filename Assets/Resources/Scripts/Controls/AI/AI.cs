@@ -41,7 +41,7 @@ public static class AI
     
     private static void AssignHeroesToCityDev(SaveForceData force, SaveCityData city)
     {
-        var levelCfg = CityLevelConfig.GetConfig(city.level);
+        var levelCfg = CityLevelConfig.GetConfig(city.GetLevel());
         
         int maxJobCount = levelCfg.JobCount;
         

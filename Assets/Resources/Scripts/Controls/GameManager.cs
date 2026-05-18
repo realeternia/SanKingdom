@@ -156,8 +156,7 @@ public class GameManager : MonoBehaviour
             var city = new SaveCityData();
             city.cityId = cityCfg.Id;
             city.forceId = cityCfg.ForceId;
-            city.level = cityCfg.Level;
-            city.exp = 0;
+            city.exp = SaveCityData.GetExpByLevel(cityCfg.Level);
             city.soldier = cityCfg.Soldier;
             city.happy = SystemConst.City.INITIAL_CITY_HAPPY;
             city.food = cityCfg.Food;

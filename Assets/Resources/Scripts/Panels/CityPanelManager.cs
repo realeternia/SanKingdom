@@ -249,7 +249,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         if (cityCfg != null)
         {
-            int level = cityData != null ? cityData.level : 1;
+            int level = cityData != null ? cityData.GetLevel() : 1;
             cityName.text = $"{cityCfg.Cname}({level}级)";
             cityImage.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.CityView(cityCfg.ViewPrefab));
         }
@@ -533,7 +533,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         if (!isHeroAlreadyAssigned && !isTargetNodeFull)
         {
-            var levelCfg = CityLevelConfig.GetConfig(cityData.level);
+            var levelCfg = CityLevelConfig.GetConfig(cityData.GetLevel());
             if (heroToDevNodeMap.Count >= levelCfg.JobCount)
             {
                 SystemTip.Instance.ShowTip($"该城市最多只能派遣{levelCfg.JobCount}人工作");

@@ -8,7 +8,6 @@ public class SaveCityData
 {
     public int cityId;
     public int forceId;
-    public int level;
     public int exp;
     public float soldier;
     public float happy;
@@ -19,6 +18,28 @@ public class SaveCityData
     public int ownerHeroId;
     [NonSerialized]
     public Dictionary<int, int> actions = new Dictionary<int, int>();
+
+    public int GetLevel()
+    {
+        int level = 1;
+        for (int i = 1; i <= 20; i++)
+        {
+            if (!CityLevelConfig.HasConfig(i)) break;
+            if (exp >= CityLevelConfig.GetConfig(i).ExpNeed)
+                level = i + 1;
+            else
+                break;
+        }
+        return level;
+    }
+
+    public static int GetExpByLevel(int level)
+    {
+        if (level <= 1) return 0;
+        if (CityLevelConfig.HasConfig(level - 1))
+            return CityLevelConfig.GetConfig(level - 1).ExpNeed;
+        return 0;
+    }
 
     public void SetDevAssignment(int heroId, int devId)
     {
@@ -64,9 +85,9 @@ public class SaveCityData
         var forceData = GameManager.Instance.GetForce(forceId);
         if(forceData != null)
         {
-            forceData.AddAttr("gold", (int)SysFormula.City.CalculateGoldProduction(level));
+            forceData.AddAttr("gold", (int)SysFormula.City.CalculateGoldProduction(GetLevel()));
         }
-        AddAttr("food", (int)SysFormula.City.CalculateFoodProduction(level));
+        AddAttr("food", (int)SysFormula.City.CalculateFoodProduction(GetLevel()));
         actions.Clear();
     }
 
@@ -186,11 +207,19 @@ public class SaveCityData
         switch (type.ToLower())
         {
             case "level":
-                level += add;
+                GameLog.Warn($"AddAttr: level由exp推导，请使用AddAttr(\"exp\", ...)");
                 break;
             case "exp":
+                int oldLevel = GetLevel();
                 exp += add;
-                break;
+                int newLevel = GetLevel();
+                if (PanelManager.Instance != null)
+                {
+                    PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = type.ToLower(), Value = GetAttr(type.ToLower()) });
+                    if (oldLevel != newLevel)
+                        PanelManager.Instance.SendSignal(new CityLevelChangeSignal { CityId = cityId });
+                }
+                return;
             case "soldier":
                 soldier += add;
                 break;
@@ -210,9 +239,6 @@ public class SaveCityData
         if (PanelManager.Instance != null)
         {
             PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = type.ToLower(), Value = GetAttr(type.ToLower()) });
-
-            if (type.ToLower() == "level")
-                PanelManager.Instance.SendSignal(new CityLevelChangeSignal { CityId = cityId });
         }
     }
 
@@ -221,7 +247,7 @@ public class SaveCityData
         switch (type.ToLower())
         {
             case "level":
-                return level;
+                return GetLevel();
             case "exp":
                 return exp;
             case "soldier":
