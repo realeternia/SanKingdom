@@ -651,6 +651,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         {
             if (attrConfig.IsForceAttr)
                 continue;
+            if (attrConfig.NotShow)
+                continue;
             
             GameLog.Debug($"InitTopNodeResItems creating ResItem for {attrConfig.name}");
             var resBasePrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.ResBase());

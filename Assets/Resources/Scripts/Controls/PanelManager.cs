@@ -89,6 +89,7 @@ public class PanelManager : MonoBehaviour
         foreach (var attrConfig in CityAttrConfig.ConfigList)
         {
             if (!attrConfig.IsForceAttr) continue;
+            if (attrConfig.NotShow) continue;
             
             GameLog.Debug($"PanelManager.InitTopNodeResItems creating ResItem for {attrConfig.name}");
             var resBasePrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.ResBase());
