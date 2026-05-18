@@ -26,7 +26,7 @@ public class TaskPriorityCalculator
     {
         foreach (var devConfig in CityDevConfig.ConfigList)
         {
-            if (devConfig.Prefab == "CityDevBattle" && IsTaskAvailable(city, devConfig))
+            if (devConfig.Prefab == "Battle" && IsTaskAvailable(city, devConfig))
             {
                 return new TaskPriorityInfo(devConfig.Id, devConfig.AiPriotyAtk, devConfig);
             }
@@ -63,18 +63,19 @@ public class TaskPriorityCalculator
         if (forceData.gold < config.GoldCost)
             return false;
         
+        if (config.Type == "normal")
+        {
+            return IsNormalTaskAvailable(city, config);
+        }
+        
         switch (config.Prefab)
         {
-            case "CityDevNormal":
-                return IsNormalTaskAvailable(city, config);
-            case "CityDevBattle":
+            case "Battle":
                 return HasSoldier(city);
             case "CityDevMove":
                 return HasSoldier(city);
             case "CityDevUseHero":
                 return city.GetRecruitableHeroList().Count > 0;
-            case "CityDevChange":
-                return forceData.gold >= SystemConst.Economy.EXCHANGE_MIN_GOLD;
             case "CityDevPraiseHero":
                 return HasLowLoyaltyHero(city);
             default:
@@ -130,16 +131,6 @@ public class TaskPriorityCalculator
     {
         int adjusted = taskInfo.basePriority;
         
-        if (taskInfo.config.Prefab == "CityDevChange")
-        {
-            int totalSoldier = city.GetAttr("soldier");
-            int foodThreshold = totalSoldier / 2;
-            if (totalSoldier > 0 && city.food < foodThreshold)
-            {
-                adjusted += NEED_WEIGHT;
-            }
-        }
-        
         foreach (var need in needs)
         {
             if (TaskMatchesNeed(taskInfo.config, need))
@@ -161,7 +152,7 @@ public class TaskPriorityCalculator
             case CityNeedType.GoldShortage:
                 return attr1 == "gold" || attr2 == "gold";
             case CityNeedType.FoodShortage:
-                return attr1 == "food" || attr2 == "food" || config.Prefab == "CityDevChange";
+                return attr1 == "food" || attr2 == "food";
             case CityNeedType.WallLow:
                 return attr1 == "wall" || attr2 == "wall";
             case CityNeedType.SoldierShortage:

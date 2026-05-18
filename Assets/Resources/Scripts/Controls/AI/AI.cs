@@ -48,7 +48,23 @@ public static class AI
         var normalHeroes = city.GetNormalHeroList();
         if (normalHeroes.Count == 0) return;
         
+        var normalHeroIdSet = new HashSet<int>(normalHeroes);
         var currentAssignments = city.GetDevAssignments();
+        var staleHeroIds = new List<int>();
+        foreach (var assignment in currentAssignments)
+        {
+            if (!normalHeroIdSet.Contains(assignment.heroId))
+            {
+                staleHeroIds.Add(assignment.heroId);
+            }
+        }
+        foreach (var heroId in staleHeroIds)
+        {
+            city.RemoveDevAssignment(heroId);
+            GameLog.SetTag("AI").Debug($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 清理无效委派 heroId={heroId}");
+        }
+        
+        currentAssignments = city.GetDevAssignments();
         var assignedHeroIds = new HashSet<int>(currentAssignments.Select(a => a.heroId));
         var devAssignmentCounts = new Dictionary<int, int>();
         foreach (var assignment in currentAssignments)
@@ -59,7 +75,7 @@ public static class AI
         }
         
         var devConfigs = CityDevConfig.ConfigList
-            .Where(c => c.Prefab == "CityDevNormal" && c.AiPriotyDev > 0)
+            .Where(c => c.Type == "normal" && c.AiPriotyDev > 0)
             .OrderByDescending(c => c.AiPriotyDev)
             .ToList();
         

@@ -306,11 +306,9 @@ public class GameManager : MonoBehaviour
                 var heroIds = new int[] { assignment.heroId };
                 var devCfg = CityDevConfig.GetConfig(assignment.devId);
                 
-                if (devCfg == null) continue;
-                
                 List<PopResultPanelManager.AttrData> attrDatas = null;
                 
-                if (devCfg.Prefab == "CityDevNormal")
+                if (devCfg.Type == "normal")
                 {
                     force.ExecuteCityDev(city.cityId, assignment.devId, heroIds, out attrDatas);
                 }
