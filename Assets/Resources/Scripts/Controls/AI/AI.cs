@@ -271,11 +271,6 @@ public static class AI
         if (normalHeroes.Count == 0) return;
         
         var assignedHeroIds = new HashSet<int>();
-        var devAssignments = city.GetDevAssignments();
-        foreach (var assignment in devAssignments)
-        {
-            assignedHeroIds.Add(assignment.heroId);
-        }
         
         foreach (var troop in existingTroops)
         {
@@ -287,10 +282,25 @@ public static class AI
         var idleHeroes = normalHeroes
             .Select(id => GameManager.Instance.GetHero(id))
             .Where(h => h != null && !assignedHeroIds.Contains(h.heroId))
-            .OrderByDescending(h => h.GetAttr("leadship"))
             .ToList();
         
         if (idleHeroes.Count < SystemConst.AIStrategy.TROOP_MIN_HEROES) return;
+        
+        var commanders = idleHeroes
+            .Where(h => HeroDispatcher.ClassifyHero(h) != HeroType.Domestic)
+            .OrderByDescending(h => h.GetAttr("leadship"))
+            .ToList();
+        
+        var viceHeroes = idleHeroes
+            .Where(h => HeroDispatcher.ClassifyHero(h) != HeroType.Combat)
+            .OrderByDescending(h => h.GetAttr("inte") + h.GetAttr("charm"))
+            .ToList();
+        
+        if (commanders.Count == 0)
+        {
+            commanders = idleHeroes.OrderByDescending(h => h.GetAttr("leadship")).ToList();
+            viceHeroes = new List<SaveHeroData>();
+        }
         
         int cityLevel = city.GetLevel();
         int citySoldier = city.GetAttr("soldier");
@@ -298,31 +308,34 @@ public static class AI
         int troopLimit = SysFormula.AIStrategy.CalculateTroopLimit(cityLevel, idleHeroes.Count, citySoldier);
         
         int existingCount = existingTroops.Count;
-        int newTroopCount = Math.Max(0, troopLimit - existingCount);
+        int newTroopCount = Math.Max(0, Math.Min(troopLimit, commanders.Count) - existingCount);
         
         if (newTroopCount == 0) return;
         
-        int heroesPerTroop = SysFormula.AIStrategy.CalculateHeroesPerTroop(idleHeroes.Count, newTroopCount);
-        
-        int heroIndex = 0;
+        var usedHeroIds = new HashSet<int>();
         int formedCount = 0;
         
-        for (int i = 0; i < newTroopCount && heroIndex < idleHeroes.Count; i++)
+        for (int i = 0; i < newTroopCount; i++)
         {
-            var troop = new SaveTroopsData();
+            var commander = commanders[i];
+            usedHeroIds.Add(commander.heroId);
             
-            var commander = idleHeroes[heroIndex];
+            var troop = new SaveTroopsData();
             troop.heroId1 = commander.heroId;
             troop.armsId = commander.GetArmsId() > 0 ? commander.GetArmsId() : SystemConst.Hero.DEFAULT_ARMS_ID;
-            heroIndex++;
             
-            for (int j = 1; j < heroesPerTroop && heroIndex < idleHeroes.Count; j++)
+            int viceCount = 0;
+            foreach (var viceHero in viceHeroes)
             {
-                if (j == 1)
-                    troop.heroId2 = idleHeroes[heroIndex].heroId;
-                else if (j == 2)
-                    troop.heroId3 = idleHeroes[heroIndex].heroId;
-                heroIndex++;
+                if (viceCount >= SystemConst.AIStrategy.TROOP_MAX_HEROES - 1) break;
+                if (usedHeroIds.Contains(viceHero.heroId)) continue;
+                
+                if (viceCount == 0)
+                    troop.heroId2 = viceHero.heroId;
+                else if (viceCount == 1)
+                    troop.heroId3 = viceHero.heroId;
+                usedHeroIds.Add(viceHero.heroId);
+                viceCount++;
             }
             
             SaveTroopsData.AddTroopToCity(troop, city.cityId);

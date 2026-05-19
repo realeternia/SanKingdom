@@ -109,6 +109,22 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
                 job2.gameObject.SetActive(true);
             }
         }
+        else if (isCommander && devId.HasValue)
+        {
+            if (job2 != null)
+            {
+                var devCfg = CityDevConfig.GetConfig(devId.Value);
+                if (devCfg != null && !string.IsNullOrEmpty(devCfg.DevAttr1))
+                {
+                    var attrCfg = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower());
+                    if (attrCfg != null && !string.IsNullOrEmpty(attrCfg.Icon))
+                    {
+                        job2.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(attrCfg.Icon));
+                    }
+                }
+                job2.gameObject.SetActive(true);
+            }
+        }
         else
         {
             if (job2 != null)

@@ -103,11 +103,7 @@ public class CityTroopsItem : MonoBehaviour
 
             SaveTroopsData.AddTroopToCity(warTeamData, cityPanelManager.cityId);
 
-            if (slotIndex == 0)
-            {
-                RemoveHeroFromDev(heroId);
-            }
-
+            EnsureCommanderHasHighestLeadship(warTeamData);
             cityPanelManager.CreateTroopsItems();
             cityPanelManager.UpdateAllHeroWorkState();
             return;
@@ -129,13 +125,45 @@ public class CityTroopsItem : MonoBehaviour
 
         SetHeroIdBySlot(warTeamData, slotIndex, heroId);
 
-        if (slotIndex == 0)
-        {
-            RemoveHeroFromDev(heroId);
-        }
-
+        EnsureCommanderHasHighestLeadship(warTeamData);
         RefreshUI();
         cityPanelManager.UpdateAllHeroWorkState();
+    }
+
+    private void EnsureCommanderHasHighestLeadship(SaveTroopsData data)
+    {
+        if (data.heroId1 <= 0) return;
+
+        var commander = GameManager.Instance.GetHero(data.heroId1);
+        if (commander == null) return;
+        int maxLeadship = commander.GetAttr("leadship");
+        int bestSlot = 0;
+
+        if (data.heroId2 > 0)
+        {
+            var hero2 = GameManager.Instance.GetHero(data.heroId2);
+            if (hero2 != null && hero2.GetAttr("leadship") > maxLeadship)
+            {
+                maxLeadship = hero2.GetAttr("leadship");
+                bestSlot = 1;
+            }
+        }
+
+        if (data.heroId3 > 0)
+        {
+            var hero3 = GameManager.Instance.GetHero(data.heroId3);
+            if (hero3 != null && hero3.GetAttr("leadship") > maxLeadship)
+            {
+                bestSlot = 2;
+            }
+        }
+
+        if (bestSlot > 0)
+        {
+            int swapHeroId = bestSlot == 1 ? data.heroId2 : data.heroId3;
+            SetHeroIdBySlot(data, bestSlot, data.heroId1);
+            data.heroId1 = swapHeroId;
+        }
     }
 
     private void RemoveHeroFromDev(int heroId)

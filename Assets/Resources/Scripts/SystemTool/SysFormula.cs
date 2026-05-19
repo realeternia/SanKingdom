@@ -44,16 +44,6 @@ public static class SysFormula
             };
         }
 
-        private static float CalculateSodBonusForTroop(SaveHeroData hero1, SaveHeroData hero2, SaveHeroData hero3, ArmsType armsType)
-        {
-            int sod1 = GetSodValueFromHero(hero1, armsType);
-            int sod2 = hero2 != null ? GetSodValueFromHero(hero2, armsType) : 0;
-            int sod3 = hero3 != null ? GetSodValueFromHero(hero3, armsType) : 0;
-            int maxSod = Math.Max(Math.Max(sod1, sod2), sod3);
-            float bonus = maxSod * SystemConst.Battle.SOD_BONUS_RATE_PER_POINT;
-            return Math.Clamp(bonus, SystemConst.Battle.SOD_BONUS_MIN, SystemConst.Battle.SOD_BONUS_MAX);
-        }
-
         public static (int atk, int def) CalculateCombatAttrForTroop(SaveTroopsData troop)
         {
             if (troop == null || troop.heroId1 <= 0 || troop.armsId <= 0)
@@ -62,11 +52,14 @@ public static class SysFormula
             var hero1 = GameManager.Instance.GetHero(troop.heroId1);
             var hero2 = troop.heroId2 > 0 ? GameManager.Instance.GetHero(troop.heroId2) : null;
             var hero3 = troop.heroId3 > 0 ? GameManager.Instance.GetHero(troop.heroId3) : null;
-
-            var armsId = troop.armsId;
             
-            var armsConfig = ArmsConfig.GetConfig(armsId);
-            float sodBonus = CalculateSodBonusForTroop(hero1, hero2, hero3, armsConfig.Type);
+            var armsConfig = ArmsConfig.GetConfig(troop.armsId);
+            int sod1 = GetSodValueFromHero(hero1, armsConfig.Type);
+            int sod2 = hero2 != null ? GetSodValueFromHero(hero2, armsConfig.Type) : 0;
+            int sod3 = hero3 != null ? GetSodValueFromHero(hero3, armsConfig.Type) : 0;
+            int maxSod = Math.Max(Math.Max(sod1, sod2), sod3);
+            float sodBonus = Math.Clamp(maxSod * SystemConst.Battle.SOD_BONUS_RATE_PER_POINT, SystemConst.Battle.SOD_BONUS_MIN, SystemConst.Battle.SOD_BONUS_MAX);
+
             int atk = (int)(hero1.str * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Atk * (1f + sodBonus));
             int def = (int)(hero1.leadShip * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Def * (1f + sodBonus));
             return (atk, def);

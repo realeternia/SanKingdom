@@ -1,0 +1,7 @@
+- [x] CityTroopsItem.OnHeroDropped 中不再调用 RemoveHeroFromDev，主将保留委派状态
+- [x] CityPanelManager.AssignHeroToDevNode 中移除 IsCommander 校验，主将可被委派
+- [x] AI.FormCityTroops 中不再排除已委派英雄，已委派英雄可作为主将
+- [x] CityCellHero.UpdateWorkState 支持主将和委派图标同时显示
+- [x] 英雄仅为主将时，job1显示主将图标，job2隐藏
+- [x] 英雄仅为委派时，job1显示委派图标，job2隐藏
+- [x] 英雄同时为主将和委派时，job1显示主将图标，job2显示委派图标

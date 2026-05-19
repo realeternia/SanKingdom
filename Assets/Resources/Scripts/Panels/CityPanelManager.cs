@@ -499,12 +499,6 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             return false;
         }
 
-        if (IsCommander(heroId))
-        {
-            SystemTip.Instance.ShowTip("主将不能派遣到开发位置");
-            return false;
-        }
-
         if (isViewOnly)
         {
             SystemTip.Instance.ShowTip("查看模式下无法操作");
