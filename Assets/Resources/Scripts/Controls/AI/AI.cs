@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
+using System;
+
 public static class AI
 {
     public static void ExecutePlanningPhase(SaveForceData force)
@@ -14,6 +16,8 @@ public static class AI
         var cityStrategies = StrategicDecider.DetermineCityStrategies(force);
         
         AssignHeroesToDev(force, context);
+        
+        FormTroops(force, context);
         
         GenerateWarPlans(force, context, cityStrategies);
         
@@ -249,5 +253,85 @@ public static class AI
         StrategicDecider.MarkTargetAttacked(force.forceId, targetCityId);
         
         GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 计划攻击[{ConfigNameHelper.GetCityName(targetCityId)}] 英雄:[{ConfigNameHelper.GetHeroNames(heroIds)}] 兵力:{totalSoldier}");
+    }
+    
+    private static void FormTroops(SaveForceData force, AIStrategyContext context)
+    {
+        foreach (var city in context.cities)
+        {
+            FormCityTroops(force, city);
+        }
+    }
+    
+    private static void FormCityTroops(SaveForceData force, SaveCityData city)
+    {
+        var existingTroops = SaveTroopsData.GetTroopsByCity(city.cityId);
+        
+        var normalHeroes = city.GetNormalHeroList();
+        if (normalHeroes.Count == 0) return;
+        
+        var assignedHeroIds = new HashSet<int>();
+        var devAssignments = city.GetDevAssignments();
+        foreach (var assignment in devAssignments)
+        {
+            assignedHeroIds.Add(assignment.heroId);
+        }
+        
+        foreach (var troop in existingTroops)
+        {
+            if (troop.heroId1 > 0) assignedHeroIds.Add(troop.heroId1);
+            if (troop.heroId2 > 0) assignedHeroIds.Add(troop.heroId2);
+            if (troop.heroId3 > 0) assignedHeroIds.Add(troop.heroId3);
+        }
+        
+        var idleHeroes = normalHeroes
+            .Select(id => GameManager.Instance.GetHero(id))
+            .Where(h => h != null && !assignedHeroIds.Contains(h.heroId))
+            .OrderByDescending(h => h.GetAttr("leadship"))
+            .ToList();
+        
+        if (idleHeroes.Count < SystemConst.AIStrategy.TROOP_MIN_HEROES) return;
+        
+        int cityLevel = city.GetLevel();
+        int citySoldier = city.GetAttr("soldier");
+        
+        int troopLimit = SysFormula.AIStrategy.CalculateTroopLimit(cityLevel, idleHeroes.Count, citySoldier);
+        
+        int existingCount = existingTroops.Count;
+        int newTroopCount = Math.Max(0, troopLimit - existingCount);
+        
+        if (newTroopCount == 0) return;
+        
+        int heroesPerTroop = SysFormula.AIStrategy.CalculateHeroesPerTroop(idleHeroes.Count, newTroopCount);
+        
+        int heroIndex = 0;
+        int formedCount = 0;
+        
+        for (int i = 0; i < newTroopCount && heroIndex < idleHeroes.Count; i++)
+        {
+            var troop = new SaveTroopsData();
+            
+            var commander = idleHeroes[heroIndex];
+            troop.heroId1 = commander.heroId;
+            troop.armsId = commander.GetArmsId() > 0 ? commander.GetArmsId() : SystemConst.Hero.DEFAULT_ARMS_ID;
+            heroIndex++;
+            
+            for (int j = 1; j < heroesPerTroop && heroIndex < idleHeroes.Count; j++)
+            {
+                if (j == 1)
+                    troop.heroId2 = idleHeroes[heroIndex].heroId;
+                else if (j == 2)
+                    troop.heroId3 = idleHeroes[heroIndex].heroId;
+                heroIndex++;
+            }
+            
+            SaveTroopsData.AddTroopToCity(troop, city.cityId);
+            formedCount++;
+        }
+        
+        if (formedCount > 0)
+        {
+            GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 组建{formedCount}个军团(等级{cityLevel} 空闲武将{idleHeroes.Count} 士兵{citySoldier})");
+        }
     }
 }

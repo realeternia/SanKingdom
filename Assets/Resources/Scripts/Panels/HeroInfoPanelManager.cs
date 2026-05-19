@@ -448,7 +448,7 @@ public class HeroInfoPanelManager : MonoBehaviour
         armsNameText.text = armsConfig.NameS;
         armsNameText.color = SysColor.GetArmsLevelColor(armsConfig.Level);
         
-        var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, armsId);
+        var (atk, def) = SysFormula.Battle.CalculateCombatAttrForTroop(troop);
         armsAttr1Text.text = atk.ToString();
         armsAttr2Text.text = def.ToString();
     }

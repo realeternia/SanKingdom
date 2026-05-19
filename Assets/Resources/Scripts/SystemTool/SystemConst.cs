@@ -548,6 +548,42 @@ public static class SystemConst
         /// 低匹配评分阈值
         /// </summary>
         public const int LOW_MATCH_SCORE_THRESHOLD = 70;
+        /// <summary>
+        /// 军团最小英雄数
+        /// </summary>
+        public const int TROOP_MIN_HEROES = 1;
+        /// <summary>
+        /// 军团最大英雄数
+        /// </summary>
+        public const int TROOP_MAX_HEROES = 3;
+        /// <summary>
+        /// 军团最低士兵数
+        /// </summary>
+        public const int TROOP_MIN_SOLDIER = 100;
+        /// <summary>
+        /// 城市等级1-5军团上限
+        /// </summary>
+        public const int TROOP_LIMIT_LOW = 1;
+        /// <summary>
+        /// 城市等级6-14军团上限
+        /// </summary>
+        public const int TROOP_LIMIT_MID = 2;
+        /// <summary>
+        /// 城市等级15-20军团上限
+        /// </summary>
+        public const int TROOP_LIMIT_HIGH = 3;
+        /// <summary>
+        /// 低等级城市阈值
+        /// </summary>
+        public const int CITY_LEVEL_LOW = 5;
+        /// <summary>
+        /// 高等级城市阈值
+        /// </summary>
+        public const int CITY_LEVEL_HIGH = 15;
+        /// <summary>
+        /// 军团组建空闲英雄阈值
+        /// </summary>
+        public const int TROOP_IDLE_HERO_THRESHOLD = 3;
     }
 
     public static class AIHero

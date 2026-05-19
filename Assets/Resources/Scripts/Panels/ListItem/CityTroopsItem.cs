@@ -301,18 +301,9 @@ public class CityTroopsItem : MonoBehaviour
         {
             if (warTeamData.heroId1 > 0 && warTeamData.armsId > 0)
             {
-                var heroData = GameManager.Instance.GetHero(warTeamData.heroId1);
-                if (heroData != null)
-                {
-                    var (atk, def) = SysFormula.Battle.CalculateCombatAttr(heroData, warTeamData.armsId);
-                    if (atkText != null) atkText.text = atk.ToString();
-                    if (defText != null) defText.text = def.ToString();
-                }
-                else
-                {
-                    if (atkText != null) atkText.text = "0";
-                    if (defText != null) defText.text = "0";
-                }
+                var (atk, def) = SysFormula.Battle.CalculateCombatAttrForTroop(warTeamData);
+                if (atkText != null) atkText.text = atk.ToString();
+                if (defText != null) defText.text = def.ToString();
             }
             else
             {

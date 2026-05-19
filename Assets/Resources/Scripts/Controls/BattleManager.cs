@@ -216,8 +216,7 @@ public class BattleManager : MonoBehaviour
 
         int inte = Math.Max(Math.Max(heroData1.inte, heroData2?.inte ?? 0), heroData3?.inte ?? 0);
 
-        var mainHero = heroData1;
-        var (atk, def) = SysFormula.Battle.CalculateCombatAttr(mainHero, troop.armsId);
+        var (atk, def) = SysFormula.Battle.CalculateCombatAttrForTroop(troop);
         
         var id = idCounter++;
         var action = new CreateChessAction(0, tickAdd, id, force.forceId, 

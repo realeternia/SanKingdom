@@ -29,15 +29,46 @@ public static class SysFormula
             return Math.Clamp(bonus, SystemConst.Battle.SOD_BONUS_MIN, SystemConst.Battle.SOD_BONUS_MAX);
         }
 
-        public static (int atk, int def) CalculateCombatAttr(SaveHeroData heroData, int armsId)
+        private static int GetSodValueFromHero(SaveHeroData heroData, ArmsType armsType)
         {
-            if (heroData == null || armsId <= 0)
+            if (heroData == null) return 0;
+            var heroConfig = HeroConfig.GetConfig(heroData.heroId);
+            return armsType switch
+            {
+                ArmsType.SodWalk => heroConfig.SodWalk,
+                ArmsType.SodHorse => heroConfig.SodHorse,
+                ArmsType.SodBow => heroConfig.SodBow,
+                ArmsType.SodWater => heroConfig.SodWater,
+                ArmsType.SodTank => heroConfig.SodTank,
+                _ => 0
+            };
+        }
+
+        private static float CalculateSodBonusForTroop(SaveHeroData hero1, SaveHeroData hero2, SaveHeroData hero3, ArmsType armsType)
+        {
+            int sod1 = GetSodValueFromHero(hero1, armsType);
+            int sod2 = hero2 != null ? GetSodValueFromHero(hero2, armsType) : 0;
+            int sod3 = hero3 != null ? GetSodValueFromHero(hero3, armsType) : 0;
+            int maxSod = Math.Max(Math.Max(sod1, sod2), sod3);
+            float bonus = maxSod * SystemConst.Battle.SOD_BONUS_RATE_PER_POINT;
+            return Math.Clamp(bonus, SystemConst.Battle.SOD_BONUS_MIN, SystemConst.Battle.SOD_BONUS_MAX);
+        }
+
+        public static (int atk, int def) CalculateCombatAttrForTroop(SaveTroopsData troop)
+        {
+            if (troop == null || troop.heroId1 <= 0 || troop.armsId <= 0)
                 return (0, 0);
             
+            var hero1 = GameManager.Instance.GetHero(troop.heroId1);
+            var hero2 = troop.heroId2 > 0 ? GameManager.Instance.GetHero(troop.heroId2) : null;
+            var hero3 = troop.heroId3 > 0 ? GameManager.Instance.GetHero(troop.heroId3) : null;
+
+            var armsId = troop.armsId;
+            
             var armsConfig = ArmsConfig.GetConfig(armsId);
-            float sodBonus = CalculateSodBonus(heroData, armsConfig.Type);
-            int atk = (int)(heroData.str * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Atk * (1f + sodBonus));
-            int def = (int)(heroData.leadShip * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Def * (1f + sodBonus));
+            float sodBonus = CalculateSodBonusForTroop(hero1, hero2, hero3, armsConfig.Type);
+            int atk = (int)(hero1.str * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Atk * (1f + sodBonus));
+            int def = (int)(hero1.leadShip * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Def * (1f + sodBonus));
             return (atk, def);
         }
 
@@ -329,6 +360,29 @@ public static class SysFormula
         public static int CalculateFoodNeeded(int totalSoldier)
         {
             return totalSoldier / SystemConst.AIStrategy.AI_FOOD_NEED_DIVISOR;
+        }
+
+        public static int CalculateTroopLimit(int cityLevel, int idleHeroCount, int citySoldier)
+        {
+            int limitByLevel;
+            if (cityLevel <= SystemConst.AIStrategy.CITY_LEVEL_LOW)
+                limitByLevel = SystemConst.AIStrategy.TROOP_LIMIT_LOW;
+            else if (cityLevel <= SystemConst.AIStrategy.CITY_LEVEL_HIGH)
+                limitByLevel = SystemConst.AIStrategy.TROOP_LIMIT_MID;
+            else
+                limitByLevel = SystemConst.AIStrategy.TROOP_LIMIT_HIGH;
+
+            int limitByHeroes = idleHeroCount / SystemConst.AIStrategy.TROOP_IDLE_HERO_THRESHOLD;
+            int limitBySoldier = citySoldier / SystemConst.AIStrategy.TROOP_MIN_SOLDIER;
+
+            return Math.Max(1, Math.Min(limitByLevel, Math.Min(limitByHeroes, limitBySoldier)));
+        }
+
+        public static int CalculateHeroesPerTroop(int idleHeroCount, int troopCount)
+        {
+            if (troopCount <= 0) return SystemConst.AIStrategy.TROOP_MIN_HEROES;
+            int heroesPerTroop = idleHeroCount / troopCount;
+            return Math.Max(SystemConst.AIStrategy.TROOP_MIN_HEROES, Math.Min(SystemConst.AIStrategy.TROOP_MAX_HEROES, heroesPerTroop));
         }
     }
 
