@@ -272,6 +272,18 @@ public static class SysFormula
         {
             return Math.Abs(x1 - x2) + Math.Abs(y1 - y2);
         }
+
+        public static bool CityHasResAddon(int cityId, string attrName)
+        {
+            var worldCfg = WorldConfig.GetConfig(cityId);
+            if (worldCfg.ResAddon == null) return false;
+            var attrCfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
+            foreach (int addonId in worldCfg.ResAddon)
+            {
+                if (addonId == attrCfg.Id) return true;
+            }
+            return false;
+        }
     }
 
     public static class Economy

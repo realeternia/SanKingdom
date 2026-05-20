@@ -115,6 +115,22 @@ public class SaveForceData
                 string resType = devConfig.DevAttr1.ToLower();
                 posResCache[resType] += devConfig.DevAttr1Value[tier];
             }
+        }
+
+        foreach (var city in cities)
+        {
+            var worldCfg = WorldConfig.GetConfig(city.cityId);
+            if (worldCfg.ResAddon != null)
+            {
+                foreach (int addonId in worldCfg.ResAddon)
+                {
+                    var attrCfg = CityAttrConfig.GetConfig(addonId);
+                    if (attrCfg.IsPosRes && attrCfg.IsForceAttr)
+                    {
+                        posResCache[attrCfg.name] += SystemConst.City.RES_ADDON_BONUS;
+                    }
+                }
+            }
         }        
         
         if (isPlayer)

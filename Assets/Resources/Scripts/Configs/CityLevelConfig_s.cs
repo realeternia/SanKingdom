@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,24 +10,48 @@ namespace CommonConfig
         {
             public string fieldName;
             public string fieldType;
-            public FieldMetaInfo(string name, string type)
+            public int fieldWidth;
+            public string fieldRule;
+            public bool fieldIndex;
+            public FieldMetaInfo(string name, string type, int width = 0, string rule = "", bool index = false)
             {
                 fieldName = name;
                 fieldType = type;
+                fieldWidth = width;
+                fieldRule = rule;
+                fieldIndex = index;
+            }
+        }
+
+        public class CellMeta
+        {
+            public int row;
+            public int col;
+            public int? foreColor;
+            public int? backColor;
+            public CellMeta(int row, int col, int? foreColor, int? backColor)
+            {
+                this.row = row;
+                this.col = col;
+                this.foreColor = foreColor;
+                this.backColor = backColor;
             }
         }
 
         private static Dictionary<string, FieldMetaInfo> fieldMeta = new Dictionary<string, FieldMetaInfo>()
         {
-            {"Id", new FieldMetaInfo("序列", "int")},
-            {"ExpNeed", new FieldMetaInfo("名字", "int")},
-            {"GoldAdd", new FieldMetaInfo("黄金产量", "int")},
-            {"FoodAdd", new FieldMetaInfo("粮食产量", "int")},
-            {"SoldierAdd", new FieldMetaInfo("士兵产量", "int")},
-            {"JobCount", new FieldMetaInfo("工位数", "int")},
+            {"Id", new FieldMetaInfo("序列", "int", 0)},
+            {"ExpNeed", new FieldMetaInfo("名字", "int", 0)},
+            {"GoldAdd", new FieldMetaInfo("黄金产量", "int", 0)},
+            {"FoodAdd", new FieldMetaInfo("粮食产量", "int", 0)},
+            {"SoldierAdd", new FieldMetaInfo("士兵产量", "int", 0)},
+            {"JobCount", new FieldMetaInfo("工位数", "int", 0)},
         };
 
         public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
+
+        private static List<CellMeta> cellMeta = new List<CellMeta>();
+        public static List<CellMeta> CellMetas { get { return cellMeta; } }
 
         /// <summary>
         ///序列
@@ -63,7 +87,6 @@ namespace CommonConfig
             this.FoodAdd = FoodAdd;
             this.SoldierAdd = SoldierAdd;
             this.JobCount = JobCount;
-
         }
 
         public CityLevelConfig() { }
@@ -78,6 +101,7 @@ namespace CommonConfig
         {
             config.Clear();
             config = dict;
+            RebuildIndex();
         }
 
         public static void Load()
@@ -87,23 +111,32 @@ namespace CommonConfig
             config[2] = new CityLevelConfig(2, 80, 10, 10, 10, 4);
             config[3] = new CityLevelConfig(3, 160, 10, 10, 10, 4);
             config[4] = new CityLevelConfig(4, 260, 10, 10, 10, 4);
-            config[5] = new CityLevelConfig(5, 360, 10, 10, 10, 4);
-            config[6] = new CityLevelConfig(6, 460, 10, 10, 10, 4);
-            config[7] = new CityLevelConfig(7, 560, 10, 10, 10, 4);
-            config[8] = new CityLevelConfig(8, 660, 10, 10, 10, 4);
-            config[9] = new CityLevelConfig(9, 780, 10, 10, 10, 4);
-            config[10] = new CityLevelConfig(10, 920, 11, 11, 11, 5);
-            config[11] = new CityLevelConfig(11, 1080, 11, 11, 11, 5);
-            config[12] = new CityLevelConfig(12, 1260, 11, 11, 11, 5);
-            config[13] = new CityLevelConfig(13, 1460, 11, 11, 11, 5);
-            config[14] = new CityLevelConfig(14, 1660, 11, 11, 11, 5);
-            config[15] = new CityLevelConfig(15, 1860, 11, 11, 11, 5);
-            config[16] = new CityLevelConfig(16, 2060, 11, 11, 11, 5);
-            config[17] = new CityLevelConfig(17, 2300, 11, 11, 11, 5);
-            config[18] = new CityLevelConfig(18, 2580, 11, 11, 11, 5);
-            config[19] = new CityLevelConfig(19, 2980, 11, 11, 11, 5);
-            config[20] = new CityLevelConfig(20, 3480, 12, 12, 12, 6);
+            config[5] = new CityLevelConfig(5, 360, 10, 10, 10, 5);
+            config[6] = new CityLevelConfig(6, 460, 10, 10, 10, 5);
+            config[7] = new CityLevelConfig(7, 560, 10, 10, 10, 5);
+            config[8] = new CityLevelConfig(8, 660, 10, 10, 10, 5);
+            config[9] = new CityLevelConfig(9, 780, 10, 10, 10, 5);
+            config[10] = new CityLevelConfig(10, 920, 11, 11, 11, 6);
+            config[11] = new CityLevelConfig(11, 1080, 11, 11, 11, 6);
+            config[12] = new CityLevelConfig(12, 1260, 11, 11, 11, 6);
+            config[13] = new CityLevelConfig(13, 1460, 11, 11, 11, 6);
+            config[14] = new CityLevelConfig(14, 1660, 11, 11, 11, 6);
+            config[15] = new CityLevelConfig(15, 1860, 11, 11, 11, 7);
+            config[16] = new CityLevelConfig(16, 2060, 11, 11, 11, 7);
+            config[17] = new CityLevelConfig(17, 2300, 11, 11, 11, 7);
+            config[18] = new CityLevelConfig(18, 2580, 11, 11, 11, 7);
+            config[19] = new CityLevelConfig(19, 2980, 11, 11, 11, 7);
+            config[20] = new CityLevelConfig(20, 3480, 12, 12, 12, 8);
 
+            RebuildIndex();
+
+        }
+
+        private static void RebuildIndex()
+        {
+            foreach (var kv in config)
+            {
+            }
         }
 
         public static CityLevelConfig GetConfig(int id)
@@ -115,7 +148,6 @@ namespace CommonConfig
             }
             throw new NullReferenceException(string.Format("配置表CityLevelConfig不存在id={0}", id));
         }
-
 
 
         public static bool HasConfig(int id)

@@ -88,6 +88,27 @@ public class SaveCityData
             forceData.AddAttr("gold", (int)SysFormula.City.CalculateGoldProduction(GetLevel()));
         }
         AddAttr("food", (int)SysFormula.City.CalculateFoodProduction(GetLevel()));
+
+        var worldCfg = WorldConfig.GetConfig(cityId);
+        if (worldCfg.ResAddon != null)
+        {
+            foreach (int addonId in worldCfg.ResAddon)
+            {
+                var attrCfg = CityAttrConfig.GetConfig(addonId);
+                if (!attrCfg.IsPosRes)
+                {
+                    if (attrCfg.IsForceAttr && forceData != null)
+                    {
+                        forceData.AddAttr(attrCfg.name, SystemConst.City.RES_ADDON_BONUS);
+                    }
+                    else if (!attrCfg.IsForceAttr)
+                    {
+                        AddAttr(attrCfg.name, SystemConst.City.RES_ADDON_BONUS);
+                    }
+                }
+            }
+        }
+
         actions.Clear();
     }
 

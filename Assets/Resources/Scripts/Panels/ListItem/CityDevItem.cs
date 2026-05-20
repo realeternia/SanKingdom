@@ -46,7 +46,12 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         this.cityId = cityId;
         this.devId = devId;
         var devCfg = CityDevConfig.GetConfig(devId);
-        nameText.text = devCfg.Cname;
+        string displayName = devCfg.Cname;
+        if (!string.IsNullOrEmpty(devCfg.DevAttr1) && SysFormula.City.CityHasResAddon(cityId, devCfg.DevAttr1))
+        {
+            displayName = "★" + displayName;
+        }
+        nameText.text = displayName;
         cityImg.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.BuildingIcon(devCfg.Icon));
         isRunType = devCfg.Type == "run";
         prefabName = devCfg.Prefab;

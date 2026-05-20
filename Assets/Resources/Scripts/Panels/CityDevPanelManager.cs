@@ -42,7 +42,12 @@ public class CityDevPanelManager : MonoBehaviour
         }
 
         var devCfg = CityDevConfig.GetConfig(devId);
-        buildingText.text = devCfg.Cname;
+        string displayName = devCfg.Cname;
+        if (!string.IsNullOrEmpty(devCfg.DevAttr1) && SysFormula.City.CityHasResAddon(cityId, devCfg.DevAttr1))
+        {
+            displayName = "★" + displayName;
+        }
+        buildingText.text = displayName;
 
         if (!string.IsNullOrEmpty(devCfg.Prefab))
         {
