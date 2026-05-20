@@ -70,15 +70,15 @@ public class StrategicDecider
         return SysFormula.AIStrategy.CalculateEffectiveSoldier(citySoldier, heroCount);
     }
     
-    public static Dictionary<int, CityStrategyState> DetermineCityStrategies(SaveForceData force)
+    public static Dictionary<int, CityStrategyBase> DetermineCityStrategies(SaveForceData force, AIStrategyContext context)
     {
-        var result = new Dictionary<int, CityStrategyState>();
+        var result = new Dictionary<int, CityStrategyBase>();
         var cities = force.GetCityList();
         var frontlineCities = MapTool.GetFrontlineCityIds(force.forceId);
         
         foreach (var city in cities)
         {
-            result[city.cityId] = CityStrategyState.Dev;
+            result[city.cityId] = CityStrategyFactory.CreateStrategy(CityStrategyState.Dev, context, city, force);
         }
         
         int atkCount = 0;
@@ -108,7 +108,13 @@ public class StrategicDecider
                 if (usedTargets.Contains(candidate.targetCityId))
                     continue;
                 
-                result[candidate.sourceCityId] = CityStrategyState.Atk;
+                var sourceCity = cities.FirstOrDefault(c => c.cityId == candidate.sourceCityId);
+                if (sourceCity != null)
+                {
+                    result[candidate.sourceCityId] = CityStrategyFactory.CreateStrategy(
+                        CityStrategyState.Atk, context, sourceCity, force, candidate.targetCityId);
+                }
+                
                 attackTargets[candidate.sourceCityId] = candidate.targetCityId;
                 usedSources.Add(candidate.sourceCityId);
                 usedTargets.Add(candidate.targetCityId);
@@ -116,7 +122,7 @@ public class StrategicDecider
                 
                 var targetCity = GameManager.Instance.GetCity(candidate.targetCityId);
                 string targetForceName = targetCity != null ? ConfigNameHelper.GetForceName(targetCity.forceId) : "未知";
-                GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(candidate.sourceCityId)}] 决定攻击[{ConfigNameHelper.GetCityName(candidate.targetCityId)}] 目标势力:{targetForceName} 优势比:{candidate.advantage:F2} 来源:{candidate.sourceType}");
+                GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(candidate.sourceCityId)}] 决定进攻[{ConfigNameHelper.GetCityName(candidate.targetCityId)}] 目标势力:{targetForceName} 优势比:{candidate.advantage:F2} 来源:{candidate.sourceType}");
             }
         }
         
@@ -127,7 +133,11 @@ public class StrategicDecider
                 var city = GameManager.Instance.GetCity(cityId);
                 if (HasThreat(city))
                 {
-                    result[cityId] = CityStrategyState.Def;
+                    var forceCity = cities.FirstOrDefault(c => c.cityId == cityId);
+                    if (forceCity != null)
+                    {
+                        result[cityId] = CityStrategyFactory.CreateStrategy(CityStrategyState.Def, context, forceCity, force);
+                    }
                     GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(cityId)}] 决定防御");
                 }
             }

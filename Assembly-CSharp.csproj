@@ -108,6 +108,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityDevItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackRunCrossPlus.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveBuffAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyDefense.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\WorldPieceControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ConfigManager.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateMissileAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyDevelopment.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateEffectAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\HeroTaskMatcher.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleUIManager.cs" />
@@ -149,6 +151,7 @@
     <Compile Include="Assets\Resources\Scripts\SystemTool\HeroSelectionTool.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackMultiArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RoundUpdateAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyFactory.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysFormula.cs" />
@@ -158,6 +161,7 @@
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysRandom.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefSkillDamageReduce.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefFeedback.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyBase.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\PopHeroBattleSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\PanelEvent.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\UnityMeshMgr.cs" />
@@ -231,6 +235,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\CityDevNodeMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidHeal.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSpeedDown.cs" />
@@ -296,7 +301,6 @@
     <None Include="Assets\Shaders\GridLineUsage.txt" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\Props.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\DissolveParticleGroundPacked.shader" />
-    <None Include="Assets\TextMesh Pro\Glyph Report.txt" />
     <None Include="Assets\SineVFX\TopDownEffects\Environment\EnvShaders\PrototypeGridCenterMaskTDE.shader" />
     <None Include="Assets\SineVFX\TopDownEffects\Shaders\DissolveParticleDepth.shader" />
     <None Include="Assets\Epic Toon FX\Shaders\ETFX_PowerboxLit.shader" />
