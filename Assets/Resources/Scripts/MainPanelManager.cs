@@ -19,14 +19,18 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     public TMP_Text textYear;
     public TMP_Text textAiInfo;
     public GameObject bgPanel;
+    public GameObject roadNode;
     public VideoPanelManager videoPanelManager;
     private MapDragHandler mapDragHandler;
     private List<WorldPieceControl> worldPieces = new List<WorldPieceControl>();
+    private Dictionary<int, Vector2> cityCenterPositions = new Dictionary<int, Vector2>();
+    private static Sprite whiteSprite;
 
     // Start is called before the first frame update
     void Start()
     {
         LoadMapPieces();
+        LoadRoads();
         InitDragHandler();
 
         var nowRound = GameManager.Instance.SaveData.round;
@@ -55,7 +59,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
     void Update()
     {
-        
+
     }
     
     private void OnRoundNextClick()
@@ -255,11 +259,99 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                     );
                     
                     rectTransform.sizeDelta = new Vector2(texture.width * MAP_SCALE_FACTOR, texture.height * MAP_SCALE_FACTOR);
+
+                    cityCenterPositions[worldConfig.Id] = rectTransform.anchoredPosition;
                 }
 
                 pieceControl.InitForce();
                 worldPieces.Add(pieceControl);
         }
+    }
+
+    private void LoadRoads()
+    {
+        RectTransform bgRect = bgPanel.GetComponent<RectTransform>();
+        RectTransform roadNodeRect = roadNode.GetComponent<RectTransform>();
+
+        HashSet<string> createdRoads = new HashSet<string>();
+
+        foreach (var worldConfig in WorldConfig.ConfigList)
+        {
+            int cityId = worldConfig.Id;
+            var adjacentIds = MapTool.GetAdjacentCityIds(cityId);
+
+            foreach (int adjId in adjacentIds)
+            {
+                int minId = Mathf.Min(cityId, adjId);
+                int maxId = Mathf.Max(cityId, adjId);
+                string roadKey = minId + "_" + maxId;
+
+                if (createdRoads.Contains(roadKey))
+                    continue;
+                createdRoads.Add(roadKey);
+
+                CreateRoad(minId, maxId);
+            }
+        }
+
+        GameLog.Info($"LoadRoads 道路数量: {createdRoads.Count}");
+    }
+
+    private void CreateRoad(int cityId1, int cityId2)
+    {
+        Vector2 pos1 = GetCityCenterPosition(cityId1);
+        Vector2 pos2 = GetCityCenterPosition(cityId2);
+
+        Vector2 midPoint = (pos1 + pos2) / 2f;
+        float distance = Vector2.Distance(pos1, pos2);
+        float angle = Mathf.Atan2(pos2.y - pos1.y, pos2.x - pos1.x) * Mathf.Rad2Deg;
+
+        GameObject roadObj = new GameObject("Road_" + cityId1 + "_" + cityId2);
+        RectTransform rectTransform = roadObj.AddComponent<RectTransform>();
+        rectTransform.SetParent(roadNode.transform, false);
+
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+        Image image = roadObj.AddComponent<Image>();
+        image.sprite = GetWhiteSprite();
+        image.color = SysColor.WorldMap.RoadColor;
+        image.raycastTarget = false;
+
+        rectTransform.anchoredPosition = midPoint;
+        rectTransform.sizeDelta = new Vector2(distance, SystemConst.WorldMap.ROAD_WIDTH);
+        rectTransform.localEulerAngles = new Vector3(0f, 0f, angle);
+    }
+
+    private Vector2 GetCityCenterPosition(int cityId)
+    {
+        if (!cityCenterPositions.TryGetValue(cityId, out Vector2 pos))
+        {
+            GameLog.Error("GetCityCenterPosition: 未找到城市" + cityId + "的中心位置");
+            return Vector2.zero;
+        }
+
+        var cfg = WorldConfig.GetConfig(cityId);
+        if (cfg.MiniMapOffsets != null && cfg.MiniMapOffsets.Length >= 2)
+        {
+            pos.x += cfg.MiniMapOffsets[0] * MAP_SCALE_FACTOR;
+            pos.y += cfg.MiniMapOffsets[1] * MAP_SCALE_FACTOR;
+        }
+
+        return pos;
+    }
+
+    private static Sprite GetWhiteSprite()
+    {
+        if (whiteSprite == null)
+        {
+            Texture2D tex = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+            tex.SetPixel(0, 0, Color.white);
+            tex.Apply();
+            whiteSprite = Sprite.Create(tex, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
+        }
+        return whiteSprite;
     }
 
     public void OnPieceClick(int pieceId)

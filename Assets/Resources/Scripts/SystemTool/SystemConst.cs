@@ -477,10 +477,8 @@ public static class SystemConst
 
     public static class WorldMap
     {
-        /// <summary>
-        /// 地图缩放因子
-        /// </summary>
         public const float MAP_SCALE_FACTOR = 1.25f;
+        public const float ROAD_WIDTH = 6f;
     }
 
     public static class AIStrategy

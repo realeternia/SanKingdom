@@ -157,6 +157,11 @@ public static class SysColor
         public static readonly Color SilverSpec = new Color(1f, 1f, 1f, 1f);
     }
 
+    public static class WorldMap
+    {
+        public static readonly Color RoadColor = new Color(0.6f, 0.5f, 0.35f, 0.8f);
+    }
+
     public static class City
     {
         public static readonly Color HeroOverlayColor = new Color(0f, 0f, 0f, 0.92f);
