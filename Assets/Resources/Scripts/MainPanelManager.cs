@@ -400,6 +400,35 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         return whiteSprite;
     }
 
+    private void RefreshRoadsByForce(int forceId1, int forceId2)
+    {
+        foreach (Transform child in roadLayer.transform)
+        {
+            string name = child.name;
+            if (!name.StartsWith("Road_")) continue;
+
+            string[] parts = name.Split('_');
+            if (parts.Length < 3) continue;
+
+            if (!int.TryParse(parts[1], out int cityId1) || !int.TryParse(parts[2], out int cityId2))
+                continue;
+
+            var city1 = GameManager.Instance.GetCity(cityId1);
+            var city2 = GameManager.Instance.GetCity(cityId2);
+            if (city1 == null || city2 == null) continue;
+
+            bool match = (city1.forceId == forceId1 && city2.forceId == forceId2)
+                      || (city1.forceId == forceId2 && city2.forceId == forceId1);
+            if (!match) continue;
+
+            Image image = child.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = GetRoadColor(cityId1, cityId2);
+            }
+        }
+    }
+
     public void OnPieceClick(int pieceId)
     {
         var currentForce = GameManager.Instance.CurrentForce;
@@ -480,6 +509,11 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 var color = ForceConfig.GetConfig(signal.ForceId).Color;
                 textAiInfo.text = $"<color={color}>{signal.AIName}</color> 进行中";
             }
+        }
+        else if(data.Name == "RelationChange")
+        {
+            var signal = data as RelationChangeSignal;
+            RefreshRoadsByForce(signal.ForceId1, signal.ForceId2);
         }
     }    
 }

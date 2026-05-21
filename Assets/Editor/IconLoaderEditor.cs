@@ -123,7 +123,7 @@ public class IconLoaderEditor : Editor
         GUI.Label(labelRect, label, limeLabelStyle);
     }
 
-    private void DrawHeader()
+    private new void DrawHeader()
     {
         Rect rect = GUILayoutUtility.GetRect(0, 36, headerStyle);
         EditorGUI.DrawRect(rect, HeaderBg);

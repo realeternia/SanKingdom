@@ -96,6 +96,9 @@ public class SaveForceRelation
     public void AddRelation(int forceId1, int forceId2, int delta)
     {
         if (forceId1 == forceId2) return;
+
+        RelationLevel oldLevel = GetRelationLevel(forceId1, forceId2);
+
         var entry = FindEntry(forceId1, forceId2);
         int newScore = (entry != null ? entry.score : SystemConst.Diplomacy.RELATION_DEFAULT) + delta;
         newScore = Math.Clamp(newScore, SystemConst.Diplomacy.RELATION_MIN, SystemConst.Diplomacy.RELATION_MAX);
@@ -108,6 +111,12 @@ public class SaveForceRelation
             int minId = Math.Min(forceId1, forceId2);
             int maxId = Math.Max(forceId1, forceId2);
             relations.Add(new SaveForceRelationEntry(minId, maxId, newScore));
+        }
+
+        RelationLevel newLevel = GetRelationLevel(forceId1, forceId2);
+        if (oldLevel != newLevel)
+        {
+            PanelManager.Instance.SendSignal(new RelationChangeSignal { ForceId1 = forceId1, ForceId2 = forceId2 });
         }
     }
 

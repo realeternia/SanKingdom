@@ -62,3 +62,10 @@ public class CityLevelChangeSignal : SignalData
     public CityLevelChangeSignal() { Name = "CityLevelChange"; }
     public int CityId;
 }
+
+public class RelationChangeSignal : SignalData
+{
+    public RelationChangeSignal() { Name = "RelationChange"; }
+    public int ForceId1;
+    public int ForceId2;
+}

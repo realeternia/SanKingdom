@@ -159,11 +159,11 @@ public static class SysColor
 
     public static class WorldMap
     {
-        public static readonly Color RoadColor = new Color(0.6f, 0.5f, 0.35f, 0.6f);
-        public static readonly Color RoadInternalColor = new Color(0.5f, 0.5f, 0.5f, 0.6f);
-        public static readonly Color RoadFriendlyColor = new Color(0.2f, 0.8f, 0.2f, 0.6f);
-        public static readonly Color RoadNeutralColor = new Color(0.9f, 0.8f, 0.2f, 0.6f);
-        public static readonly Color RoadHostileColor = new Color(0.9f, 0.2f, 0.2f, 0.6f);
+        public static readonly Color RoadColor = new Color(0.6f, 0.5f, 0.35f, 0.4f);
+        public static readonly Color RoadInternalColor = new Color(0.5f, 0.5f, 0.5f, 0.4f);
+        public static readonly Color RoadFriendlyColor = new Color(0.2f, 0.8f, 0.2f, 0.4f);
+        public static readonly Color RoadNeutralColor = new Color(0.9f, 0.8f, 0.2f, 0.4f);
+        public static readonly Color RoadHostileColor = new Color(0.9f, 0.2f, 0.2f, 0.4f);
     }
 
     public static class City
