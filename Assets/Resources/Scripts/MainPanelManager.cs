@@ -19,7 +19,9 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     public TMP_Text textYear;
     public TMP_Text textAiInfo;
     public GameObject bgPanel;
-    public GameObject roadNode;
+    public GameObject roadLayer;
+    public GameObject textLayer;
+    public GameObject areaLayer;
     public VideoPanelManager videoPanelManager;
     private MapDragHandler mapDragHandler;
     private List<WorldPieceControl> worldPieces = new List<WorldPieceControl>();
@@ -29,6 +31,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     // Start is called before the first frame update
     void Start()
     {
+        InitLayers();
         LoadMapPieces();
         LoadRoads();
         InitDragHandler();
@@ -60,6 +63,25 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     void Update()
     {
 
+    }
+
+    private void InitLayers()
+    {
+        SetupLayer(areaLayer);
+        SetupLayer(textLayer);
+        SetupLayer(roadLayer);
+    }
+
+    private void SetupLayer(GameObject layer)
+    {
+        layer.transform.SetParent(bgPanel.transform, false);
+        RectTransform layerRect = layer.GetComponent<RectTransform>();
+        if (layerRect == null) return;
+
+        layerRect.anchorMin = Vector2.zero;
+        layerRect.anchorMax = Vector2.one;
+        layerRect.offsetMin = Vector2.zero;
+        layerRect.offsetMax = Vector2.zero;
     }
     
     private void OnRoundNextClick()
@@ -236,7 +258,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 GameObject worldPiecePrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.WorldPiece());
                 
                 // 实例化预设体
-                GameObject mapPiece = Instantiate(worldPiecePrefab, bgPanel.transform, false);
+                GameObject mapPiece = Instantiate(worldPiecePrefab, areaLayer.transform, false);
                 mapPiece.name = worldConfig.Name;
                 
                 // 获取或添加Image组件
@@ -264,15 +286,16 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 }
 
                 pieceControl.InitForce();
+
+                Transform textNameTransform = pieceControl.pieceName.transform;
+                textNameTransform.SetParent(textLayer.transform, true);
+
                 worldPieces.Add(pieceControl);
         }
     }
 
     private void LoadRoads()
     {
-        RectTransform bgRect = bgPanel.GetComponent<RectTransform>();
-        RectTransform roadNodeRect = roadNode.GetComponent<RectTransform>();
-
         HashSet<string> createdRoads = new HashSet<string>();
 
         foreach (var worldConfig in WorldConfig.ConfigList)
@@ -306,9 +329,11 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         float distance = Vector2.Distance(pos1, pos2);
         float angle = Mathf.Atan2(pos2.y - pos1.y, pos2.x - pos1.x) * Mathf.Rad2Deg;
 
+        Color roadColor = GetRoadColor(cityId1, cityId2);
+
         GameObject roadObj = new GameObject("Road_" + cityId1 + "_" + cityId2);
         RectTransform rectTransform = roadObj.AddComponent<RectTransform>();
-        rectTransform.SetParent(roadNode.transform, false);
+        rectTransform.SetParent(roadLayer.transform, false);
 
         rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
@@ -316,12 +341,33 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
 
         Image image = roadObj.AddComponent<Image>();
         image.sprite = GetWhiteSprite();
-        image.color = SysColor.WorldMap.RoadColor;
+        image.color = roadColor;
         image.raycastTarget = false;
 
-        rectTransform.anchoredPosition = midPoint;
+        rectTransform.anchoredPosition = midPoint + new Vector2(-1280, 1280);
         rectTransform.sizeDelta = new Vector2(distance, SystemConst.WorldMap.ROAD_WIDTH);
         rectTransform.localEulerAngles = new Vector3(0f, 0f, angle);
+    }
+
+    private Color GetRoadColor(int cityId1, int cityId2)
+    {
+        var city1 = GameManager.Instance.GetCity(cityId1);
+        var city2 = GameManager.Instance.GetCity(cityId2);
+
+        if (city1.forceId == city2.forceId)
+            return SysColor.WorldMap.RoadInternalColor;
+
+        var relationLevel = GameManager.Instance.SaveData.forceRelation.GetRelationLevel(city1.forceId, city2.forceId);
+
+        switch (relationLevel)
+        {
+            case RelationLevel.Friendly:
+                return SysColor.WorldMap.RoadFriendlyColor;
+            case RelationLevel.Hostile:
+                return SysColor.WorldMap.RoadHostileColor;
+            default:
+                return SysColor.WorldMap.RoadNeutralColor;
+        }
     }
 
     private Vector2 GetCityCenterPosition(int cityId)

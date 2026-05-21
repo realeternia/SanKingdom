@@ -2,6 +2,13 @@ using System;
 using System.Collections.Generic;
 using CommonConfig;
 
+public enum RelationLevel
+{
+    Friendly,
+    Neutral,
+    Hostile
+}
+
 [System.Serializable]
 public class SaveForceRelationEntry
 {
@@ -29,17 +36,17 @@ public class SaveForceRelation
 
     private static readonly int[,] initialRelations = new int[,]
     {
-        {1, 2, 40}, {1, 3, 60}, {1, 4, 35}, {1, 5, 20}, {1, 6, 50}, {1, 7, 55}, {1, 8, 50}, {1, 9, 50}, {1, 10, 30}, {1, 11, 45}, {1, 12, 50},
-        {2, 3, 30}, {2, 4, 25}, {2, 5, 20}, {2, 6, 45}, {2, 7, 40}, {2, 8, 45}, {2, 9, 50}, {2, 10, 35}, {2, 11, 40}, {2, 12, 50},
-        {3, 4, 40}, {3, 5, 30}, {3, 6, 55}, {3, 7, 50}, {3, 8, 50}, {3, 9, 50}, {3, 10, 45}, {3, 11, 50}, {3, 12, 50},
-        {4, 5, 35}, {4, 6, 45}, {4, 7, 50}, {4, 8, 50}, {4, 9, 50}, {4, 10, 20}, {4, 11, 40}, {4, 12, 50},
-        {5, 6, 30}, {5, 7, 35}, {5, 8, 40}, {5, 9, 45}, {5, 10, 25}, {5, 11, 30}, {5, 12, 40},
-        {6, 7, 50}, {6, 8, 55}, {6, 9, 50}, {6, 10, 45}, {6, 11, 50}, {6, 12, 50},
-        {7, 8, 60}, {7, 9, 50}, {7, 10, 40}, {7, 11, 45}, {7, 12, 50},
-        {8, 9, 55}, {8, 10, 45}, {8, 11, 50}, {8, 12, 50},
-        {9, 10, 40}, {9, 11, 45}, {9, 12, 50},
-        {10, 11, 35}, {10, 12, 45},
-        {11, 12, 50}
+        {1, 2, 15}, {1, 3, 75}, {1, 4, 40}, {1, 5, 30}, {1, 6, 55}, {1, 7, 70}, {1, 8, 65}, {1, 9, 50}, {1, 10, 30}, {1, 11, 45}, {1, 12, 50},
+        {2, 3, 30}, {2, 4, 20}, {2, 5, 25}, {2, 6, 35}, {2, 7, 40}, {2, 8, 45}, {2, 9, 50}, {2, 10, 20}, {2, 11, 30}, {2, 12, 40},
+        {3, 4, 40}, {3, 5, 30}, {3, 6, 45}, {3, 7, 25}, {3, 8, 50}, {3, 9, 50}, {3, 10, 35}, {3, 11, 40}, {3, 12, 45},
+        {4, 5, 30}, {4, 6, 50}, {4, 7, 55}, {4, 8, 50}, {4, 9, 50}, {4, 10, 15}, {4, 11, 70}, {4, 12, 55},
+        {5, 6, 20}, {5, 7, 30}, {5, 8, 40}, {5, 9, 45}, {5, 10, 35}, {5, 11, 25}, {5, 12, 40},
+        {6, 7, 45}, {6, 8, 50}, {6, 9, 50}, {6, 10, 40}, {6, 11, 50}, {6, 12, 50},
+        {7, 8, 70}, {7, 9, 55}, {7, 10, 30}, {7, 11, 45}, {7, 12, 50},
+        {8, 9, 55}, {8, 10, 40}, {8, 11, 50}, {8, 12, 50},
+        {9, 10, 40}, {9, 11, 50}, {9, 12, 50},
+        {10, 11, 30}, {10, 12, 40},
+        {11, 12, 65}
     };
 
     public void InitForNewGame()
@@ -74,6 +81,16 @@ public class SaveForceRelation
         if (entry != null)
             return entry.score;
         return SystemConst.Diplomacy.RELATION_DEFAULT;
+    }
+
+    public RelationLevel GetRelationLevel(int forceId1, int forceId2)
+    {
+        int score = GetRelation(forceId1, forceId2);
+        if (score >= SystemConst.Diplomacy.RELATION_FRIENDLY_THRESHOLD)
+            return RelationLevel.Friendly;
+        if (score <= SystemConst.Diplomacy.RELATION_HOSTILE_THRESHOLD)
+            return RelationLevel.Hostile;
+        return RelationLevel.Neutral;
     }
 
     public void AddRelation(int forceId1, int forceId2, int delta)

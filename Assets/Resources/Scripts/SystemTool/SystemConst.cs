@@ -645,6 +645,8 @@ public static class SystemConst
         public const int RELATION_MIN = 1;
         public const int RELATION_MAX = 100;
         public const int RELATION_DEFAULT = 50;
+        public const int RELATION_FRIENDLY_THRESHOLD = 65;
+        public const int RELATION_HOSTILE_THRESHOLD = 35;
         public const int PEACE_DECAY_MIN = 1;
         public const int PEACE_DECAY_MAX = 4;
         public const int PEACE_DECAY_ADJACENT_MIN = 1;
