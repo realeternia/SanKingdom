@@ -100,6 +100,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideArmsItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PopCitySelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\HeroInfoCell.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\ForceRelation.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PopHeroSelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefPlantSkin.cs" />
@@ -214,6 +215,7 @@
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolHeroDev.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\ResourceCache.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PickPanelCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />

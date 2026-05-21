@@ -71,16 +71,6 @@ public class GameManager : MonoBehaviour
         
     }
     
-    private void SortForces()
-    {
-        SaveData.forces.Sort((a, b) =>
-        {
-            if (a.isPlayer != b.isPlayer)
-                return a.isPlayer ? -1 : 1;
-            return a.forceId - b.forceId;
-        });
-    }
-
     public SaveForceData GetForce(int forceId)
     {
         return SaveData.forces.FirstOrDefault(f => f.forceId == forceId);
@@ -150,54 +140,7 @@ public class GameManager : MonoBehaviour
     public void NewGame(int forceId)
     {
         SaveData = new SaveData();
-        SaveData.round = 1;
-        foreach(var cityCfg in WorldConfig.ConfigList)
-        {
-            var city = new SaveCityData();
-            city.cityId = cityCfg.Id;
-            city.forceId = cityCfg.ForceId;
-            city.exp = SaveCityData.GetExpByLevel(cityCfg.Level);
-            city.soldier = cityCfg.Soldier;
-            city.happy = SystemConst.City.INITIAL_CITY_HAPPY;
-            city.food = cityCfg.Food;
-            city.wall = cityCfg.Wall;
-
-            SaveData.cities.Add(city);
-        }
-        foreach(var heroCfg in HeroConfig.ConfigList)
-        {
-            if(string.IsNullOrEmpty(heroCfg.City))
-                continue;
-            var cityCfg = WorldConfig.ConfigList.FirstOrDefault(c => c.Cname == heroCfg.City);
-            if(cityCfg == null)
-                continue;
-            if(SystemConst.Game.BASE_YEAR - heroCfg.BornYear  < SystemConst.Game.BORN_AGE)
-                continue;
-
-            var hero = new SaveHeroData { heroId = heroCfg.Id, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId };
-            hero.InitAttrsFromConfig();
-            SaveData.heros.Add(hero);
-        }
-        foreach(var city in SaveData.cities)
-        {
-            city.SelectOwner();
-        }
-        foreach(var force in ForceConfig.ConfigList)
-        {
-            if(force.Id > SystemConst.Game.MAX_FORCE_ID)
-                continue;
-            var forceData = new SaveForceData { forceId = force.Id, gold = force.InitGold };
-            if(force.Id == forceId)
-                forceData.isPlayer = true;
-            forceData.InitRuntimeState();
-            SaveData.forces.Add(forceData); 
-        }
-
-        SortForces();
-
-        foreach (var forceData in SaveData.forces)
-            forceData.ResetRoundState();
-        SaveData.currentForceIndex = 0;
+        SaveData.OnNewGame(forceId);
         StartNextForceTurn();
 
         SaveToFile();        
@@ -205,11 +148,7 @@ public class GameManager : MonoBehaviour
 
     public void NextRound()
     {
-        SaveData.round++;
         SaveData.OnRound();
-        
-        SaveData.currentForceIndex = 0;
-        SortForces();
         StartNextForceTurn();
         
         PanelManager.Instance.SendSignal(new RoundChangeSignal { Round = SaveData.round });
@@ -408,9 +347,7 @@ public class GameManager : MonoBehaviour
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
             SaveData = saveData;
 
-            SortForces();
-            foreach (var forceData in SaveData.forces)
-                forceData.InitRuntimeState();
+            SaveData.InitLoadedData();
 
             StartNextForceTurn();            
 

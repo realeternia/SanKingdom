@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CommonConfig;
 
 [System.Serializable]
@@ -11,6 +12,70 @@ public class SaveData
     public BattleStatManager battleStatManager = new BattleStatManager();
     public int round;
     public int currentForceIndex;
+    public SaveForceRelation forceRelation = new SaveForceRelation();
+
+    public void OnNewGame(int playerForceId)
+    {
+        round = 1;
+
+        foreach (var cityCfg in WorldConfig.ConfigList)
+        {
+            var city = new SaveCityData();
+            city.cityId = cityCfg.Id;
+            city.forceId = cityCfg.ForceId;
+            city.exp = SaveCityData.GetExpByLevel(cityCfg.Level);
+            city.soldier = cityCfg.Soldier;
+            city.happy = SystemConst.City.INITIAL_CITY_HAPPY;
+            city.food = cityCfg.Food;
+            city.wall = cityCfg.Wall;
+            cities.Add(city);
+        }
+
+        foreach (var heroCfg in HeroConfig.ConfigList)
+        {
+            if (string.IsNullOrEmpty(heroCfg.City))
+                continue;
+            var cityCfg = WorldConfig.ConfigList.FirstOrDefault(c => c.Cname == heroCfg.City);
+            if (cityCfg == null)
+                continue;
+            if (SystemConst.Game.BASE_YEAR - heroCfg.BornYear < SystemConst.Game.BORN_AGE)
+                continue;
+
+            var hero = new SaveHeroData { heroId = heroCfg.Id, cityId = cityCfg.Id, state = HeroState.Normal, loyalty = heroCfg.Loyal, forceId = cityCfg.ForceId };
+            hero.InitAttrsFromConfig();
+            heros.Add(hero);
+        }
+
+        foreach (var city in cities)
+        {
+            city.SelectOwner();
+        }
+
+        foreach (var force in ForceConfig.ConfigList)
+        {
+            if (force.Id > SystemConst.Game.MAX_FORCE_ID)
+                continue;
+            var forceData = new SaveForceData { forceId = force.Id, gold = force.InitGold };
+            if (force.Id == playerForceId)
+                forceData.isPlayer = true;
+            forceData.InitRuntimeState();
+            forces.Add(forceData);
+        }
+
+        forceRelation.InitForNewGame();
+        SortForces();
+
+        foreach (var forceData in forces)
+            forceData.ResetRoundState();
+        currentForceIndex = 0;
+    }
+
+    public void InitLoadedData()
+    {
+        SortForces();
+        foreach (var forceData in forces)
+            forceData.InitRuntimeState();
+    }
 
     public void BeforeSave()
     {
@@ -19,6 +84,8 @@ public class SaveData
 
     public void OnRound()
     {
+        round++;
+        forceRelation.OnRound();
         CleanupTroopsWithoutCommander();
 
         foreach (var city in cities)
@@ -30,6 +97,19 @@ public class SaveData
 
         foreach (var forceData in forces)
             forceData.ResetRoundState();
+
+        currentForceIndex = 0;
+        SortForces();
+    }
+
+    private void SortForces()
+    {
+        forces.Sort((a, b) =>
+        {
+            if (a.isPlayer != b.isPlayer)
+                return a.isPlayer ? -1 : 1;
+            return a.forceId - b.forceId;
+        });
     }
 
     private void ProcessHeros()

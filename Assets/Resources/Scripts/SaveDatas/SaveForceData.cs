@@ -269,7 +269,7 @@ public class SaveForceData
 
         if (isPlayer)
         {
-            AI.AssignHeroesToDev(this);
+            AIToolHeroDev.AssignHeroesToDev(this);
             PanelManager.Instance.SendSignal(new PhaseChangeSignal { PhaseName = "Planning", ForceId = forceId });
             PanelManager.Instance.SendSignal(new AICheckSignal { ForceId = 0 });
         }
@@ -474,7 +474,7 @@ public class SaveForceData
         }
         int srcForceId = forceId;
         int destForceId = cityDest.forceId;
-        
+        GameManager.Instance.SaveData.forceRelation.RecordBattle(srcForceId, destForceId);
         var (defenceTroops, defenceSoldierMap) = TroopsBuilder.BuildDefenceTroops(cityDest);
         
         BattleManager.Instance.BattleBegin(this, cityDest.GetForce(), attackTroops, defenceTroops, attackSoldierMap, defenceSoldierMap, targetCityId,

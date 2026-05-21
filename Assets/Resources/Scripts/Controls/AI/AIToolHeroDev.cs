@@ -14,7 +14,7 @@ public static class AIToolHeroDev
         }
     }
 
-    private static void AssignHeroesToCityDev(SaveForceData force, SaveCityData city)
+    internal static void AssignHeroesToCityDev(SaveForceData force, SaveCityData city)
     {
         var levelCfg = CityLevelConfig.GetConfig(city.GetLevel());
         

@@ -641,4 +641,17 @@ public static class SystemConst
         public static long UI_CACHE_MAX_MEMORY_BYTES => UI_CACHE_MAX_MEMORY_MB * 1024L * 1024L;
         public static long BATTLE_CACHE_MAX_MEMORY_BYTES => BATTLE_CACHE_MAX_MEMORY_MB * 1024L * 1024L;
     }
+
+    public static class Diplomacy
+    {
+        public const int RELATION_MIN = 1;
+        public const int RELATION_MAX = 100;
+        public const int RELATION_DEFAULT = 50;
+        public const int PEACE_DECAY_MIN = 1;
+        public const int PEACE_DECAY_MAX = 4;
+        public const int PEACE_DECAY_ADJACENT_MIN = 1;
+        public const int PEACE_DECAY_ADJACENT_MAX = 2;
+        public const int BATTLE_RISE_MIN = 3;
+        public const int BATTLE_RISE_MAX = 8;
+    }
 }

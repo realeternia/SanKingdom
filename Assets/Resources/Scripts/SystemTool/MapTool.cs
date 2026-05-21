@@ -113,6 +113,24 @@ public static class MapTool
         return result.ToList();
     }
 
+    public static bool AreForcesAdjacent(int forceId1, int forceId2)
+    {
+        if (forceId1 == forceId2) return false;
+        var cities1 = GameManager.Instance.GetCitiesByForce(forceId1);
+        foreach (var city in cities1)
+        {
+            var nearIds = WorldConfig.GetConfig(city.cityId)?.WorldNearIds;
+            if (nearIds == null) continue;
+            foreach (var nearCityId in nearIds)
+            {
+                var nearCity = GameManager.Instance.GetCity(nearCityId);
+                if (nearCity != null && nearCity.forceId == forceId2)
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public static int GetRandomAdjacentCityId(int cityId)
     {
         var nearIds = WorldConfig.GetConfig(cityId)?.WorldNearIds;

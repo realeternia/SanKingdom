@@ -405,4 +405,19 @@ public static class SysFormula
             return (round % SystemConst.Game.SEASONS_PER_YEAR) + 1;
         }
     }
+
+    public static class Diplomacy
+    {
+        public static int CalculatePeaceDecay(bool isAdjacent)
+        {
+            if (isAdjacent)
+                return SysRandom.Range(SystemConst.Diplomacy.PEACE_DECAY_ADJACENT_MIN, SystemConst.Diplomacy.PEACE_DECAY_ADJACENT_MAX + 1);
+            return SysRandom.Range(SystemConst.Diplomacy.PEACE_DECAY_MIN, SystemConst.Diplomacy.PEACE_DECAY_MAX + 1);
+        }
+
+        public static int CalculateBattleRise()
+        {
+            return SysRandom.Range(SystemConst.Diplomacy.BATTLE_RISE_MIN, SystemConst.Diplomacy.BATTLE_RISE_MAX + 1);
+        }
+    }
 }

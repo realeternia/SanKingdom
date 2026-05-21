@@ -1,0 +1,16 @@
+- [x] SystemConst.Diplomacy 常量类包含所有外交相关常量（RELATION_MIN/MAX/DEFAULT、PEACE_DECAY_MIN/MAX、PEACE_DECAY_ADJACENT_MIN/MAX、BATTLE_RISE_MIN/MAX）
+- [x] SysFormula.Diplomacy 公式类包含 CalculatePeaceDecay 和 CalculateBattleRise 方法，使用 SysRandom 而非 UnityEngine.Random
+- [x] MapTool.AreForcesAdjacent(forceId1, forceId2) 正确判断两势力是否有城市相邻
+- [x] ForceRelationEntry 类标记 [Serializable]，包含 forceId1、forceId2、score 字段，可被 JsonUtility 序列化
+- [x] ForceRelation 类标记 [Serializable]，relations 列表可被 JsonUtility 序列化，foughtPaths 标记 [NonSerialized]
+- [x] ForceRelation.InitForNewGame() 根据初始二维数组正确填充所有势力对的关系
+- [x] ForceRelation.GetRelation() 返回正确的关系分数，不存在的势力对返回默认值
+- [x] ForceRelation.SetRelation() 设置关系分数并 Clamp 到 1-100
+- [x] ForceRelation.AddRelation() 增减关系分数并 Clamp 到 1-100
+- [x] ForceRelation.RecordBattle() 正确记录交战势力对到 foughtPaths
+- [x] ForceRelation.OnRound() 正确实现回合演变逻辑：和平下降（相邻1-2/不相邻1-4）、交战上升3-8、跳过已消灭势力、清空交战记录
+- [x] SaveData.cs 新增 forceRelation 字段，OnRound() 中调用 forceRelation.OnRound()
+- [x] GameManager.NewGame() 中调用 SaveData.forceRelation.InitForNewGame()
+- [x] SaveForceData.ExecuteBattle() 中调用 RecordBattle 记录交战势力对
+- [x] ForceRelation.cs 已添加到 Assembly-CSharp.csproj 的 Compile Include
+- [x] 旧存档兼容：加载旧存档时 forceRelation 为 null 或 relations 为空不会报错
