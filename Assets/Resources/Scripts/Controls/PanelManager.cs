@@ -18,6 +18,7 @@ public class PanelManager : MonoBehaviour
     private GameObject cityPanel;
     private GameObject systemPanel;
     private GameObject cityBattlePanel;
+    private GameObject cityMovePanel;
 
     private GameObject popResultPanel;
     private GameObject heroInfoPanel;
@@ -268,7 +269,34 @@ public class PanelManager : MonoBehaviour
         Destroy(cityBattlePanel);
         cityBattlePanel = null;
     }
-  
+
+    public void ShowCityMove(int forceId, int sourceCityId)
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        if (cityMovePanel == null)
+        {
+            var cityMovePanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityMovePanel"));
+            cityMovePanel = Instantiate(cityMovePanelPrefab, transform);
+        }
+        cityMovePanel.SetActive(true);
+        var cityMovePanelManager = cityMovePanel.GetComponent<CityMovePanelManager>();
+        cityMovePanelManager.Init(forceId, sourceCityId);
+        cityMovePanelManager.OnShow();
+
+        ChangePanelCount(cityMovePanel, true);
+    }
+
+    public void HideCityMove()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        cityMovePanel.SetActive(false);
+        cityMovePanel.GetComponent<CityMovePanelManager>().OnHide();
+
+        ChangePanelCount(cityMovePanel, false);
+        Destroy(cityMovePanel);
+        cityMovePanel = null;
+    }
+
 
 
     public void ShowRank()

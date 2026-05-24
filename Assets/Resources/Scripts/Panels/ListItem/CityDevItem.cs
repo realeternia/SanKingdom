@@ -234,9 +234,10 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
                 var cityData = GameManager.Instance.GetCity(cityId);
                 PanelManager.Instance.ShowCityBattle(cityData.forceId);
             }
-            else
+            else if (prefabName == "CityDevMove")
             {
-             //   PanelManager.Instance.ShowCityDev(cityId, devId);
+                var cityData = GameManager.Instance.GetCity(cityId);
+                PanelManager.Instance.ShowCityMove(cityData.forceId, cityId);
             }
         });
     }

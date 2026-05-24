@@ -640,6 +640,12 @@ public static class SystemConst
         public static long BATTLE_CACHE_MAX_MEMORY_BYTES => BATTLE_CACHE_MAX_MEMORY_MB * 1024L * 1024L;
     }
 
+    public static class CityDev
+    {
+        public const int MOVE_DEV_ID = 21102;
+        public const int BATTLE_DEV_ID = 21103;
+    }
+
     public static class Diplomacy
     {
         public const int RELATION_MIN = 1;

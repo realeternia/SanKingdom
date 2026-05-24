@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveData.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\BattleResultPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\Gismo\HeroHeadItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\BattleUnitConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackSpeedAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\MissileViewObj.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysFormula.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\CityMovePanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAidSuddenArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\RankPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\SystemPanelManager.cs" />
@@ -225,7 +227,6 @@
     <Compile Include="Assets\Resources\Scripts\Panels\Gismo\ArmsItemControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ForceConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\CityDevNodeMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideCityItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
