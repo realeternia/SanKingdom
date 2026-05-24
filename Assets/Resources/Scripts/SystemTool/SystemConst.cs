@@ -535,21 +535,6 @@ public static class SystemConst
         /// AI威胁敌方士兵阈值
         /// </summary>
         public const int AI_THREAT_ENEMY_SOLDIER_THRESHOLD = 500;
-        /// <summary>
-        /// 任务优先级权重
-        /// </summary>
-        public const float TASK_PRIORITY_WEIGHT = 0.5f;
-        /// <summary>
-        /// 每个任务最大英雄数
-        /// </summary>
-        public const int MAX_HEROES_PER_TASK = 3;
-        /// <summary>
-        /// 低匹配评分阈值
-        /// </summary>
-        public const int LOW_MATCH_SCORE_THRESHOLD = 70;
-        /// <summary>
-        /// 军团最小英雄数
-        /// </summary>
         public const int TROOP_MIN_HEROES = 1;
         /// <summary>
         /// 军团最大英雄数
@@ -599,34 +584,6 @@ public static class SystemConst
         /// 后方最小英雄数
         /// </summary>
         public const int MIN_REAR_HEROES = 1;
-    }
-
-    public static class AICity
-    {
-        /// <summary>
-        /// 金币警戒值
-        /// </summary>
-        public const int GOLD_ALERT = 500;
-        /// <summary>
-        /// 粮草警戒值
-        /// </summary>
-        public const int FOOD_ALERT = 500;
-        /// <summary>
-        /// 城墙警戒值
-        /// </summary>
-        public const int WALL_ALERT = 150;
-        /// <summary>
-        /// 士兵警戒值
-        /// </summary>
-        public const int SOLDIER_ALERT = 500;
-        /// <summary>
-        /// 民心警戒值
-        /// </summary>
-        public const int HAPPY_ALERT = 50;
-        /// <summary>
-        /// 需求权重
-        /// </summary>
-        public const int NEED_WEIGHT = 30;
     }
 
     public static class ResourceCache

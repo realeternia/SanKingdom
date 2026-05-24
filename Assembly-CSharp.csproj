@@ -82,7 +82,6 @@
     <Compile Include="Assets\Resources\Scripts\Panels\SideArmsSelector.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillManager.cs" />
     <Compile Include="Assets\Resources\Scripts\OOs\ICityDevNode.cs" />
-    <Compile Include="Assets\Resources\Scripts\Controls\AI\TaskPriorityCalculator.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Missile.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\SideBarAlphaGradient.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitArea.cs" />
@@ -118,7 +117,6 @@
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyDevelopment.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateEffectAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Controls\AI\HeroTaskMatcher.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleUIManager.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\UIColorChanger.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineUIControllerTopDownEffects.cs" />
@@ -140,7 +138,6 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityTroopsItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\BuffConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\HeroAttrTool.cs" />
-    <Compile Include="Assets\Resources\Scripts\Controls\AI\CityEvaluator.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\Skill.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ResItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\Buff.cs" />

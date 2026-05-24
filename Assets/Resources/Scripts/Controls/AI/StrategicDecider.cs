@@ -26,11 +26,8 @@ public class AttackCandidate
 public class StrategicDecider
 {
     private const int MAX_ATK_CITIES = SystemConst.AIStrategy.MAX_ATK_CITIES;
-    private const int MIN_RESOURCE_FOR_ATTACK = SystemConst.AIStrategy.MIN_RESOURCE_FOR_ATTACK;
-    private const int MIN_SOLDIER_FOR_ATTACK = SystemConst.AIStrategy.MIN_SOLDIER_FOR_ATTACK;
     private const int MIN_CITY_SOLDIER_FOR_ATTACK = SystemConst.AIStrategy.MIN_CITY_SOLDIER_FOR_ATTACK;
     private const int MIN_CITY_HEROES_FOR_ATTACK = SystemConst.AIStrategy.MIN_CITY_HEROES_FOR_ATTACK;
-    private const int MAX_SOLDIER_PER_HERO = SystemConst.AIStrategy.MAX_SOLDIER_PER_HERO;
     
     private static Dictionary<int, HashSet<int>> attackedTargetsThisRound = new Dictionary<int, HashSet<int>>();
     private static Dictionary<int, int> attackTargets = new Dictionary<int, int>();
@@ -41,23 +38,7 @@ public class StrategicDecider
         attackTargets.Clear();
     }
     
-    public static int? GetAttackTarget(int sourceCityId)
-    {
-        if (attackTargets.ContainsKey(sourceCityId))
-            return attackTargets[sourceCityId];
-        return null;
-    }
-    
-    public static void MarkTargetAttacked(int forceId, int targetCityId)
-    {
-        if (!attackedTargetsThisRound.ContainsKey(forceId))
-        {
-            attackedTargetsThisRound[forceId] = new HashSet<int>();
-        }
-        attackedTargetsThisRound[forceId].Add(targetCityId);
-    }
-    
-    public static bool HasAttackedTarget(int forceId, int targetCityId)
+    private static bool HasAttackedTarget(int forceId, int targetCityId)
     {
         return attackedTargetsThisRound.ContainsKey(forceId) && 
                attackedTargetsThisRound[forceId].Contains(targetCityId);

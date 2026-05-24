@@ -296,34 +296,6 @@ public static class SysFormula
 
     public static class AIStrategy
     {
-        public static int CalculatePriority(int current, int alert)
-        {
-            if (current <= 0) return 100;
-            int deficit = alert - current;
-            return (deficit * 100) / alert;
-        }
-
-        public static int AdjustPriorityByNeeds(int basePriority, int needPriority)
-        {
-            return basePriority + SystemConst.AICity.NEED_WEIGHT * needPriority / 100;
-        }
-
-        public static float CalculateMatchScore(int[] attrValues)
-        {
-            if (attrValues == null || attrValues.Length == 0) return 50f;
-
-            float totalScore = 0f;
-            foreach (var val in attrValues)
-                totalScore += val;
-
-            return totalScore / attrValues.Length;
-        }
-
-        public static float CalculateCombinedScore(float matchScore, int adjustedPriority)
-        {
-            return matchScore + adjustedPriority * SystemConst.AIStrategy.TASK_PRIORITY_WEIGHT;
-        }
-
         public static float CalculateAdvantageRatio(int mySoldier, int targetSoldier)
         {
             return mySoldier > 0 ? (float)mySoldier / Math.Max(1, targetSoldier) : 0;
@@ -333,11 +305,6 @@ public static class SysFormula
         {
             int maxSoldierByHeroes = (heroCount - 1) * SystemConst.AIStrategy.MAX_SOLDIER_PER_HERO;
             return Math.Min(citySoldier, maxSoldierByHeroes);
-        }
-
-        public static bool CheckAttackSourceAdvantage(int mySoldier, int targetSoldier)
-        {
-            return mySoldier >= targetSoldier * SystemConst.AIStrategy.AI_ATTACK_SOURCE_ADVANTAGE_RATIO;
         }
 
         public static bool CheckOwnCityAttackAdvantage(int mySoldier, int targetSoldier)
@@ -381,13 +348,6 @@ public static class SysFormula
             int limitBySoldier = citySoldier / SystemConst.AIStrategy.TROOP_MIN_SOLDIER;
 
             return Math.Max(1, Math.Min(limitByLevel, Math.Min(limitByHeroes, limitBySoldier)));
-        }
-
-        public static int CalculateHeroesPerTroop(int idleHeroCount, int troopCount)
-        {
-            if (troopCount <= 0) return SystemConst.AIStrategy.TROOP_MIN_HEROES;
-            int heroesPerTroop = idleHeroCount / troopCount;
-            return Math.Max(SystemConst.AIStrategy.TROOP_MIN_HEROES, Math.Min(SystemConst.AIStrategy.TROOP_MAX_HEROES, heroesPerTroop));
         }
     }
 

@@ -23,18 +23,4 @@ public class AIStrategyContext
             }
         }
     }
-   
-    
-    public List<SaveHeroData> GetAvailableHeroes(int cityId)
-    {
-        var result = new List<SaveHeroData>();
-        if (cityHeroes.ContainsKey(cityId))
-        {
-            foreach (var hero in cityHeroes[cityId])
-            {
-                result.Add(hero);
-            }
-        }
-        return result;
-    }
 }
