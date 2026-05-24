@@ -124,7 +124,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDumb.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\RampGeneratorTDE.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\Utils\GameLog.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\PopArmySetManager.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUnityVersion.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\VideoPanelManager.cs" />
@@ -273,6 +272,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\WarPlanData.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveHeroData.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\SideArmsSetSod.cs" />
     <Compile Include="Assets\Resources\Scripts\Tooltip.cs" />
   </ItemGroup>
   <ItemGroup>

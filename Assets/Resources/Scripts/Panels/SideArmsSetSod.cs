@@ -5,13 +5,13 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using CommonConfig;
-public class PopArmySetManager : MonoBehaviour
+
+public class SideArmsSetSod : MonoBehaviour
 {
     private int cityId;
     private int heroId;
     private int currentAllocated;
 
-    public Button closeBtn;
     public Button okBtn;
     public Button maxBtn;
     public TMP_Text textSoldier;
@@ -21,10 +21,12 @@ public class PopArmySetManager : MonoBehaviour
     public Image heroPic;
     private int maxSoldier;
 
+    private static int currentHeroId;
     private static System.Action<int> onSoldierSetCallback;
 
-    public static void SetSoldierSetCallback(System.Action<int> callback)
+    public static void SetContext(int heroId, System.Action<int> callback)
     {
+        currentHeroId = heroId;
         onSoldierSetCallback = callback;
     }
 
@@ -51,11 +53,8 @@ public class PopArmySetManager : MonoBehaviour
 
     void Start()
     {
-        closeBtn.onClick.AddListener(() =>
-        {
-            onSoldierSetCallback = null;
-            PanelManager.Instance.HidePopArmySetPanel();
-        });
+        SetHero(currentHeroId);
+
         okBtn.onClick.AddListener(() =>
         {
             GameLog.Debug($"okBtn {cityId} {heroId}");
@@ -67,7 +66,7 @@ public class PopArmySetManager : MonoBehaviour
                 onSoldierSetCallback?.Invoke(soldier);
                 onSoldierSetCallback = null;
                 PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = 0 });
-                PanelManager.Instance.HidePopArmySetPanel();
+                PanelManager.Instance.HideSideBar();
             }
         });
         maxBtn.onClick.AddListener(() =>
@@ -92,7 +91,7 @@ public class PopArmySetManager : MonoBehaviour
     {
     }
 
-    public void OnShow(int heroId)
+    public void SetHero(int heroId)
     {
         this.heroId = heroId;
         var heroData = GameManager.Instance.GetHero(heroId);

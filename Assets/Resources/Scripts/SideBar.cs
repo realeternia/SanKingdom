@@ -1,9 +1,10 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class SideBar : MonoBehaviour
+public class SideBar : MonoBehaviour, IPointerClickHandler
 {
     public GameObject scrollItem;
     public Image scrollImg;
@@ -11,6 +12,7 @@ public class SideBar : MonoBehaviour
     private RectTransform scrollRect;
     private float fullWidth;
     private Tween currentTween;
+    private Camera uiCamera;
 
     private const float AnimDuration = 0.4f;
     private const float GradientWidth = 100f;
@@ -22,6 +24,11 @@ public class SideBar : MonoBehaviour
         scrollRect = scrollItem.GetComponent<RectTransform>();
         fullWidth = scrollRect.sizeDelta.x;
 
+        Canvas canvas = GetComponentInParent<Canvas>();
+        uiCamera = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
+            ? canvas.worldCamera
+            : null;
+
         scrollRect.pivot = new Vector2(1f, scrollRect.pivot.y);
         scrollRect.anchoredPosition = new Vector2(
             scrollRect.anchoredPosition.x + fullWidth,
@@ -30,18 +37,16 @@ public class SideBar : MonoBehaviour
         var gradient = scrollImg.gameObject.AddComponent<SideBarAlphaGradient>();
         gradient.gradientWidth = GradientWidth;
 
-        var bgButton = GetComponent<Button>();
-        if (bgButton != null)
-        {
-            bgButton.onClick.AddListener(OnBackgroundClick);
-        }
-
         scrollItem.SetActive(false);
         scrollRect.sizeDelta = new Vector2(0, scrollRect.sizeDelta.y);
     }
 
-    private void OnBackgroundClick()
+    public void OnPointerClick(PointerEventData eventData)
     {
+        if (RectTransformUtility.RectangleContainsScreenPoint(scrollRect, eventData.position, uiCamera))
+        {
+            return;
+        }
         PanelManager.Instance.HideSideBar();
     }
 

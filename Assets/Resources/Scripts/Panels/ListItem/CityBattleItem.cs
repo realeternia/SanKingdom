@@ -74,13 +74,13 @@ public class CityBattleItem : MonoBehaviour
 
     private void OnEdit()
     {
-        PopArmySetManager.SetSoldierSetCallback((soldier) =>
+        SideArmsSetSod.SetContext(warTeamData.heroId1, (soldier) =>
         {
             CityBattlePanelManager.SetAllocatedSoldier(warTeamData.heroId1, soldier);
             RefreshUI();
         });
 
-        PanelManager.Instance.ShowPopArmySetPanel(warTeamData.heroId1);
+        PanelManager.Instance.ShowSideBar("SideArmsSodSet");
     }
 
     private void RefreshUI()
