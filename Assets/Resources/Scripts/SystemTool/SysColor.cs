@@ -100,6 +100,7 @@ public static class SysColor
     public static class Theme
     {
         public static readonly Color CellNormal = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+        public static readonly Color CellNormalDark = new Color(0, 0, 0, 1);
         public static readonly Color CellSelected = new Color(0.3f, 0.7f, 0.4f, 1f);
         public static readonly Color CellDisabled = new Color(0.1f, 0.1f, 0.1f, 0.5f);
     }

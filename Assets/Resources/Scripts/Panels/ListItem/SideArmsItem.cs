@@ -99,7 +99,7 @@ public class SelectArmsItem : MonoBehaviour
         isSelected = selected;
         if (BG != null)
         {
-            BG.color = isSelected ? SysColor.UI.MatchColor : SysColor.Theme.CellNormal;
+            BG.color = isSelected ? SysColor.UI.MatchColor : SysColor.Theme.CellNormalDark;
         }
     }
 

@@ -357,27 +357,25 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         float spacing = 10f;
         int index = 0;
 
-        if (cityData != null)
+        var troops = SaveTroopsData.GetTroopsByForce(viewForceId);
+        foreach (var troop in troops)
         {
-            foreach (var troop in SaveTroopsData.GetTroopsByCity(cityId))
-            {
-                var itemObj = Instantiate(troopsItemPrefab, devList);
-                var rectTransform = itemObj.GetComponent<RectTransform>();
-                rectTransform.anchorMin = new Vector2(0, 1);
-                rectTransform.anchorMax = new Vector2(0, 1);
-                rectTransform.pivot = new Vector2(0, 1);
-                rectTransform.anchoredPosition = new Vector2(0, -index * (itemHeight + spacing));
+            var itemObj = Instantiate(troopsItemPrefab, devList);
+            var rectTransform = itemObj.GetComponent<RectTransform>();
+            rectTransform.anchorMin = new Vector2(0, 1);
+            rectTransform.anchorMax = new Vector2(0, 1);
+            rectTransform.pivot = new Vector2(0, 1);
+            rectTransform.anchoredPosition = new Vector2(0, -index * (itemHeight + spacing));
 
-                var troopsItem = itemObj.GetComponent<CityTroopsItem>();
-                if (troopsItem != null)
-                {
-                    troopsItem.SetCityPanelManager(this);
-                    troopsItem.SetViewOnly(isViewOnly);
-                    troopsItem.Init(troop);
-                    troopsItem.SetCreateMode(false);
-                }
-                index++;
+            var troopsItem = itemObj.GetComponent<CityTroopsItem>();
+            if (troopsItem != null)
+            {
+                troopsItem.SetCityPanelManager(this);
+                troopsItem.SetViewOnly(isViewOnly);
+                troopsItem.Init(troop);
+                troopsItem.SetCreateMode(false);
             }
+            index++;
         }
 
         if (!isViewOnly)

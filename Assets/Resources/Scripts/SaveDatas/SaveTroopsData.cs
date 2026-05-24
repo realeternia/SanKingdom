@@ -7,6 +7,7 @@ using CommonConfig;
 public class SaveTroopsData
 {
     public int cityId;
+    public int forceId;
     public int heroId1;
     public int heroId2;
     public int heroId3;
@@ -15,6 +16,7 @@ public class SaveTroopsData
     public SaveTroopsData()
     {
         cityId = 0;
+        forceId = 0;
         heroId1 = 0;
         heroId2 = 0;
         heroId3 = 0;
@@ -24,6 +26,7 @@ public class SaveTroopsData
     public SaveTroopsData(int heroId1, int heroId2, int heroId3, int armsId)
     {
         this.cityId = 0;
+        this.forceId = 0;
         this.heroId1 = heroId1;
         this.heroId2 = heroId2;
         this.heroId3 = heroId3;
@@ -100,9 +103,19 @@ public class SaveTroopsData
         return GameManager.Instance.SaveData.troops.Where(t => t.cityId == cityId).ToList();
     }
 
+    public static List<SaveTroopsData> GetTroopsByForce(int forceId)
+    {
+        return GameManager.Instance.SaveData.troops.Where(t => t.forceId == forceId).ToList();
+    }
+
     public static void AddTroopToCity(SaveTroopsData troop, int cityId)
     {
         troop.cityId = cityId;
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData != null)
+        {
+            troop.forceId = cityData.forceId;
+        }
         GameManager.Instance.SaveData.troops.Add(troop);
     }
 

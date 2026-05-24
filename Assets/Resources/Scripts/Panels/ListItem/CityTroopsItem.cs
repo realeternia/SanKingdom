@@ -9,11 +9,14 @@ public class CityTroopsItem : MonoBehaviour
 {
     public TMP_Text heroNameText;
     public TMP_Text armsText;
+    public TMP_Text cityText;
+
     public TMP_Text atkText;
     public TMP_Text defText;
     public Image hero1IconImage;
     public Image hero2IconImage;
     public Image hero3IconImage;
+    public Image bgImage;
 
     public Button editButton;
     public Button dismissButton;
@@ -37,6 +40,19 @@ public class CityTroopsItem : MonoBehaviour
     public void SetViewOnly(bool viewOnly)
     {
         isViewOnly = viewOnly;
+    }
+
+    private void UpdateBgColor()
+    {
+        if (bgImage == null) return;
+        if (warTeamData != null && warTeamData.cityId > 0 && cityPanelManager != null && warTeamData.cityId == cityPanelManager.cityId)
+        {
+            bgImage.color = SysColor.Theme.CellSelected;
+        }
+        else
+        {
+            bgImage.color = SysColor.Theme.CellNormal;
+        }
     }
 
     public void Init(SaveTroopsData data)
@@ -104,6 +120,7 @@ public class CityTroopsItem : MonoBehaviour
             SaveTroopsData.AddTroopToCity(warTeamData, cityPanelManager.cityId);
 
             EnsureCommanderHasHighestLeadship(warTeamData);
+            UpdateTroopCityId(warTeamData);
             cityPanelManager.CreateTroopsItems();
             cityPanelManager.UpdateAllHeroWorkState();
             return;
@@ -117,6 +134,26 @@ public class CityTroopsItem : MonoBehaviour
             return;
         }
 
+        if (slotIndex == 0 && (warTeamData.heroId2 > 0 || warTeamData.heroId3 > 0))
+        {
+            var newHero = GameManager.Instance.GetHero(heroId);
+            if (newHero != null && newHero.cityId != warTeamData.cityId)
+            {
+                SystemTip.Instance.ShowTip("有副将时不能换其他城市的主将");
+                return;
+            }
+        }
+
+        if (slotIndex > 0)
+        {
+            var viceHero = GameManager.Instance.GetHero(heroId);
+            if (viceHero != null && viceHero.cityId != warTeamData.cityId)
+            {
+                SystemTip.Instance.ShowTip("副将必须来自同一城市");
+                return;
+            }
+        }
+
         int existingSlot = FindHeroSlot(warTeamData, heroId);
         if (existingSlot >= 0)
         {
@@ -126,8 +163,19 @@ public class CityTroopsItem : MonoBehaviour
         SetHeroIdBySlot(warTeamData, slotIndex, heroId);
 
         EnsureCommanderHasHighestLeadship(warTeamData);
+        UpdateTroopCityId(warTeamData);
         RefreshUI();
         cityPanelManager.UpdateAllHeroWorkState();
+    }
+
+    private void UpdateTroopCityId(SaveTroopsData data)
+    {
+        if (data.heroId1 <= 0) return;
+        var hero = GameManager.Instance.GetHero(data.heroId1);
+        if (hero != null)
+        {
+            data.cityId = hero.cityId;
+        }
     }
 
     private void EnsureCommanderHasHighestLeadship(SaveTroopsData data)
@@ -311,6 +359,19 @@ public class CityTroopsItem : MonoBehaviour
             heroNameText.text = heroName;
         }
 
+        if (cityText != null)
+        {
+            if (warTeamData.cityId > 0)
+            {
+                var cityCfg = WorldConfig.GetConfig(warTeamData.cityId);
+                cityText.text = cityCfg.Cname;
+            }
+            else
+            {
+                cityText.text = "";
+            }
+        }
+
         if (armsText != null)
         {
             if (warTeamData.armsId > 0)
@@ -344,6 +405,7 @@ public class CityTroopsItem : MonoBehaviour
         RefreshHeroSlot(hero2IconImage, warTeamData.heroId2);
         RefreshHeroSlot(hero3IconImage, warTeamData.heroId3);
         
+        UpdateBgColor();
         UpdateButtonsState();
     }
 

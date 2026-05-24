@@ -295,7 +295,7 @@ public class SaveForceData
         var devConfig = CityDevConfig.GetConfig(devId);
         var cityData = GameManager.Instance.GetCity(cityId);
         
-        if (devConfig.Attrs.Length > 0)
+        if (devConfig.Attrs.Length > 0 && !string.IsNullOrEmpty(devConfig.DevAttr1))
         {
             string mainAttr = devConfig.DevAttr1.ToLower();
             var attrConfig = CityAttrConfig.GetConfigByname(mainAttr);
@@ -327,10 +327,13 @@ public class SaveForceData
             int tier = SysFormula.City.GetHeroTier(avgWeightedValue);
 
             resultTmp.Add(0);
-            var val = GetValByTier(devConfig.DevAttr1, devConfig.DevAttr1Value[tier], cityData.GetAttr(devConfig.DevAttr1));
-            resultTmp[0] += val;
+            if (!string.IsNullOrEmpty(devConfig.DevAttr1))
+            {
+                var val = GetValByTier(devConfig.DevAttr1, devConfig.DevAttr1Value[tier], cityData.GetAttr(devConfig.DevAttr1));
+                resultTmp[0] += val;
+            }
 
-            if (devConfig.DevAttr2Value != null && devConfig.DevAttr2Value.Length > tier)
+            if (!string.IsNullOrEmpty(devConfig.DevAttr2) && devConfig.DevAttr2Value != null && devConfig.DevAttr2Value.Length > tier)
             {
                 resultTmp.Add(0);
                 resultTmp[1] += GetValByTier(devConfig.DevAttr2, devConfig.DevAttr2Value[tier], cityData.GetAttr(devConfig.DevAttr2));
@@ -344,20 +347,23 @@ public class SaveForceData
             results.Add((int)Math.Floor(resultTmp[i]));
         }
         
-        var attr1Config = CityAttrConfig.GetConfigByname(devConfig.DevAttr1.ToLower());
-        int attr1Old = attr1Config.IsForceAttr ? GetAttr(devConfig.DevAttr1) : cityData.GetAttr(devConfig.DevAttr1);
-        if (!attr1Config.IsPosRes)
+        if (!string.IsNullOrEmpty(devConfig.DevAttr1))
         {
-            if (attr1Config.IsForceAttr)
-                AddAttr(devConfig.DevAttr1, results[0]);
-            else
-                cityData.AddAttr(devConfig.DevAttr1, results[0]);
-            attrDatas.Add(new PopResultPanelManager.AttrData()
+            var attr1Config = CityAttrConfig.GetConfigByname(devConfig.DevAttr1.ToLower());
+            int attr1Old = attr1Config.IsForceAttr ? GetAttr(devConfig.DevAttr1) : cityData.GetAttr(devConfig.DevAttr1);
+            if (!attr1Config.IsPosRes)
             {
-                attr = devConfig.DevAttr1,
-                valOld = attr1Old,
-                valAddon = results[0],
-            });
+                if (attr1Config.IsForceAttr)
+                    AddAttr(devConfig.DevAttr1, results[0]);
+                else
+                    cityData.AddAttr(devConfig.DevAttr1, results[0]);
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attr = devConfig.DevAttr1,
+                    valOld = attr1Old,
+                    valAddon = results[0],
+                });
+            }
         }
         
         if (!string.IsNullOrEmpty(devConfig.DevAttr2))
