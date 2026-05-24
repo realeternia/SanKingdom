@@ -16,7 +16,6 @@ public class PanelManager : MonoBehaviour
     private GameObject pickPanel;
     public GameObject worldPanel;
     private GameObject cityPanel;
-    private GameObject cityDevPanel;
     private GameObject systemPanel;
     private GameObject cityBattlePanel;
 
@@ -217,33 +216,6 @@ public class PanelManager : MonoBehaviour
         {
             RefreshForceResItems(playerForce.forceId);
         }
-    }
-    
-    public void ShowCityDev(int cityId, int devId)
-    {
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        if (cityDevPanel == null)
-        {
-            var cityDevPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityDevPanel"));
-            cityDevPanel = Instantiate(cityDevPanelPrefab, transform);
-        }
-        cityDevPanel.SetActive(true);
-        var cityDevPanelManager = cityDevPanel.GetComponent<CityDevPanelManager>();
-        cityDevPanelManager.SetDev(cityId, devId);
-        cityDevPanelManager.OnShow();
-
-        ChangePanelCount(cityDevPanel, true);
-    }
-
-    public void HideCityDev()
-    {
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        cityDevPanel.SetActive(false);
-        cityDevPanel.GetComponent<CityDevPanelManager>().OnHide();
-
-        ChangePanelCount(cityDevPanel, false);
-        Destroy(cityDevPanel);
-        cityDevPanel = null;
     }
 
     public void ShowSystemPanel()

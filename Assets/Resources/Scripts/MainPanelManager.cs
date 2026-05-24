@@ -13,7 +13,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     
     public Button btnSystem;
     public Button btnRoundNext;
-    public Button btnMode;
     public TMP_Text textRoundNext;
 
     public TMP_Text textYear;
@@ -51,10 +50,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         btnRoundNext.onClick.AddListener(() =>
         {
             OnRoundNextClick();
-        });
-        btnMode.onClick.AddListener(() =>
-        {
-            PanelManager.Instance.ShowSideBar("SideArmsSelector");
         });
         
         StartCoroutine(MoveToPlayerCapitalDelayed());

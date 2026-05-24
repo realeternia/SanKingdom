@@ -179,7 +179,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySummonTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRegion.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\HeroInfoPanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\CityDevPanelCell.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModulePhysics2D.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\DevAssignmentData.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\TroopsHeroSlot.cs" />
@@ -268,7 +267,6 @@
     <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfoHeader.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRepeat.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\AttrInfo.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\CityDevPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysColor.cs" />
     <Compile Include="Assets\Resources\Scripts\SideBar.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />

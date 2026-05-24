@@ -236,7 +236,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
             }
             else
             {
-                PanelManager.Instance.ShowCityDev(cityId, devId);
+             //   PanelManager.Instance.ShowCityDev(cityId, devId);
             }
         });
     }

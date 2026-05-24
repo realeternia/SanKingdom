@@ -125,7 +125,7 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         var soldierTotal = citySrc.GetAttr("soldier");
         var foodCost = soldierTotal * foodCount / SystemConst.Expedition.SOLDIER_FOOD_COST_DIVISOR;
 
-        PanelManager.Instance.HideCityDev();
+ //        PanelManager.Instance.HideCityDev();
 
         force.ExecuteCityMoveDev(cityId, devId, new int[0], foodCost, selectedCityId);
     }
