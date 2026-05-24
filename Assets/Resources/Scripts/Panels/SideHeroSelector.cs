@@ -1,0 +1,145 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using CommonConfig;
+using System.Linq;
+
+public class SideHeroSelector : MonoBehaviour
+{
+    public ScrollRect scrollRectMain;
+    public GameObject subRegionMain;
+    public SideHeroItem itemPrefab;
+
+    private List<SideHeroItem> selectedItems = new List<SideHeroItem>();
+    private List<SideHeroItem> allItems = new List<SideHeroItem>();
+    public Button confirmButton;
+
+    private const int MAX_SELECT_COUNT = 3;
+
+    private static int currentCityId;
+    private static int currentForceId;
+    private static System.Action<List<int>> onHeroIdsSelected;
+
+    public static void SetContext(int cityId, int forceId, System.Action<List<int>> callback)
+    {
+        currentCityId = cityId;
+        currentForceId = forceId;
+        onHeroIdsSelected = callback;
+        GameLog.Info($"SideHeroSelector.SetContext: cityId={cityId}, forceId={forceId}");
+    }
+
+    void Start()
+    {
+        LoadHeroList();
+
+        if (confirmButton != null)
+        {
+            confirmButton.onClick.AddListener(OnConfirm);
+        }
+    }
+
+    void LoadHeroList()
+    {
+        foreach (Transform child in subRegionMain.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        selectedItems.Clear();
+        allItems.Clear();
+        List<int> heroIds = GetAvailableHeroIds();
+        int count = 0;
+
+        foreach (int heroId in heroIds)
+        {
+            GameObject item = Instantiate(itemPrefab.gameObject, subRegionMain.transform);
+            item.transform.localScale = Vector3.one;
+            SideHeroItem heroItem = item.GetComponent<SideHeroItem>();
+            heroItem.SetData(heroId);
+            heroItem.SetOnClickCallback(OnItemSelected);
+            allItems.Add(heroItem);
+            count++;
+        }
+
+        RectTransform subRect = subRegionMain.GetComponent<RectTransform>();
+        RectTransform itemRect = itemPrefab.GetComponent<RectTransform>();
+
+        if (subRect != null && itemRect != null)
+        {
+            subRect.sizeDelta = new Vector2(subRect.sizeDelta.x, itemRect.sizeDelta.y * count);
+        }
+
+        if (scrollRectMain != null)
+        {
+            scrollRectMain.normalizedPosition = new Vector2(0, 1);
+        }
+    }
+
+    List<int> GetAvailableHeroIds()
+    {
+        List<int> result = new List<int>();
+        var saveData = GameManager.Instance.SaveData;
+        if (saveData == null || saveData.heros == null)
+        {
+            GameLog.Warn("SideHeroSelector.GetAvailableHeroIds: saveData or heros is null");
+            return result;
+        }
+
+        foreach (var hero in saveData.heros)
+        {
+            if (hero.state == HeroState.Catched && hero.cityId == currentCityId)
+            {
+                result.Add(hero.heroId);
+            }
+            else if (hero.state == HeroState.Normal && hero.forceId != currentForceId && hero.loyalty < SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD)
+            {
+                if (MapTool.IsAdjacentCity(currentCityId, hero.cityId))
+                {
+                    result.Add(hero.heroId);
+                }
+            }
+        }
+
+        result = result.OrderBy(h =>
+        {
+            var heroData = GameManager.Instance.GetHero(h);
+            return heroData != null ? heroData.loyalty : 0;
+        }).ToList();
+
+        return result;
+    }
+
+    void OnItemSelected(SideHeroItem item)
+    {
+        if (item.IsSelected())
+        {
+            item.SetSelected(false);
+            selectedItems.Remove(item);
+        }
+        else
+        {
+            if (selectedItems.Count >= MAX_SELECT_COUNT)
+            {
+                SystemTip.Instance.ShowTip($"最多选择{MAX_SELECT_COUNT}个武将");
+                return;
+            }
+            item.SetSelected(true);
+            selectedItems.Add(item);
+        }
+    }
+
+    void OnConfirm()
+    {
+        if (selectedItems.Count == 0)
+        {
+            GameLog.Warn("SideHeroSelector.OnConfirm: selectedItems is empty");
+            return;
+        }
+
+        List<int> selectedHeroIds = selectedItems.Select(item => item.GetHeroId()).ToList();
+        onHeroIdsSelected?.Invoke(selectedHeroIds);
+        PanelManager.Instance.HideSideBar();
+    }
+}

@@ -20,6 +20,7 @@ public class PanelManager : MonoBehaviour
     private GameObject cityBattlePanel;
     private GameObject cityMovePanel;
     private GameObject cityPraisePanel;
+    private GameObject cityUseHeroPanel;
 
     private GameObject popResultPanel;
     private GameObject heroInfoPanel;
@@ -323,6 +324,33 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(cityPraisePanel, false);
         Destroy(cityPraisePanel);
         cityPraisePanel = null;
+    }
+
+    public void ShowCityUseHero(int forceId, int cityId, int devId)
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        if (cityUseHeroPanel == null)
+        {
+            var cityUseHeroPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityHeroUsePanel"));
+            cityUseHeroPanel = Instantiate(cityUseHeroPanelPrefab, transform);
+        }
+        cityUseHeroPanel.SetActive(true);
+        var cityUseHeroPanelManager = cityUseHeroPanel.GetComponent<CityUseHeroPanelManager>();
+        cityUseHeroPanelManager.Init(forceId, cityId, devId);
+        cityUseHeroPanelManager.OnShow();
+
+        ChangePanelCount(cityUseHeroPanel, true);
+    }
+
+    public void HideCityUseHero()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        cityUseHeroPanel.SetActive(false);
+        cityUseHeroPanel.GetComponent<CityUseHeroPanelManager>().OnHide();
+
+        ChangePanelCount(cityUseHeroPanel, false);
+        Destroy(cityUseHeroPanel);
+        cityUseHeroPanel = null;
     }
 
 

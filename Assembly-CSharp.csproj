@@ -91,6 +91,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityCellCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityBattlePanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateChessAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\CityUseHeroPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellForce.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleAudio.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\IconLoader.cs" />
     <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfo.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\SideHeroSelector.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIStrategyContext.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SeasonConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BattleRandom.cs" />
@@ -240,6 +242,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\ArmsConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySkillRateTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopForceBar.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideHeroItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoAction.cs" />
     <Compile Include="Assets\Resources\Scripts\MapDragHandler.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysSwitch.cs" />

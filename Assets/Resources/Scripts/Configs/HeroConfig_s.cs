@@ -85,7 +85,7 @@ namespace CommonConfig
         /// <summary>
         ///名字
         /// </summary>
-        public string Name;
+        public string Cname;
         /// <summary>
         ///出生
         /// </summary>
