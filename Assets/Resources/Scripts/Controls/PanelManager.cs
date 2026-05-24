@@ -20,7 +20,6 @@ public class PanelManager : MonoBehaviour
     private GameObject systemPanel;
     private GameObject cityBattlePanel;
 
-    private GameObject popCitySelectPanel;
     private GameObject popHeroSelectPanel;
     private GameObject popHeroBattleSelectPanel;
     private GameObject popResultPanel;
@@ -351,29 +350,6 @@ public class PanelManager : MonoBehaviour
         pickPanel = null;
     }
 
-    public void ShowPopCitySelectPanel(List<int> cityIds, int currentCityId, System.Action<int> callback)
-    {
-        if (popCitySelectPanel == null)
-        {
-            popCitySelectPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PopCitySelectPanel")), transform);
-        }
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        popCitySelectPanel.SetActive(true);
-        popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnShow(cityIds, currentCityId, callback);
-
-        ChangePanelCount(popCitySelectPanel, true);
-    }
-
-    public void HidePopCitySelectPanel()
-    {
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        popCitySelectPanel.SetActive(false);
-        popCitySelectPanel.GetComponent<PopCitySelectPanelManager>().OnHide();
-
-        ChangePanelCount(popCitySelectPanel, false);
-        Destroy(popCitySelectPanel);
-        popCitySelectPanel = null;
-    }
 
     public void ShowPopHeroSelectPanel(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod, bool ignoreActionCheck = false)
     {

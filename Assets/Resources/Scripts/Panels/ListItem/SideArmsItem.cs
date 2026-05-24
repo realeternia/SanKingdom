@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using CommonConfig;
 
-public class SelectArmsItem : MonoBehaviour
+public class SideArmsItem : MonoBehaviour
 {
     public Image BG;
     public TMP_Text NameText;
@@ -19,7 +19,7 @@ public class SelectArmsItem : MonoBehaviour
     private bool isSelected = false;
 
     public Button button;
-    private System.Action<SelectArmsItem> onClickCallback;
+    private System.Action<SideArmsItem> onClickCallback;
     private int armsId;
 
     void Start()
@@ -84,7 +84,7 @@ public class SelectArmsItem : MonoBehaviour
         SetSelected(false);
     }
 
-    public void SetOnClickCallback(System.Action<SelectArmsItem> callback)
+    public void SetOnClickCallback(System.Action<SideArmsItem> callback)
     {
         onClickCallback = callback;
     }

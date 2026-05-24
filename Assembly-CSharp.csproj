@@ -98,7 +98,6 @@
     <Compile Include="Assets\Resources\Scripts\Configs\FormulaLearnAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddRege.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideArmsItem.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PopCitySelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\HeroInfoCell.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\ForceRelation.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PopHeroSelectPanelCell.cs" />
@@ -221,7 +220,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\IconLoader.cs" />
     <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfo.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\PopCitySelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIStrategyContext.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SeasonConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BattleRandom.cs" />
@@ -236,10 +234,12 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityDevNodeMove.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideCityItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidHeal.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleTopInfo.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\SideCitySelector.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSpeedDown.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\StrategicDecider.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ArmsConfig_s.cs" />

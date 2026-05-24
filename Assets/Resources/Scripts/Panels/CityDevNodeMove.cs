@@ -67,17 +67,18 @@ public class CityDevNodeMove : MonoBehaviour, ICityDevNode
         {
             var forceId = GameManager.Instance.GetCity(cityId).forceId;
             var cityIds = MapTool.GetOwnCityIds(forceId);
-            PanelManager.Instance.ShowPopCitySelectPanel(cityIds, selectedCityId, (selectedCityId) =>
+            SideCitySelector.SetContext(selectedCityId, cityIds, (newCityId) =>
             {
-                this.selectedCityId = selectedCityId;
-                if(selectedCityId == 0)
+                selectedCityId = newCityId;
+                if (newCityId == 0)
                 {
                     attrVal1Text.text = "-";
                     return;
                 }
-                var cityCfg = WorldConfig.GetConfig(selectedCityId);
+                var cityCfg = WorldConfig.GetConfig(newCityId);
                 attrVal1Text.text = cityCfg.Cname;
             });
+            PanelManager.Instance.ShowSideBar("SideCitySelector");
         });
         foodButton.onClick.AddListener(() =>
         {

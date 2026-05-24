@@ -54,21 +54,22 @@ public class CityBattlePanelManager : MonoBehaviour
         destButton.onClick.AddListener(() =>
         {
             var cityIds = MapTool.GetAdjacentEnemyCityIds(forceId);
-            PanelManager.Instance.ShowPopCitySelectPanel(cityIds, selectedCityId, (selectedCityId) =>
+            SideCitySelector.SetContext(selectedCityId, cityIds, (newCityId) =>
             {
-                this.selectedCityId = selectedCityId;
-                if(selectedCityId == 0)
+                selectedCityId = newCityId;
+                if (newCityId == 0)
                 {
                     attrVal1Text.text = "-";
                 }
                 else
                 {
-                    var cityCfg = WorldConfig.GetConfig(selectedCityId);
+                    var cityCfg = WorldConfig.GetConfig(newCityId);
                     attrVal1Text.text = cityCfg.Cname;
                 }
                 ClearAllSelections();
                 CreateCityBattleItems(forceId);
             });
+            PanelManager.Instance.ShowSideBar("SideCitySelector");
         });
 
         if (battleButton != null)

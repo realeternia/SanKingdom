@@ -4,28 +4,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CommonConfig;
-public class SideArmysSelector : MonoBehaviour
+
+public class SideCitySelector : MonoBehaviour
 {
     public ScrollRect scrollRectMain;
     public GameObject subRegionMain;
-    public SideArmsItem itemPrefab;
+    public SideCityItem itemPrefab;
 
-    private SideArmsItem selectedItem;
+    private SideCityItem selectedItem;
     public Button confirmButton;
 
-    private static int currentArmsIdForTroop;
-    private static System.Action<int> onArmsIdSelected;
+    private static int currentCityId;
+    private static List<int> cityIdList;
+    private static System.Action<int> onCityIdSelected;
 
-    public static void SetContextForTroop(int armsId, System.Action<int> callback)
+    public static void SetContext(int cityId, List<int> cities, System.Action<int> callback)
     {
-        currentArmsIdForTroop = armsId;
-        onArmsIdSelected = callback;
-        GameLog.Info($"SideArmysSelector.SetContextForTroop: armsId={armsId}");
+        currentCityId = cityId;
+        cityIdList = cities;
+        onCityIdSelected = callback;
+        GameLog.Info($"SideCitySelector.SetContext: cityId={cityId}, count={cities.Count}");
     }
 
     void Start()
     {
-        LoadArmsList();
+        LoadCityList();
 
         if (confirmButton != null)
         {
@@ -33,29 +36,27 @@ public class SideArmysSelector : MonoBehaviour
         }
     }
 
-    void LoadArmsList()
+    void LoadCityList()
     {
         foreach (Transform child in subRegionMain.transform)
         {
             Destroy(child.gameObject);
         }
 
-        int currentArmsId = currentArmsIdForTroop;
-
         selectedItem = null;
         int count = 0;
-        foreach (var config in ArmsConfig.ConfigList)
+        foreach (int id in cityIdList)
         {
             GameObject item = Instantiate(itemPrefab.gameObject, subRegionMain.transform);
             item.transform.localScale = Vector3.one;
-            SideArmsItem armsItem = item.GetComponent<SideArmsItem>();
-            armsItem.SetData(config.Id);
-            armsItem.SetOnClickCallback(OnItemSelected);
+            SideCityItem cityItem = item.GetComponent<SideCityItem>();
+            cityItem.SetData(id);
+            cityItem.SetOnClickCallback(OnItemSelected);
 
-            if (config.Id == currentArmsId)
+            if (id == currentCityId)
             {
-                armsItem.SetSelected(true);
-                selectedItem = armsItem;
+                cityItem.SetSelected(true);
+                selectedItem = cityItem;
             }
 
             count++;
@@ -75,13 +76,13 @@ public class SideArmysSelector : MonoBehaviour
         }
     }
 
-    void OnItemSelected(SideArmsItem item)
+    void OnItemSelected(SideCityItem item)
     {
         if (selectedItem != null && selectedItem != item)
         {
             selectedItem.SetSelected(false);
         }
-        
+
         item.SetSelected(true);
         selectedItem = item;
     }
@@ -90,12 +91,12 @@ public class SideArmysSelector : MonoBehaviour
     {
         if (selectedItem == null)
         {
-            GameLog.Warn("SideArmysSelector.OnConfirm: selectedItem is null");
+            GameLog.Warn("SideCitySelector.OnConfirm: selectedItem is null");
             return;
         }
 
-        int newArmsId = selectedItem.GetArmsId();
-        onArmsIdSelected?.Invoke(newArmsId);
+        int selectedCityId = selectedItem.GetCityId();
+        onCityIdSelected?.Invoke(selectedCityId);
         PanelManager.Instance.HideSideBar();
     }
 }
