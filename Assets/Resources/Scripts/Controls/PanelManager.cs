@@ -20,8 +20,6 @@ public class PanelManager : MonoBehaviour
     private GameObject systemPanel;
     private GameObject cityBattlePanel;
 
-    private GameObject popHeroSelectPanel;
-    private GameObject popHeroBattleSelectPanel;
     private GameObject popResultPanel;
     private GameObject popArmySetPanel;
     private GameObject heroInfoPanel;
@@ -350,54 +348,6 @@ public class PanelManager : MonoBehaviour
         pickPanel = null;
     }
 
-
-    public void ShowPopHeroSelectPanel(int cityId, int selectCount, int[] heroList, int[] checkedList, string[] attrs, Action<List<int>> onSelectMethod, bool ignoreActionCheck = false)
-    {
-        if (popHeroSelectPanel == null)
-        {
-            popHeroSelectPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PopHeroSelectPanel")), transform);
-        }
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        popHeroSelectPanel.SetActive(true);
-        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnShow(cityId, selectCount, heroList, checkedList, attrs, onSelectMethod, ignoreActionCheck);
-
-        ChangePanelCount(popHeroSelectPanel, true);
-    }
-
-    public void HidePopHeroSelectPanel()
-    {
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        popHeroSelectPanel.SetActive(false);
-        popHeroSelectPanel.GetComponent<PopHeroSelectPanelManager>().OnHide();
-
-        ChangePanelCount(popHeroSelectPanel, false);
-        Destroy(popHeroSelectPanel);
-        popHeroSelectPanel = null;
-    }
-
-    public void ShowPopHeroBattleSelectPanel(int cityId, int selectCount, int[] heroList, bool allowZeroSoldier, int[] checkedList, Action<List<int>> onSelectMethod)
-    {
-        if (popHeroBattleSelectPanel == null)
-        {
-            popHeroBattleSelectPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PopHeroBattleSelectPanel")), transform);
-        }
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        popHeroBattleSelectPanel.SetActive(true);
-        popHeroBattleSelectPanel.GetComponent<PopHeroBattleSelectPanelManager>().OnShow(cityId, selectCount, heroList, allowZeroSoldier, checkedList, onSelectMethod);
-
-        ChangePanelCount(popHeroBattleSelectPanel, true);
-    }
-
-    public void HidePopHeroBattleSelectPanel()
-    {
-        BGMPlayer.Instance.PlaySound("Sounds/deck");
-        popHeroBattleSelectPanel.SetActive(false);
-        popHeroBattleSelectPanel.GetComponent<PopHeroBattleSelectPanelManager>().OnHide();
-
-        ChangePanelCount(popHeroBattleSelectPanel, false);
-        Destroy(popHeroBattleSelectPanel);
-        popHeroBattleSelectPanel = null;
-    }    
 
     public void ShowPopResultPanel(string title, List<PopResultPanelManager.AttrData> attrDatas, Action afterRun, string path)
     {

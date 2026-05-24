@@ -63,7 +63,6 @@
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveData.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\BattleResultPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\BattleUnitConfig_s.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\SelectHeroArmyControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackSpeedAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\MissileViewObj.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\NLCoroutineManager.cs" />
@@ -88,19 +87,16 @@
     <Compile Include="Assets\Resources\Scripts\Panels\PopResultPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\TurnPhase.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityCellCity.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\SelectHeroControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityBattlePanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellForce.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleAudio.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\PopHeroSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\FormulaLearnAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddRege.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideArmsItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\HeroInfoCell.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\ForceRelation.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PopHeroSelectPanelCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefPlantSkin.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuffArea.cs" />
@@ -131,7 +127,6 @@
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUnityVersion.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\VideoPanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PopHeroBattleSelectPanelCell.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModulePhysics.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PopResultCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />
@@ -162,7 +157,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefSkillDamageReduce.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefFeedback.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyBase.cs" />
-    <Compile Include="Assets\Resources\Scripts\Panels\PopHeroBattleSelectPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\PanelEvent.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\UnityMeshMgr.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\MapTool.cs" />
