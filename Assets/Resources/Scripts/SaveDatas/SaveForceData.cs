@@ -675,36 +675,29 @@ public class SaveForceData
         return true;
     }
 
-    public bool ExecuteCityUseHero(int cityId, int devId, int myHeroId, int targetHeroId, out List<PopResultPanelManager.AttrData> attrDatas)
+    private int CalculateRecruitRate(int cityId, int myHeroId, int targetHeroId)
     {
-        attrDatas = new List<PopResultPanelManager.AttrData>();
-        
         var cityData = GameManager.Instance.GetCity(cityId);
-
         var hero = GameManager.Instance.GetHero(targetHeroId);
-        if(hero.state == HeroState.Normal && hero.forceId == cityData.forceId)
-        {
-            SystemTip.Instance.ShowTip("该英雄已经是己方英雄");
-            return false;
-        }
-        bool success = false;
-        string resultMsg = "";
+
+        if (hero.state == HeroState.Normal && hero.forceId == cityData.forceId)
+            return 0;
 
         int baseSuccessRate = 0;
-        
-        if(hero.state == HeroState.Wild)
+
+        if (hero.state == HeroState.Wild)
         {
             baseSuccessRate = SysFormula.Hero.CalculateRecruitWildRate();
         }
-        else if(hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
+        else if (hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
         {
             baseSuccessRate = SysFormula.Hero.CalculateRecruitCapturedRate(hero.loyalty);
         }
 
-        if(myHeroId > 0)
+        if (myHeroId > 0)
         {
             var executorHero = GameManager.Instance.GetHero(myHeroId);
-            if(executorHero != null)
+            if (executorHero != null)
             {
                 int charm = executorHero.GetAttr("charm");
                 bool isKing = myHeroId == ForceConfig.GetConfig(executorHero.forceId).HeroId;
@@ -712,39 +705,69 @@ public class SaveForceData
             }
         }
 
-        int randomVal = SysRandom.Range(0, 100);
-        success = randomVal < baseSuccessRate;
+        return baseSuccessRate;
+    }
 
-        
-        if(success)
+    public bool ExecuteCityUseHero(int cityId, int devId, int[] myHeroIds, int[] targetHeroIds, out List<PopResultPanelManager.AttrData> attrDatas)
+    {
+        attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        var cityData = GameManager.Instance.GetCity(cityId);
+        List<int> remainingTargets = new List<int>(targetHeroIds);
+
+        foreach (int myHeroId in myHeroIds)
         {
-            hero.state = HeroState.Normal;
-            hero.forceId = cityData.forceId;
-            hero.loyalty = SystemConst.Hero.RECRUIT_SUCCESS_LOYALTY;
+            if (remainingTargets.Count == 0) break;
 
-            MoveHeroToCity(hero.cityId, cityId, new int[] { targetHeroId });
-
-            resultMsg = string.Format("成功 ({0}%)", baseSuccessRate);
-
-            attrDatas.Add(new PopResultPanelManager.AttrData()
+            int bestTargetId = 0;
+            int bestRate = -1;
+            foreach (int targetId in remainingTargets)
             {
-                attrStr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
-                valStr = string.Format("<color=green>{0}</color>", resultMsg),
-            });
-        }
-        else
-        {
-            resultMsg = string.Format("失败 ({0}%)", baseSuccessRate);
-            attrDatas.Add(new PopResultPanelManager.AttrData()
+                int rate = CalculateRecruitRate(cityId, myHeroId, targetId);
+                if (rate > bestRate)
+                {
+                    bestRate = rate;
+                    bestTargetId = targetId;
+                }
+            }
+
+            if (bestTargetId == 0 || bestRate <= 0) continue;
+
+            int randomVal = SysRandom.Range(0, 100);
+            bool success = randomVal < bestRate;
+
+            string executorName = HeroConfig.GetConfig(myHeroId).Name;
+            string targetName = HeroConfig.GetConfig(bestTargetId).Name;
+
+            GameLog.Info($"{executorName}登庸{targetName} {(success ? "成功" : "失败")} {bestRate}%");
+
+            if (success)
             {
-                attrStr = "登用" + HeroConfig.GetConfig(targetHeroId).Name,
-                valStr = string.Format("<color=red>{0}</color>", resultMsg),
-            });     
+                var hero = GameManager.Instance.GetHero(bestTargetId);
+                hero.state = HeroState.Normal;
+                hero.forceId = cityData.forceId;
+                hero.loyalty = SystemConst.Hero.RECRUIT_SUCCESS_LOYALTY;
+                MoveHeroToCity(hero.cityId, cityId, new int[] { bestTargetId });
+                remainingTargets.Remove(bestTargetId);
+
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr =  "登庸" + targetName,
+                    valStr = "<color=green>成功</color>"+executorName,
+                });
+            }
+            else
+            {
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr =  "登庸" + targetName,
+                    valStr = "<color=red>失败</color>"+executorName,
+                });
+            }
         }
 
-        var heroList = new int[] { myHeroId };
-        cityData.AddAction(devId, heroList.Length);
-       return true;            
+        cityData.AddAction(devId, myHeroIds.Length);
+        return true;
     }
 
     public bool ExecuteCityPraiseHero(int cityId, int devId, int[] heroList, int methodId, out List<PopResultPanelManager.AttrData> attrDatas)

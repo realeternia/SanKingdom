@@ -26,7 +26,7 @@ public class TaskPriorityCalculator
     {
         foreach (var devConfig in CityDevConfig.ConfigList)
         {
-            if (devConfig.Prefab == "Battle" && IsTaskAvailable(city, devConfig))
+            if (devConfig.Action == "Battle" && IsTaskAvailable(city, devConfig))
             {
                 return new TaskPriorityInfo(devConfig.Id, devConfig.AiPriotyAtk, devConfig);
             }
@@ -68,15 +68,15 @@ public class TaskPriorityCalculator
             return IsNormalTaskAvailable(city, config);
         }
         
-        switch (config.Prefab)
+        switch (config.Action)
         {
             case "Battle":
                 return HasSoldier(city);
-            case "CityDevMove":
+            case "Move":
                 return HasSoldier(city);
-            case "CityDevUseHero":
+            case "UseHero":
                 return city.GetRecruitableHeroList().Count > 0;
-            case "CityDevPraiseHero":
+            case "Praise":
                 return HasLowLoyaltyHero(city);
             default:
                 return false;

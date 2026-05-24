@@ -108,17 +108,12 @@ public class CityUseHeroPanelManager : MonoBehaviour
             return;
         }
 
-        int executorHeroId = selectedItems[0].GetHeroId();
+        int[] executorHeroIds = selectedItems.Select(item => item.GetHeroId()).ToArray();
 
         var devCfg = CityDevConfig.GetConfig(devId);
         var force = GameManager.Instance.GetForce(forceId);
 
-        List<PopResultPanelManager.AttrData> allAttrDatas = new List<PopResultPanelManager.AttrData>();
-        foreach (int targetHeroId in selectedHeroIds)
-        {
-            force.ExecuteCityUseHero(cityId, devId, executorHeroId, targetHeroId, out var attrDatas);
-            allAttrDatas.AddRange(attrDatas);
-        }
+        force.ExecuteCityUseHero(cityId, devId, executorHeroIds, selectedHeroIds.ToArray(), out var allAttrDatas);
 
         PanelManager.Instance.ShowPopResultPanel(devCfg.Cname, allAttrDatas, () =>
         {
@@ -138,11 +133,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
         var force = GameManager.Instance.GetForce(forceId);
         if (force == null) return;
 
-        var kingCity = force.GetKingCity();
-        int kingCityId = kingCity != null ? kingCity.cityId : 0;
-
         var cities = GameManager.Instance.GetCitiesByForce(forceId);
-        cities = cities.OrderByDescending(c => c.cityId == kingCityId).ToList();
 
         List<int> heroList = new List<int>();
         foreach (var city in cities)
@@ -152,6 +143,11 @@ public class CityUseHeroPanelManager : MonoBehaviour
         }
 
         if (heroList.Count == 0) return;
+
+        int kingHeroId = ForceConfig.GetConfig(forceId).HeroId;
+        heroList = heroList.OrderByDescending(h => h == kingHeroId ? 1 : 0)
+                           .ThenByDescending(h => GameManager.Instance.GetHero(h).GetAttr("charm"))
+                           .ToList();
 
         var itemPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelGismo("HeroHeadItem"));
 

@@ -54,7 +54,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         nameText.text = displayName;
         cityImg.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.BuildingIcon(devCfg.Icon));
         isRunType = devCfg.Type == "run";
-        prefabName = devCfg.Prefab;
+        prefabName = devCfg.Action;
 
         UpdateAttrImg(devCfg);
         UpdateBtnRun();
@@ -234,17 +234,17 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
                 var cityData = GameManager.Instance.GetCity(cityId);
                 PanelManager.Instance.ShowCityBattle(cityData.forceId);
             }
-            else if (prefabName == "CityDevMove")
+            else if (prefabName == "Move")
             {
                 var cityData = GameManager.Instance.GetCity(cityId);
                 PanelManager.Instance.ShowCityMove(cityData.forceId, cityId);
             }
-            else if (prefabName == "CityDevPraiseHero")
+            else if (prefabName == "Praise")
             {
                 var cityData = GameManager.Instance.GetCity(cityId);
                 PanelManager.Instance.ShowCityPraise(cityData.forceId, cityId, devId);
             }
-            else if (prefabName == "CityDevUseHero")
+            else if (prefabName == "UseHero")
             {
                 var cityData = GameManager.Instance.GetCity(cityId);
                 PanelManager.Instance.ShowCityUseHero(cityData.forceId, cityId, devId);

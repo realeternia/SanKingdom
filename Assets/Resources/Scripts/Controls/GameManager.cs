@@ -250,19 +250,19 @@ public class GameManager : MonoBehaviour
                 {
                     force.ExecuteCityDev(city.cityId, assignment.devId, heroIds, out attrDatas);
                 }
-                else if (devCfg.Prefab == "CityDevChange")
+                else if (devCfg.Action == "CityDevChange")
                 {
                     force.ExecuteCityChange(city.cityId, assignment.devId, heroIds, true, 300, SystemConst.Economy.EXCHANGE_RATE, out attrDatas);
                 }
-                else if (devCfg.Prefab == "CityDevUseHero")
+                else if (devCfg.Action == "UseHero")
                 {
                     var recruitableHeroes = city.GetRecruitableHeroList();
                     if (recruitableHeroes.Count > 0)
                     {
-                        force.ExecuteCityUseHero(city.cityId, assignment.devId, assignment.heroId, recruitableHeroes[0], out attrDatas);
+                        force.ExecuteCityUseHero(city.cityId, assignment.devId, new int[] { assignment.heroId }, recruitableHeroes.ToArray(), out attrDatas);
                     }
                 }
-                else if (devCfg.Prefab == "CityDevPraiseHero")
+                else if (devCfg.Action == "Praise")
                 {
                     var praiseableHeroes = GetPraiseableHeroList(force.forceId);
                     if (praiseableHeroes.Count > 0)

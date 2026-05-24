@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -45,7 +45,7 @@ namespace CommonConfig
             {"Des", new FieldMetaInfo("描述", "string", 0)},
             {"Type", new FieldMetaInfo("类型", "string", 0)},
             {"KingAction", new FieldMetaInfo("国王行动", "bool", 0)},
-            {"Prefab", new FieldMetaInfo("对象", "string", 153)},
+            {"Action", new FieldMetaInfo("对象", "string", 153)},
             {"Icon", new FieldMetaInfo("图片", "string", 0)},
             {"GoldCost", new FieldMetaInfo("人均消耗黄金", "int", 60)},
             {"HeroCount", new FieldMetaInfo("最大参与人数", "int", 60)},
@@ -91,7 +91,7 @@ namespace CommonConfig
         /// <summary>
         ///对象
         /// </summary>
-        public string Prefab;
+        public string Action;
         /// <summary>
         ///图片
         /// </summary>
@@ -154,14 +154,14 @@ namespace CommonConfig
         public string Mp4;
 
 
-        public CityDevConfig(int Id, string Cname, string Des, string Type, bool KingAction, string Prefab, string Icon, int GoldCost, int HeroCount, string DevAttr1, float[] DevAttr1Value, string DevAttr2, float[] DevAttr2Value, string SpecialAction, int[] SpecialActionVal, string[] Attrs, string ActionName, int AiPriotyDev, int AiPriotyAtk, int AiPriotyDef, string Mp4)
+        public CityDevConfig(int Id, string Cname, string Des, string Type, bool KingAction, string Action, string Icon, int GoldCost, int HeroCount, string DevAttr1, float[] DevAttr1Value, string DevAttr2, float[] DevAttr2Value, string SpecialAction, int[] SpecialActionVal, string[] Attrs, string ActionName, int AiPriotyDev, int AiPriotyAtk, int AiPriotyDef, string Mp4)
         {
             this.Id = Id;
             this.Cname = Cname;
             this.Des = Des;
             this.Type = Type;
             this.KingAction = KingAction;
-            this.Prefab = Prefab;
+            this.Action = Action;
             this.Icon = Icon;
             this.GoldCost = GoldCost;
             this.HeroCount = HeroCount;
@@ -202,12 +202,12 @@ namespace CommonConfig
             config[21003] = new CityDevConfig(21003, "征兵", "提升士兵数量", "normal", false, "", "zhengbing", 0, 1, "soldier", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, "", new int[0], new string[]{"LeadShip","Charm"}, "sod", 0, 8, 2, "zhengbing2.mp4");
             config[21004] = new CityDevConfig(21004, "加固城墙", "提升城防", "normal", false, "", "wall", 0, 1, "wall", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, "", new int[0], new string[]{"Str"}, "def", 30, 0, 10, "fix4.mp4");
             config[21005] = new CityDevConfig(21005, "训练", "提升军队士气", "normal", false, "", "train", 0, 1, "happy", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, "", new int[0], new string[]{"LeadShip","Str"}, "sod", 0, 9, 3, "train3.mp4");
-            config[21102] = new CityDevConfig(21102, "移动", "移动到其他城市", "run", true, "CityDevMove", "move", 0, 10, "", new float[0], "", new float[0], "", new int[0], new string[]{"LeadShip","Charm"}, "", 28, 4, 9, "move2.mp4");
+            config[21102] = new CityDevConfig(21102, "移动", "移动到其他城市", "run", true, "Move", "move", 0, 10, "", new float[0], "", new float[0], "", new int[0], new string[]{"LeadShip","Charm"}, "", 28, 4, 9, "move2.mp4");
             config[21103] = new CityDevConfig(21103, "出战", "出兵攻打敌人", "run", true, "Battle", "battle", 0, 10, "", new float[0], "", new float[0], "", new int[0], new string[]{"LeadShip","Str"}, "", 0, 1, 0, "atk2.mp4");
             config[21202] = new CityDevConfig(21202, "走访", "搜集人才和宝物", "normal", false, "", "find", 0, 1, "gold", new float[]{3f,2f,1f,1f}, "", new float[0], "", new int[0], new string[]{"Charm","Inte"}, "find", 21, 0, 11, "search2.mp4");
             config[21203] = new CityDevConfig(21203, "交易", "交易钱粮", "normal", false, "", "change", 0, 1, "", new float[0], "", new float[0], "", new int[0], new string[]{"Inte"}, "", 1, 3, 1, "change.mp4");
-            config[21401] = new CityDevConfig(21401, "登用", "提拔在野武将", "run", true, "CityDevUseHero", "wild", 0, 1, "", new float[0], "", new float[0], "", new int[0], new string[]{"Charm","Inte"}, "", 2, 0, 0, "wild.mp4");
-            config[21402] = new CityDevConfig(21402, "褒奖", "提升武将忠心度", "run", true, "CityDevPraiseHero", "praise", 0, 5, "", new float[0], "", new float[0], "praise", new int[]{1,5}, new string[]{"Charm","Inte"}, "", 3, 12, 0, "wild.mp4");
+            config[21401] = new CityDevConfig(21401, "登用", "提拔在野武将", "run", true, "UseHero", "wild", 0, 1, "", new float[0], "", new float[0], "", new int[0], new string[]{"Charm","Inte"}, "", 2, 0, 0, "wild.mp4");
+            config[21402] = new CityDevConfig(21402, "褒奖", "提升武将忠心度", "run", true, "Praise", "praise", 0, 5, "", new float[0], "", new float[0], "praise", new int[]{1,5}, new string[]{"Charm","Inte"}, "", 3, 12, 0, "wild.mp4");
             config[21403] = new CityDevConfig(21403, "采石场", "提升石料", "normal", false, "", "stone", 0, 1, "stone", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, "", new int[0], new string[]{"Charm","Inte"}, "", 0, 0, 0, "");
             config[21404] = new CityDevConfig(21404, "马场", "提升马场", "normal", false, "", "horse", 0, 1, "horse", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, "", new int[0], new string[]{"Charm","Inte"}, "", 0, 0, 0, "");
             config[21405] = new CityDevConfig(21405, "木材场", "提升木材", "normal", false, "", "wood", 0, 1, "wood", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, "", new int[0], new string[]{"Charm","Inte"}, "", 0, 0, 0, "");
