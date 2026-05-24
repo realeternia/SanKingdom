@@ -118,6 +118,9 @@ public static class SysColor
 
         public static readonly Color DragHighlightColor = Color.green;
         public static readonly Color DragResetColor = Color.white;
+
+        public static readonly Color CheckBtnSelected = new Color(1f, 0.843f, 0f, 1f);
+        public static readonly Color CheckBtnNormal = new Color(0.15f, 0.15f, 0.15f, 1f);
     }
 
     public static class Battle

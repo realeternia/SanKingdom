@@ -19,6 +19,7 @@ public class PanelManager : MonoBehaviour
     private GameObject systemPanel;
     private GameObject cityBattlePanel;
     private GameObject cityMovePanel;
+    private GameObject cityPraisePanel;
 
     private GameObject popResultPanel;
     private GameObject heroInfoPanel;
@@ -297,6 +298,33 @@ public class PanelManager : MonoBehaviour
         cityMovePanel = null;
     }
 
+    public void ShowCityPraise(int forceId, int cityId, int devId)
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        if (cityPraisePanel == null)
+        {
+            var cityPraisePanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityPraisePanel"));
+            cityPraisePanel = Instantiate(cityPraisePanelPrefab, transform);
+        }
+        cityPraisePanel.SetActive(true);
+        var cityPraisePanelManager = cityPraisePanel.GetComponent<CityPraisePanelManager>();
+        cityPraisePanelManager.Init(forceId, cityId, devId);
+        cityPraisePanelManager.OnShow();
+
+        ChangePanelCount(cityPraisePanel, true);
+    }
+
+    public void HideCityPraise()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        cityPraisePanel.SetActive(false);
+        cityPraisePanel.GetComponent<CityPraisePanelManager>().OnHide();
+
+        ChangePanelCount(cityPraisePanel, false);
+        Destroy(cityPraisePanel);
+        cityPraisePanel = null;
+    }
+
 
 
     public void ShowRank()
@@ -348,7 +376,7 @@ public class PanelManager : MonoBehaviour
     }
 
 
-    public void ShowPopResultPanel(string title, List<PopResultPanelManager.AttrData> attrDatas, Action afterRun, string path)
+    public void ShowPopResultPanel(string title, List<PopResultPanelManager.AttrData> attrDatas, Action afterRun, string path, bool autoHide = true)
     {
         if (popResultPanel == null)
         {
@@ -356,7 +384,7 @@ public class PanelManager : MonoBehaviour
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popResultPanel.SetActive(true);
-        popResultPanel.GetComponent<PopResultPanelManager>().OnShow(title, attrDatas, afterRun, path);
+        popResultPanel.GetComponent<PopResultPanelManager>().OnShow(title, attrDatas, afterRun, path, autoHide);
 
         ChangePanelCount(popResultPanel, true);
     }

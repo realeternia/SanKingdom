@@ -35,6 +35,7 @@ public class PopResultPanelManager : MonoBehaviour
     public GameObject resultItemPrefab;
 
     private Action afterRun;
+    private bool autoHide;
     private List<GameObject> resultItems = new List<GameObject>();
 
     void Start()
@@ -46,6 +47,7 @@ public class PopResultPanelManager : MonoBehaviour
         runBtn.onClick.AddListener(() =>
         {
             PanelManager.Instance.HidePopResultPanel();
+            afterRun?.Invoke();
         });
 
 
@@ -165,10 +167,11 @@ public class PopResultPanelManager : MonoBehaviour
 
     }
 
-    public void OnShow(string title, List<AttrData> attrDatas, Action afterRun, string path)
+    public void OnShow(string title, List<AttrData> attrDatas, Action afterRun, string path, bool autoHide)
     {
         titleText.text = title;
         this.afterRun = afterRun;
+        this.autoHide = autoHide;
         runBtn.gameObject.SetActive(false);
 
         ClearResultItems();
@@ -259,10 +262,10 @@ public class PopResultPanelManager : MonoBehaviour
 
         videoPanel.SetActive(false);
 
-        if (afterRun != null)
+        if (autoHide)
         {
             PanelManager.Instance.HidePopResultPanel();
-            afterRun.Invoke();
+            afterRun?.Invoke();
         }
         else
         {

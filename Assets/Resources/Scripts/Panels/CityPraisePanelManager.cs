@@ -6,20 +6,21 @@ using CommonConfig;
 using System.Linq;
 using System;
 
-public class CityMovePanelManager : MonoBehaviour
+public class CityPraisePanelManager : MonoBehaviour
 {
     public ScrollRect scrollRectMain;
     public GameObject itemRegionMain;
 
-    private int forceId;
-    private int sourceCityId;
-    private int selectedDestCityId;
-
-    public Button destButton;
-    public TMP_Text attrVal1Text;
-
     public Button closeButton;
     public Button okButton;
+    public NLMutiCheckButton checkBtn;
+
+    public TMP_Text goldCostText;
+
+    private int forceId;
+    private int cityId;
+    private int devId;
+    private int methodId = 1;
 
     private List<GameObject> heroHeadItems = new List<GameObject>();
 
@@ -27,32 +28,18 @@ public class CityMovePanelManager : MonoBehaviour
     {
         closeButton.onClick.AddListener(() =>
         {
-            PanelManager.Instance.HideCityMove();
-        });
-        destButton.onClick.AddListener(() =>
-        {
-            var cityIds = MapTool.GetOwnCityIds(forceId);
-            cityIds.Remove(sourceCityId);
-            SideCitySelector.SetContext(selectedDestCityId, cityIds, (newCityId) =>
-            {
-                selectedDestCityId = newCityId;
-                if (newCityId == 0)
-                {
-                    attrVal1Text.text = "-";
-                }
-                else
-                {
-                    var cityCfg = WorldConfig.GetConfig(newCityId);
-                    attrVal1Text.text = cityCfg.Cname;
-                }
-                //ClearAllSelections();
-            });
-            PanelManager.Instance.ShowSideBar("SideCitySelector");
+            PanelManager.Instance.HideCityPraise();
         });
 
         if (okButton != null)
         {
-            okButton.onClick.AddListener(OnMove);
+            okButton.onClick.AddListener(OnPraise);
+        }
+
+        if (checkBtn != null)
+        {
+            checkBtn.Init(new string[] { "褒奖", "奖赏" });
+            checkBtn.SelectIndexChange = OnCheckBtnChange;
         }
     }
 
@@ -61,29 +48,37 @@ public class CityMovePanelManager : MonoBehaviour
 
     }
 
-    public void Init(int forceId, int sourceCityId)
+    public void Init(int forceId, int cityId, int devId)
     {
         this.forceId = forceId;
-        this.sourceCityId = sourceCityId;
-        this.selectedDestCityId = 0;
-        attrVal1Text.text = "-";
+        this.cityId = cityId;
+        this.devId = devId;
+        this.methodId = 1;
+        UpdateMethodUI();
         CreateHeroHeadItems();
     }
 
-    public bool CanSelectItem()
+    private void OnCheckBtnChange(int index)
     {
-        return selectedDestCityId > 0;
+        methodId = index + 1;
+        UpdateMethodUI();
     }
 
-    private void ClearAllSelections()
+    private void UpdateMethodUI()
     {
-        foreach (var itemObj in heroHeadItems)
+        if (goldCostText != null)
         {
-            if (itemObj == null) continue;
-            var itemScript = itemObj.GetComponent<HeroHeadItem>();
-            if (itemScript != null)
+            if (methodId == 2)
             {
-                itemScript.SetSelected(false);
+                int selectedCount = GetSelectedItems().Count;
+                int cost = selectedCount * SystemConst.Hero.PRAISE_GOLD_COST_PER_HERO;
+                var force = GameManager.Instance.GetForce(forceId);
+                goldCostText.text = string.Format("{0} / {1}", cost, force != null ? (int)force.gold : 0);
+                goldCostText.gameObject.SetActive(true);
+            }
+            else
+            {
+                goldCostText.gameObject.SetActive(false);
             }
         }
     }
@@ -103,19 +98,24 @@ public class CityMovePanelManager : MonoBehaviour
         return selected;
     }
 
-    private void OnMove()
+    private void OnPraise()
     {
-        if (selectedDestCityId <= 0)
-        {
-            SystemTip.Instance.ShowTip("请选择目标城市");
-            return;
-        }
-
         var selectedItems = GetSelectedItems();
         if (selectedItems.Count == 0)
         {
-            SystemTip.Instance.ShowTip("请选择移动武将");
+            SystemTip.Instance.ShowTip("请选择武将");
             return;
+        }
+
+        var force = GameManager.Instance.GetForce(forceId);
+        if (methodId == 2)
+        {
+            int totalCost = selectedItems.Count * SystemConst.Hero.PRAISE_GOLD_COST_PER_HERO;
+            if (force != null && force.gold < totalCost)
+            {
+                SystemTip.Instance.ShowTip("黄金不足");
+                return;
+            }
         }
 
         List<int> heroIds = new List<int>();
@@ -124,25 +124,16 @@ public class CityMovePanelManager : MonoBehaviour
             heroIds.Add(item.GetHeroId());
         }
 
-        var moveDevCfg = CityDevConfig.GetConfig(SystemConst.CityDev.MOVE_DEV_ID);
-        PanelManager.Instance.ShowPopResultPanel("移动", new List<PopResultPanelManager.AttrData>(), () =>
+        var devCfg = CityDevConfig.GetConfig(devId);
+        bool success = force.ExecuteCityPraiseHero(cityId, devId, heroIds.ToArray(), methodId, out var attrDatas);
+
+        if (success)
         {
-            var force = GameManager.Instance.GetForce(forceId);
-
-            var heroGroups = heroIds
-                .Select(id => GameManager.Instance.GetHero(id))
-                .Where(h => h != null)
-                .GroupBy(h => h.cityId);
-
-            foreach (var group in heroGroups)
+            PanelManager.Instance.ShowPopResultPanel(devCfg.Cname, attrDatas, () =>
             {
-                int srcCityId = group.Key;
-                int[] heroesToMove = group.Select(h => h.heroId).ToArray();
-                force.MoveHeroToCity(srcCityId, selectedDestCityId, heroesToMove);
-            }
-
-            PanelManager.Instance.HideCityMove();
-        }, moveDevCfg != null ? moveDevCfg.Mp4 : "");
+                PanelManager.Instance.HideCityPraise();
+            }, devCfg != null ? devCfg.Mp4 : "", false);
+        }
     }
 
     private void CreateHeroHeadItems()
@@ -163,14 +154,23 @@ public class CityMovePanelManager : MonoBehaviour
         var cities = GameManager.Instance.GetCitiesByForce(forceId);
         cities = cities.OrderByDescending(c => c.cityId == kingCityId).ToList();
 
-        List<int> heroList = new List<int>();
+        List<SaveHeroData> allHeroes = new List<SaveHeroData>();
         foreach (var city in cities)
         {
-            var cityHeroes = city.GetNormalHeroList();
-            heroList.AddRange(cityHeroes);
+            var heroIds = city.GetNormalHeroList();
+            foreach (var hid in heroIds)
+            {
+                var heroData = GameManager.Instance.GetHero(hid);
+                if (heroData != null)
+                {
+                    allHeroes.Add(heroData);
+                }
+            }
         }
 
-        if (heroList.Count == 0) return;
+        allHeroes = allHeroes.OrderBy(h => h.loyalty).ToList();
+
+        if (allHeroes.Count == 0) return;
 
         var itemPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelGismo("HeroHeadItem"));
 
@@ -185,7 +185,7 @@ public class CityMovePanelManager : MonoBehaviour
         float totalWidth = itemsPerRow * itemWidth + (itemsPerRow - 1) * spacing;
         float startX = -totalWidth / 2f + itemWidth / 2f;
 
-        for (int i = 0; i < heroList.Count; i++)
+        for (int i = 0; i < allHeroes.Count; i++)
         {
             int row = i / itemsPerRow;
             int col = i % itemsPerRow;
@@ -209,14 +209,14 @@ public class CityMovePanelManager : MonoBehaviour
             HeroHeadItem itemScript = itemObj.GetComponent<HeroHeadItem>();
             if (itemScript != null)
             {
-                string attText = GetHeroAttText(heroList[i]);
-                itemScript.Init(heroList[i], attText, forceId);
+                string attText = GetHeroAttText(allHeroes[i]);
+                itemScript.Init(allHeroes[i].heroId, attText, forceId);
             }
 
             heroHeadItems.Add(itemObj);
         }
 
-        int totalRows = (heroList.Count + itemsPerRow - 1) / itemsPerRow;
+        int totalRows = (allHeroes.Count + itemsPerRow - 1) / itemsPerRow;
         float contentHeight = totalRows * itemHeight + (totalRows - 1) * spacing;
         containerRect.sizeDelta = new Vector2(containerRect.sizeDelta.x, contentHeight);
     }
@@ -230,11 +230,8 @@ public class CityMovePanelManager : MonoBehaviour
     {
     }
 
-    private string GetHeroAttText(int heroId)
+    private string GetHeroAttText(SaveHeroData heroData)
     {
-        var heroData = GameManager.Instance.GetHero(heroId);
-
-        var cityCfg = WorldConfig.GetConfig(heroData.cityId);
-        return cityCfg != null ? cityCfg.Cname : "";
+        return $"忠{heroData.loyalty}";
     }
 }

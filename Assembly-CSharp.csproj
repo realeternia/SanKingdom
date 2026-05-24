@@ -99,6 +99,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideArmsItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\HeroInfoCell.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\ForceRelation.cs" />
+    <Compile Include="Assets\Resources\Scripts\UIScripts\NLMutiCheckButton.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefPlantSkin.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuffArea.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackReboundArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSuck.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\CityPraisePanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\MapConfig.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackRunCross.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffTimeDamage.cs" />
