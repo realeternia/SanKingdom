@@ -7,7 +7,8 @@ public enum IconSourceType
 {
     Path,
     CityAttr,
-    HeroAttr
+    HeroAttr,
+    SysAttr
 }
 
 public class IconLoader : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
@@ -92,6 +93,16 @@ public class IconLoader : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 HeroAttrConfig cfg = HeroAttrConfig.GetConfig(configId);
                 return cfg.Cname;
             }
+            case IconSourceType.SysAttr:
+            {
+                if (!SystemAttrConfig.HasConfig(configId))
+                {
+                    GameLog.Error(string.Format("IconLoader SystemAttrConfig不存在id={0}", configId));
+                    return null;
+                }
+                SystemAttrConfig cfg = SystemAttrConfig.GetConfig(configId);
+                return cfg.Cname;
+            }
             default:
                 return null;
         }
@@ -123,6 +134,20 @@ public class IconLoader : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                     return null;
                 }
                 HeroAttrConfig cfg = HeroAttrConfig.GetConfig(configId);
+                if (string.IsNullOrEmpty(cfg.Icon))
+                {
+                    return null;
+                }
+                return ResPath.Texture.AttrIcon(cfg.Icon);
+            }
+            case IconSourceType.SysAttr:
+            {
+                if (!SystemAttrConfig.HasConfig(configId))
+                {
+                    GameLog.Error(string.Format("IconLoader SystemAttrConfig不存在id={0}", configId));
+                    return null;
+                }
+                SystemAttrConfig cfg = SystemAttrConfig.GetConfig(configId);
                 if (string.IsNullOrEmpty(cfg.Icon))
                 {
                     return null;

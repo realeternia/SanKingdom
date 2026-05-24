@@ -8,16 +8,20 @@ public class IconLoaderEditor : Editor
 {
     private int cityAttrIndex = -1;
     private int heroAttrIndex = -1;
+    private int sysAttrIndex = -1;
     private List<int> cityAttrIds;
     private List<int> heroAttrIds;
+    private List<int> sysAttrIds;
     private string[] cityAttrDisplayNames;
     private string[] heroAttrDisplayNames;
+    private string[] sysAttrDisplayNames;
 
     private static readonly Color HeaderBg = new Color(0.18f, 0.20f, 0.28f);
     private static readonly Color HeaderText = new Color(0.85f, 0.88f, 1.0f);
     private static readonly Color PathAccent = new Color(0.30f, 0.70f, 0.95f);
     private static readonly Color CityAccent = new Color(0.95f, 0.65f, 0.20f);
     private static readonly Color HeroAccent = new Color(0.75f, 0.30f, 0.90f);
+    private static readonly Color SysAccent = new Color(0.20f, 0.80f, 0.55f);
     private static readonly Color IdBadgeBg = new Color(0.22f, 0.24f, 0.32f);
     private static readonly Color IdBadgeText = new Color(0.60f, 0.85f, 1.0f);
     private static readonly Color SectionBg = new Color(0.24f, 0.26f, 0.34f, 0.6f);
@@ -75,6 +79,9 @@ public class IconLoaderEditor : Editor
         heroAttrIds = null;
         heroAttrDisplayNames = null;
         heroAttrIndex = -1;
+        sysAttrIds = null;
+        sysAttrDisplayNames = null;
+        sysAttrIndex = -1;
     }
 
     private void EnsureCityAttrData()
@@ -105,6 +112,21 @@ public class IconLoaderEditor : Editor
             names.Add(string.Format("{0}  [{1}]", cfg.Cname, cfg.Icon));
         }
         heroAttrDisplayNames = names.ToArray();
+    }
+
+    private void EnsureSysAttrData()
+    {
+        if (sysAttrIds != null) return;
+        SystemAttrConfig.Load();
+        sysAttrIds = new List<int>();
+        List<string> names = new List<string>();
+        foreach (SystemAttrConfig cfg in SystemAttrConfig.ConfigList)
+        {
+            if (string.IsNullOrEmpty(cfg.Icon)) continue;
+            sysAttrIds.Add(cfg.Id);
+            names.Add(string.Format("{0}  [{1}]", cfg.Cname, cfg.Icon));
+        }
+        sysAttrDisplayNames = names.ToArray();
     }
 
     private int FindIndex(List<int> ids, int targetId)
@@ -252,6 +274,36 @@ public class IconLoaderEditor : Editor
                     EditorUtility.SetDirty(loader);
                 }
                 if (heroAttrIndex >= 0 && heroAttrIndex < heroAttrDisplayNames.Length)
+                {
+                    DrawIdBadge(loader.configId);
+                }
+                break;
+            }
+            case IconSourceType.SysAttr:
+            {
+                DrawSectionHeader("\u25B8 \u7CFB\u7EDF\u5C5E\u6027", SysAccent);
+                EnsureSysAttrData();
+                if (sysAttrIds.Count == 0)
+                {
+                    EditorGUILayout.HelpBox("SystemAttrConfig \u65E0\u53EF\u7528\u6761\u76EE", MessageType.Warning);
+                    break;
+                }
+                if (sysAttrIndex < 0)
+                {
+                    sysAttrIndex = FindIndex(sysAttrIds, loader.configId);
+                }
+                Rect sysPopRect = GUILayoutUtility.GetRect(0, 20);
+                Rect sysPopLabelRect = new Rect(sysPopRect.x, sysPopRect.y, EditorGUIUtility.labelWidth, sysPopRect.height);
+                Rect sysPopFieldRect = new Rect(sysPopRect.x + EditorGUIUtility.labelWidth, sysPopRect.y, sysPopRect.width - EditorGUIUtility.labelWidth, sysPopRect.height);
+                GUI.Label(sysPopLabelRect, "\u5C5E\u6027\u9009\u62E9", limeLabelStyle);
+                int sysNewIndex = EditorGUI.Popup(sysPopFieldRect, sysAttrIndex, sysAttrDisplayNames);
+                if (sysNewIndex != sysAttrIndex && sysNewIndex >= 0)
+                {
+                    sysAttrIndex = sysNewIndex;
+                    loader.configId = sysAttrIds[sysNewIndex];
+                    EditorUtility.SetDirty(loader);
+                }
+                if (sysAttrIndex >= 0 && sysAttrIndex < sysAttrDisplayNames.Length)
                 {
                     DrawIdBadge(loader.configId);
                 }

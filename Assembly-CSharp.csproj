@@ -71,6 +71,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveMissileAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamageAddRate.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShieldValue.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\SystemAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedShadow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitFood.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellInfoForce.cs" />
