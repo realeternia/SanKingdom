@@ -207,13 +207,43 @@ public class WorldPieceControl : MonoBehaviour
 
     private void UpdateResImages(WorldConfig pieceCfg)
     {
-        var resAddon = pieceCfg.ResAddon;
+        var displayIcons = new List<string>();
+
+        if (pieceCfg.SpecialBuildings != null)
+        {
+            foreach (int buildingId in pieceCfg.SpecialBuildings)
+            {
+                var devCfg = CityDevConfig.GetConfig(buildingId);
+                if(devCfg.DevAttr1 != null)
+                {
+                    var attrCfg = CityAttrConfig.GetConfigByname(devCfg.DevAttr1);
+                    displayIcons.Add(attrCfg.Icon);
+                }
+            }
+        }
+
+        if (pieceCfg.ResAddon != null && displayIcons.Count < resImage.Length)
+        {
+            foreach (int addonId in pieceCfg.ResAddon)
+            {
+                if (displayIcons.Count >= resImage.Length) break;
+                var attrCfg = CityAttrConfig.GetConfig(addonId);
+                displayIcons.Add(attrCfg.Icon);
+            }
+        }
+
+        foreach (var icon in displayIcons)
+        {
+        GameLog.Info($"UpdateResImages {pieceCfg.Cname} {icon}");
+        }
+
+        
+
         for (int i = 0; i < resImage.Length; i++)
         {
-            if (resAddon != null && i < resAddon.Length)
+            if (i < displayIcons.Count)
             {
-                var attrCfg = CityAttrConfig.GetConfig(resAddon[i]);
-                resImage[i].sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(attrCfg.Icon));
+                resImage[i].sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(displayIcons[i]));
                 resImage[i].gameObject.SetActive(true);
             }
             else

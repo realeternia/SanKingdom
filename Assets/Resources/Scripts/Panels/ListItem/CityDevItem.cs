@@ -47,7 +47,11 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         this.devId = devId;
         var devCfg = CityDevConfig.GetConfig(devId);
         string displayName = devCfg.Cname;
-        if (!string.IsNullOrEmpty(devCfg.DevAttr1) && SysFormula.City.CityHasResAddon(cityId, devCfg.DevAttr1))
+        if (devCfg.IsSpecial)
+        {
+            displayName = "★" + displayName;
+        }
+        else if (!string.IsNullOrEmpty(devCfg.DevAttr1) && SysFormula.City.CityHasResAddon(cityId, devCfg.DevAttr1))
         {
             displayName = "★" + displayName;
         }
