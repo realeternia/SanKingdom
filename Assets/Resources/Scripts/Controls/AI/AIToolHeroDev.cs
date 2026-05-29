@@ -50,7 +50,7 @@ public static class AIToolHeroDev
         }
         
         var devConfigs = CityDevConfig.ConfigList
-            .Where(c => c.Type == "normal" && c.AiPriotyDev > 0)
+            .Where(c => c.Type == "normal" && c.AiPriotyDev > 0 && SaveCityData.IsDevAvailableForCity(city.cityId, c))
             .OrderByDescending(c => c.AiPriotyDev)
             .ToList();
         

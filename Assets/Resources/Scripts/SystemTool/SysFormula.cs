@@ -126,10 +126,6 @@ public static class SysFormula
 
     public static class Hero
     {
-        public static int CalculateRecruitWildRate()
-        {
-            return SystemConst.Hero.RECRUIT_WILD_BASE_RATE;
-        }
 
         public static int CalculateRecruitCapturedRate(int loyalty)
         {
@@ -252,7 +248,7 @@ public static class SysFormula
 
         public static int CalculateFoodProduction(int cityLevel)
         {
-            return (int)(CityLevelConfig.GetConfig(cityLevel).FoodAdd);
+            return (int)CityLevelConfig.GetConfig(cityLevel).FoodAdd;
         }
 
         public static float CalculateDevValue(int min, int max, int addon, int currentVal, int valMax)
@@ -275,14 +271,7 @@ public static class SysFormula
 
         public static bool CityHasResAddon(int cityId, string attrName)
         {
-            var worldCfg = WorldConfig.GetConfig(cityId);
-            if (worldCfg.ResAddon == null) return false;
-            var attrCfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
-            foreach (int addonId in worldCfg.ResAddon)
-            {
-                if (addonId == attrCfg.Id) return true;
-            }
-            return false;
+            return SaveCityData.CityHasResAddon(cityId, attrName);
         }
     }
 

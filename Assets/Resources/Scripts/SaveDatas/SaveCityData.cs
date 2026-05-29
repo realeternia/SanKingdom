@@ -553,4 +553,28 @@ public class SaveCityData
         return addon;
     }
 
+    public static bool CityHasResAddon(int cityId, string attrName)
+    {
+        var worldCfg = WorldConfig.GetConfig(cityId);
+        if (worldCfg.ResAddon == null) return false;
+        var attrCfg = CityAttrConfig.GetConfigByname(attrName.ToLower());
+        foreach (int addonId in worldCfg.ResAddon)
+        {
+            if (addonId == attrCfg.Id) return true;
+        }
+        return false;
+    }
+
+    public static bool IsDevAvailableForCity(int cityId, CityDevConfig devCfg)
+    {
+        if (!devCfg.IsSpecial) return true;
+        var worldCfg = WorldConfig.GetConfig(cityId);
+        if (worldCfg.SpecialBuildings == null) return false;
+        foreach (int buildingId in worldCfg.SpecialBuildings)
+        {
+            if (buildingId == devCfg.Id) return true;
+        }
+        return false;
+    }
+
 }

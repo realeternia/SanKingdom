@@ -136,6 +136,7 @@ namespace CommonConfig
             config[14] = new CityAttrConfig(14, "horse", "马", true, true, false, 0, 999, "cityhorse");
             config[15] = new CityAttrConfig(15, "wood", "木材", true, true, false, 0, 999, "citywood");
             config[16] = new CityAttrConfig(16, "stone", "石料", true, true, false, 0, 999, "citystone");
+            config[17] = new CityAttrConfig(17, "elephant", "战象", true, true, true, 0, 999, "cityelephant");
 
             RebuildIndex();
 

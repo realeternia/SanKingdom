@@ -421,6 +421,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         {
             if (isKing && !cfg.KingAction) continue;
             if (!isKing && cfg.KingAction) continue;
+            if (!SaveCityData.IsDevAvailableForCity(cityId, cfg)) continue;
             int row = devIndex / itemsPerRow;
             int col = devIndex % itemsPerRow;
 

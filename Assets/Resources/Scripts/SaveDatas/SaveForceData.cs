@@ -687,7 +687,7 @@ public class SaveForceData
 
         if (hero.state == HeroState.Wild)
         {
-            baseSuccessRate = SysFormula.Hero.CalculateRecruitWildRate();
+            baseSuccessRate = SystemConst.Hero.RECRUIT_WILD_BASE_RATE;
         }
         else if (hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
         {

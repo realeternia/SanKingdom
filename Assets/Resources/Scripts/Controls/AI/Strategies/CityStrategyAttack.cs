@@ -26,7 +26,7 @@ public class CityStrategyAttack : CityStrategyBase
     protected override List<CityDevConfig> GetSortedDevConfigs()
     {
         return CityDevConfig.ConfigList
-            .Where(c => c.Type == "normal" && c.AiPriotyAtk > 0)
+            .Where(c => c.Type == "normal" && c.AiPriotyAtk > 0 && SaveCityData.IsDevAvailableForCity(City.cityId, c))
             .OrderByDescending(c => c.AiPriotyAtk)
             .ToList();
     }
