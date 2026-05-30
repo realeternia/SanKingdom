@@ -640,6 +640,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         var viewForce = GameManager.Instance.GetForce(viewForceId);
         
         int index = 0;
+        float offsetX = 0;
+        float prevWidth = 0;
         foreach (var attrConfig in CityAttrConfig.ConfigList)
         {
             if (attrConfig.IsForceAttr)
@@ -650,11 +652,16 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             GameLog.Debug($"InitTopNodeResItems creating ResItem for {attrConfig.name}");
             var resBasePrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.ResBase());
             var resObj = Instantiate(resBasePrefab, topNode.transform);
-            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(240 * index, 0);
             var resItem = resObj.GetComponent<ResItem>();
             resItem.Init(attrConfig.name);
+            float currentWidth = SysFormula.City.GetResBaseWidth(attrConfig);
+            if (index > 0 && currentWidth < prevWidth)
+                offsetX -= (prevWidth - currentWidth) / 2;
+            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(offsetX, 0);
             resItem.UpdateNum(cityData.GetAttr(attrConfig.name));
             resItemDict[attrConfig.name] = resItem;
+            offsetX += currentWidth;
+            prevWidth = currentWidth;
             index++;
         }
         

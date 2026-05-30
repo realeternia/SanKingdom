@@ -45,6 +45,7 @@ namespace CommonConfig
             {"Cname", new FieldMetaInfo("中文名", "string", 0)},
             {"IsForceAttr", new FieldMetaInfo("是否force", "bool", 0)},
             {"IsPosRes", new FieldMetaInfo("占用类资源", "bool", 0)},
+            {"IsConsumeRes", new FieldMetaInfo("消耗型资源", "bool", 0)},
             {"NotShow", new FieldMetaInfo("不显示top ui", "bool", 0)},
             {"ValMaxCity", new FieldMetaInfo("最大值", "int", 0)},
             {"ValMaxForce", new FieldMetaInfo("最大值", "int", 0)},
@@ -77,6 +78,10 @@ namespace CommonConfig
         /// </summary>
         public bool IsPosRes;
         /// <summary>
+        ///消耗型资源
+        /// </summary>
+        public bool IsConsumeRes;
+        /// <summary>
         ///不显示top ui
         /// </summary>
         public bool NotShow;
@@ -94,13 +99,14 @@ namespace CommonConfig
         public string Icon;
 
 
-        public CityAttrConfig(int Id, string name, string Cname, bool IsForceAttr, bool IsPosRes, bool NotShow, int ValMaxCity, int ValMaxForce, string Icon)
+        public CityAttrConfig(int Id, string name, string Cname, bool IsForceAttr, bool IsPosRes, bool IsConsumeRes, bool NotShow, int ValMaxCity, int ValMaxForce, string Icon)
         {
             this.Id = Id;
             this.name = name;
             this.Cname = Cname;
             this.IsForceAttr = IsForceAttr;
             this.IsPosRes = IsPosRes;
+            this.IsConsumeRes = IsConsumeRes;
             this.NotShow = NotShow;
             this.ValMaxCity = ValMaxCity;
             this.ValMaxForce = ValMaxForce;
@@ -125,20 +131,20 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new CityAttrConfig(1, "level", "等级", false, false, true, 99, 0, "");
-            config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, false, 999, 0, "citydev");
-            config[5] = new CityAttrConfig(5, "food", "粮食", false, false, false, 999, 0, "cityfood");
-            config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, false, 999, 0, "armscount");
-            config[7] = new CityAttrConfig(7, "happy", "民心", false, false, false, 999, 0, "cityheart");
-            config[8] = new CityAttrConfig(8, "wall", "城墙", false, false, false, 999, 0, "citywall");
-            config[12] = new CityAttrConfig(12, "gold", "金钱", true, false, false, 0, 999, "citygold");
-            config[13] = new CityAttrConfig(13, "steel", "铁", true, true, false, 0, 999, "citysteel");
-            config[14] = new CityAttrConfig(14, "horse", "马", true, true, false, 0, 999, "cityhorse");
-            config[15] = new CityAttrConfig(15, "wood", "木材", true, true, false, 0, 999, "citywood");
-            config[16] = new CityAttrConfig(16, "stone", "石料", true, true, false, 0, 999, "citystone");
-            config[17] = new CityAttrConfig(17, "elephant", "战象", true, true, true, 0, 999, "cityelephant");
-            config[18] = new CityAttrConfig(18, "salt", "盐", true, true, true, 0, 999, "citysalt");
-            config[19] = new CityAttrConfig(19, "fish", "鱼", true, true, true, 0, 999, "cityfish");
+            config[1] = new CityAttrConfig(1, "level", "等级", false, false, false, true, 99, 0, "");
+            config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, true, false, 999, 0, "citydev");
+            config[5] = new CityAttrConfig(5, "food", "粮食", false, false, true, false, 999, 0, "cityfood");
+            config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, true, false, 999, 0, "armscount");
+            config[7] = new CityAttrConfig(7, "wall", "城墙", false, false, true, false, 999, 0, "citywall");
+            config[8] = new CityAttrConfig(8, "happy", "民心", false, false, true, false, 99, 0, "cityheart");
+            config[12] = new CityAttrConfig(12, "gold", "金钱", true, false, true, false, 0, 999, "citygold");
+            config[13] = new CityAttrConfig(13, "steel", "铁", true, true, false, false, 0, 99, "citysteel");
+            config[14] = new CityAttrConfig(14, "horse", "马", true, true, false, false, 0, 99, "cityhorse");
+            config[15] = new CityAttrConfig(15, "wood", "木材", true, true, false, false, 0, 99, "citywood");
+            config[16] = new CityAttrConfig(16, "stone", "石料", true, true, false, false, 0, 99, "citystone");
+            config[17] = new CityAttrConfig(17, "elephant", "战象", true, true, false, true, 0, 99, "cityelephant");
+            config[18] = new CityAttrConfig(18, "salt", "盐", true, false, false, true, 0, 9, "citysalt");
+            config[19] = new CityAttrConfig(19, "fish", "鱼", true, false, false, true, 0, 9, "cityfish");
 
             RebuildIndex();
 

@@ -34,6 +34,12 @@ public class ResItem : MonoBehaviour
         this.config = item;
 
         GetComponent<IconLoader>().SetId(item.Id);
+
+        int resItemWidth = SysFormula.City.GetResItemWidth(item);
+        int resBaseWidth = SysFormula.City.GetResBaseWidth(item);
+        itemNum.rectTransform.sizeDelta = new Vector2(resItemWidth, itemNum.rectTransform.sizeDelta.y);
+        var rt = GetComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(resBaseWidth, rt.sizeDelta.y);
     }
 
     public void UpdateNum(float num)

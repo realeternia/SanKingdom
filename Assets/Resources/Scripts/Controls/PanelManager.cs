@@ -84,23 +84,32 @@ public class PanelManager : MonoBehaviour
         playerForce.RecalculateResUsed();
         
         int index = 0;
+        float offsetX = 0;
+        float prevWidth = 0;
         foreach (var attrConfig in CityAttrConfig.ConfigList)
         {
             if (!attrConfig.IsForceAttr) continue;
             if (attrConfig.NotShow) continue;
             
+            float attrValue = playerForce.GetAttr(attrConfig.name);
+            
             GameLog.Debug($"PanelManager.InitTopNodeResItems creating ResItem for {attrConfig.name}");
             var resBasePrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.ResBase());
             var resObj = Instantiate(resBasePrefab, topNode.transform);
-            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(240 * index, 0);
             var resItem = resObj.GetComponent<ResItem>();
             resItem.Init(attrConfig.name);
-            resItem.UpdateNum(playerForce.GetAttr(attrConfig.name));
+            float currentWidth = SysFormula.City.GetResBaseWidth(attrConfig);
+            if (index > 0 && currentWidth < prevWidth)
+                offsetX -= (prevWidth - currentWidth) / 2;
+            resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(offsetX, 0);
+            resItem.UpdateNum(attrValue);
             if (attrConfig.IsPosRes)
             {
                 resItem.UpdateUsed(playerForce.GetResUsed(attrConfig.name));
             }
             forceResItemDict[attrConfig.name] = resItem;
+            offsetX += currentWidth;
+            prevWidth = currentWidth;
             index++;
         }
         
@@ -114,7 +123,7 @@ public class PanelManager : MonoBehaviour
         if (force == null) return;
         
         force.RecalculateResUsed();
-        
+         
         foreach (var kvp in forceResItemDict)
         {
             string attrName = kvp.Key;

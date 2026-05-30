@@ -274,6 +274,28 @@ public static class SysFormula
                 return 0.8f;
             return 0.6f;
         }
+
+        public static int GetResDisplayMaxLength(CityAttrConfig config)
+        {
+            var digitCount = config.IsForceAttr ? config.ValMaxForce.ToString().Length : config.ValMaxCity.ToString().Length;
+            if (config.IsConsumeRes)
+            {
+                return digitCount * 2 + 3;
+            }
+            if (config.IsPosRes)
+                return digitCount * 2 + 2;
+            return digitCount;
+        }
+
+        public static int GetResItemWidth(CityAttrConfig config)
+        {
+            return GetResDisplayMaxLength(config) * 20;
+        }
+
+        public static int GetResBaseWidth(CityAttrConfig config)
+        {
+            return 60 + GetResDisplayMaxLength(config) * 20;
+        }
     }
 
     public static class Economy
