@@ -92,6 +92,11 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         {
             if (currentForce != null && currentForce.isPlayer)
             {
+                if (currentForce.GetPredictedGoldBalance() < 0)
+                {
+                    SystemTip.Instance.ShowTip("黄金不足，无法确认计划");
+                    return;
+                }
                 GameManager.Instance.ConfirmPlan(currentForce.forceId);
             }
         }

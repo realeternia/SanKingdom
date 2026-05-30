@@ -241,16 +241,6 @@ public static class SysFormula
             return totalScore;
         }
 
-        public static int CalculateGoldProduction(int cityLevel)
-        {
-            return CityLevelConfig.GetConfig(cityLevel).GoldAdd;
-        }
-
-        public static int CalculateFoodProduction(int cityLevel)
-        {
-            return (int)CityLevelConfig.GetConfig(cityLevel).FoodAdd;
-        }
-
         public static float CalculateDevValue(int min, int max, int addon, int currentVal, int valMax)
         {
             var val = Math.Max(min, (float)addon / 100 * max);
@@ -272,6 +262,17 @@ public static class SysFormula
         public static bool CityHasResAddon(int cityId, string attrName)
         {
             return SaveCityData.CityHasResAddon(cityId, attrName);
+        }
+
+        public static float GetHappyMultiplier(int happy)
+        {
+            if (happy >= 95)
+                return 1.2f;
+            if (happy >= 60)
+                return 1f;
+            if (happy >= 30)
+                return 0.8f;
+            return 0.6f;
         }
     }
 

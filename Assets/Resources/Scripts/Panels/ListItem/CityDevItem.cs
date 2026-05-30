@@ -55,6 +55,24 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         {
             displayName = "★" + displayName;
         }
+
+        string attr1Lower = string.IsNullOrEmpty(devCfg.DevAttr1) ? "" : devCfg.DevAttr1.ToLower();
+        string attr2Lower = string.IsNullOrEmpty(devCfg.DevAttr2) ? "" : devCfg.DevAttr2.ToLower();
+        if (attr1Lower == "food" || attr1Lower == "soldier" || attr1Lower == "gold"
+            || attr2Lower == "food" || attr2Lower == "soldier" || attr2Lower == "gold")
+        {
+            var cityData = GameManager.Instance.GetCity(cityId);
+            if (cityData != null)
+            {
+                float multiplier = cityData.GetProductionMultiplier();
+                if (multiplier < 0.999f || multiplier > 1.001f)
+                {
+                    string hex = ColorUtility.ToHtmlStringRGB(Color.red);
+                    displayName = string.Format("{0}<color=#{1}>({2:F2})</color>", displayName, hex, multiplier);
+                }
+            }
+        }
+
         nameText.text = displayName;
         cityImg.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.BuildingIcon(devCfg.Icon));
         isRunType = devCfg.Type == "run";

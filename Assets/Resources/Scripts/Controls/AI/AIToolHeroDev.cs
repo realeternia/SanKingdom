@@ -12,6 +12,8 @@ public static class AIToolHeroDev
         {
             AssignHeroesToCityDev(force, city);
         }
+
+        AdjustForGoldBalance(force);
     }
 
     internal static void AssignHeroesToCityDev(SaveForceData force, SaveCityData city)
@@ -155,5 +157,72 @@ public static class AIToolHeroDev
             float secondAttr = hero.GetAttr(attrs[1]);
             return firstAttr * (2f / 3f) + secondAttr * (1f / 3f);
         }
+    }
+
+    public static void AdjustForGoldBalance(SaveForceData force)
+    {
+        var cities = force.GetCityList();
+
+        while (force.GetPredictedGoldBalance() < 0)
+        {
+            SaveCityData worstCity = null;
+            int worstHeroId = 0;
+            float worstEffect = float.MaxValue;
+            bool foundAny = false;
+
+            foreach (var city in cities)
+            {
+                var assignments = city.GetDevAssignments();
+                foreach (var assignment in assignments)
+                {
+                    var devCfg = CityDevConfig.GetConfig(assignment.devId);
+                    var heroData = GameManager.Instance.GetHero(assignment.heroId);
+                    if (heroData == null) continue;
+                    float effect = GetAssignmentGoldEffect(devCfg, heroData);
+                    if (effect < worstEffect)
+                    {
+                        worstEffect = effect;
+                        worstCity = city;
+                        worstHeroId = assignment.heroId;
+                        foundAny = true;
+                    }
+                }
+            }
+
+            if (!foundAny)
+            {
+                GameLog.SetTag("AI").Warn($"{ConfigNameHelper.GetForceName(force.forceId)} 无法通过调整委派避免金钱为负");
+                break;
+            }
+
+            worstCity.RemoveDevAssignment(worstHeroId);
+            GameLog.SetTag("AI").Warn($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(worstCity.cityId)}] 移除委派 {ConfigNameHelper.GetHeroName(worstHeroId)}，防止金钱预测为负");
+        }
+    }
+
+    private static float GetAssignmentGoldEffect(CityDevConfig devCfg, SaveHeroData heroData)
+    {
+        float effect = 0;
+        float avgWeightedValue = SysFormula.City.GetHeroWeightedAttrValue(heroData, devCfg.Attrs);
+        int tier = SysFormula.City.GetHeroTier(avgWeightedValue);
+
+        if (!string.IsNullOrEmpty(devCfg.DevAttr1) && devCfg.DevAttr1.ToLower() == "gold")
+        {
+            var attrConfig = CityAttrConfig.GetConfigByname("gold");
+            if (attrConfig.IsForceAttr && devCfg.DevAttr1Value != null && devCfg.DevAttr1Value.Length > tier)
+                effect += devCfg.DevAttr1Value[tier];
+        }
+
+        if (!string.IsNullOrEmpty(devCfg.DevAttr2) && devCfg.DevAttr2.ToLower() == "gold"
+            && devCfg.DevAttr2Value != null && devCfg.DevAttr2Value.Length > tier)
+        {
+            var attrConfig = CityAttrConfig.GetConfigByname("gold");
+            if (attrConfig.IsForceAttr)
+                effect += devCfg.DevAttr2Value[tier];
+        }
+
+        effect -= devCfg.GoldCost;
+
+        return effect;
     }
 }

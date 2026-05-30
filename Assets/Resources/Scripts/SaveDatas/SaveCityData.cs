@@ -13,11 +13,17 @@ public class SaveCityData
     public float happy;
     public float food;
     public float wall;
+    public int battleTime;
     public List<DevAssignmentData> devAssignments = new List<DevAssignmentData>();    
 
     public int ownerHeroId;
     [NonSerialized]
     public Dictionary<int, int> actions = new Dictionary<int, int>();
+
+    public bool IsInWar
+    {
+        get { return battleTime > 0; }
+    }
 
     public int GetLevel()
     {
@@ -81,14 +87,9 @@ public class SaveCityData
 
     public void OnRound()
     {
-        var seasonCfg = SeasonConfig.GetConfig(GameManager.Instance.SeasonId);
-        var forceData = GameManager.Instance.GetForce(forceId);
-        if(forceData != null)
-        {
-            forceData.AddAttr("gold", (int)SysFormula.City.CalculateGoldProduction(GetLevel()));
-        }
-        AddAttr("food", (int)SysFormula.City.CalculateFoodProduction(GetLevel()));
+        battleTime = Math.Max(0, battleTime - 1);
 
+        var forceData = GameManager.Instance.GetForce(forceId);
         var worldCfg = WorldConfig.GetConfig(cityId);
         if (worldCfg.ResAddon != null)
         {
@@ -196,7 +197,11 @@ public class SaveCityData
             citySoldier -= toAssign;
         }
 
-        soldier = citySoldier;
+        var attrConfig = CityAttrConfig.GetConfigByname("soldier");
+        AddAttr("soldier", citySoldier);
+        
+        PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = "soldier", Value = GetAttr("soldier") });
+        
         return result;
     }
 
@@ -232,7 +237,7 @@ public class SaveCityData
                 break;
             case "exp":
                 int oldLevel = GetLevel();
-                exp += add;
+                exp = Math.Max(0, exp + add);
                 int newLevel = GetLevel();
                 if (PanelManager.Instance != null)
                 {
@@ -242,16 +247,59 @@ public class SaveCityData
                 }
                 return;
             case "soldier":
-                soldier += add;
+                soldier = Math.Max(0, Math.Min(soldier + add, attrConfig.ValMaxCity));
                 break;
             case "happy":
-                happy += add;
+                happy = Math.Max(0, Math.Min(happy + add, attrConfig.ValMaxCity));
                 break;
             case "food":
-                food += add;
+                food = Math.Max(0, Math.Min(food + add, attrConfig.ValMaxCity));
                 break;
             case "wall":
-                wall += add;
+                wall = Math.Max(0, Math.Min(wall + add, attrConfig.ValMaxCity));
+                break;
+            default:
+                break;
+        }
+
+        if (PanelManager.Instance != null)
+        {
+            PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = type.ToLower(), Value = GetAttr(type.ToLower()) });
+        }
+    }
+
+    public void MultiplyAttr(string type, float multiplier)
+    {
+        var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
+        if (attrConfig.IsForceAttr)
+        {
+            GameLog.Error($"MultiplyAttr: {type} is force attr, not city attr");
+            return;
+        }
+        
+        if (attrConfig.IsPosRes)
+        {
+            GameLog.Debug($"MultiplyAttr: {type} is IsPosRes, skip");
+            return;
+        }
+        
+        switch (type.ToLower())
+        {
+            case "level":
+            case "exp":
+                GameLog.Warn($"MultiplyAttr: {type} 不支持乘法操作");
+                break;
+            case "soldier":
+                soldier = Math.Max(0, Math.Min(soldier * multiplier, attrConfig.ValMaxCity));
+                break;
+            case "happy":
+                happy = Math.Max(0, Math.Min(happy * multiplier, attrConfig.ValMaxCity));
+                break;
+            case "food":
+                food = Math.Max(0, Math.Min(food * multiplier, attrConfig.ValMaxCity));
+                break;
+            case "wall":
+                wall = Math.Max(0, Math.Min(wall * multiplier, attrConfig.ValMaxCity));
                 break;
             default:
                 break;
@@ -282,6 +330,19 @@ public class SaveCityData
             default:
                 return 0;
         }
+    }
+
+    public void OnBattle()
+    {
+        battleTime = Math.Min(battleTime + SystemConst.City.BATTLE_TIME_INCREMENT, SystemConst.City.BATTLE_TIME_MAX);
+    }
+
+    public float GetProductionMultiplier()
+    {
+        float happyMult = SysFormula.City.GetHappyMultiplier((int)Math.Floor(happy));
+        if (IsInWar)
+            return SystemConst.City.WAR_PRODUCTION_MULTIPLIER + happyMult - 1f;
+        return happyMult;
     }
 
     public void MoveHeroTo(int[] heroIds, int destCityId)

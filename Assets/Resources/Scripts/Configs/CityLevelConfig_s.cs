@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -42,9 +42,6 @@ namespace CommonConfig
         {
             {"Id", new FieldMetaInfo("序列", "int", 0)},
             {"ExpNeed", new FieldMetaInfo("名字", "int", 0)},
-            {"GoldAdd", new FieldMetaInfo("黄金产量", "int", 0)},
-            {"FoodAdd", new FieldMetaInfo("粮食产量", "int", 0)},
-            {"SoldierAdd", new FieldMetaInfo("士兵产量", "int", 0)},
             {"JobCount", new FieldMetaInfo("工位数", "int", 0)},
         };
 
@@ -62,30 +59,15 @@ namespace CommonConfig
         /// </summary>
         public int ExpNeed;
         /// <summary>
-        ///黄金产量
-        /// </summary>
-        public int GoldAdd;
-        /// <summary>
-        ///粮食产量
-        /// </summary>
-        public int FoodAdd;
-        /// <summary>
-        ///士兵产量
-        /// </summary>
-        public int SoldierAdd;
-        /// <summary>
         ///工位数
         /// </summary>
         public int JobCount;
 
 
-        public CityLevelConfig(int Id, int ExpNeed, int GoldAdd, int FoodAdd, int SoldierAdd, int JobCount)
+        public CityLevelConfig(int Id, int ExpNeed, int JobCount)
         {
             this.Id = Id;
             this.ExpNeed = ExpNeed;
-            this.GoldAdd = GoldAdd;
-            this.FoodAdd = FoodAdd;
-            this.SoldierAdd = SoldierAdd;
             this.JobCount = JobCount;
         }
 
@@ -107,26 +89,26 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new CityLevelConfig(1, 30, 10, 10, 10, 4);
-            config[2] = new CityLevelConfig(2, 80, 10, 10, 10, 4);
-            config[3] = new CityLevelConfig(3, 160, 10, 10, 10, 4);
-            config[4] = new CityLevelConfig(4, 260, 10, 10, 10, 4);
-            config[5] = new CityLevelConfig(5, 360, 10, 10, 10, 5);
-            config[6] = new CityLevelConfig(6, 460, 10, 10, 10, 5);
-            config[7] = new CityLevelConfig(7, 560, 10, 10, 10, 5);
-            config[8] = new CityLevelConfig(8, 660, 10, 10, 10, 5);
-            config[9] = new CityLevelConfig(9, 780, 10, 10, 10, 5);
-            config[10] = new CityLevelConfig(10, 920, 11, 11, 11, 6);
-            config[11] = new CityLevelConfig(11, 1080, 11, 11, 11, 6);
-            config[12] = new CityLevelConfig(12, 1260, 11, 11, 11, 6);
-            config[13] = new CityLevelConfig(13, 1460, 11, 11, 11, 6);
-            config[14] = new CityLevelConfig(14, 1660, 11, 11, 11, 6);
-            config[15] = new CityLevelConfig(15, 1860, 11, 11, 11, 7);
-            config[16] = new CityLevelConfig(16, 2060, 11, 11, 11, 7);
-            config[17] = new CityLevelConfig(17, 2300, 11, 11, 11, 7);
-            config[18] = new CityLevelConfig(18, 2580, 11, 11, 11, 7);
-            config[19] = new CityLevelConfig(19, 2980, 11, 11, 11, 7);
-            config[20] = new CityLevelConfig(20, 3480, 12, 12, 12, 8);
+            config[1] = new CityLevelConfig(1, 30, 4);
+            config[2] = new CityLevelConfig(2, 80, 4);
+            config[3] = new CityLevelConfig(3, 160, 4);
+            config[4] = new CityLevelConfig(4, 260, 4);
+            config[5] = new CityLevelConfig(5, 360, 5);
+            config[6] = new CityLevelConfig(6, 460, 5);
+            config[7] = new CityLevelConfig(7, 560, 5);
+            config[8] = new CityLevelConfig(8, 660, 5);
+            config[9] = new CityLevelConfig(9, 780, 5);
+            config[10] = new CityLevelConfig(10, 920, 6);
+            config[11] = new CityLevelConfig(11, 1080, 6);
+            config[12] = new CityLevelConfig(12, 1260, 6);
+            config[13] = new CityLevelConfig(13, 1460, 6);
+            config[14] = new CityLevelConfig(14, 1660, 6);
+            config[15] = new CityLevelConfig(15, 1860, 7);
+            config[16] = new CityLevelConfig(16, 2060, 7);
+            config[17] = new CityLevelConfig(17, 2300, 7);
+            config[18] = new CityLevelConfig(18, 2580, 7);
+            config[19] = new CityLevelConfig(19, 2980, 7);
+            config[20] = new CityLevelConfig(20, 3480, 8);
 
             RebuildIndex();
 

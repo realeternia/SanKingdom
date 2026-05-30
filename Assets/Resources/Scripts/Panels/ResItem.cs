@@ -77,6 +77,10 @@ public class ResItem : MonoBehaviour
             {
                 itemNum.text = $"{num}(<color=green>+{addon}</color>)";
             }
+            else if (addon < 0)
+            {
+                itemNum.text = $"{num}(<color=red>{addon}</color>)";
+            }
             else
             {
                 itemNum.text = num.ToString();

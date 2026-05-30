@@ -169,6 +169,9 @@ public static class SystemConst
         public const int KING_OWNER_BONUS_SCORE = 9999;
         public const int MAX_TROOPS = 5;
         public const int RES_ADDON_BONUS = 1;
+        public const int BATTLE_TIME_MAX = 5;
+        public const int BATTLE_TIME_INCREMENT = 2;
+        public const float WAR_PRODUCTION_MULTIPLIER = 0.7f;
     }
 
     public static class Economy

@@ -18,6 +18,8 @@ public static class AI
             strategy.Execute();
         }
         
+        AIToolHeroDev.AdjustForGoldBalance(force);
+        
         GameManager.Instance.ConfirmPlan(force.forceId);
         
         GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} 计划阶段完成");

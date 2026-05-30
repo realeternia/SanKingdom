@@ -346,6 +346,8 @@ public class SaveForceData
         {
             results.Add((int)Math.Floor(resultTmp[i]));
         }
+
+        ApplyProductionMultiplier(cityData, devConfig, results);
         
         if (!string.IsNullOrEmpty(devConfig.DevAttr1))
         {
@@ -445,6 +447,28 @@ public class SaveForceData
         }
     }
 
+    private static void ApplyProductionMultiplier(SaveCityData cityData, CityDevConfig devConfig, List<int> results)
+    {
+        float multiplier = cityData.GetProductionMultiplier();
+        if (multiplier >= 0.999f && multiplier <= 1.001f)
+            return;
+
+        int index = 0;
+        if (!string.IsNullOrEmpty(devConfig.DevAttr1))
+        {
+            string attr1 = devConfig.DevAttr1.ToLower();
+            if (attr1 == "food" || attr1 == "soldier" || attr1 == "gold")
+                results[index] = (int)(results[index] * multiplier);
+            index++;
+        }
+        if (!string.IsNullOrEmpty(devConfig.DevAttr2))
+        {
+            string attr2 = devConfig.DevAttr2.ToLower();
+            if (attr2 == "food" || attr2 == "soldier" || attr2 == "gold")
+                results[index] = (int)(results[index] * multiplier);
+        }
+    }
+
     private static float GetValByTier(string resName, float tierValue, int nowVal)
     {
         var cityAttrConfig = CityAttrConfig.GetConfigByname(resName.ToLower());
@@ -471,6 +495,7 @@ public class SaveForceData
         foreach (var srcCityId in srcCityIds)
         {
             var citySrc = GameManager.Instance.GetCity(srcCityId);
+            citySrc.OnBattle();
             int totalSoldiers = attackTroops
                 .Where(t => t.heroId1 > 0 && GameManager.Instance.GetHero(t.heroId1).cityId == srcCityId)
                 .Sum(t => attackSoldierMap.ContainsKey(t.heroId1) ? attackSoldierMap[t.heroId1] : 0);
@@ -478,6 +503,7 @@ public class SaveForceData
             citySrc.AddAttr("soldier", -totalSoldiers);
             citySrc.AddAttr("food", -totalSoldiers);
         }
+        cityDest.OnBattle();
         int srcForceId = forceId;
         int destForceId = cityDest.forceId;
         GameManager.Instance.SaveData.forceRelation.RecordBattle(srcForceId, destForceId);
@@ -498,6 +524,18 @@ public class SaveForceData
             var defenceHeroList = defenderSoldierCount.Keys.ToList();
             
             destCity.Occupy(forceId, attackHeroList, destForceId, defenceHeroList);
+        }
+
+        destCity.AddAttr("wall", -10);
+        GameLog.Info($"OnBattleEnd 防守城市城墙减少10 wall={destCity.GetAttr("wall")}");
+        
+        if (result == BattleResult.Win)
+        {
+            destCity.AddAttr("happy", -30);
+            GameLog.Info($"OnBattleEnd 攻方胜利，城市民心减少30 happy={destCity.GetAttr("happy")}");
+            
+            destCity.MultiplyAttr("food", 0.5f);
+            GameLog.Info($"OnBattleEnd 攻方胜利，城市粮食减少50% food={destCity.GetAttr("food")}");
         }
 
         foreach (var kvp in attackerSoldierCount)
@@ -883,6 +921,14 @@ public class SaveForceData
                 }
             }
         }
+
+        if (devCfg.GoldCost > 0)
+        {
+            string goldAttrName = "gold";
+            if (!attrAddons.ContainsKey(goldAttrName))
+                attrAddons[goldAttrName] = 0;
+            attrAddons[goldAttrName] -= devCfg.GoldCost;
+        }
     }
 
     private float CalculateForceDevAddonByTier(string attrName, float tierValue)
@@ -899,5 +945,12 @@ public class SaveForceData
             addon = Math.Max(0, remaining);
         
         return addon;
+    }
+
+    public float GetPredictedGoldBalance()
+    {
+        var addons = CalculateForceAttrAddons();
+        addons.TryGetValue("gold", out float goldAddon);
+        return gold + goldAddon;
     }
 }
