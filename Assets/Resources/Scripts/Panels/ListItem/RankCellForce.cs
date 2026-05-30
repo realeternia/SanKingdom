@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using CommonConfig;
+using System;
 
 public class RankCellForce : MonoBehaviour, IPointerDownHandler
 {

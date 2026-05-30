@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -207,6 +207,9 @@ namespace CommonConfig
             config[21405] = new CityDevConfig(21405, "木材场", "提升木材", "normal", false, false, "", "wood", 0, 1, "wood", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0, 0, 0, "");
             config[21406] = new CityDevConfig(21406, "铁匠铺", "提升铁", "normal", false, false, "", "steel", 0, 1, "steel", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0, 0, 0, "");
             config[21407] = new CityDevConfig(21407, "象棚", "提升战象", "normal", true, false, "", "elephant", 0, 1, "elephant", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "", 0, 0, 0, "");
+            config[21408] = new CityDevConfig(21408, "金矿", "提升金钱", "normal", true, false, "", "gold", 0, 1, "gold", new float[]{8f,6f,5f,4f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0, 0, 0, "");
+            config[21409] = new CityDevConfig(21409, "盐矿", "提升盐", "normal", true, false, "", "salt", 0, 1, "salt", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0, 0, 0, "");
+            config[21410] = new CityDevConfig(21410, "渔场", "提升鱼", "normal", true, false, "", "fish", 0, 1, "fish", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Str"}, "", 0, 0, 0, "");
 
             RebuildIndex();
 

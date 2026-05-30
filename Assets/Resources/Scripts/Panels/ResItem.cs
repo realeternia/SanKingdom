@@ -10,9 +10,9 @@ public class ResItem : MonoBehaviour
     public TMP_Text itemNum;
     public string attrName;
 
-    private int num;
+    private float num;
     private int used;
-    private int addon;
+    private float addon;
     private CityAttrConfig config;
 
     void Start()
@@ -36,7 +36,7 @@ public class ResItem : MonoBehaviour
         GetComponent<IconLoader>().SetId(item.Id);
     }
 
-    public void UpdateNum(int num)
+    public void UpdateNum(float num)
     {
         this.num = num;
         RefreshDisplay();
@@ -50,7 +50,7 @@ public class ResItem : MonoBehaviour
         RefreshDisplay();
     }
 
-    public void UpdateAddon(int addon)
+    public void UpdateAddon(float addon)
     {
         if (config == null || config.IsPosRes)
             return;
@@ -60,30 +60,32 @@ public class ResItem : MonoBehaviour
 
     private void RefreshDisplay()
     {
+        string numStr = num.ToString("F0");
         if (config != null && config.IsPosRes)
         {
             if (used > 0)
             {
-                itemNum.text = $"{num}(<color=red>{used}</color>)";
+                itemNum.text = $"{numStr}(<color=red>{used}</color>)";
             }
             else
             {
-                itemNum.text = num.ToString();
+                itemNum.text = numStr;
             }
         }
         else
         {
+            string addonStr = addon.ToString("F0");
             if (addon > 0)
             {
-                itemNum.text = $"{num}(<color=green>+{addon}</color>)";
+                itemNum.text = $"{numStr}(<color=green>+{addonStr}</color>)";
             }
             else if (addon < 0)
             {
-                itemNum.text = $"{num}(<color=red>{addon}</color>)";
+                itemNum.text = $"{numStr}(<color=red>{addonStr}</color>)";
             }
             else
             {
-                itemNum.text = num.ToString();
+                itemNum.text = numStr;
             }
         }
     }

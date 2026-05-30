@@ -12,8 +12,8 @@ public class PopResultPanelManager : MonoBehaviour
     public class AttrData
     {
         public string attr;
-        public int valOld;
-        public int valAddon;
+        public float valOld;
+        public float valAddon;
 
         public string attrStr;
         public string valStr;

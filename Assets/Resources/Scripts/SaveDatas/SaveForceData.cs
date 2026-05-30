@@ -25,7 +25,7 @@ public class SaveForceData
     [NonSerialized]
     private Dictionary<string, int> resUsedCache = new Dictionary<string, int>();
 
-    public void AddAttr(string type, int add)
+    public void AddAttr(string type, float add, string reason = "")
     {
         var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
         if (!attrConfig.IsForceAttr)
@@ -40,21 +40,27 @@ public class SaveForceData
             return;
         }
         
+        float oldVal = 0;
         switch (type.ToLower())
         {
             case "gold":
+                oldVal = gold;
                 gold = Math.Min(gold + add, attrConfig.ValMaxForce);
                 break;
             default:
                 break;
         }
-        if (isPlayer && PanelManager.Instance != null)
+
+        float newVal = gold;
+        GameLog.Info($"SaveForceData.AddAttr forceId={forceId} type={type} old={oldVal} add={add} new={newVal} reason={reason}");
+
+        if (isPlayer)
         {
             PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = type.ToLower(), Value = GetAttr(type.ToLower()), Used = GetResUsed(type.ToLower()) });
         }
     }
 
-    public int GetAttr(string type)
+    public float GetAttr(string type)
     {
         var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
         if (!attrConfig.IsForceAttr)
@@ -62,13 +68,13 @@ public class SaveForceData
         
         if (attrConfig.IsPosRes)
         {
-            return (int)Math.Floor(GetPosResFromCache(type.ToLower()));
+            return GetPosResFromCache(type.ToLower());
         }
         
         switch (type.ToLower())
         {
             case "gold":
-                return (int)Math.Floor(gold);
+                return gold;
             default:
                 return 0;
         }
@@ -137,7 +143,7 @@ public class SaveForceData
         {
             foreach (var kvp in posResCache)
             {
-                PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = kvp.Key, Value = (int)Math.Floor(kvp.Value), Used = GetResUsed(kvp.Key) });
+                PanelManager.Instance.SendSignal(new ForceResChangeSignal { ResType = kvp.Key, Value = kvp.Value, Used = GetResUsed(kvp.Key) });
             }
         }
     }
@@ -181,10 +187,10 @@ public class SaveForceData
     {
         var armsConfig = ArmsConfig.GetConfig(armsId);
         
-        int horseAvailable = GetAttr("horse") - GetResUsed("horse");
-        int steelAvailable = GetAttr("steel") - GetResUsed("steel");
-        int woodAvailable = GetAttr("wood") - GetResUsed("wood");
-        int stoneAvailable = GetAttr("stone") - GetResUsed("stone");
+        float horseAvailable = GetAttr("horse") - GetResUsed("horse");
+        float steelAvailable = GetAttr("steel") - GetResUsed("steel");
+        float woodAvailable = GetAttr("wood") - GetResUsed("wood");
+        float stoneAvailable = GetAttr("stone") - GetResUsed("stone");
         
         if (excludeTroop != null && excludeTroop.armsId > 0)
         {
@@ -299,7 +305,7 @@ public class SaveForceData
         {
             string mainAttr = devConfig.DevAttr1.ToLower();
             var attrConfig = CityAttrConfig.GetConfigByname(mainAttr);
-            int currentVal = attrConfig.IsForceAttr ? GetAttr(mainAttr) : cityData.GetAttr(mainAttr);
+            float currentVal = attrConfig.IsForceAttr ? GetAttr(mainAttr) : cityData.GetAttr(mainAttr);
             int valMax = attrConfig.IsForceAttr ? attrConfig.ValMaxForce : attrConfig.ValMaxCity;
             if (currentVal >= valMax)
             {
@@ -316,7 +322,7 @@ public class SaveForceData
         
         if (devConfig.GoldCost > 0)
         {
-            AddAttr("gold", -devConfig.GoldCost * heroList.Length);
+            AddAttr("gold", -devConfig.GoldCost * heroList.Length, "城市发展扣除金钱");
         }
         
         for (int i = 0; i < heroList.Length; i++)
@@ -330,21 +336,26 @@ public class SaveForceData
             if (!string.IsNullOrEmpty(devConfig.DevAttr1))
             {
                 var val = GetValByTier(devConfig.DevAttr1, devConfig.DevAttr1Value[tier], cityData.GetAttr(devConfig.DevAttr1));
+                if (val > 0 && SaveCityData.CityHasResAddon(cityId, devConfig.DevAttr1))
+                    val += SystemConst.City.RES_ADDON_BONUS;
                 resultTmp[0] += val;
             }
 
             if (!string.IsNullOrEmpty(devConfig.DevAttr2) && devConfig.DevAttr2Value != null && devConfig.DevAttr2Value.Length > tier)
             {
                 resultTmp.Add(0);
-                resultTmp[1] += GetValByTier(devConfig.DevAttr2, devConfig.DevAttr2Value[tier], cityData.GetAttr(devConfig.DevAttr2));
+                var val = GetValByTier(devConfig.DevAttr2, devConfig.DevAttr2Value[tier], cityData.GetAttr(devConfig.DevAttr2));
+                if (val > 0 && SaveCityData.CityHasResAddon(cityId, devConfig.DevAttr2))
+                    val += SystemConst.City.RES_ADDON_BONUS;
+                resultTmp[1] += val;
             }
 
         }
 
-        List<int> results = new List<int>();
+        List<float> results = new List<float>();
         for (int i = 0; i < resultTmp.Count; i++)
         {
-            results.Add((int)Math.Floor(resultTmp[i]));
+            results.Add(resultTmp[i]);
         }
 
         ApplyProductionMultiplier(cityData, devConfig, results);
@@ -352,13 +363,13 @@ public class SaveForceData
         if (!string.IsNullOrEmpty(devConfig.DevAttr1))
         {
             var attr1Config = CityAttrConfig.GetConfigByname(devConfig.DevAttr1.ToLower());
-            int attr1Old = attr1Config.IsForceAttr ? GetAttr(devConfig.DevAttr1) : cityData.GetAttr(devConfig.DevAttr1);
+            float attr1Old = attr1Config.IsForceAttr ? GetAttr(devConfig.DevAttr1) : cityData.GetAttr(devConfig.DevAttr1);
             if (!attr1Config.IsPosRes)
             {
                 if (attr1Config.IsForceAttr)
-                    AddAttr(devConfig.DevAttr1, results[0]);
+                    AddAttr(devConfig.DevAttr1, results[0], "城市发展产出1");
                 else
-                    cityData.AddAttr(devConfig.DevAttr1, results[0]);
+                    cityData.AddAttr(devConfig.DevAttr1, results[0], "城市发展产出1");
                 attrDatas.Add(new PopResultPanelManager.AttrData()
                 {
                     attr = devConfig.DevAttr1,
@@ -373,11 +384,11 @@ public class SaveForceData
             var attr2Config = CityAttrConfig.GetConfigByname(devConfig.DevAttr2.ToLower());
             if (!attr2Config.IsPosRes)
             {
-                int attr2Old = attr2Config.IsForceAttr ? GetAttr(devConfig.DevAttr2) : cityData.GetAttr(devConfig.DevAttr2);
+                float attr2Old = attr2Config.IsForceAttr ? GetAttr(devConfig.DevAttr2) : cityData.GetAttr(devConfig.DevAttr2);
                 if (attr2Config.IsForceAttr)
-                    AddAttr(devConfig.DevAttr2, results[1]);
+                    AddAttr(devConfig.DevAttr2, results[1], "城市发展产出2");
                 else
-                    cityData.AddAttr(devConfig.DevAttr2, results[1]);
+                    cityData.AddAttr(devConfig.DevAttr2, results[1], "城市发展产出2");
                 attrDatas.Add(new PopResultPanelManager.AttrData()
                 {
                     attr = devConfig.DevAttr2,
@@ -447,7 +458,7 @@ public class SaveForceData
         }
     }
 
-    private static void ApplyProductionMultiplier(SaveCityData cityData, CityDevConfig devConfig, List<int> results)
+    private static void ApplyProductionMultiplier(SaveCityData cityData, CityDevConfig devConfig, List<float> results)
     {
         float multiplier = cityData.GetProductionMultiplier();
         if (multiplier >= 0.999f && multiplier <= 1.001f)
@@ -458,24 +469,24 @@ public class SaveForceData
         {
             string attr1 = devConfig.DevAttr1.ToLower();
             if (attr1 == "food" || attr1 == "soldier" || attr1 == "gold")
-                results[index] = (int)(results[index] * multiplier);
+                results[index] = results[index] * multiplier;
             index++;
         }
         if (!string.IsNullOrEmpty(devConfig.DevAttr2))
         {
             string attr2 = devConfig.DevAttr2.ToLower();
             if (attr2 == "food" || attr2 == "soldier" || attr2 == "gold")
-                results[index] = (int)(results[index] * multiplier);
+                results[index] = results[index] * multiplier;
         }
     }
 
-    private static float GetValByTier(string resName, float tierValue, int nowVal)
+    private static float GetValByTier(string resName, float tierValue, float nowVal)
     {
         var cityAttrConfig = CityAttrConfig.GetConfigByname(resName.ToLower());
         int valMax = cityAttrConfig.IsForceAttr ? cityAttrConfig.ValMaxForce : cityAttrConfig.ValMaxCity;
         
         float addon = tierValue;
-        int remaining = valMax - nowVal;
+        float remaining = valMax - nowVal;
         
         if (addon > remaining)
             addon = Math.Max(0, remaining);
@@ -500,8 +511,8 @@ public class SaveForceData
                 .Where(t => t.heroId1 > 0 && GameManager.Instance.GetHero(t.heroId1).cityId == srcCityId)
                 .Sum(t => attackSoldierMap.ContainsKey(t.heroId1) ? attackSoldierMap[t.heroId1] : 0);
             GameLog.Info($"ExecuteBattle 扣除士兵和粮食 cityId={srcCityId} totalSoldiers={totalSoldiers}");
-            citySrc.AddAttr("soldier", -totalSoldiers);
-            citySrc.AddAttr("food", -totalSoldiers);
+            citySrc.AddAttr("soldier", -totalSoldiers, "出征扣除士兵");
+            citySrc.AddAttr("food", -totalSoldiers, "出征扣除粮草");
         }
         cityDest.OnBattle();
         int srcForceId = forceId;
@@ -526,12 +537,12 @@ public class SaveForceData
             destCity.Occupy(forceId, attackHeroList, destForceId, defenceHeroList);
         }
 
-        destCity.AddAttr("wall", -10);
+        destCity.AddAttr("wall", -10, "战斗后城墙减少");
         GameLog.Info($"OnBattleEnd 防守城市城墙减少10 wall={destCity.GetAttr("wall")}");
         
         if (result == BattleResult.Win)
         {
-            destCity.AddAttr("happy", -30);
+            destCity.AddAttr("happy", -30, "战斗胜利民心减少");
             GameLog.Info($"OnBattleEnd 攻方胜利，城市民心减少30 happy={destCity.GetAttr("happy")}");
             
             destCity.MultiplyAttr("food", 0.5f);
@@ -551,7 +562,7 @@ public class SaveForceData
                         var heroCity = GameManager.Instance.GetCity(hero.cityId);
                         if (heroCity != null)
                         {
-                            heroCity.AddAttr("soldier", kvp.Value);
+                            heroCity.AddAttr("soldier", kvp.Value, "攻击方退回士兵");
                             GameLog.Info($"OnBattleEnd 攻击方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
                         }
                     }
@@ -572,7 +583,7 @@ public class SaveForceData
                         var heroCity = GameManager.Instance.GetCity(hero.cityId);
                         if (heroCity != null)
                         {
-                            heroCity.AddAttr("soldier", kvp.Value);
+                            heroCity.AddAttr("soldier", kvp.Value, "防守方退回士兵");
                             GameLog.Info($"OnBattleEnd 防守方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
                         }
                     }
@@ -621,11 +632,11 @@ public class SaveForceData
     {
         var citySrc = GameManager.Instance.GetCity(cityId);
 
-        citySrc.AddAttr("food", -foodUse);
+        citySrc.AddAttr("food", -foodUse, "运粮移出粮草");
         var cityDest = GameManager.Instance.GetCity(targetCityId);
         if (cityDest != null && cityDest.forceId == citySrc.forceId)
         {
-            cityDest.AddAttr("food", foodUse);
+            cityDest.AddAttr("food", foodUse, "运粮移入粮草");
         }
 
         MoveHeroToCity(cityId, targetCityId, heroList);
@@ -662,7 +673,7 @@ public class SaveForceData
             }
 
             int goldOld = (int)gold;
-            AddAttr("gold", -amount);
+            AddAttr("gold", -amount, "买粮扣除金钱");
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
@@ -672,7 +683,7 @@ public class SaveForceData
 
             int foodOld = (int)cityData.food;
             int foodAdd = SysFormula.Economy.CalculateExchangeResult(amount, true);
-            cityData.AddAttr("food", foodAdd);
+            cityData.AddAttr("food", foodAdd, "买粮增加粮草");
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Food",
@@ -689,7 +700,7 @@ public class SaveForceData
             }
 
             int foodOld = (int)cityData.food;
-            cityData.AddAttr("food", -amount);
+            cityData.AddAttr("food", -amount, "卖粮扣除粮草");
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Food",
@@ -699,7 +710,7 @@ public class SaveForceData
 
             int goldOld = (int)gold;
             int goldAdd = SysFormula.Economy.CalculateExchangeResult(amount, false);
-            AddAttr("gold", goldAdd);
+            AddAttr("gold", goldAdd, "卖粮增加金钱");
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
@@ -823,7 +834,7 @@ public class SaveForceData
                 return false;
             }
             int goldOld = (int)gold;
-            AddAttr("gold", -totalCost);
+            AddAttr("gold", -totalCost, "赏赐英雄扣除金钱");
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
@@ -889,6 +900,7 @@ public class SaveForceData
     {
         float avgWeightedValue = SysFormula.City.GetHeroWeightedAttrValue(heroData, devCfg.Attrs);
         int tier = SysFormula.City.GetHeroTier(avgWeightedValue);
+        float multiplier = cityData.GetProductionMultiplier();
 
         if (!string.IsNullOrEmpty(devCfg.DevAttr1))
         {
@@ -898,6 +910,9 @@ public class SaveForceData
                 float addon = CalculateForceDevAddonByTier(devCfg.DevAttr1, devCfg.DevAttr1Value[tier]);
                 if (addon > 0)
                 {
+                    if (SaveCityData.CityHasResAddon(cityData.cityId, devCfg.DevAttr1))
+                        addon += SystemConst.City.RES_ADDON_BONUS;
+                    addon = ApplyProductionMultiplierToAddon(devCfg.DevAttr1.ToLower(), addon, multiplier);
                     string attrName = devCfg.DevAttr1.ToLower();
                     if (!attrAddons.ContainsKey(attrName))
                         attrAddons[attrName] = 0;
@@ -914,6 +929,9 @@ public class SaveForceData
                 float addon = CalculateForceDevAddonByTier(devCfg.DevAttr2, devCfg.DevAttr2Value[tier]);
                 if (addon > 0)
                 {
+                    if (SaveCityData.CityHasResAddon(cityData.cityId, devCfg.DevAttr2))
+                        addon += SystemConst.City.RES_ADDON_BONUS;
+                    addon = ApplyProductionMultiplierToAddon(devCfg.DevAttr2.ToLower(), addon, multiplier);
                     string attrName = devCfg.DevAttr2.ToLower();
                     if (!attrAddons.ContainsKey(attrName))
                         attrAddons[attrName] = 0;
@@ -931,15 +949,24 @@ public class SaveForceData
         }
     }
 
+    private static float ApplyProductionMultiplierToAddon(string attrName, float addon, float multiplier)
+    {
+        if (multiplier >= 0.999f && multiplier <= 1.001f)
+            return addon;
+        if (attrName == "gold" || attrName == "food" || attrName == "soldier")
+            return addon * multiplier;
+        return addon;
+    }
+
     private float CalculateForceDevAddonByTier(string attrName, float tierValue)
     {
         var attrConfig = CityAttrConfig.GetConfigByname(attrName.ToLower());
         
-        int currentVal = GetAttr(attrName);
+        float currentVal = GetAttr(attrName);
         int valMax = attrConfig.ValMaxForce;
         
         float addon = tierValue;
-        int remaining = valMax - currentVal;
+        float remaining = valMax - currentVal;
         
         if (addon > remaining)
             addon = Math.Max(0, remaining);

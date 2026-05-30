@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -137,6 +137,8 @@ namespace CommonConfig
             config[15] = new CityAttrConfig(15, "wood", "木材", true, true, false, 0, 999, "citywood");
             config[16] = new CityAttrConfig(16, "stone", "石料", true, true, false, 0, 999, "citystone");
             config[17] = new CityAttrConfig(17, "elephant", "战象", true, true, true, 0, 999, "cityelephant");
+            config[18] = new CityAttrConfig(18, "salt", "盐", true, true, true, 0, 999, "citysalt");
+            config[19] = new CityAttrConfig(19, "fish", "鱼", true, true, true, 0, 999, "cityfish");
 
             RebuildIndex();
 

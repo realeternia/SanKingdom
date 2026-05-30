@@ -8,7 +8,7 @@ public class CityResChangeSignal : SignalData
     public CityResChangeSignal() { Name = "CityResChange"; }
     public int CityId;
     public string ResType;
-    public int Value;
+    public float Value;
 }
 
 public class CityForceChangeSignal : SignalData
@@ -21,7 +21,7 @@ public class ForceResChangeSignal : SignalData
 {
     public ForceResChangeSignal() { Name = "ForceResChange"; }
     public string ResType;
-    public int Value;
+    public float Value;
     public int Used;
 }
 

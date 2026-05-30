@@ -68,7 +68,7 @@ public abstract class CityStrategyBase
         }
 
         int cityLevel = City.GetLevel();
-        int citySoldier = City.GetAttr("soldier");
+        int citySoldier = (int)Math.Floor(City.GetAttr("soldier"));
 
         int troopLimit = SysFormula.AIStrategy.CalculateTroopLimit(cityLevel, idleHeroes.Count, citySoldier);
 
@@ -118,8 +118,8 @@ public abstract class CityStrategyBase
         var allTroops = SaveTroopsData.GetTroopsByCity(City.cityId);
         if (allTroops.Count == 0) return;
         
-        int horse = City.GetAttr("horse");
-        int steel = City.GetAttr("steel");
+        int horse = (int)Math.Floor(City.GetAttr("horse"));
+        int steel = (int)Math.Floor(City.GetAttr("steel"));
         
         if (horse <= 0 && steel <= 0) return;
         
@@ -183,8 +183,8 @@ public abstract class CityStrategyBase
         
         foreach (var armsCfg in armsConfigs)
         {
-            int horse = City.GetAttr("horse");
-            int steel = City.GetAttr("steel");
+            int horse = (int)Math.Floor(City.GetAttr("horse"));
+            int steel = (int)Math.Floor(City.GetAttr("steel"));
             
             troop.armsId = armsCfg.Id;
             GameLog.SetTag("AI").Debug($"{ConfigNameHelper.GetForceName(Force.forceId)} - [{ConfigNameHelper.GetCityName(City.cityId)}] 给军团装备 {armsCfg.NameS}");

@@ -231,13 +231,7 @@ public class WorldPieceControl : MonoBehaviour
                 displayIcons.Add(attrCfg.Icon);
             }
         }
-
-        foreach (var icon in displayIcons)
-        {
-        GameLog.Info($"UpdateResImages {pieceCfg.Cname} {icon}");
-        }
-
-        
+       
 
         for (int i = 0; i < resImage.Length; i++)
         {

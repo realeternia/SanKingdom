@@ -122,9 +122,9 @@ public static class AIToolHeroDev
             var attrConfig = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower());
             if (!attrConfig.IsForceAttr)
             {
-                int currentVal = city.GetAttr(devCfg.DevAttr1);
+                float currentVal = city.GetAttr(devCfg.DevAttr1);
                 int maxVal = attrConfig.ValMaxCity;
-                int deficit = maxVal - currentVal;
+                float deficit = maxVal - currentVal;
                 if (deficit > 0)
                 {
                     score += deficit / 10f;
@@ -132,9 +132,9 @@ public static class AIToolHeroDev
             }
             else if (!attrConfig.IsPosRes)
             {
-                int currentVal = force.GetAttr(devCfg.DevAttr1);
+                float currentVal = force.GetAttr(devCfg.DevAttr1);
                 int maxVal = attrConfig.ValMaxForce;
-                int deficit = maxVal - currentVal;
+                float deficit = maxVal - currentVal;
                 if (deficit > 0)
                 {
                     score += deficit / 10f;

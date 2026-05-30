@@ -237,7 +237,7 @@ public class GameManager : MonoBehaviour
         foreach (var city in cities)
         {
             var assignments = city.GetDevAssignments();
-            var attrChanges = new Dictionary<string, int>();
+            var attrChanges = new Dictionary<string, float>();
             
             foreach (var assignment in assignments)
             {
@@ -293,7 +293,7 @@ public class GameManager : MonoBehaviour
             
             if (attrChanges.Count > 0)
             {
-                var changeStrs = attrChanges.Select(kvp => $"{CityAttrConfig.GetConfigByname(kvp.Key).Cname}{(kvp.Value >= 0 ? "+" : "")}{kvp.Value}").ToArray();
+                var changeStrs = attrChanges.Select(kvp => $"{CityAttrConfig.GetConfigByname(kvp.Key).Cname}{(kvp.Value >= 0 ? "+" : "")}{kvp.Value.ToString("F1")}").ToArray();
                 GameLog.SetTag("AI").Info($"[{ConfigNameHelper.GetForceName(force.forceId)}] [{ConfigNameHelper.GetCityName(city.cityId)}] 收入: {string.Join(", ", changeStrs)}");
             }
         }

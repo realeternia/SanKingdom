@@ -138,7 +138,7 @@ public class PanelManager : MonoBehaviour
             
             float addonFloat = 0;
             attrAddons.TryGetValue(attrName.ToLower(), out addonFloat);
-            resItem.UpdateAddon((int)Math.Floor(addonFloat));
+            resItem.UpdateAddon(addonFloat);
         }
     }
 
@@ -166,13 +166,12 @@ public class PanelManager : MonoBehaviour
             
             float addonFloat = 0;
             attrAddons.TryGetValue(attrName.ToLower(), out addonFloat);
-            int addon = (int)Math.Floor(addonFloat);
-            GameLog.Debug($"UpdateForceResItemAddons attrName={attrName} addon={addon}");
-            resItem.UpdateAddon(addon);
+            GameLog.Debug($"UpdateForceResItemAddons attrName={attrName} addon={addonFloat}");
+            resItem.UpdateAddon(addonFloat);
         }
     }
 
-    private void RefreshTopNodeResItem(string attrName, int value, int used = -1)
+    private void RefreshTopNodeResItem(string attrName, float value, int used = -1)
     {
         foreach (Transform child in topNode.transform)
         {

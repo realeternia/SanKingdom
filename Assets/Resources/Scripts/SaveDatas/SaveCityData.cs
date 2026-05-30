@@ -88,28 +88,6 @@ public class SaveCityData
     public void OnRound()
     {
         battleTime = Math.Max(0, battleTime - 1);
-
-        var forceData = GameManager.Instance.GetForce(forceId);
-        var worldCfg = WorldConfig.GetConfig(cityId);
-        if (worldCfg.ResAddon != null)
-        {
-            foreach (int addonId in worldCfg.ResAddon)
-            {
-                var attrCfg = CityAttrConfig.GetConfig(addonId);
-                if (!attrCfg.IsPosRes)
-                {
-                    if (attrCfg.IsForceAttr && forceData != null)
-                    {
-                        forceData.AddAttr(attrCfg.name, SystemConst.City.RES_ADDON_BONUS);
-                    }
-                    else if (!attrCfg.IsForceAttr)
-                    {
-                        AddAttr(attrCfg.name, SystemConst.City.RES_ADDON_BONUS);
-                    }
-                }
-            }
-        }
-
         actions.Clear();
     }
 
@@ -198,7 +176,7 @@ public class SaveCityData
         }
 
         var attrConfig = CityAttrConfig.GetConfigByname("soldier");
-        AddAttr("soldier", citySoldier);
+        AddAttr("soldier", citySoldier, "分配士兵后剩余更新");
         
         PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = "soldier", Value = GetAttr("soldier") });
         
@@ -215,7 +193,7 @@ public class SaveCityData
         return ownerHeroId;
     }
 
-    public void AddAttr(string type, int add)
+    public void AddAttr(string type, float add, string reason = "")
     {
         var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
         if (attrConfig.IsForceAttr)
@@ -230,6 +208,7 @@ public class SaveCityData
             return;
         }
         
+        float oldValFloat = GetAttr(type.ToLower());
         switch (type.ToLower())
         {
             case "level":
@@ -237,8 +216,9 @@ public class SaveCityData
                 break;
             case "exp":
                 int oldLevel = GetLevel();
-                exp = Math.Max(0, exp + add);
+                exp = Math.Max(0, exp + (int)add);
                 int newLevel = GetLevel();
+                GameLog.Info($"SaveCityData.AddAttr cityId={cityId} type={type} old={oldValFloat} add={add} new={exp} reason={reason}");
                 if (PanelManager.Instance != null)
                 {
                     PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = type.ToLower(), Value = GetAttr(type.ToLower()) });
@@ -262,9 +242,12 @@ public class SaveCityData
                 break;
         }
 
+        float newValFloat = GetAttr(type.ToLower());
+        GameLog.Info($"SaveCityData.AddAttr cityId={cityId} type={type} old={oldValFloat} add={add} new={newValFloat} reason={reason}");
+
         if (PanelManager.Instance != null)
         {
-            PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = type.ToLower(), Value = GetAttr(type.ToLower()) });
+            PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = type.ToLower(), Value = newValFloat });
         }
     }
 
@@ -311,7 +294,7 @@ public class SaveCityData
         }
     }
 
-    public int GetAttr(string type)
+    public float GetAttr(string type)
     {
         switch (type.ToLower())
         {
@@ -320,13 +303,13 @@ public class SaveCityData
             case "exp":
                 return exp;
             case "soldier":
-                return (int)Math.Floor(soldier);
+                return soldier;
             case "happy":
-                return (int)Math.Floor(happy);
+                return happy;
             case "food":
-                return (int)Math.Floor(food);
+                return food;
             case "wall":
-                return (int)Math.Floor(wall);
+                return wall;
             default:
                 return 0;
         }
@@ -561,6 +544,7 @@ public class SaveCityData
     {
         float avgWeightedValue = SysFormula.City.GetHeroWeightedAttrValue(heroData, devCfg.Attrs);
         int tier = SysFormula.City.GetHeroTier(avgWeightedValue);
+        float multiplier = GetProductionMultiplier();
 
         if (!string.IsNullOrEmpty(devCfg.DevAttr1))
         {
@@ -571,6 +555,9 @@ public class SaveCityData
                 float addon = CalculateDevAddonByTier(devCfg.DevAttr1, devCfg.DevAttr1Value[tier]);
                 if (addon > 0)
                 {
+                    if (CityHasResAddon(cityId, devCfg.DevAttr1))
+                        addon += SystemConst.City.RES_ADDON_BONUS;
+                    addon = ApplyProductionMultiplierToAddon(devCfg.DevAttr1.ToLower(), addon, multiplier);
                     string attrName = devCfg.DevAttr1.ToLower();
                     if (!attrAddons.ContainsKey(attrName))
                         attrAddons[attrName] = 0;
@@ -588,6 +575,9 @@ public class SaveCityData
                 float addon = CalculateDevAddonByTier(devCfg.DevAttr2, devCfg.DevAttr2Value[tier]);
                 if (addon > 0)
                 {
+                    if (CityHasResAddon(cityId, devCfg.DevAttr2))
+                        addon += SystemConst.City.RES_ADDON_BONUS;
+                    addon = ApplyProductionMultiplierToAddon(devCfg.DevAttr2.ToLower(), addon, multiplier);
                     string attrName = devCfg.DevAttr2.ToLower();
                     if (!attrAddons.ContainsKey(attrName))
                         attrAddons[attrName] = 0;
@@ -597,15 +587,24 @@ public class SaveCityData
         }
     }
 
+    private static float ApplyProductionMultiplierToAddon(string attrName, float addon, float multiplier)
+    {
+        if (multiplier >= 0.999f && multiplier <= 1.001f)
+            return addon;
+        if (attrName == "food" || attrName == "soldier")
+            return addon * multiplier;
+        return addon;
+    }
+
     private float CalculateDevAddonByTier(string attrName, float tierValue)
     {
         var attrConfig = CityAttrConfig.GetConfigByname(attrName.ToLower());
         
-        int currentVal = GetAttr(attrName);
+        float currentVal = GetAttr(attrName);
         int valMax = attrConfig.ValMaxCity;
         
         float addon = tierValue;
-        int remaining = valMax - currentVal;
+        float remaining = valMax - currentVal;
         
         if (addon > remaining)
             addon = Math.Max(0, remaining);

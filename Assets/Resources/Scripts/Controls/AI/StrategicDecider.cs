@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
@@ -46,7 +47,7 @@ public class StrategicDecider
     
     private static int CalculateEffectiveSoldier(SaveCityData city)
     {
-        int citySoldier = city.GetAttr("soldier");
+        int citySoldier = (int)Math.Floor(city.GetAttr("soldier"));
         int heroCount = city.GetNormalHeroList().Count;
         return SysFormula.AIStrategy.CalculateEffectiveSoldier(citySoldier, heroCount);
     }
@@ -154,7 +155,7 @@ public class StrategicDecider
         {
             var cityA = GameManager.Instance.GetCity(a);
             var cityB = GameManager.Instance.GetCity(b);
-            return cityA.GetAttr("soldier").CompareTo(cityB.GetAttr("soldier"));
+            return ((int)Math.Floor(cityA.GetAttr("soldier"))).CompareTo((int)Math.Floor(cityB.GetAttr("soldier")));
         });
         
         foreach (var targetId in potentialTargets)
@@ -168,7 +169,7 @@ public class StrategicDecider
                 var sourceCity = GameManager.Instance.GetCity(sourceId.Value);
                 var targetCity = GameManager.Instance.GetCity(targetId);
                 int mySoldier = CalculateEffectiveSoldier(sourceCity);
-                int targetSoldier = targetCity.GetAttr("soldier");
+                int targetSoldier = (int)Math.Floor(targetCity.GetAttr("soldier"));
                 
                 result.Add(new AttackCandidate(sourceId.Value, targetId, mySoldier, targetSoldier, "目标优先"));
             }
@@ -196,11 +197,11 @@ public class StrategicDecider
             return null;
         
         candidateCities.Sort((a, b) => 
-            b.GetAttr("soldier").CompareTo(a.GetAttr("soldier")));
+            ((int)Math.Floor(b.GetAttr("soldier"))).CompareTo((int)Math.Floor(a.GetAttr("soldier"))));
         
         var bestCity = candidateCities[0];
         int mySoldier = CalculateEffectiveSoldier(bestCity);
-        int targetSoldier = targetCity.GetAttr("soldier");
+        int targetSoldier = (int)Math.Floor(targetCity.GetAttr("soldier"));
         
         if (mySoldier < targetSoldier * SystemConst.AIStrategy.AI_ATTACK_SOURCE_ADVANTAGE_RATIO)
             return null;
@@ -240,7 +241,7 @@ public class StrategicDecider
                     var nearCity = GameManager.Instance.GetCity(nearId);
                     if (nearCity != null)
                     {
-                        int targetSoldier = nearCity.GetAttr("soldier");
+                        int targetSoldier = (int)Math.Floor(nearCity.GetAttr("soldier"));
                         
                         if (SysFormula.AIStrategy.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && SysFormula.AIStrategy.CheckAttackFoodSufficient(soldier, (int)city.food))
                         {
@@ -271,7 +272,7 @@ public class StrategicDecider
             var nearCity = GameManager.Instance.GetCity(nearId);
             if (nearCity != null)
             {
-                int enemySoldier = nearCity.GetAttr("soldier");
+                int enemySoldier = (int)Math.Floor(nearCity.GetAttr("soldier"));
                 if (SysFormula.AIStrategy.HasThreat(enemySoldier))
                 {
                     return true;
@@ -293,7 +294,7 @@ public class StrategicDecider
         foreach (var city in cities)
         {
             totalFood += (int)city.food;
-            totalSoldier += city.GetAttr("soldier");
+            totalSoldier += (int)Math.Floor(city.GetAttr("soldier"));
         }
         
         return SysFormula.AIStrategy.CanExpand(totalGold, totalFood, totalSoldier);

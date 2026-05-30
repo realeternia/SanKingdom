@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using CommonConfig;
+using System;
 
 public class RankCellInfoForce : MonoBehaviour, IRankDetailInfo, IRankDetailInfoHeader
 {
@@ -133,15 +134,15 @@ public class RankCellInfoForce : MonoBehaviour, IRankDetailInfo, IRankDetailInfo
         // 统计城市的 Soldier、金钱和粮食
         foreach (var city in cities)
         {
-            totalSoldier += city.GetAttr("soldier");
+            totalSoldier += (int)Math.Floor(city.GetAttr("soldier"));
         }
         
         int totalGold = 0;
         int totalFood = 0;
         foreach (var city in cities)
         {
-            totalGold += city.GetAttr("gold");
-            totalFood += city.GetAttr("food");
+            totalGold += (int)Math.Floor(city.GetAttr("gold"));
+            totalFood += (int)Math.Floor(city.GetAttr("food"));
         }
         
         // 存储原始值用于排序

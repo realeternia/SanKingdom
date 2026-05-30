@@ -689,9 +689,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             {
                 cityAttrAddons.TryGetValue(attrName.ToLower(), out addonFloat);
             }
-            int addon = (int)Math.Floor(addonFloat);
-            GameLog.Debug($"UpdateAllResItemAddons attrName={attrName} addon={addon}");
-            resItem.UpdateAddon(addon);
+            GameLog.Debug($"UpdateAllResItemAddons attrName={attrName} addon={addonFloat}");
+            resItem.UpdateAddon(addonFloat);
         }
         
         if (!isViewOnly)
@@ -700,7 +699,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         }
     }
 
-    private void RefreshTopNodeResItem(string attrName, int value)
+    private void RefreshTopNodeResItem(string attrName, float value)
     {
         if (topNode == null) return;
         foreach (Transform child in topNode.transform)

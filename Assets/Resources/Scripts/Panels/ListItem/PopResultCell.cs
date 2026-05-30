@@ -29,9 +29,9 @@ public class PopResultCell : MonoBehaviour
         else
         {
             if (attrData.valAddon > 0)
-                attrValText.text = string.Format("{0}(<color=green>+{1}</color>)", attrData.valOld, attrData.valAddon);
+                attrValText.text = string.Format("{0}(<color=green>+{1}</color>)", attrData.valOld.ToString("F1"), attrData.valAddon.ToString("F1"));
             else
-                attrValText.text = string.Format("{0}(<color=red>{1}</color>)", attrData.valOld, attrData.valAddon);               
+                attrValText.text = string.Format("{0}(<color=red>{1}</color>)", attrData.valOld.ToString("F1"), attrData.valAddon.ToString("F1"));               
         }
     }
 }
