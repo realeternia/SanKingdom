@@ -26,6 +26,7 @@ public class PanelManager : MonoBehaviour
     private GameObject heroInfoPanel;
     private GameObject battleResultPanel;
     private GameObject replayPanel;
+    private GameObject gmPanel;
     public GameObject sideBarPanel;
 
     public GameObject topNode; //显示顶部资源
@@ -52,6 +53,7 @@ public class PanelManager : MonoBehaviour
     public void ShowWorld()
     {
         worldPanel.SetActive(true);
+        topNode.SetActive(true);
         gameObject.SetActive(true);
         isShowWorld = true;
 
@@ -62,6 +64,7 @@ public class PanelManager : MonoBehaviour
     public void HideWorld()
     {
         worldPanel.SetActive(false);
+        topNode.SetActive(false);
         gameObject.SetActive(false);
         isShowWorld = false;
 
@@ -506,6 +509,31 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(replayPanel, false);
         Destroy(replayPanel);
         replayPanel = null;
+    }
+
+    public void ShowGmPanel()
+    {
+        if (gmPanel == null)
+        {
+            var gmPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("GMPanel"));
+            gmPanel = Instantiate(gmPanelPrefab, transform);
+        }
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        gmPanel.SetActive(true);
+        gmPanel.GetComponent<GmPanelManager>().OnShow();
+
+        ChangePanelCount(gmPanel, true);
+    }
+
+    public void HideGmPanel()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        gmPanel.SetActive(false);
+        gmPanel.GetComponent<GmPanelManager>().OnHide();
+
+        ChangePanelCount(gmPanel, false);
+        Destroy(gmPanel);
+        gmPanel = null;
     }
 
     public void ShowSideBar(string panelName)

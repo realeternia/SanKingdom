@@ -13,6 +13,8 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
     
     public Button btnSystem;
     public Button btnRoundNext;
+    public Button btnGm;
+
     public TMP_Text textRoundNext;
 
     public TMP_Text textYear;
@@ -51,6 +53,11 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         {
             OnRoundNextClick();
         });
+        btnGm.onClick.AddListener(() =>
+        {
+            PanelManager.Instance.ShowGmPanel();
+        });
+        btnGm.gameObject.SetActive(SysSwitch.IsDebugMode);
         
         StartCoroutine(MoveToPlayerCapitalDelayed());
     }
