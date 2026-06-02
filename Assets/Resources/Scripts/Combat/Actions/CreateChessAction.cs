@@ -92,6 +92,7 @@ public class CreateChessAction : ChessAction
 
         chessObj.hp = chessObj.maxHp;
         battleManager.chessList.Add(chessObj);
+        battleManager.OccupyGrid(chessObj.id, chessObj.position);
         chessObj.Init(ForceId);
 
         if (SummonTime > 0)

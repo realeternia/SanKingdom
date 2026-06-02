@@ -85,11 +85,6 @@ public static class ResPath
             return "Prefabs/HudSmall";
         }
 
-        public static string HudCastle()
-        {
-            return "Prefabs/HudCastle";
-        }
-
         public static string BattleTxt()
         {
             return "Prefabs/BattleTxt";

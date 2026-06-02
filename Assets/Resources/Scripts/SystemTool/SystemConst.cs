@@ -215,7 +215,7 @@ public static class SystemConst
         /// <summary>
         /// 网格单元格大小
         /// </summary>
-        public const int GRID_CELL_SIZE = 3;
+        public const int GRID_CELL_SIZE = 15;
         /// <summary>
         /// 最大回合数
         /// </summary>
@@ -261,10 +261,6 @@ public static class SystemConst
         /// </summary>
         public const int MAGIC_HELPER_UNIT_ID = 501001;
         /// <summary>
-        /// 棋子碰撞大小
-        /// </summary>
-        public const float CHESS_COLLISION_SIZE = 7.5f;
-        /// <summary>
         /// 默认暴击伤害倍率
         /// </summary>
         public const float DEFAULT_CRIT_DAMAGE_MULTI = 0.5f;
@@ -296,10 +292,6 @@ public static class SystemConst
         /// 移动点消耗
         /// </summary>
         public const int MOVE_POINT_COST = 10;
-        /// <summary>
-        /// 移动距离因子
-        /// </summary>
-        public const float MOVE_DISTANCE_FACTOR = 0.5f;
         /// <summary>
         /// 最小攻击伤害
         /// </summary>
@@ -444,34 +436,6 @@ public static class SystemConst
         /// 目标评分选取数量
         /// </summary>
         public const int TARGET_SCORE_SELECT_COUNT = 3;
-        /// <summary>
-        /// 移动短距离尝试次数
-        /// </summary>
-        public const int MOVE_SHORT_ATTEMPT_COUNT = 4;
-        /// <summary>
-        /// 移动长距离尝试次数
-        /// </summary>
-        public const int MOVE_LONG_ATTEMPT_COUNT = 10;
-        /// <summary>
-        /// 寻路偏移角度-低
-        /// </summary>
-        public const float PATHFIND_ANGLE_OFFSET_LOW = 45f;
-        /// <summary>
-        /// 寻路偏移角度-中
-        /// </summary>
-        public const float PATHFIND_ANGLE_OFFSET_MID = 70f;
-        /// <summary>
-        /// 寻路偏移角度-高
-        /// </summary>
-        public const float PATHFIND_ANGLE_OFFSET_HIGH = 90f;
-        /// <summary>
-        /// 寻路失败次数-低角度阈值
-        /// </summary>
-        public const int PATHFIND_FAIL_COUNT_LOW = 3;
-        /// <summary>
-        /// 寻路失败次数-中角度阈值
-        /// </summary>
-        public const int PATHFIND_FAIL_COUNT_MID = 5;
         public const float SOD_BONUS_RATE_PER_POINT = 0.03f;
         public const float SOD_BONUS_MIN = 0.01f;
         public const float SOD_BONUS_MAX = 0.30f;

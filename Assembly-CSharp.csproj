@@ -208,7 +208,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RemoveChessAction.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineCameraControllerTopDownEffects.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroAttrConfig_s.cs" />
-    <Compile Include="Assets\Resources\Scripts\CastleHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolHeroDev.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\ResourceCache.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PickPanelCellControl.cs" />

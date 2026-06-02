@@ -39,6 +39,9 @@ public class BattleManager : MonoBehaviour
     public List<Missile> missileList = new List<Missile>(); // 所有导弹
 
     [NonSerialized]
+    public List<(int gridX, int gridZ, int chessId)> gridOccupancy = new List<(int, int, int)>();
+
+    [NonSerialized]
     private NLCoroutineManager coroutineManager = new NLCoroutineManager();
 
     [SerializeReference]
@@ -108,6 +111,7 @@ public class BattleManager : MonoBehaviour
         chessList.Clear();
         missileList.Clear();
         actions.Clear();
+        gridOccupancy.Clear();
         idCounter = 100;
         lastFoodDeductionTick = 0;        
         battleId = GameManager.Instance.SaveData.battleStatManager.OnNewBattle();
@@ -151,8 +155,7 @@ public class BattleManager : MonoBehaviour
             GameLog.Info("加载地图耗时：" + (endTime - startTime) + "秒");
 
             battleUIManager.ShowBattleBegin(force1, force2, MaxRound, playerInfoList[0].soldierNumInit, playerInfoList[1].soldierNumInit);
-            battleUIManager.CreateCastleHUD(force1, GetSpawnPosition(1, 5));
-            battleUIManager.CreateCastleHUD(force2, GetSpawnPosition(2, 5));
+
         }
     }
 
@@ -170,6 +173,7 @@ public class BattleManager : MonoBehaviour
 
         chessList.Clear();
         missileList.Clear();
+        gridOccupancy.Clear();
         GameManager.Instance.SaveData.battleStatManager.LoadBattleForReplay(battleId);
 
         gameFinish = false;
@@ -184,9 +188,9 @@ public class BattleManager : MonoBehaviour
     private Vector3 GetSpawnPosition(int side, int indx)
     {
         if(side == 1)
-            return new Vector3(330 - (indx / 4) * 15, 7, 245 - (indx % 4) * 20);
+            return new Vector3(330 - (indx / 4) * 15, 7, 245 - (indx % 4) * 15);
         else
-            return new Vector3(430 + (indx / 4) * 15, 7, 245 - (indx % 4) * 20);
+            return new Vector3(435 + (indx / 4) * 15, 7, 245 - (indx % 4) * 15);
     }
 
     public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)
@@ -455,6 +459,45 @@ public class BattleManager : MonoBehaviour
         return missileList.Find(x => x.id == id);
     }
 
+    public void OccupyGrid(int chessId, Vector3 worldPos)
+    {
+        var (gx, gz) = WorldToGridCoord(worldPos);
+        gridOccupancy.Add((gx, gz, chessId));
+    }
+
+    public void ReleaseGrid(int chessId)
+    {
+        gridOccupancy.RemoveAll(g => g.chessId == chessId);
+    }
+
+    public void UpdateGrid(int chessId, Vector3 newWorldPos)
+    {
+        ReleaseGrid(chessId);
+        OccupyGrid(chessId, newWorldPos);
+    }
+
+    public (int gx, int gz) WorldToGridCoord(Vector3 worldPos)
+    {
+        int gx = Mathf.RoundToInt(worldPos.x / SystemConst.Battle.GRID_CELL_SIZE);
+        int gz = Mathf.RoundToInt(worldPos.z / SystemConst.Battle.GRID_CELL_SIZE);
+        return (gx, gz);
+    }
+
+    public Vector3 GridCoordToWorld(int gx, int gz, float y = 7f)
+    {
+        return new Vector3(gx * SystemConst.Battle.GRID_CELL_SIZE, y, gz * SystemConst.Battle.GRID_CELL_SIZE);
+    }
+
+    public bool IsGridOccupied(int gx, int gz)
+    {
+        return gridOccupancy.Exists(g => g.gridX == gx && g.gridZ == gz);
+    }
+
+    public bool IsGridOccupiedByOther(int gx, int gz, int excludeChessId)
+    {
+        return gridOccupancy.Exists(g => g.gridX == gx && g.gridZ == gz && g.chessId != excludeChessId);
+    }
+
     // 世界坐标转格子坐标
     public static Vector2Int WorldToGridPosition(Vector3 worldPosition, bool FloorToInt)
     {
@@ -475,32 +518,16 @@ public class BattleManager : MonoBehaviour
 
     public bool IsPositionFree(Chess unit, Vector3 targetPosition)
     {
-        var ckSize = SystemConst.Battle.CHESS_COLLISION_SIZE;
-        var findInRange = false;
-        foreach(var ckUnit in chessList)
-        {
-            if(ckUnit == unit)
-                continue;
-            
-            if(Math.Abs(ckUnit.position.x - targetPosition.x) + Math.Abs(ckUnit.position.z - targetPosition.z) < ckSize)
-            {
-                findInRange = true;
-                break;
-            }
-        }
-
-        if(findInRange)
-            return false;
-
-        return true;
+        var (gx, gz) = WorldToGridCoord(targetPosition);
+        return !IsGridOccupiedByOther(gx, gz, unit.id);
     }
 
     public bool MoveTo(Chess unit, Vector3 targetPosition, bool isForce = false)
     {
         if (isForce)
         {
+            UpdateGrid(unit.id, targetPosition);
             unit.SetPosition(targetPosition);
-
             return true;
         }
         else
@@ -508,6 +535,7 @@ public class BattleManager : MonoBehaviour
             if(!IsPositionFree(unit, targetPosition))
                 return false;
             
+            UpdateGrid(unit.id, targetPosition);
             unit.SetPosition(targetPosition);
             return true;
         }
@@ -691,6 +719,7 @@ public class BattleManager : MonoBehaviour
             foreach (var chessComponent in chessList)
             {
                 chessComponent.OnRecover();
+                OccupyGrid(chessComponent.id, chessComponent.position);
             }
             foreach (var missileComponent in missileList)
             {

@@ -42,18 +42,6 @@ public class BattleUIManager : MonoBehaviour
         }
     }
 
-    public void CreateCastleHUD(SaveForceData force, Vector3 castleSpawn)
-    {
-        GameObject hudPrefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.HudCastle());
-
-        GameObject hudObj = Instantiate(hudPrefab, HudNode.transform);
-        hudObj.name = "CastleHUD";
-
-        var hud = hudObj.GetComponent<CastleHUD>();
-
-        hud.Init(force, castleSpawn);
-    }
-
     public void ShowBattleBegin(SaveForceData force1, SaveForceData force2, int maxRound, int soldierNum1, int soldierNum2)
     {
         PanelManager.Instance.HideWorld();

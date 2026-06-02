@@ -468,53 +468,69 @@ public class Chess : SceneObj
 
     private Vector3 GetMoveDest()
     {
-        int moveFailCount = 0;
-        var moveDis = moveSpeed * SystemConst.Battle.MOVE_DISTANCE_FACTOR;
-
-        // 检查目标是否存在
         var targetChess = BattleManager.Instance.GetChess(targetChessId);
-        for (int i = 0; i < SystemConst.Battle.MOVE_SHORT_ATTEMPT_COUNT; i++)
+        if (targetChess == null)
+            return Vector3.zero;
+
+        var bm = BattleManager.Instance;
+        var (curGx, curGz) = bm.WorldToGridCoord(position);
+        var (tarGx, tarGz) = bm.WorldToGridCoord(targetChess.position);
+
+        int dx = tarGx - curGx;
+        int dz = tarGz - curGz;
+
+        if (dx == 0 && dz == 0)
+            return Vector3.zero;
+
+        List<(int gx, int gz, int priority)> candidates = new List<(int, int, int)>();
+
+        if (Math.Abs(dx) >= Math.Abs(dz))
         {
-            Vector3 nextPosition = Vector3.MoveTowards(position, targetChess.position, moveDis * (SystemConst.Battle.MOVE_SHORT_ATTEMPT_COUNT - i) / SystemConst.Battle.MOVE_SHORT_ATTEMPT_COUNT);
-            if (BattleManager.Instance.IsPositionFree(this, nextPosition))
-                return nextPosition;
-        }
-
-        for (int i = 0; i < SystemConst.Battle.MOVE_LONG_ATTEMPT_COUNT; i++)
-        {
-            Vector3 nextPosition = Vector3.MoveTowards(position, targetChess.position, moveDis * (i + 1) / SystemConst.Battle.MOVE_SHORT_ATTEMPT_COUNT);
-            if (BattleManager.Instance.IsPositionFree(this, nextPosition))
-                return nextPosition;
-        }
-
-        if (moveFailCount == 0)
-        {
-            // 根据连续失败次数尝试不同角度找路
-            // 计算原始方向
-            Vector3 direction = (targetChess.position - position).normalized;
-            float angleOffset;
-
-            // 根据失败次数确定偏移角度
-            if (moveFailCount <= SystemConst.Battle.PATHFIND_FAIL_COUNT_LOW)
-                angleOffset = SystemConst.Battle.PATHFIND_ANGLE_OFFSET_LOW;
-            else if (moveFailCount <= SystemConst.Battle.PATHFIND_FAIL_COUNT_MID)
-                angleOffset = SystemConst.Battle.PATHFIND_ANGLE_OFFSET_MID;
-            else
-                angleOffset = SystemConst.Battle.PATHFIND_ANGLE_OFFSET_HIGH;
-
-            angleOffset *= BattleRandom.Value > 0.5f ? 1 : -1;
-
-            // 计算旋转后的方向
-            Quaternion rotation = Quaternion.Euler(0, angleOffset, 0);
-            Vector3 newDirection = rotation * direction;
-
-            for (int i = 0; i < 4; i++)
+            int stepX = dx > 0 ? 1 : -1;
+            candidates.Add((curGx + stepX, curGz, 0));
+            if (dz != 0)
             {
-                var nextPosition = position + newDirection * moveDis * (4 - i) / 4;
-                if (BattleManager.Instance.IsPositionFree(this, nextPosition))
-                    return nextPosition;
+                int stepZ = dz > 0 ? 1 : -1;
+                candidates.Add((curGx, curGz + stepZ, 1));
             }
         }
+        else
+        {
+            int stepZ = dz > 0 ? 1 : -1;
+            candidates.Add((curGx, curGz + stepZ, 0));
+            if (dx != 0)
+            {
+                int stepX = dx > 0 ? 1 : -1;
+                candidates.Add((curGx + stepX, curGz, 1));
+            }
+        }
+
+        foreach (var (gx, gz, _) in candidates)
+        {
+            if (!bm.IsGridOccupiedByOther(gx, gz, id))
+                return bm.GridCoordToWorld(gx, gz, position.y);
+        }
+
+        int[] sideOffsets = { 1, -1 };
+        if (Math.Abs(dx) >= Math.Abs(dz))
+        {
+            foreach (int offset in sideOffsets)
+            {
+                int newGz = curGz + offset;
+                if (!bm.IsGridOccupiedByOther(curGx, newGz, id))
+                    return bm.GridCoordToWorld(curGx, newGz, position.y);
+            }
+        }
+        else
+        {
+            foreach (int offset in sideOffsets)
+            {
+                int newGx = curGx + offset;
+                if (!bm.IsGridOccupiedByOther(newGx, curGz, id))
+                    return bm.GridCoordToWorld(newGx, curGz, position.y);
+            }
+        }
+
         return Vector3.zero;
     }    
 

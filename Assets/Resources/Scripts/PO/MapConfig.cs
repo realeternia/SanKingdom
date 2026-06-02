@@ -4,25 +4,14 @@ using UnityEngine;
 
 public class MapConfig : MonoBehaviour
 {
-    public GameObject[] RegionSide1; // 阵营1的出生点数组
-    public GameObject[] RegionSide2; // 阵营2的出生点数组     
-    
-    public GameObject[] RegionHeroSide1; // 阵营1的出生点数组
-    public GameObject[] RegionHeroSide2; // 阵营2的出生点数组
-
-
     public GameObject WallNode;
     public GameObject RegionNode;
 
-    public int TeamMode;
     public int Mapid;
     // Start is called before the first frame update
     void Start()
     {
-        foreach(Transform region in RegionNode.transform)
-        {
-            region.gameObject.GetComponent<MeshRenderer>().enabled = false;
-        }
+
         foreach(Transform wall in WallNode.transform)
         {
             wall.gameObject.GetComponent<MeshRenderer>().enabled = false;
