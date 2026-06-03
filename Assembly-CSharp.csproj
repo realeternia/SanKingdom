@@ -149,6 +149,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RoundUpdateAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyFactory.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackHitAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysFormula.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityMovePanelManager.cs" />

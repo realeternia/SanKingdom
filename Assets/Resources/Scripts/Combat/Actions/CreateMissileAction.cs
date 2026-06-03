@@ -10,7 +10,14 @@ public class CreateMissileAction : ChessAction
     public float Time;
     public bool IsDirectional;
 
-    public CreateMissileAction(int sourceId, int tick, int id, int targetChessId, UnityEngine.Vector3 startPos, int skillId, int damage)
+    // 普通攻击伤害数据（skillId == 0时使用）
+    public int AttackDamage;
+    public bool AttackIsCrit;
+    public bool AttackIsDodge;
+    public string AttackDamType;
+
+    public CreateMissileAction(int sourceId, int tick, int id, int targetChessId, UnityEngine.Vector3 startPos, int skillId, int damage,
+        int attackDamage = 0, bool attackIsCrit = false, bool attackIsDodge = false, string attackDamType = "str")
         : base(sourceId, tick)
     {
         Id = id;
@@ -19,6 +26,10 @@ public class CreateMissileAction : ChessAction
         SkillId = skillId;
         Damage = damage;
         IsDirectional = false;
+        AttackDamage = attackDamage;
+        AttackIsCrit = attackIsCrit;
+        AttackIsDodge = attackIsDodge;
+        AttackDamType = attackDamType;
     }
 
     public CreateMissileAction(int sourceId, int tick, int id, UnityEngine.Vector3 targetPos, UnityEngine.Vector3 startPos, int skillId, int damage, float time)
@@ -39,7 +50,7 @@ public class CreateMissileAction : ChessAction
         var sourceChess = battleManager.GetChess(SourceId);
         if (sourceChess == null)
             return;
-        var missile = new Missile(Id, sourceChess, StartPos, SkillId, Damage);
+        var missile = new Missile(Id, sourceChess, StartPos, SkillId, Damage, AttackDamage, AttackIsCrit, AttackIsDodge, AttackDamType);
         missile.Init();
         battleManager.missileList.Add(missile);
 

@@ -19,7 +19,10 @@ public class SkillAttackMultiArrow : Skill
             SkillManager.AddSkillAction(owner, null, id, 0);
             BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
             foreach (var unit in unitsInRange)
-                BattleManager.Instance.CreateAttackMissile(owner, unit);
+            {
+                var (damage, isCrit, isDodge, effect) = Chess.CalculateAttackDamage(owner, unit, "str", owner.hitEffect);
+                BattleManager.Instance.CreateAttackMissile(owner, unit, damage, isCrit, isDodge, effect, "str");
+            }
         }
     }
 

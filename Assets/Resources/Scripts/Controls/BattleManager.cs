@@ -422,10 +422,10 @@ public class BattleManager : MonoBehaviour
         return (int)(time / tickTimeReal);
     } 
 
-    public void CreateAttackMissile(Chess sourceChess, Chess targetChess)
+    public void CreateAttackMissile(Chess sourceChess, Chess targetChess, int attackDamage = 0, bool attackIsCrit = false, bool attackIsDodge = false, string hitEffect = "", string attackDamType = "str")
     {
         var id = idCounter++;
-        var action = new CreateMissileAction(sourceChess.id, tickIndex, id, targetChess.id, sourceChess.position, 0, 0);
+        var action = new CreateMissileAction(sourceChess.id, tickIndex, id, targetChess.id, sourceChess.position, 0, 0, attackDamage, attackIsCrit, attackIsDodge, attackDamType);
         AddChessAction(action);
     }
 

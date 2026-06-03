@@ -382,7 +382,7 @@ public class Chess : SceneObj
     {
         float score = SysFormula.Battle.CalculateTargetScore(
             target.isHero, distance, attackRange,
-            CalculateDamage(this, target), level, target.level, (float)target.hp / target.maxHp);
+            SysFormula.Battle.CalculateDamage(atk, hp, target.def), level, target.level, (float)target.hp / target.maxHp);
         return score;
     }
 
@@ -428,14 +428,7 @@ public class Chess : SceneObj
             {
                 attackPoint -= SystemConst.Battle.ATTACK_POINT_COST;
                 SkillManager.AimTarget(this, targetChess);
-                if (attackRange >= SystemConst.Battle.RANGE_ATTACK_THRESHOLD)
-                {
-                    BattleManager.Instance.CreateAttackMissile(this, targetChess);
-                }
-                else
-                {
-                    Attack(targetChess, hitEffect, tickIndex); // 普通攻击
-                }
+                Attack(targetChess, hitEffect, tickIndex);
             }
             lastAttackTime = tickIndex;
             return;
@@ -534,55 +527,49 @@ public class Chess : SceneObj
         return Vector3.zero;
     }    
 
-    // 攻击目标
+    // 发起攻击（仅创建AttackAction，伤害计算在AttackAction中延迟执行）
     public void Attack(Chess victim, string hitEffectName, int tickIndex)
     {
         if (victim == null)
             return;
 
-        // 造成伤害
-        var damage = CalculateDamage(this, victim);
-        var effect = hitEffectName;
-        var damageBase = damage;
-        var damageMulti = 1f;
-        var damageReal = 0; //真实伤害
-        bool isCrit = false;
-        bool isDodge = false;
+        var isRanged = attackRange >= SystemConst.Battle.RANGE_ATTACK_THRESHOLD;
+        var attackAction = new AttackAction(id, tickIndex, victim.id, hitEffectName, "str", isRanged);
+        BattleManager.Instance.AddChessAction(attackAction);
+    }
 
-        SkillManager.DuringAttack(this, victim, "str", ref damageBase, ref damageMulti, ref damageReal, ref effect);
-        // 暴击
-        if (critRate > 0 && BattleRandom.Value < critRate)
+    // 伤害结算（从AttackAction.Doing()和Missile.OnCrash()调用）
+    public void OnAttackDamage(Chess victim, int damage, bool isCrit, bool isDodge, string hitEffect, string damType)
+    {
+        var actualDamage = Mathf.Min(damage, victim.hp);
+        victim.hp -= damage;
+        if (id != victim.id)
+            victim.lastDamagedPlayerId = id;
+
+        if(isCrit)
+            BattleManager.Instance.AddBattleText("暴!", position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+        if(isDodge)
+            BattleManager.Instance.AddBattleText("闪!", victim.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
+
+        if(damage > 0)
         {
-            damageMulti += critDamageMulti;
-            isCrit = true;
+            if(!string.IsNullOrEmpty(hitEffect))
+                EffectManager.PlayHitEffect(this, victim, hitEffect);
+
+            SkillManager.OnAttack(this, victim, damType, damage); 
         }
 
-        damage = (int)(damageBase * damageMulti);
-        var levelDiff = (isHero && victim.isHero) ? level - victim.level : 0;
-        var (minDamage, maxDamage) = SysFormula.Battle.GetDamageRange(levelDiff, isCrit, critDamageMulti);
-        damage = Mathf.Clamp(damage, minDamage, maxDamage);
-        if (damage > 0)
+        if (isHero && actualDamage > 0)
         {
-            if (victim.dodgeRate > 0 && BattleRandom.Value < victim.dodgeRate)
-            {
-                damage = 0;
-                isDodge = true;
-            }
-            else
-            {
-                //这里不改数值，只能伤害吸收
-                SkillManager.BeforeAttack(this, victim, ref damage);
-            }
+            BattleStatManager.AddDamage(forceId, heroId, actualDamage);
+        }
+        
+        if (victim.isHero && actualDamage > 0)
+        {
+            BattleStatManager.AddBeDamaged(victim.forceId, victim.heroId, actualDamage);
         }
 
-        if (damage + damageReal > 0)
-        {
-            damage = Math.Max(damage, damageReal);
-
-            // 创建攻击Action并添加到actions列表
-            var attackAction = new AttackAction(id, tickIndex, victim.id, damage, isCrit, isDodge, effect, "str");
-            BattleManager.Instance.AddChessAction(attackAction);     
-        }
+        victim.OnHpChanged();   
     }
 
     public void DoSkillDamage(Chess caster, int skillId, int damage, bool isFeedback = false)
@@ -613,9 +600,49 @@ public class Chess : SceneObj
         BattleManager.Instance.AddChessAction(action);
     }
 
-    private static int CalculateDamage(Chess attacker, Chess defender)
+    // 计算攻击伤害（含暴击、闪避、技能加成等），供AttackAction和技能共用
+    public static (int damage, bool isCrit, bool isDodge, string effect) CalculateAttackDamage(Chess attacker, Chess defender, string damType, string hitEffect)
     {
-        return SysFormula.Battle.CalculateDamage(attacker.atk, attacker.hp, defender.def);
+        var damage = SysFormula.Battle.CalculateDamage(attacker.atk, attacker.hp, defender.def);
+        var effect = hitEffect;
+        var damageBase = damage;
+        var damageMulti = 1f;
+        var damageReal = 0;
+        bool isCrit = false;
+        bool isDodge = false;
+
+        SkillManager.DuringAttack(attacker, defender, damType, ref damageBase, ref damageMulti, ref damageReal, ref effect);
+        // 暴击
+        if (attacker.critRate > 0 && BattleRandom.Value < attacker.critRate)
+        {
+            damageMulti += attacker.critDamageMulti;
+            isCrit = true;
+        }
+
+        damage = (int)(damageBase * damageMulti);
+        var levelDiff = (attacker.isHero && defender.isHero) ? attacker.level - defender.level : 0;
+        var (minDamage, maxDamage) = SysFormula.Battle.GetDamageRange(levelDiff, isCrit, attacker.critDamageMulti);
+        damage = Mathf.Clamp(damage, minDamage, maxDamage);
+        if (damage > 0)
+        {
+            if (defender.dodgeRate > 0 && BattleRandom.Value < defender.dodgeRate)
+            {
+                damage = 0;
+                isDodge = true;
+            }
+            else
+            {
+                //这里不改数值，只能伤害吸收
+                SkillManager.BeforeAttack(attacker, defender, ref damage);
+            }
+        }
+
+        if (damage + damageReal > 0)
+            damage = Math.Max(damage, damageReal);
+        else
+            damage = 0;
+
+        return (damage, isCrit, isDodge, effect);
     }
 
     public void JumpToPosition(Vector3 targetPos, float jumpHeight = 10f, float moveDuration = 0.5f)

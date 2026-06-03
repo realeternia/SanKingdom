@@ -12,6 +12,12 @@ public class Missile : SceneObj
     public int skillId;
     public int skillDamage;
 
+    // 普通攻击伤害数据（skillId == 0时使用）
+    public int attackDamage;
+    public bool attackIsCrit;
+    public bool attackIsDodge;
+    public string attackDamType;
+
     // Movement state variables
     public enum MoveState { None, ToTarget, ToDirection }
     public MoveState moveState = MoveState.None;
@@ -44,7 +50,7 @@ public class Missile : SceneObj
     public int tickTotal;
     public List<int> checkedIdList; //已结算单位id列表
 
-    public Missile(int id, Chess sourceChess, Vector3 startPos, int skillId, int damage)
+    public Missile(int id, Chess sourceChess, Vector3 startPos, int skillId, int damage, int attackDamage = 0, bool attackIsCrit = false, bool attackIsDodge = false, string attackDamType = "str")
     {
         base.id = id;
 
@@ -53,6 +59,10 @@ public class Missile : SceneObj
         position = startPos + new Vector3(0f, 6f, 0f);
         this.skillId = skillId;
         this.skillDamage = damage;
+        this.attackDamage = attackDamage;
+        this.attackIsCrit = attackIsCrit;
+        this.attackIsDodge = attackIsDodge;
+        this.attackDamType = attackDamType;
         forceId = sourceChess.forceId;
 
         // Reset state
@@ -285,7 +295,7 @@ public class Missile : SceneObj
 
         if (skillId == 0)
         {
-            ownerChess.Attack(target, hitEffectName, tickIndex);
+            ownerChess.OnAttackDamage(target, attackDamage, attackIsCrit, attackIsDodge, hitEffectName, attackDamType);
         }
         else
         {
