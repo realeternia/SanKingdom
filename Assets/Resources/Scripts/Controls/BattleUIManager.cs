@@ -12,7 +12,7 @@ public class BattleUIManager : MonoBehaviour
     public Camera uiCamera;
     public bool isDebug = true; //自动判定的，不要改
     public GameObject NodeUnits;
-   
+
     public HeroInfoGroup heroInfoGroup;
     public Button buttonRestart;
     public TMP_Text textRestart;
@@ -21,6 +21,8 @@ public class BattleUIManager : MonoBehaviour
 
     public GameObject HudNode;
     public GameObject BattleTextNode;
+
+    public Button deployConfirmButton;
 
 
     void Start()
@@ -72,7 +74,14 @@ public class BattleUIManager : MonoBehaviour
     }
 
     public void OnEndButtonClick()
-    {       
+    {
+        if (BattleManager.Instance.isDeployPhase)
+        {
+            BattleManager.Instance.isDeployPhase = false;
+            BattleManager.Instance.IsBattleRunning = false;
+            BattleManager.Instance.chessList.Clear();
+        }
+
         foreach (Transform child in NodeUnits.transform)
         {
             Destroy(child.gameObject);
@@ -85,6 +94,27 @@ public class BattleUIManager : MonoBehaviour
 
         PanelManager.Instance.ShowWorld();
         PanelManager.Instance.ShowBattleResultPanel(BattleManager.Instance.battleId);
+    }
+
+    public void ShowDeployConfirmButton()
+    {
+        if (deployConfirmButton != null)
+        {
+            deployConfirmButton.onClick.RemoveAllListeners();
+            deployConfirmButton.onClick.AddListener(OnDeployConfirmClick);
+            deployConfirmButton.gameObject.SetActive(true);
+        }
+    }
+
+    public void HideDeployConfirmButton()
+    {
+        if (deployConfirmButton != null)
+            deployConfirmButton.gameObject.SetActive(false);
+    }
+
+    private void OnDeployConfirmClick()
+    {
+        BattleManager.Instance.OnDeployConfirm();
     }       
 
     public void AddBattleText(string text, Vector3 worldPos, Vector2 speed, Color color, int duration)

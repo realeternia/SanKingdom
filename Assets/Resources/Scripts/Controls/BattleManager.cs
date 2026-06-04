@@ -75,6 +75,21 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private bool isDoingAction = false;
 
+    [NonSerialized]
+    public bool isDeployPhase = false;
+    [NonSerialized]
+    private Chess draggingChess = null;
+    [NonSerialized]
+    private Vector3 dragStartPos;
+    [NonSerialized]
+    private Dictionary<int, Vector3> playerDeployPositions = new Dictionary<int, Vector3>();
+    [NonSerialized]
+    private Dictionary<int, int> deployAttackSoldierMap;
+    [NonSerialized]
+    private Dictionary<int, int> deployDefenderSoldierMap;
+    [NonSerialized]
+    private int playerSideIndex = -1;
+
 
     private void Awake()
     {
@@ -119,15 +134,26 @@ public class BattleManager : MonoBehaviour
 
         gameFinish = false;
         round = 0;
+        playerDeployPositions.Clear();
 
         InitUI(force1, force2);
-        
+
         attackTroops = troops1;
         defenderTroops = troops2;
         attackTroops.Sort((a, b) => ArmsConfig.GetConfig(a.armsId).Range.CompareTo(ArmsConfig.GetConfig(b.armsId).Range));
         defenderTroops.Sort((a, b) => ArmsConfig.GetConfig(a.armsId).Range.CompareTo(ArmsConfig.GetConfig(b.armsId).Range));
 
-        currentBattleCoroutine = StartCoroutine(GameUpdate(soldierMap1, soldierMap2));
+        deployAttackSoldierMap = soldierMap1;
+        deployDefenderSoldierMap = soldierMap2;
+
+        if (!quickMode && showUI)
+        {
+            StartDeployPhase();
+        }
+        else
+        {
+            currentBattleCoroutine = StartCoroutine(GameUpdate(soldierMap1, soldierMap2));
+        }
     }
 
     private int GetTotalSoldierCount(Dictionary<int, int> soldierMap)
@@ -183,6 +209,241 @@ public class BattleManager : MonoBehaviour
         InitUI(player1, player2);
 
         currentBattleCoroutine = StartCoroutine(GameUpdate(null, null, true));
+    }
+
+    private void StartDeployPhase()
+    {
+        isDeployPhase = true;
+
+        // 判断玩家是哪一方
+        var force0 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
+        var force1 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
+        playerSideIndex = force0.isPlayer ? 0 : 1;
+
+        var playerForce = playerSideIndex == 0 ? force0 : force1;
+        var playerTroops = playerSideIndex == 0 ? attackTroops : defenderTroops;
+
+        int count = Math.Min(playerTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
+        for (int i = 0; i < count; i++)
+        {
+            var troop = playerTroops[i];
+            var spawnPos = GetSpawnPosition(playerSideIndex + 1, i);
+            CreateDeployChess(playerForce, troop, spawnPos);
+        }
+
+        FillEmptyGridsWithSodNull();
+
+        foreach (var chess in chessList)
+        {
+            if (chess.viewObj != null)
+            {
+                var collider = chess.viewObj.gameObject.AddComponent<BoxCollider>();
+                collider.size = new Vector3(12, 10, 12);
+            }
+        }
+
+        battleUIManager.ShowDeployConfirmButton();
+        GameLog.Info($"布阵阶段开始 玩家方=side{playerSideIndex + 1}");
+    }
+
+    private void CreateDeployChess(SaveForceData force, SaveTroopsData troop, Vector3 spawnPos)
+    {
+        if (troop.heroId1 <= 0)
+            return;
+
+        var heroData1 = GameManager.Instance.GetHero(troop.heroId1);
+        var heroData2 = troop.heroId2 > 0 ? GameManager.Instance.GetHero(troop.heroId2) : null;
+        var heroData3 = troop.heroId3 > 0 ? GameManager.Instance.GetHero(troop.heroId3) : null;
+
+        int inte = Math.Max(Math.Max(heroData1.inte, heroData2?.inte ?? 0), heroData3?.inte ?? 0);
+        var (atk, def) = SysFormula.Battle.CalculateCombatAttrForTroop(troop);
+
+        var id = idCounter++;
+        var chessObj = new Chess(id);
+        chessObj.forceId = force.forceId;
+        chessObj.position = spawnPos;
+        chessObj.isHero = true;
+        chessObj.heroId = troop.heroId1;
+        chessObj.heroId2 = troop.heroId2;
+        chessObj.heroId3 = troop.heroId3;
+        chessObj.level = heroData1.GetLevel();
+        chessObj.armsId = troop.armsId;
+        chessObj.atk = atk;
+        chessObj.def = def;
+        chessObj.inte = inte;
+        chessObj.maxHp = SystemConst.Hero.MAX_SOLDIER_PER_HERO;
+        chessObj.hp = chessObj.maxHp;
+
+        chessList.Add(chessObj);
+        chessObj.Init(force.forceId);
+    }
+
+    private void FillEmptyGridsWithSodNull()
+    {
+        int baseGx = playerSideIndex == 0
+            ? SystemConst.Battle.DEPLOY_SIDE1_BASE_GX
+            : SystemConst.Battle.DEPLOY_SIDE2_BASE_GX;
+        int baseGz = playerSideIndex == 0
+            ? SystemConst.Battle.DEPLOY_SIDE1_BASE_GZ
+            : SystemConst.Battle.DEPLOY_SIDE2_BASE_GZ;
+
+        for (int row = 0; row < SystemConst.Battle.DEPLOY_GRID_ROWS; row++)
+        {
+            for (int col = 0; col < SystemConst.Battle.DEPLOY_GRID_COLS; col++)
+            {
+                int gx = baseGx + row;
+                int gz = baseGz + col;
+                bool occupied = chessList.Any(c =>
+                {
+                    var (cx, cz) = WorldToGridCoord(c.position);
+                    return cx == gx && cz == gz;
+                });
+                if (!occupied)
+                    CreateSodNullChess(playerInfoList[playerSideIndex].forceId, GridCoordToWorld(gx, gz));
+            }
+        }
+    }
+
+    private void CreateSodNullChess(int forceId, Vector3 position)
+    {
+        var id = idCounter++;
+        var chessObj = new Chess(id);
+        chessObj.forceId = forceId;
+        chessObj.position = position;
+        chessObj.isSodNull = true;
+        chessObj.isHero = false;
+        chessObj.armsId = SystemConst.Hero.DEFAULT_ARMS_ID;
+        chessObj.maxHp = 1;
+        chessObj.hp = 1;
+        chessObj.atk = 0;
+        chessObj.def = 0;
+        chessObj.inte = 0;
+
+        chessList.Add(chessObj);
+        chessObj.Init(forceId);
+    }
+
+    public void OnDeployConfirm()
+    {
+        // 记录玩家布阵位置（按 heroId1 映射）
+        playerDeployPositions.Clear();
+        foreach (var chess in chessList)
+        {
+            if (!chess.isSodNull && chess.isHero)
+                playerDeployPositions[chess.heroId] = chess.position;
+        }
+
+        // 清除所有布阵阶段棋子
+        foreach (var chess in chessList.ToList())
+        {
+            if (chess.viewObj != null)
+            {
+                chess.viewObj.DestroyHUD();
+                Destroy(chess.viewObj.gameObject);
+            }
+        }
+        chessList.Clear();
+
+        isDeployPhase = false;
+        draggingChess = null;
+        battleUIManager.HideDeployConfirmButton();
+        GameLog.Info("布阵阶段结束，开始战斗");
+
+        currentBattleCoroutine = StartCoroutine(GameUpdate(deployAttackSoldierMap, deployDefenderSoldierMap));
+    }
+
+    public void SwapChessPosition(Chess chess1, Chess chess2)
+    {
+        var pos1 = chess1.position;
+        var pos2 = chess2.position;
+
+        chess1.SetPosition(pos2);
+        chess2.SetPosition(pos1);
+    }
+
+    private bool IsInPlayerDeployArea(int gx, int gz)
+    {
+        int baseGx = playerSideIndex == 0
+            ? SystemConst.Battle.DEPLOY_SIDE1_BASE_GX
+            : SystemConst.Battle.DEPLOY_SIDE2_BASE_GX;
+        int baseGz = playerSideIndex == 0
+            ? SystemConst.Battle.DEPLOY_SIDE1_BASE_GZ
+            : SystemConst.Battle.DEPLOY_SIDE2_BASE_GZ;
+
+        return gx >= baseGx &&
+               gx < baseGx + SystemConst.Battle.DEPLOY_GRID_ROWS &&
+               gz >= baseGz &&
+               gz < baseGz + SystemConst.Battle.DEPLOY_GRID_COLS;
+    }
+
+    private void Update()
+    {
+        if (!isDeployPhase) return;
+
+        if (Input.GetMouseButtonDown(0) && draggingChess == null)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                var chessViewObj = hit.collider.GetComponentInParent<ChessViewObj>();
+                if (chessViewObj != null && !chessViewObj.chessUnit.isSodNull)
+                {
+                    draggingChess = chessViewObj.chessUnit;
+                    dragStartPos = draggingChess.position;
+                }
+            }
+        }
+
+        if (draggingChess != null)
+        {
+            Plane groundPlane = new Plane(Vector3.up, new Vector3(0, 7, 0));
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (groundPlane.Raycast(ray, out float distance))
+            {
+                Vector3 worldPos = ray.GetPoint(distance);
+                if (draggingChess.viewObj != null)
+                    draggingChess.viewObj.transform.position = new Vector3(worldPos.x, 12, worldPos.z);
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                Plane gp = new Plane(Vector3.up, new Vector3(0, 7, 0));
+                Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
+                bool swapped = false;
+                if (gp.Raycast(r, out float d))
+                {
+                    Vector3 worldPos = r.GetPoint(d);
+                    var (gx, gz) = WorldToGridCoord(worldPos);
+
+                    if (IsInPlayerDeployArea(gx, gz))
+                    {
+                        // 在 chessList 中查找目标位置的棋子
+                        Chess targetChess = null;
+                        foreach (var c in chessList)
+                        {
+                            if (c == draggingChess) continue;
+                            var (cx, cz) = WorldToGridCoord(c.position);
+                            if (cx == gx && cz == gz)
+                            {
+                                targetChess = c;
+                                break;
+                            }
+                        }
+
+                        if (targetChess != null)
+                        {
+                            SwapChessPosition(draggingChess, targetChess);
+                            swapped = true;
+                        }
+                    }
+                }
+
+                if (!swapped)
+                    draggingChess.SetPosition(dragStartPos);
+
+                draggingChess = null;
+            }
+        }
     }
 
     private Vector3 GetSpawnPosition(int side, int indx)
@@ -246,7 +507,7 @@ public class BattleManager : MonoBehaviour
 
         var waitTick = GetTickFromTime(SystemConst.Battle.WAIT_TIME);
         var battleBeginTick = GetTickFromTime(SystemConst.Battle.BATTLE_BEGIN_TIME);
-        var foodDeductionTick = GetTickFromTime(SystemConst.Battle.FOOD_DEDUCTION_INTERVAL);        
+        var foodDeductionTick = GetTickFromTime(SystemConst.Battle.FOOD_DEDUCTION_INTERVAL);
 
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var magicHelperUnitId = SpawnUnitsForRegion(player1, SystemConst.Battle.MAGIC_HELPER_UNIT_ID, new Vector3(1, 7, 1), 10);
@@ -399,19 +660,27 @@ public class BattleManager : MonoBehaviour
         int count = Math.Min(defenderTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++)
         {
+            // 防守方是玩家时优先使用布阵位置
+            var spawnPos = playerSideIndex == 1 && playerDeployPositions.ContainsKey(defenderTroops[i].heroId1)
+                ? playerDeployPositions[defenderTroops[i].heroId1]
+                : GetSpawnPosition(2, i);
             var tick = tickIndex + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
-            var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(2, i), "SoftFireBigRed", 0.7f);
+            var eff = new CreateEffectAction(magicHelperUnitId, tick, spawnPos, "SoftFireBigRed", 0.7f);
             AddChessAction(eff);
-            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(2, i), defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0);
+            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, spawnPos, defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0);
         }
 
         count = Math.Min(attackTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
-        for (int i = 0; i < count; i++) 
+        for (int i = 0; i < count; i++)
         {
+            // 攻击方是玩家时优先使用布阵位置
+            var spawnPos = playerSideIndex == 0 && playerDeployPositions.ContainsKey(attackTroops[i].heroId1)
+                ? playerDeployPositions[attackTroops[i].heroId1]
+                : GetSpawnPosition(1, i);
             var tick = tickIndex + SystemConst.Battle.ATTACKER_SPAWN_DELAY_TICKS + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
-            var eff = new CreateEffectAction(magicHelperUnitId, tick, GetSpawnPosition(1, i), "LightningExplosionBlue", 0.7f);
+            var eff = new CreateEffectAction(magicHelperUnitId, tick, spawnPos, "LightningExplosionBlue", 0.7f);
             AddChessAction(eff);
-            SpawnTroopForRegion(player1, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, GetSpawnPosition(1, i), attackTroops[i], attackSoldierMap.ContainsKey(attackTroops[i].heroId1) ? attackSoldierMap[attackTroops[i].heroId1] : 0);
+            SpawnTroopForRegion(player1, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, spawnPos, attackTroops[i], attackSoldierMap.ContainsKey(attackTroops[i].heroId1) ? attackSoldierMap[attackTroops[i].heroId1] : 0);
         }
 
         GameLog.Info($"InitSummon {player1.Name} {attackTroops.Count} {player2.Name} {defenderTroops.Count}");

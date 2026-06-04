@@ -126,6 +126,7 @@ MonoBehaviour:
     isHero: 0
     isFakeHero: 0
     isShadow: 0
+    isSodNull: 0
     heroId: 0
     heroId2: 0
     heroId3: 0
@@ -142,6 +143,8 @@ MonoBehaviour:
     lastDamagedPlayerId: 0
     maxHp: 0
     hp: 0
+    atk: 0
+    def: 0
     attackPoint: 0
     attackRate: 0
     lastAttackTime: 0
@@ -164,6 +167,7 @@ MonoBehaviour:
     regeHp: 0
   rend: {fileID: 965843959451955951}
   material: {fileID: 0}
+  flagObj: {fileID: 3405850965564564052}
   rendFlag: {fileID: 3405850965569777482}
   materialFlag: {fileID: 0}
   lockTargetId: 0
@@ -339,6 +343,11 @@ PrefabInstance:
 --- !u!4 &3405850965564341876 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6867965199317989987, guid: c01396a98b9fc1dace8b08096f6721c9, type: 3}
+  m_PrefabInstance: {fileID: 8073804718959608855}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3405850965564564052 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6867965199317493315, guid: c01396a98b9fc1dace8b08096f6721c9, type: 3}
   m_PrefabInstance: {fileID: 8073804718959608855}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &3405850965569777482 stripped

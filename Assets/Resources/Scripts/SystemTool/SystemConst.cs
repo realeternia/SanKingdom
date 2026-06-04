@@ -261,6 +261,30 @@ public static class SystemConst
         /// </summary>
         public const int MAGIC_HELPER_UNIT_ID = 501001;
         /// <summary>
+        /// 布阵区域行数
+        /// </summary>
+        public const int DEPLOY_GRID_ROWS = 3;
+        /// <summary>
+        /// 布阵区域列数
+        /// </summary>
+        public const int DEPLOY_GRID_COLS = 4;
+        /// <summary>
+        /// 攻击方布阵区域起始格子X
+        /// </summary>
+        public const int DEPLOY_SIDE1_BASE_GX = 20;
+        /// <summary>
+        /// 攻击方布阵区域起始格子Z
+        /// </summary>
+        public const int DEPLOY_SIDE1_BASE_GZ = 13;
+        /// <summary>
+        /// 防守方布阵区域起始格子X
+        /// </summary>
+        public const int DEPLOY_SIDE2_BASE_GX = 29;
+        /// <summary>
+        /// 防守方布阵区域起始格子Z
+        /// </summary>
+        public const int DEPLOY_SIDE2_BASE_GZ = 13;
+        /// <summary>
         /// 默认暴击伤害倍率
         /// </summary>
         public const float DEFAULT_CRIT_DAMAGE_MULTI = 0.5f;

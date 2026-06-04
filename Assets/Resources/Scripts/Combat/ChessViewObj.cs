@@ -10,6 +10,7 @@ public class ChessViewObj : MonoBehaviour
     private ChessHUD hud;
     public Renderer rend;
     public Material material;
+    public GameObject flagObj;
     public Renderer rendFlag;
     public Material materialFlag;    
     private Material originalMaterial;
@@ -30,6 +31,17 @@ public class ChessViewObj : MonoBehaviour
     {
         this.chessUnit = chessUnit;
         this.outlineColor = c;
+
+        if (chessUnit.isSodNull)
+        {
+            originalMaterial = rend.sharedMaterial;
+            material = new Material(rend.sharedMaterial);
+            rend.material = material;
+            if (flagObj != null)
+                flagObj.SetActive(false);
+            UpdateSoldierModels();
+            return;
+        }
 
         var chessName = chessUnit.chessName;
         originalMaterial = rend.sharedMaterial;
@@ -186,9 +198,20 @@ public class ChessViewObj : MonoBehaviour
 
     public void UpdateSoldierModels()
     {
-        var armsConfig = ArmsConfig.GetConfig(chessUnit.armsId);
-        string sodType = armsConfig.Model;
-        int modelCountFactor = armsConfig.ModelCountFactor;
+        string sodType;
+        int modelCountFactor;
+
+        if (chessUnit.isSodNull)
+        {
+            sodType = "SodNull";
+            modelCountFactor = 1;
+        }
+        else
+        {
+            var armsConfig = ArmsConfig.GetConfig(chessUnit.armsId);
+            sodType = armsConfig.Model;
+            modelCountFactor = armsConfig.ModelCountFactor;
+        }
         
         GameObject soldierPrefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.Arms(sodType));
         if (soldierPrefab == null)

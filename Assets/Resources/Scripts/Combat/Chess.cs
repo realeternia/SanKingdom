@@ -19,6 +19,7 @@ public class Chess : SceneObj
     public bool isHero;
     public bool isFakeHero;
     public bool isShadow;
+    public bool isSodNull;
 
     public int heroId;
     public int heroId2;
@@ -159,7 +160,17 @@ public class Chess : SceneObj
         if (BattleManager.Instance.showUI)
         {
             SaveForceData force = GameManager.Instance.GetForce(forceId);
-            if (isHero)
+            if (isSodNull)
+            {
+                GameObject heroPrefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.UnitModel("UnitHero"));
+                GameObject unitModel = UnityEngine.Object.Instantiate(heroPrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
+                unitModel.name = $"SodNull_{forceId}_{id}";
+                unitModel.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+
+                viewObj = unitModel.GetComponent<ChessViewObj>();
+                viewObj.Init(this, force.LineColor);
+            }
+            else if (isHero)
             {
                 GameObject heroPrefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.UnitModel("UnitHero"));
                 GameObject unitModel = UnityEngine.Object.Instantiate(heroPrefab, position, Quaternion.identity, BattleManager.Instance.battleUIManager.NodeUnits.transform);
