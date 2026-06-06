@@ -13,7 +13,12 @@ public class BattleUIManager : MonoBehaviour
     public bool isDebug = true; //自动判定的，不要改
     public GameObject NodeUnits;
 
-    public HeroInfoGroup heroInfoGroup;
+    public GameObject heroInfoRectSide1;
+    public GameObject heroInfoRectSide2;
+    public GameObject heroPrefab;
+    private int heroCountSide1;
+    private int heroCountSide2;
+
     public Button buttonRestart;
     public TMP_Text textRestart;
 
@@ -52,7 +57,7 @@ public class BattleUIManager : MonoBehaviour
         BattleResultPanel.gameObject.SetActive(false);
         foreach (Transform child in NodeUnits.transform)
             UnityEngine.Object.Destroy(child.gameObject);
-        heroInfoGroup.Reset();
+        ResetHeroInfo();
 
         BattleInfoTop.Instance.UpdateRound(0, maxRound);
     }
@@ -206,5 +211,45 @@ public class BattleUIManager : MonoBehaviour
     private void OnDestroy()
     {
 
+    }
+
+    public void ResetHeroInfo()
+    {
+        heroCountSide1 = 0;
+        heroCountSide2 = 0;
+        foreach (Transform child in heroInfoRectSide1.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (Transform child in heroInfoRectSide2.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        GameLog.Debug("Reset " + heroInfoRectSide1.transform.childCount + " " + heroInfoRectSide2.transform.childCount);
+    }
+
+    public BattleHeroInfo AddHero(int forceId, int heroId, int level, int heroId2, int heroId3, int inte, int atk, int def)
+    {
+        var attackerForceId = BattleManager.Instance.playerInfoList[0].forceId;
+        bool isSide1 = forceId == attackerForceId;
+        int count = isSide1 ? heroCountSide1 : heroCountSide2;
+        GameObject heroInfoRect = isSide1 ? heroInfoRectSide1 : heroInfoRectSide2;
+
+        BattleHeroInfo heroInfo = Instantiate(heroPrefab, heroInfoRect.transform).GetComponent<BattleHeroInfo>();
+        heroInfo.transform.localPosition = new Vector3(0, -60 - 120 * count, 0);
+        heroInfo.Init(heroId, level, heroId2, heroId3, inte, atk, def);
+
+        if(isSide1)
+        {
+            heroCountSide1++;
+        }
+        else
+        {
+            heroCountSide2++;
+        }
+
+        heroInfoRect.GetComponent<RectTransform>().sizeDelta = new Vector2(heroInfoRect.GetComponent<RectTransform>().sizeDelta.x, 120 * count + 3);
+
+        return heroInfo;
     }
 }

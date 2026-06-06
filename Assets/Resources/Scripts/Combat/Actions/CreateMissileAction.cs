@@ -50,6 +50,7 @@ public class CreateMissileAction : ChessAction
         var sourceChess = battleManager.GetChess(SourceId);
         if (sourceChess == null)
             return;
+        GameLog.Info($"CreateMissileAction: id={Id} sourceId={SourceId} targetId={TargetChessId} skillId={SkillId} startPos={StartPos} tick={Tick} directional={IsDirectional}");
         var missile = new Missile(Id, sourceChess, StartPos, SkillId, Damage, AttackDamage, AttackIsCrit, AttackIsDodge, AttackDamType);
         missile.Init();
         battleManager.missileList.Add(missile);

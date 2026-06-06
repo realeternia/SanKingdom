@@ -448,10 +448,12 @@ public class BattleManager : MonoBehaviour
 
     private Vector3 GetSpawnPosition(int side, int indx)
     {
+        int row = indx % 5;
+        int zRow = (row + 1) % 5;
         if(side == 1)
-            return new Vector3(330 - (indx / 4) * 15, 7, 240 - (indx % 4) * 15);
+            return new Vector3(330 - (indx / 5) * 15, 7, 255 - zRow * 15);
         else
-            return new Vector3(435 + (indx / 4) * 15, 7, 240 - (indx % 4) * 15);
+            return new Vector3(435 + (indx / 5) * 15, 7, 255 - zRow * 15);
     }
 
     public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)

@@ -180,9 +180,12 @@ public class Chess : SceneObj
                 viewObj = unitModel.GetComponent<ChessViewObj>();
                 viewObj.Init(this, force.LineColor);
 
-                var heroInfo = BattleManager.Instance.battleUIManager.heroInfoGroup.AddHero(forceId, heroId, level, heroId2, heroId3, inte, atk, def);
-                heroInfo.SetHpRate(maxHp, maxHp);
-                this.heroInfo = heroInfo;
+                if (!BattleManager.Instance.isDeployPhase)
+                {
+                    var heroInfo = BattleManager.Instance.battleUIManager.AddHero(forceId, heroId, level, heroId2, heroId3, inte, atk, def);
+                    heroInfo.SetHpRate(maxHp, maxHp);
+                    this.heroInfo = heroInfo;
+                }
 
                 viewObj.UpdateSoldierModels();
             }

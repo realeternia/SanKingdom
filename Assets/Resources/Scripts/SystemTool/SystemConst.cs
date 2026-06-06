@@ -235,7 +235,7 @@ public static class SystemConst
         /// <summary>
         /// 每方最大战斗英雄数
         /// </summary>
-        public const int MAX_BATTLE_HEROES_PER_SIDE = 12;
+        public const int MAX_BATTLE_HEROES_PER_SIDE = 15;
         /// <summary>
         /// 召唤批次阈值
         /// </summary>
@@ -267,7 +267,7 @@ public static class SystemConst
         /// <summary>
         /// 布阵区域列数
         /// </summary>
-        public const int DEPLOY_GRID_COLS = 4;
+        public const int DEPLOY_GRID_COLS = 5;
         /// <summary>
         /// 攻击方布阵区域起始格子X
         /// </summary>

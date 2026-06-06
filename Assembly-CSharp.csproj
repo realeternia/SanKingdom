@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Generated file, do not modify, your changes will be overwritten (use AssetPostprocessor.OnGeneratedCSProject) -->
   <PropertyGroup>
@@ -194,7 +194,6 @@
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUI.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\ArmsType.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\PanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\BattleHeroInfoGroup.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleSprite.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Chess.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\PickPanelControl.cs" />
