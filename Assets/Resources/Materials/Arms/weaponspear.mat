@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: stick
+  m_Name: weaponspear
   m_Shader: {fileID: 4800000, guid: abcc9d0a522712e3f8f5be915a2e3263, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -44,7 +44,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 2704270a6471bcc44ae3a8045c85a7ba, type: 3}
+        m_Texture: {fileID: 2800000, guid: 17861c45f6c49824ba4aff1287e1f3a6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:

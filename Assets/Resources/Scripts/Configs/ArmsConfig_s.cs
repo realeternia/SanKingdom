@@ -186,12 +186,12 @@ namespace CommonConfig
         {
             config.Clear();
             config[1] = new ArmsConfig(1, "dyb", "动员兵", ArmsType.SodWalk, 0, 5, 5, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 1f, 40, "马车", "", 0, 0, 0, 0);
-            config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 1, 40, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 0f, 40, "戟弩炮车", "弓", 2, 0, 0, 0);
+            config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 1, 40, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHorseSpear", 1f, 40, "戟弩炮车", "弓", 2, 0, 0, 0);
             config[102] = new ArmsConfig(102, "che", "车", ArmsType.SodTank, 1, 30, 20, 10, 17, 0, 0f, "SwordHitGreenCritical", "SodStick", 0f, 40, "", "", 0, 1, 1, 0);
             config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 1, 25, 5, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 1f, 40, "枪戟", "刀", 0, 0, 1, 0);
             config[202] = new ArmsConfig(202, "pao", "炮", ArmsType.SodTank, 1, 25, 8, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodBow", 0f, 40, "盾", "士", 0, 2, 1, 0);
             config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 1, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 0f, 40, "马车", "", 0, 1, 0, 0);
-            config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 15, 15, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 0f, 40, "枪", "", 0, 1, 1, 0);
+            config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 15, 15, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodSpear", 1f, 40, "枪", "", 0, 1, 1, 0);
             config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 15, 15, 10, 40, 30, 3f, "FanExplosion", "SodStick", 0f, 40, "", "", 0, 1, 0, 0);
             config[701] = new ArmsConfig(701, "shan", "扇", ArmsType.SodWalk, 1, 5, 8, 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 0f, 40, "", "", 0, 0, 0, 0);
             config[702] = new ArmsConfig(702, "mou", "谋", ArmsType.SodWalk, 1, 3, 5, 7, 50, 26, 8f, "GasShootFire", "SodStick", 0f, 40, "", "", 0, 0, 0, 0);
