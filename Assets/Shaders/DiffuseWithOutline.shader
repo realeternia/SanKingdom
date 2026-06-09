@@ -73,6 +73,7 @@ Shader "Custom/DiffuseWithOutline"
             #pragma fragment frag
             #include "UnityCG.cginc"
             #include "UnityLightingCommon.cginc"
+            #include "AutoLight.cginc"
 
             struct appdata_t
             {
@@ -92,6 +93,7 @@ Shader "Custom/DiffuseWithOutline"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             float4 _Color;
+            half _AmbientStrength;
 
             v2f vert (appdata_t v)
             {
@@ -110,7 +112,12 @@ Shader "Custom/DiffuseWithOutline"
                 fixed3 worldNormal = normalize(i.worldNormal);
                 fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
                 fixed diff = max(0, dot(worldNormal, worldLightDir));
-                col.rgb *= diff * _LightColor0.rgb + unity_AmbientSky.rgb;
+
+                // 球谐光照（间接光照）+ 环境光
+                half3 ambient = ShadeSH9(half4(worldNormal, 1.0));
+                half3 lighting = diff * _LightColor0.rgb + ambient;
+
+                col.rgb *= lighting;
 
                 return col;
             }

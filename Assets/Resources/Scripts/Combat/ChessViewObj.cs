@@ -226,7 +226,7 @@ public class ChessViewObj : MonoBehaviour
         if (targetCount > currentCount)
         {
             int gridSize = 5;
-            float spacing = 2f;
+            float spacing = 2.7f;
             float offsetX = -((gridSize - 1) * spacing) / 2f;
             float offsetZ = -((gridSize - 1) * spacing) / 2f;
 
