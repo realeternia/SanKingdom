@@ -11,9 +11,9 @@ public class ChessViewObj : MonoBehaviour
     public Renderer rend;
     public Material material;
     public GameObject flagObj;
+    public Renderer rendFlagPic;
     public Renderer rendFlag;
-    public Material materialFlag;    
-    private Material originalMaterial;
+    private Material originalMaterial; //切换材质时，需要保存原始材质，用于恢复
     private Texture originalTexture;
     private string currentMaterialType = "default";
 
@@ -54,10 +54,13 @@ public class ChessViewObj : MonoBehaviour
 
         if (chessUnit.isHero)
         {
-            materialFlag = new Material(rendFlag.sharedMaterial);
-            materialFlag.mainTexture = ResourceCache.LoadBattle<Texture>(ResPath.Texture.HeroIcon(chessName));
-            materialFlag.SetColor("_OutlineColor", c);
+            var materialFlag = new Material(rendFlag.sharedMaterial);
+            materialFlag.SetColor("_Color", c);
             rendFlag.material = materialFlag;
+
+            var materialFlag2 = new Material(rendFlagPic.sharedMaterial);
+            materialFlag2.mainTexture = ResourceCache.LoadBattle<Texture>(ResPath.Texture.HeroIcon(chessName));
+            rendFlagPic.material = materialFlag2;            
         }
 
         rend.material = material; // 这会为这个渲染器创建一个独立的材质实例
@@ -259,23 +262,24 @@ public class ChessViewObj : MonoBehaviour
                 soldier.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
                 soldier.name = $"Soldier_{i}";
                 
-                var meshMgr = soldier.transform.Find("body")?.GetComponent<UnityMeshMgr>();
-                if (meshMgr != null)
-                {
-                    foreach (var mesh in meshMgr.meshes)
-                    {
-                        if (mesh != null)
-                        {
-                            var meshRenderer = mesh.GetComponent<Renderer>();
-                            if (meshRenderer != null)
-                            {
-                                var meshMaterial = new Material(meshRenderer.sharedMaterial);
-                                meshMaterial.SetColor("_OutlineColor", outlineColor);
-                                meshRenderer.material = meshMaterial;
-                            }
-                        }
-                    }
-                }
+                // 不对士兵模型进行渲染设置
+                // var meshMgr = soldier.transform.Find("body")?.GetComponent<UnityMeshMgr>();
+                // if (meshMgr != null)
+                // {
+                //     foreach (var mesh in meshMgr.meshes)
+                //     {
+                //         if (mesh != null)
+                //         {
+                //             var meshRenderer = mesh.GetComponent<Renderer>();
+                //             if (meshRenderer != null)
+                //             {
+                //                 var meshMaterial = new Material(meshRenderer.sharedMaterial);
+                //                 meshMaterial.SetColor("_OutlineColor", outlineColor);
+                //                 meshRenderer.material = meshMaterial;
+                //             }
+                //         }
+                //     }
+                // }
 
                 // if (UnityEngine.Random.value > 0.5f)
                 // {

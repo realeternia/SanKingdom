@@ -41,11 +41,15 @@ public class SideArmysSelector : MonoBehaviour
         }
 
         int currentArmsId = currentArmsIdForTroop;
+        var force = GameManager.Instance.CurrentForce;
 
         selectedItem = null;
         int count = 0;
         foreach (var config in ArmsConfig.ConfigList)
         {
+            if (!HasResourceProduction(config, force))
+                continue;
+
             GameObject item = Instantiate(itemPrefab.gameObject, subRegionMain.transform);
             item.transform.localScale = Vector3.one;
             SideArmsItem armsItem = item.GetComponent<SideArmsItem>();
@@ -97,5 +101,14 @@ public class SideArmysSelector : MonoBehaviour
         int newArmsId = selectedItem.GetArmsId();
         onArmsIdSelected?.Invoke(newArmsId);
         PanelManager.Instance.HideSideBar();
+    }
+
+    static bool HasResourceProduction(ArmsConfig config, SaveForceData force)
+    {
+        if (config.HorseCost > 0 && force.GetAttr("horse") <= 0) return false;
+        if (config.SteelCost > 0 && force.GetAttr("steel") <= 0) return false;
+        if (config.WoodCost > 0 && force.GetAttr("wood") <= 0) return false;
+        if (config.StoneCost > 0 && force.GetAttr("stone") <= 0) return false;
+        return true;
     }
 }
