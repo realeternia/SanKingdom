@@ -3084,11 +3084,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b390e0528e385ab4d83a03a77e574e02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heroInfoRectSide1: {fileID: 1019877980}
-  heroInfoRectSide2: {fileID: 1576754176}
-  countSide1: 0
-  countSide2: 0
-  heroPrefab: {fileID: 2443729787185132108, guid: b390e0528e385ab4d83a03a77e571e14, type: 3}
 --- !u!222 &1019877984
 CanvasRenderer:
   m_ObjectHideFlags: 0

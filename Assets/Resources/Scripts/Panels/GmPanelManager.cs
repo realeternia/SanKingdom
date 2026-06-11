@@ -33,7 +33,7 @@ public class GmPanelManager : MonoBehaviour
         var attackTroops = new List<SaveTroopsData>();
         var defenderTroops = new List<SaveTroopsData>();
 
-        attackTroops.Add(new SaveTroopsData{ heroId1 = 100001, armsId = 101 });
+        attackTroops.Add(new SaveTroopsData{ heroId1 = 100001, armsId = 603 });
         attackTroops.Add(new SaveTroopsData{ heroId1 = 101001, armsId = 201 });
         defenderTroops.Add(new SaveTroopsData{ heroId1 = 100002, armsId = 101 });
         defenderTroops.Add(new SaveTroopsData{ heroId1 = 102002, armsId = SystemConst.Hero.DEFAULT_ARMS_ID });

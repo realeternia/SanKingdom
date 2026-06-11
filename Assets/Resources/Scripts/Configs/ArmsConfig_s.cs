@@ -192,7 +192,7 @@ namespace CommonConfig
             config[202] = new ArmsConfig(202, "pao", "炮", ArmsType.SodTank, 1, 25, 8, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodBow", 0f, 4, "盾", "士", 0, 2, 1, 0);
             config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 1, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 0f, 4, "马车", "", 0, 1, 0, 0);
             config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 15, 15, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodSpear", 1f, 4, "枪", "", 0, 1, 1, 0);
-            config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 15, 15, 10, 40, 30, 3f, "FanExplosion", "SodStick", 0f, 4, "", "", 0, 1, 0, 0);
+            config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 15, 15, 10, 40, 30, 3f, "FanExplosion", "SodHalberd", 0f, 4, "", "", 0, 1, 0, 0);
             config[701] = new ArmsConfig(701, "shan", "扇", ArmsType.SodWalk, 1, 5, 8, 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 0f, 4, "", "", 0, 0, 0, 0);
             config[702] = new ArmsConfig(702, "mou", "谋", ArmsType.SodWalk, 1, 3, 5, 7, 50, 26, 8f, "GasShootFire", "SodStick", 0f, 4, "", "", 0, 0, 0, 0);
 
