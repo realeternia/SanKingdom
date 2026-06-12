@@ -3,7 +3,6 @@ OBJ 模型批量处理脚本
 功能：
   1. 减面：保证顶点数 < 2000
   2. 增加UV：圆柱体投影（已有UV则跳过）
-  3. 调整朝向：使圆柱体投影效果更好（长轴对齐Y轴）
 """
 
 import os
@@ -13,64 +12,6 @@ import numpy as np
 
 TARGET_DIR = os.path.dirname(os.path.abspath(__file__))
 MAX_VERTICES = 2000
-
-
-def adjust_orientation(mesh: trimesh.Trimesh):
-    """
-    调整模型朝向：用 PCA 找到最长轴，旋转使其对齐 Y 轴。
-    这样圆柱体投影的 UV 展开效果最好（长轴做圆柱轴心）。
-    """
-    vertices = mesh.vertices
-    center = vertices.mean(axis=0)
-    centered = vertices - center
-
-    # PCA：协方差矩阵的特征向量即为主轴
-    cov = np.cov(centered.T)
-    eigenvalues, eigenvectors = np.linalg.eigh(cov)
-
-    # 按特征值升序排列，最后一列是最大特征值对应的主轴（最长轴）
-    longest_axis = eigenvectors[:, -1]
-
-    # 将最长轴对齐到 Y 轴 (0, 1, 0)
-    y_axis = np.array([0.0, 1.0, 0.0])
-    rotation = rotation_from_to(longest_axis, y_axis)
-
-    mesh.vertices = centered @ rotation.T + center
-    return mesh
-
-
-def rotation_from_to(src: np.ndarray, dst: np.ndarray):
-    """
-    计算从 src 方向旋转到 dst 方向的最小旋转矩阵（Rodrigues 公式）。
-    """
-    src = src / np.linalg.norm(src)
-    dst = dst / np.linalg.norm(dst)
-
-    if np.allclose(src, dst):
-        return np.eye(3)
-    if np.allclose(src, -dst):
-        # 180度旋转，找一个垂直于 src 的轴
-        perp = np.array([1.0, 0.0, 0.0])
-        if np.abs(np.dot(src, perp)) > 0.99:
-            perp = np.array([0.0, 1.0, 0.0])
-        axis = np.cross(src, perp)
-        axis = axis / np.linalg.norm(axis)
-        return rotation_matrix(axis, np.pi)
-
-    axis = np.cross(src, dst)
-    axis = axis / np.linalg.norm(axis)
-    angle = np.arccos(np.clip(np.dot(src, dst), -1.0, 1.0))
-    return rotation_matrix(axis, angle)
-
-
-def rotation_matrix(axis: np.ndarray, angle: float):
-    """Rodrigues 旋转公式。"""
-    K = np.array([
-        [0, -axis[2], axis[1]],
-        [axis[2], 0, -axis[0]],
-        [-axis[1], axis[0], 0]
-    ])
-    return np.eye(3) + np.sin(angle) * K + (1 - np.cos(angle)) * (K @ K)
 
 
 def has_uv(mesh: trimesh.Trimesh):
@@ -163,12 +104,6 @@ def process_obj(filepath: str):
             print(f"  减面未执行或无效")
     else:
         print(f"  顶点数已达标，跳过减面")
-
-    # Step 3: 调整朝向（先调朝向，再生成UV，效果更好）
-    if modified or not has_uv(mesh):
-        print(f"  调整朝向中...")
-        mesh = adjust_orientation(mesh)
-        print(f"  朝向已调整（长轴对齐Y轴）")
 
     # Step 2: 加UV（圆柱体投影）
     if has_uv(mesh):

@@ -25,6 +25,13 @@ public class WorldPieceControl : MonoBehaviour
 
     void Start()
     {
+        pieceName.raycastTarget = false;
+
+        foreach (var img in heroImage)
+            img.raycastTarget = false;
+        foreach (var img in resImage)
+            img.raycastTarget = false;
+
         if (pieceImage != null)
         {
             pieceImage.raycastTarget = true;

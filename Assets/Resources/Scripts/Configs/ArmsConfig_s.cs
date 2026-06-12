@@ -55,8 +55,6 @@ namespace CommonConfig
             {"Model", new FieldMetaInfo("模型", "string", 0)},
             {"HitDelay", new FieldMetaInfo("命中延迟", "float", 0)},
             {"ModelCountFactor", new FieldMetaInfo("多少个士兵显示一个模型", "int", 60)},
-            {"OvercomeStrong", new FieldMetaInfo("强克制", "string", 0)},
-            {"OvercomeWeak", new FieldMetaInfo("弱克制", "string", 0)},
             {"HorseCost", new FieldMetaInfo("马消耗", "int", 60)},
             {"SteelCost", new FieldMetaInfo("铁消耗", "int", 60)},
             {"WoodCost", new FieldMetaInfo("木材消耗", "int", 60)},
@@ -117,14 +115,6 @@ namespace CommonConfig
         /// </summary>
         public int ModelCountFactor;
         /// <summary>
-        ///强克制
-        /// </summary>
-        public string OvercomeStrong;
-        /// <summary>
-        ///弱克制
-        /// </summary>
-        public string OvercomeWeak;
-        /// <summary>
         ///马消耗
         /// </summary>
         public int HorseCost;
@@ -142,7 +132,7 @@ namespace CommonConfig
         public int StoneCost;
 
 
-        public ArmsConfig(int Id, string Name, string NameS, ArmsType Type, int Level, int Atk, int Def, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, string HitEffect, string Model, float HitDelay, int ModelCountFactor, string OvercomeStrong, string OvercomeWeak, int HorseCost, int SteelCost, int WoodCost, int StoneCost)
+        public ArmsConfig(int Id, string Name, string NameS, ArmsType Type, int Level, int Atk, int Def, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, string HitEffect, string Model, float HitDelay, int ModelCountFactor, int HorseCost, int SteelCost, int WoodCost, int StoneCost)
         {
             this.Id = Id;
             this.Name = Name;
@@ -159,8 +149,6 @@ namespace CommonConfig
             this.Model = Model;
             this.HitDelay = HitDelay;
             this.ModelCountFactor = ModelCountFactor;
-            this.OvercomeStrong = OvercomeStrong;
-            this.OvercomeWeak = OvercomeWeak;
             this.HorseCost = HorseCost;
             this.SteelCost = SteelCost;
             this.WoodCost = WoodCost;
@@ -185,16 +173,12 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new ArmsConfig(1, "dyb", "动员兵", ArmsType.SodWalk, 0, 5, 5, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 1f, 4, "马车", "", 0, 0, 0, 0);
-            config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 1, 40, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHorseSpear", 1f, 6, "戟弩炮车", "弓", 2, 0, 0, 0);
-            config[102] = new ArmsConfig(102, "che", "车", ArmsType.SodTank, 1, 30, 20, 10, 17, 0, 0f, "SwordHitGreenCritical", "SodStick", 0f, 4, "", "", 0, 1, 1, 0);
-            config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 1, 25, 5, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 1f, 4, "枪戟", "刀", 0, 0, 1, 0);
-            config[202] = new ArmsConfig(202, "pao", "炮", ArmsType.SodTank, 1, 25, 8, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodBow", 0f, 4, "盾", "士", 0, 2, 1, 0);
-            config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 1, 10, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 0f, 4, "马车", "", 0, 1, 0, 0);
-            config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 15, 15, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodSpear", 1f, 4, "枪", "", 0, 1, 1, 0);
-            config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 15, 15, 10, 40, 30, 3f, "FanExplosion", "SodHalberd", 0f, 4, "", "", 0, 1, 0, 0);
-            config[701] = new ArmsConfig(701, "shan", "扇", ArmsType.SodWalk, 1, 5, 8, 10, 40, 30, 3f, "GasExplosionFire", "SodStick", 0f, 4, "", "", 0, 0, 0, 0);
-            config[702] = new ArmsConfig(702, "mou", "谋", ArmsType.SodWalk, 1, 3, 5, 7, 50, 26, 8f, "GasShootFire", "SodStick", 0f, 4, "", "", 0, 0, 0, 0);
+            config[1] = new ArmsConfig(1, "dyb", "动员兵", ArmsType.SodWalk, 0, 0, 0, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 1f, 4, 0, 0, 0, 0);
+            config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 1, 30, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHorseSpear", 1f, 6, 2, 0, 0, 0);
+            config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 1, 25, 5, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 1f, 4, 0, 0, 1, 0);
+            config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 1, 5, 5, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 0f, 4, 0, 1, 0, 0);
+            config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 15, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodSpear", 1f, 4, 0, 1, 1, 0);
+            config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 10, 15, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHalberd", 1f, 4, 0, 1, 1, 0);
 
             RebuildIndex();
 
