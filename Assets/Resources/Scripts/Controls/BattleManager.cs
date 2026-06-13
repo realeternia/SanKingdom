@@ -696,28 +696,37 @@ public class BattleManager : MonoBehaviour
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess, int attackDamage = 0, bool attackIsCrit = false, bool attackIsDodge = false, string hitEffect = "", string attackDamType = "str")
     {
         var id = idCounter++;
-        var action = new CreateMissileAction(sourceChess.id, tickIndex, id, targetChess.id, sourceChess.position, 0, 0, attackDamage, attackIsCrit, attackIsDodge, attackDamType);
-        AddChessAction(action);
+        var missile = new Missile(id, sourceChess, sourceChess.position, 0, 0, attackDamage, attackIsCrit, attackIsDodge, attackDamType);
+        missile.Init();
+        missileList.Add(missile);
+        missile.MoveToTarget(targetChess);
     }
 
     public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage)
     {
         var id = idCounter++;
-        var action = new CreateMissileAction(sourceChess.id, tickIndex, id, targetChess.id, startPos, skillId, damage);
-        AddChessAction(action);
-    }    
+        var missile = new Missile(id, sourceChess, startPos, skillId, damage);
+        missile.Init();
+        missileList.Add(missile);
+        missile.MoveToTarget(targetChess);
+    }
 
     public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, int skillId, int damage)
     {
         var id = idCounter++;
-        var action = new CreateMissileAction(sourceChess.id, tickIndex, id, targetPos, sourceChess.position, skillId, damage, time);
-        AddChessAction(action);
+        var missile = new Missile(id, sourceChess, sourceChess.position, skillId, damage);
+        missile.Init();
+        missileList.Add(missile);
+        missile.MoveToDirection(targetPos, time);
     }
-    
+
     public void RemoveMissile(Missile missile)
     {
-        var action = new RemoveMissileAction(missile.ownerId, tickIndex, missile.id);
-        AddChessAction(action);
+        if (missile.viewObj != null)
+        {
+            UnityEngine.Object.Destroy(missile.viewObj.gameObject);
+        }
+        missileList.RemoveAll(m => m.id == missile.id);
     }
 
     public Chess GetChess(int id)

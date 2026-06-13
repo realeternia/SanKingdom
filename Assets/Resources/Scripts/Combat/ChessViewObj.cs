@@ -99,8 +99,6 @@ public class ChessViewObj : MonoBehaviour
         }
     }
 
-     private Coroutine jumpCoroutine = null;
-
     public void PlayAnim(string name)
     {
         if(string.IsNullOrEmpty(name))
@@ -145,58 +143,6 @@ public class ChessViewObj : MonoBehaviour
                 soldier.transform.localRotation = Quaternion.Euler(currentRotation.x, targetAngle, currentRotation.z);
             }
         }
-    }
-
-    public void StartJump(float time)
-    {
-        var height = 15;
-        GameLog.Info("StartJump " + height + " "  + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-
-        // 如果已经在跳跃，先打断当前跳跃
-        if (jumpCoroutine != null)
-        {
-            StopCoroutine(jumpCoroutine);
-            jumpCoroutine = null;
-            transform.position = new Vector3(transform.position.x, 7, transform.position.z); // 恢复到原始位置
-        }
-        
-        jumpCoroutine = StartCoroutine(JumpCoroutine(height, time));
-    }
-
-    public void StopJump()
-    {
-        if (jumpCoroutine != null)
-        {
-            StopCoroutine(jumpCoroutine);
-            jumpCoroutine = null;
-            transform.position = new Vector3(transform.position.x, 7, transform.position.z); // 恢复到原始位置
-        }
-    }
-
-    IEnumerator JumpCoroutine(int jumpHeight, float jumpDuration)
-    {
-        float elapsedTime = 0f;
-        
-        Vector3 originalPosition = transform.position;
-        while (elapsedTime < jumpDuration)
-        {
-            float progress = elapsedTime / jumpDuration;
-            
-            // 使用抛物线运动：y = 4h * (x - x²) 其中h是最大高度
-            float height = 4f * jumpHeight * (progress - progress * progress) + 7;
-            
-            // 更新位置
-            Vector3 newPosition = originalPosition;
-            newPosition.y += height;
-            transform.position = Vector3.Lerp(originalPosition, newPosition, progress);
-            
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        
-        // 确保最终回到原始位置
-        transform.position = new Vector3(transform.position.x, 7, transform.position.z);
-        jumpCoroutine = null;
     }
 
     public void UpdateSoldierModels()

@@ -78,19 +78,6 @@ public class Chess : SceneObj
     public int noActionCount = 0;
     public bool isInAttackRange = false;
 
-    // 跳跃相关状态
-    public JumpState jumpState;
-
-    [Serializable]
-    public class JumpState
-    {
-        public Vector3 PosStart;
-        public Vector3 PosTar;
-        public float Height;
-        public int TickTotal;
-        public int TickPast;
-    }
-
     // 持续伤害相关状态
     public List<DamageOverTimeState> dotStates = new List<DamageOverTimeState>();
 
@@ -261,46 +248,13 @@ public class Chess : SceneObj
             }
         }
 
-        // 处理跳跃逻辑
-        if (jumpState != null)
-        {
-            if (jumpState.TickPast >= jumpState.TickTotal)
-            {
-                // 确保到达目标位置
-                MoveTo(jumpState.PosTar, true);
-                jumpState = null;
-
-                FindTarget(); //重新锁定一次
-            }
-        }
-        else
-        {
-            MoveAndFight(tickIndex);
-        }
+        MoveAndFight(tickIndex);
 
     }
 
     public override void RenderUpdate(int tickIndex, float indexMini, float timeElapsed)
     {
         base.RenderUpdate(tickIndex, indexMini, timeElapsed);
-
-        if (jumpState != null)
-        {
-            if (jumpState.TickPast < jumpState.TickTotal)
-            {
-                jumpState.TickPast++;
-                // 计算插值因子
-                float t = (float)jumpState.TickPast / jumpState.TickTotal;
-
-                // 计算当前位置（带跳跃效果）
-                float yOffset = jumpState.Height * Mathf.Sin(t * Mathf.PI);
-                Vector3 currentPos = Vector3.Lerp(jumpState.PosStart, jumpState.PosTar, t);
-                currentPos.y += yOffset;
-
-                if (viewObj != null && position != Vector3.zero)
-                    viewObj.transform.position = position; //只改view
-            }
-        }     
     }
 
     private void CheckHpReg()
@@ -659,22 +613,6 @@ public class Chess : SceneObj
         return (damage, isCrit, isDodge, effect);
     }
 
-    public void JumpToPosition(Vector3 targetPos, float jumpHeight = 10f, float moveDuration = 0.5f)
-    {
-        if(BattleManager.Instance.quickMode)
-            return;
-
-        if(jumpState != null)
-            return;
-
-        jumpState = new JumpState();
-        jumpState.PosStart = position;
-        jumpState.PosTar = targetPos;
-        jumpState.Height = jumpHeight;
-        jumpState.TickTotal = BattleManager.Instance.GetTickFromTime(moveDuration);
-        jumpState.TickPast = 0;
-    }
-
     public void AddHp(int addon)
     {        
         if(addon <= 0)
@@ -814,20 +752,6 @@ public class Chess : SceneObj
         if(BattleManager.Instance.quickMode)
             return;
         viewObj?.PlayAnim(name);
-    }
-
-    public void StartJump(float time)
-    {
-        if(BattleManager.Instance.quickMode)
-            return;
-        viewObj?.StartJump(time);
-    }
-
-    public void StopJump()
-    {
-        if(BattleManager.Instance.quickMode)
-            return;
-        viewObj?.StopJump();
     }
 
     public void AddSkill(int skillId, int parentSkillId)

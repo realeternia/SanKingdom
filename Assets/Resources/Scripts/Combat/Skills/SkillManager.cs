@@ -19,10 +19,6 @@ public static class SkillManager
                 return new SkillAttackAddDamage(skillId, owner);
             case "AttackedBuff":
                 return new SkillAttackedBuff(skillId, owner);
-            case "AttackRunCross":
-                return new SkillAttackRunCross(skillId, owner);
-            case "AttackRunCrossPlus":
-                return new SkillAttackRunCrossPlus(skillId, owner);                
             case "HelpAidHeal":
                 return new SkillHelpAidHeal(skillId, owner);
             case "HelpAidBuff":
