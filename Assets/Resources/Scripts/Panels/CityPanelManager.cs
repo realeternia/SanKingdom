@@ -28,12 +28,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     public GameObject rankRegionHero;
     public GameObject rankCellHeroPrefab;
 
+    public ScrollRect scrollRectDev;
+    public GameObject rankRegionDev;
+
     public RectTransform topNode;
 
-    public RectTransform devList;
-
-    private float devItemWidth = 300f;
-    private float devItemHeight = 200f;
     private float devItemSpacing = 10f;
 
     private CityCellCity lastSelectedCity;
@@ -329,17 +328,12 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
     void ClearDevList()
     {
-        List<GameObject> toDestroy = new List<GameObject>();
-        foreach (Transform child in devList)
+        foreach (Transform child in rankRegionDev.transform)
         {
             if (child.GetComponent<CityDevItem>() != null || child.GetComponent<CityTroopsItem>() != null)
             {
-                toDestroy.Add(child.gameObject);
+                Destroy(child.gameObject);
             }
-        }
-        foreach (var obj in toDestroy)
-        {
-            Destroy(obj);
         }
     }
 
@@ -351,8 +345,11 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         var troopsItemPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelListItem("CityTroopsItem"));
 
-        var cityData = GameManager.Instance.GetCity(cityId);
-
+        RectTransform rankRect = rankRegionDev.GetComponent<RectTransform>();
+        rankRect.anchorMin = new Vector2(0, 1);
+        rankRect.anchorMax = new Vector2(0, 1);
+        rankRect.pivot = new Vector2(0, 1);
+        rankRect.anchoredPosition = Vector2.zero;
         float itemHeight = 150f;
         float spacing = 10f;
         int index = 0;
@@ -360,7 +357,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         var troops = SaveTroopsData.GetTroopsByForce(viewForceId);
         foreach (var troop in troops)
         {
-            var itemObj = Instantiate(troopsItemPrefab, devList);
+            var itemObj = Instantiate(troopsItemPrefab, rankRegionDev.transform);
             var rectTransform = itemObj.GetComponent<RectTransform>();
             rectTransform.anchorMin = new Vector2(0, 1);
             rectTransform.anchorMax = new Vector2(0, 1);
@@ -380,24 +377,45 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         if (!isViewOnly)
         {
-            int troopCount = cityData != null ? SaveTroopsData.GetTroopsCountByCity(cityId) : 0;
-            if (troopCount < SystemConst.City.MAX_TROOPS)
-            {
-                var createObj = Instantiate(troopsItemPrefab, devList);
-                var createRect = createObj.GetComponent<RectTransform>();
-                createRect.anchorMin = new Vector2(0, 1);
-                createRect.anchorMax = new Vector2(0, 1);
-                createRect.pivot = new Vector2(0, 1);
-                createRect.anchoredPosition = new Vector2(0, -index * (itemHeight + spacing));
+            var createObj = Instantiate(troopsItemPrefab, rankRegionDev.transform);
+            var createRect = createObj.GetComponent<RectTransform>();
+            createRect.anchorMin = new Vector2(0, 1);
+            createRect.anchorMax = new Vector2(0, 1);
+            createRect.pivot = new Vector2(0, 1);
+            createRect.anchoredPosition = new Vector2(0, -index * (itemHeight + spacing));
 
-                var createItem = createObj.GetComponent<CityTroopsItem>();
-                if (createItem != null)
-                {
-                    createItem.SetCityPanelManager(this);
-                    createItem.SetViewOnly(isViewOnly);
-                    createItem.Init(null);
-                    createItem.SetCreateMode(true);
-                }
+            var createItem = createObj.GetComponent<CityTroopsItem>();
+            if (createItem != null)
+            {
+                createItem.SetCityPanelManager(this);
+                createItem.SetViewOnly(isViewOnly);
+                createItem.Init(null);
+                createItem.SetCreateMode(true);
+            }
+            index++;
+        }
+
+        if (rankRect != null)
+        {
+            rankRect.sizeDelta = new Vector2(rankRect.sizeDelta.x, index * (itemHeight + spacing) - spacing);
+        }
+
+        if (scrollRectDev != null)
+        {
+            scrollRectDev.movementType = ScrollRect.MovementType.Clamped;
+            scrollRectDev.velocity = Vector2.zero;
+            scrollRectDev.normalizedPosition = new Vector2(0, 1);
+        }
+    }
+
+    public void RefreshTroopsUI()
+    {
+        foreach (Transform child in rankRegionDev.transform)
+        {
+            var troopsItem = child.GetComponent<CityTroopsItem>();
+            if (troopsItem != null)
+            {
+                troopsItem.RefreshUI();
             }
         }
     }
@@ -413,8 +431,15 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         bool isKing = isKingActMode;
 
-        float listWidth = devList.rect.width;
-        int itemsPerRow = Mathf.Max(1, Mathf.FloorToInt((listWidth + devItemSpacing) / (devItemWidth + devItemSpacing)));
+        RectTransform rankRect = rankRegionDev.GetComponent<RectTransform>();
+        rankRect.anchorMin = new Vector2(0, 1);
+        rankRect.anchorMax = new Vector2(0, 1);
+        rankRect.pivot = new Vector2(0, 1);
+        rankRect.anchoredPosition = Vector2.zero;
+        float prefabWidth = devPrefab.GetComponent<RectTransform>().sizeDelta.x;
+        float prefabHeight = devPrefab.GetComponent<RectTransform>().sizeDelta.y;
+        float listWidth = scrollRectDev != null ? scrollRectDev.GetComponent<RectTransform>().rect.width : rankRect.rect.width;
+        int itemsPerRow = Mathf.Max(1, Mathf.FloorToInt((listWidth + devItemSpacing) / (prefabWidth + devItemSpacing)));
         int devIndex = 0;
 
         foreach (var cfg in CityDevConfig.ConfigList)
@@ -425,10 +450,10 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             int row = devIndex / itemsPerRow;
             int col = devIndex % itemsPerRow;
 
-            float posX = col * (devItemWidth + devItemSpacing);
-            float posY = -row * (devItemHeight + devItemSpacing);
+            float posX = col * (prefabWidth + devItemSpacing);
+            float posY = -row * (prefabHeight + devItemSpacing);
 
-            var devNode = Instantiate(devPrefab, devList);
+            var devNode = Instantiate(devPrefab, rankRegionDev.transform);
             var rectTransform = devNode.GetComponent<RectTransform>();
             rectTransform.anchorMin = new Vector2(0, 1);
             rectTransform.anchorMax = new Vector2(0, 1);
@@ -444,6 +469,20 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             }
 
             devIndex++;
+        }
+
+        int totalRows = devIndex > 0 ? Mathf.CeilToInt((float)devIndex / itemsPerRow) : 0;
+        float totalHeight = totalRows * (prefabHeight + devItemSpacing) - devItemSpacing;
+        if (rankRect != null)
+        {
+            rankRect.sizeDelta = new Vector2(rankRect.sizeDelta.x, Mathf.Max(0, totalHeight));
+        }
+
+        if (scrollRectDev != null)
+        {
+            scrollRectDev.movementType = ScrollRect.MovementType.Clamped;
+            scrollRectDev.velocity = Vector2.zero;
+            scrollRectDev.normalizedPosition = new Vector2(0, 1);
         }
 
         LoadDevAssignmentsFromSave();

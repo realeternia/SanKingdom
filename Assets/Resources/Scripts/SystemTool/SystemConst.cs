@@ -167,7 +167,6 @@ public static class SystemConst
         /// 君主担任太守的评分加成
         /// </summary>
         public const int KING_OWNER_BONUS_SCORE = 9999;
-        public const int MAX_TROOPS = 5;
         public const int RES_ADDON_BONUS = 1;
         public const int BATTLE_TIME_MAX = 5;
         public const int BATTLE_TIME_INCREMENT = 2;

@@ -112,11 +112,30 @@ public class CityTroopsItem : MonoBehaviour
             return;
         }
 
+        bool isCommander = SaveTroopsData.IsHeroCommander(heroId, cityPanelManager.cityId);
+        SaveTroopsData oldTroop = SaveTroopsData.FindByHeroId(heroId);
+
+        // 主将不能调往其他军团
+        if (isCommander && oldTroop != warTeamData)
+        {
+            SystemTip.Instance.ShowTip("主将不能调往其他军团");
+            return;
+        }
+
+        // 从原军团移除
+        if (oldTroop != null && oldTroop != warTeamData)
+        {
+            int oldSlot = FindHeroSlot(oldTroop, heroId);
+            if (oldSlot >= 0)
+            {
+                SetHeroIdBySlot(oldTroop, oldSlot, 0);
+            }
+        }
+
         if (isCreateMode)
         {
             warTeamData = new SaveTroopsData();
             SetHeroIdBySlot(warTeamData, slotIndex, heroId);
-
             SaveTroopsData.AddTroopToCity(warTeamData, cityPanelManager.cityId);
 
             EnsureCommanderHasHighestLeadship(warTeamData);
@@ -164,7 +183,7 @@ public class CityTroopsItem : MonoBehaviour
 
         EnsureCommanderHasHighestLeadship(warTeamData);
         UpdateTroopCityId(warTeamData);
-        RefreshUI();
+        cityPanelManager.RefreshTroopsUI();
         cityPanelManager.UpdateAllHeroWorkState();
     }
 
@@ -322,7 +341,7 @@ public class CityTroopsItem : MonoBehaviour
         }
     }
 
-    private void RefreshUI()
+    public void RefreshUI()
     {
         if (warTeamData == null)
         {
@@ -404,7 +423,6 @@ public class CityTroopsItem : MonoBehaviour
         RefreshHeroSlot(hero1IconImage, warTeamData.heroId1);
         RefreshHeroSlot(hero2IconImage, warTeamData.heroId2);
         RefreshHeroSlot(hero3IconImage, warTeamData.heroId3);
-        
         UpdateBgColor();
         UpdateButtonsState();
     }
