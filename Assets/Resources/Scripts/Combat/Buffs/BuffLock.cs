@@ -14,7 +14,7 @@ public class BuffLock : Buff
         foreach (var unit in unitList)
         {
             if (unit.HasBuff(id) && unit != owner)
-                unit.DoSkillDamage(caster, skillCfg.Id, (int)(damage * skillCfg.SkillDamageRate));
+                unit.DoSkillDamage(caster, skillCfg.Id, (int)(damage * skillCfg.SkillDamageRate), false, 0);
         }
 
     }

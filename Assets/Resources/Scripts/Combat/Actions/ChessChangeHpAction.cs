@@ -19,6 +19,8 @@ public class ChessChangeHpAction : ChessAction
         {
             if(Value == 0)
                 return;
+
+            GameLog.Info($"ChessChangeHpAction[{ActionId}] chess={SourceId} val={Value}");
             
             var hpval = Math.Clamp(sourceChess.hp + Value, 1, sourceChess.maxHp);
             sourceChess.hp = hpval;

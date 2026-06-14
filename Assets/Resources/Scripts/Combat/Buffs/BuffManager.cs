@@ -12,10 +12,12 @@ public static class BuffManager
         BattleManager.Instance.AddChessAction(action);
     }
 
-    public static void DoAddBuff(Chess target, Chess caster, int skillId, int buffId, float lastTime)
+    public static void DoAddBuff(Chess target, Chess caster, int skillId, int buffId, float lastTime, int actionId = 0)
     {
         // lastTime now represents rounds instead of seconds
         var endRound = BattleManager.Instance.round + (int)lastTime;
+
+        GameLog.Info($"DoAddBuff[aid={actionId}] tgt={target.id} caster={caster.id} skill={skillId} buff={buffId} last={lastTime}");
 
        // UnityEngine.Debug.Log("AddBuff buffId=" + buffId.ToString() + " skillId=" + skillId.ToString() + " time=" + time.ToString());
 
@@ -74,8 +76,9 @@ public static class BuffManager
         BattleManager.Instance.AddChessAction(action);
     }
 
-    public static void DoRemoveBuff(Chess chess, int buffId)
+    public static void DoRemoveBuff(Chess chess, int buffId, int actionId = 0)
     {
+        GameLog.Info($"DoRemoveBuff[aid={actionId}] tgt={chess.id} buff={buffId}");
         for(int i = 0; i < chess.buffs.Count; i++)
         {
             if(chess.buffs[i].id == buffId)

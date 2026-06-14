@@ -209,11 +209,6 @@ public class Chess : SceneObj
 
     public override void LogicUpdate(int tickIndex)
     {
-        if (hp <= 0)
-        {
-            Ondying();
-            return;
-        }
         // 死亡判定
         if (dieAfterLifeTime)
         {
@@ -243,7 +238,7 @@ public class Chess : SceneObj
                     var caster = BattleManager.Instance.GetChess(dotState.casterId);
                     if (caster != null)
                     {
-                        DoSkillDamage(caster, dotState.skillId, (int)dotState.damage);
+                        DoSkillDamage(caster, dotState.skillId, (int)dotState.damage, false, 0);
                     }
                 }
             }
@@ -290,7 +285,7 @@ public class Chess : SceneObj
                     var caster = BattleManager.Instance.GetChess(dotState.casterId);
                     if (caster != null)
                     {
-                        DoSkillDamage(caster, dotState.skillId, (int)dotState.damage);
+                        DoSkillDamage(caster, dotState.skillId, (int)dotState.damage, false, 0);
                     }
                 }
             }
@@ -641,8 +636,10 @@ public class Chess : SceneObj
     }
 
     // 伤害结算（从AttackAction.Doing()和Missile.OnCrash()调用）
-    public void OnAttackDamage(Chess victim, int damage, bool isCrit, bool isDodge, string hitEffect, string damType)
+    public void OnAttackDamage(Chess victim, int damage, bool isCrit, bool isDodge, string hitEffect, string damType, int actionId)
     {
+        GameLog.Info($"OnAttackDamage[aid={actionId}] src={id} tgt={victim.id} dmg={damage} crit={isCrit} dodge={isDodge}");
+
         var actualDamage = Mathf.Min(damage, victim.hp);
         victim.hp -= damage;
         if (id != victim.id)
@@ -677,10 +674,12 @@ public class Chess : SceneObj
         FinishPendingAction();
     }
 
-    public void DoSkillDamage(Chess caster, int skillId, int damage, bool isFeedback = false)
+    public void DoSkillDamage(Chess caster, int skillId, int damage, bool isFeedback, int actionId)
     {
         if(hp <= 0)
             return;
+
+        GameLog.Info($"DoSkillDamage[aid={actionId}] caster={caster.id} tgt={id} skill={skillId} dmg={damage}");
 
         var skillCfg = SkillConfig.GetConfig(skillId);
         SkillManager.OnDoSkillDamage(this, caster, skillCfg, ref damage, isFeedback);          
@@ -697,6 +696,12 @@ public class Chess : SceneObj
         
         if (isHero && viewObj != null)
             viewObj.UpdateSoldierModels();
+        if (hp <= 0 && !SkillManager.isReplay)
+        {
+            Ondying();
+            return;
+        }
+
     }
 
     public void Ondying()

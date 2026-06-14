@@ -11,6 +11,7 @@ public class Missile : SceneObj
 
     public int skillId;
     public int skillDamage;
+    public int actionId;
 
     // 普通攻击伤害数据（skillId == 0时使用）
     public int attackDamage;
@@ -293,13 +294,15 @@ public class Missile : SceneObj
         if (target == null || target.hp <= 0 || ownerChess == null || ownerChess.hp <= 0)
             return;
 
+        GameLog.Info($"Missile.OnCrash[aid={actionId}] owner={ownerId} tgt={target.id} skill={skillId}");
+
         if (skillId == 0)
         {
-            ownerChess.OnAttackDamage(target, attackDamage, attackIsCrit, attackIsDodge, hitEffectName, attackDamType);
+            ownerChess.OnAttackDamage(target, attackDamage, attackIsCrit, attackIsDodge, hitEffectName, attackDamType, actionId);
         }
         else
         {
-            target.DoSkillDamage(ownerChess, skillId, skillDamage);
+            target.DoSkillDamage(ownerChess, skillId, skillDamage, false, actionId);
             EffectManager.PlaySkillEffect(target, hitEffectName);
         }
     }

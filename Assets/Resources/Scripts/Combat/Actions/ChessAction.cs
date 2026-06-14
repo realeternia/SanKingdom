@@ -1,6 +1,7 @@
 [System.Serializable]
 public class ChessAction
-{   
+{
+    public int ActionId;
     public int SourceId;
     public int Tick;
 

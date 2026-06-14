@@ -25,11 +25,12 @@ public class SkillPlayAction : ChessAction
             var skill = casterChess.skills.Find(x => x.skillId == SkillId);
             if (skill != null)
             {
+                GameLog.Info($"SkillPlayAction[{ActionId}] caster={SourceId} tgt={TargetChessId} skill={SkillId}");
                 skill.OnPlaySkill(targetChess, Parm1);
             }
             else
             {
-                GameLog.Error(string.Format("SkillPlayAction: Hero{0} SkillId {1} not found", casterChess.heroId, SkillId));
+                GameLog.Error($"SkillPlayAction[{ActionId}]: Hero{casterChess.heroId} SkillId {SkillId} not found");
             }
         }
     }

@@ -18,7 +18,7 @@ public class RemoveChessAction : ChessAction
             {
                 ownerChess.viewObj.DestroyHUD();
             }
-            GameLog.Info("RemoveChessAction " + ownerChess.id);
+            GameLog.Info($"RemoveChessAction[{ActionId}] {ownerChess.id}");
             if (ownerChess.viewObj != null)
             {
                 UnityEngine.Object.Destroy(ownerChess.viewObj.gameObject);

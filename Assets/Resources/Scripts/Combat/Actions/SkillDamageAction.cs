@@ -24,6 +24,8 @@ public class SkillDamageAction : ChessAction
 
         if (targetChess != null && casterChess != null)
         {
+            GameLog.Info($"SkillDamageAction[{ActionId}] caster={SourceId} tgt={TargetChessId} skill={SkillId} dmg={Damage}");
+
             var actualDamage = Mathf.Min(Damage, targetChess.hp);
             targetChess.hp -= Damage;
             if(casterChess != targetChess)

@@ -20,6 +20,7 @@ public class CreateEffectAction : ChessAction
         var battleManager = BattleManager.Instance;
         var casterChess = battleManager.GetChess(SourceId);
 
+        GameLog.Info($"CreateEffectAction[{ActionId}] src={SourceId} effect={EffectName}");
         EffectManager.PlayPosSkillEffect(casterChess, TargetPos, 1, EffectName, Time);
     }
 }

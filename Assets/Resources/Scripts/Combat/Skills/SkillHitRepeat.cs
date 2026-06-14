@@ -28,7 +28,7 @@ public class SkillHitRepeat : Skill
         if (defender != null && defender.hp > 0)
         {
             var d = (int)(damage * skillCfg.SkillDamageRate);
-            defender.DoSkillDamage(owner, skillId, d);
+            defender.DoSkillDamage(owner, skillId, d, false, 0);
             SkillManager.AddSkillAction(owner, defender, id, d);
         }
     }

@@ -28,13 +28,15 @@ public class AttackHitAction : ChessAction
         if (sourceChess == null || targetChess == null)
             return;
 
+        GameLog.Info($"AttackHitAction[{ActionId}] src={SourceId} tgt={TargetId} dmg={Damage}");
+
         if (IsRanged)
         {
-            BattleManager.Instance.CreateAttackMissile(sourceChess, targetChess, Damage, IsCrit, IsDodge, HitEffect, DamType);
+            BattleManager.Instance.CreateAttackMissile(sourceChess, targetChess, Damage, IsCrit, IsDodge, HitEffect, DamType, ActionId);
         }
         else
         {
-            sourceChess.OnAttackDamage(targetChess, Damage, IsCrit, IsDodge, HitEffect, DamType);
+            sourceChess.OnAttackDamage(targetChess, Damage, IsCrit, IsDodge, HitEffect, DamType, ActionId);
         }
     }
 }

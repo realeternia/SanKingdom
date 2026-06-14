@@ -39,7 +39,7 @@ public class SkillDefFeedback : Skill
         if (CheckBurst(attacker))
         {
             var damageBack = (int)(damage * skillCfg.Strength);
-            attacker.DoSkillDamage(owner, skillId, damageBack, true);
+            attacker.DoSkillDamage(owner, skillId, damageBack, true, 0);
 
             SkillManager.AddSkillAction(owner, null, id, damageBack);
         }

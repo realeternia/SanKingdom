@@ -21,7 +21,8 @@ public class AddBuffAction : ChessAction
         var caster = BattleManager.Instance.GetChess(CasterId);
         if (sourceChess != null && caster != null)
         {
-            BuffManager.DoAddBuff(sourceChess, caster, SkillId, BuffId, LastRounds);
+            GameLog.Info($"AddBuffAction[{ActionId}] tgt={SourceId} caster={CasterId} skill={SkillId} buff={BuffId}");
+            BuffManager.DoAddBuff(sourceChess, caster, SkillId, BuffId, LastRounds, ActionId);
         }
     }
 }

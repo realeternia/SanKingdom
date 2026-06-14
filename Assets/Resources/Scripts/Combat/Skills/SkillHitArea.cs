@@ -27,7 +27,7 @@ public class SkillHitArea : Skill
                 if(skillCfg.SkillDamageRate > 0 && damage2 <= 0)
                     return;
                 foreach(var unit in unitsInRange)
-                    unit.DoSkillDamage(owner, skillId, damage2);
+                    unit.DoSkillDamage(owner, skillId, damage2, false, 0);
             }
         }
     }

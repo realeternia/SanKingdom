@@ -79,7 +79,7 @@ public class SkillHitWall : Skill
         var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
         foreach (var unit in unitList)
         {
-            unit.DoSkillDamage(owner, skillId, damage);
+            unit.DoSkillDamage(owner, skillId, damage, false, 0);
         }
     }
 

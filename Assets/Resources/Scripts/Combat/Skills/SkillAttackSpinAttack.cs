@@ -18,7 +18,7 @@ public class SkillAttackSpinAttack : Skill
             BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
             foreach(var unit in unitsInRange)
             {
-                unit.DoSkillDamage(owner, skillId, (int)(damage * skillCfg.SkillDamageRate));
+                unit.DoSkillDamage(owner, skillId, (int)(damage * skillCfg.SkillDamageRate), false, 0);
             }
 
             SkillManager.AddSkillAction(owner, null, id, 0);

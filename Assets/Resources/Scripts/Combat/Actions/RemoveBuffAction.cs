@@ -14,7 +14,8 @@ public class RemoveBuffAction : ChessAction
         var sourceChess = BattleManager.Instance.GetChess(SourceId);
         if (sourceChess != null)
         {
-            BuffManager.DoRemoveBuff(sourceChess, BuffId);
+            GameLog.Info($"RemoveBuffAction[{ActionId}] tgt={SourceId} buff={BuffId}");
+            BuffManager.DoRemoveBuff(sourceChess, BuffId, ActionId);
         }
     }
 }

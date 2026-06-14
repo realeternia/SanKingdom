@@ -26,6 +26,8 @@ public class AttackAction : ChessAction
         if (sourceChess == null || targetChess == null)
             return;
 
+        GameLog.Info($"AttackAction[{ActionId}] src={SourceId} tgt={TargetId}");
+
         sourceChess?.viewObj?.FaceTo(targetChess.position);
         sourceChess?.viewObj?.PlaySodAnim("sodattack");
 
@@ -42,9 +44,9 @@ public class AttackAction : ChessAction
         if (hitDelayTicks <= 0)
         {
             if (IsRanged)
-                BattleManager.Instance.CreateAttackMissile(sourceChess, targetChess, damage, isCrit, isDodge, effect, DamType);
+                BattleManager.Instance.CreateAttackMissile(sourceChess, targetChess, damage, isCrit, isDodge, effect, DamType, ActionId);
             else
-                sourceChess.OnAttackDamage(targetChess, damage, isCrit, isDodge, effect, DamType);
+                sourceChess.OnAttackDamage(targetChess, damage, isCrit, isDodge, effect, DamType, ActionId);
         }
         else
         {

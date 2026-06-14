@@ -63,6 +63,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private BattleResult battleResult;
     public int idCounter = 100;
+    public int actionIdCounter = 1;
     public int tickIndex = 1;
     public int round = 0;
     public const int MaxRound = SystemConst.Battle.MAX_ROUND;
@@ -145,6 +146,7 @@ public class BattleManager : MonoBehaviour
         actions.Clear();
         gridOccupancy.Clear();
         idCounter = 100;
+        actionIdCounter = 1;
         battleId = GameManager.Instance.SaveData.battleStatManager.OnNewBattle();
         SkillManager.isReplay = false;
 
@@ -860,28 +862,31 @@ public class BattleManager : MonoBehaviour
         return (int)(time / tickTimeReal);
     } 
 
-    public void CreateAttackMissile(Chess sourceChess, Chess targetChess, int attackDamage = 0, bool attackIsCrit = false, bool attackIsDodge = false, string hitEffect = "", string attackDamType = "str")
+    public void CreateAttackMissile(Chess sourceChess, Chess targetChess, int attackDamage = 0, bool attackIsCrit = false, bool attackIsDodge = false, string hitEffect = "", string attackDamType = "str", int actionId = 0)
     {
         var id = idCounter++;
         var missile = new Missile(id, sourceChess, sourceChess.position, 0, 0, attackDamage, attackIsCrit, attackIsDodge, attackDamType);
+        missile.actionId = actionId;
         missile.Init();
         missileList.Add(missile);
         missile.MoveToTarget(targetChess);
     }
 
-    public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage)
+    public void CreateSpellMissile(Chess sourceChess, Chess targetChess, Vector3 startPos, int skillId, int damage, int actionId = 0)
     {
         var id = idCounter++;
         var missile = new Missile(id, sourceChess, startPos, skillId, damage);
+        missile.actionId = actionId;
         missile.Init();
         missileList.Add(missile);
         missile.MoveToTarget(targetChess);
     }
 
-    public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, int skillId, int damage)
+    public void CreateSpellMissile(Chess sourceChess, Vector3 targetPos, float time, int skillId, int damage, int actionId = 0)
     {
         var id = idCounter++;
         var missile = new Missile(id, sourceChess, sourceChess.position, skillId, damage);
+        missile.actionId = actionId;
         missile.Init();
         missileList.Add(missile);
         missile.MoveToDirection(targetPos, time);
@@ -1144,6 +1149,11 @@ public class BattleManager : MonoBehaviour
 
     public void AddChessAction(ChessAction action)
     {
+        // 回放模式下不创建新Action，由保存的Action驱动
+        if (SkillManager.isReplay)
+            return;
+
+        action.ActionId = actionIdCounter++;
         if(isDoingAction && action.Tick == tickIndex)
             action.Tick ++; //顺延到下一帧
         

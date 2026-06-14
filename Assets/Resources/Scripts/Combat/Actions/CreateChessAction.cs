@@ -61,7 +61,7 @@ public class CreateChessAction : ChessAction
 
     public override void Doing()
     {
-        GameLog.Info($"CreateChessAction {Id} {ForceId} {SpawnPos} {IsHero} {HeroId} {Level} {SoldierNum}");
+        GameLog.Info($"CreateChessAction[{ActionId}] {Id} {ForceId} {SpawnPos} {IsHero} {HeroId} {Level} {SoldierNum}");
 
         var battleManager = BattleManager.Instance;
         var chessObj = new Chess(Id);

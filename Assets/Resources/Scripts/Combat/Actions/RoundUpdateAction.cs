@@ -11,6 +11,7 @@ public class RoundUpdateAction : ChessAction
 
     public override void Doing()
     {
+        GameLog.Info($"RoundUpdateAction[{ActionId}] round={Round}");
         BattleManager.Instance.round = Round;
         if (BattleManager.Instance.showUI)
             BattleInfoTop.Instance.UpdateRound(Round, BattleManager.MaxRound);
