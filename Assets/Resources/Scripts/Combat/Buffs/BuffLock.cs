@@ -1,7 +1,7 @@
 public class BuffLock : Buff
 {
-    public BuffLock(int id, int skillId, Chess caster, Chess target, int lastTime)
-     : base(id, skillId, caster, target, lastTime)
+    public BuffLock(int id, int skillId, Chess caster, Chess target, int endRound)
+     : base(id, skillId, caster, target, endRound)
     {
     }
 

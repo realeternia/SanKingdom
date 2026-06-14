@@ -2,8 +2,8 @@ using System;
 
 public class BuffCoolDown : Buff
 {
-    public BuffCoolDown(int id, int skillId, Chess caster, Chess target, int lastTime)
-     : base(id, skillId, caster, target, lastTime)
+    public BuffCoolDown(int id, int skillId, Chess caster, Chess target, int endRound)
+     : base(id, skillId, caster, target, endRound)
     {
     }
 

@@ -19,18 +19,18 @@ public class Buff : IRecoverable
     [NonSerialized]
     public SkillConfig skillCfg;
 
-    public int endTime;
+    public int endRound;
     [NonSerialized]
     public GameObject effect;
 
 
-    public Buff(int id, int skillId, Chess caster, Chess unit, int endTick)
+    public Buff(int id, int skillId, Chess caster, Chess unit, int endRound)
     {
         this.id = id;
         casterId = caster.id;
         ownerId = unit.id;
         this.skillId = skillId;
-        endTime = endTick;
+        this.endRound = endRound;
         buffCfg = BuffConfig.GetConfig(id);
         skillCfg = SkillConfig.GetConfig(skillId);
     }
@@ -77,14 +77,14 @@ public class Buff : IRecoverable
     }
 
     //刷新
-    public virtual void Refresh(Chess caster, int endTick)
+    public virtual void Refresh(Chess caster, int endRound)
     {
-        endTime = Math.Max(endTime, endTick);
+        this.endRound = Math.Max(this.endRound, endRound);
     }
 
     public void WaitForRemove()
     {
-        endTime = 0;
+        endRound = 0;
     }
 
     public virtual void DuringAttack(Chess defender, string damType, ref int damageBase, ref float damageMulti, ref string effect)

@@ -18,7 +18,7 @@ public class SkillHitRepeat : Skill
         {
             this.defenderId = defender.id;
             this.damage = damage;
-            RegisterDelayEffect(BattleManager.Instance.tickIndex, skillCfg.TimeDelay * skillCfg.DoCount, skillCfg.DoCount);
+            RegisterDelayEffect(BattleManager.Instance.round, skillCfg.TimeDelay * skillCfg.DoCount, skillCfg.DoCount);
         }
     }
 

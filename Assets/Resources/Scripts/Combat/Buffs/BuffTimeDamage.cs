@@ -4,8 +4,8 @@ public class BuffTimeDamage : Buff
 {
     public float damage;
 
-    public BuffTimeDamage(int id, int skillId, Chess caster, Chess target, int lastTime)
-     : base(id, skillId, caster, target, lastTime)
+    public BuffTimeDamage(int id, int skillId, Chess caster, Chess target, int endRound)
+     : base(id, skillId, caster, target, endRound)
     {
     }
 

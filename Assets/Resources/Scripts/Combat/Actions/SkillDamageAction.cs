@@ -42,6 +42,9 @@ public class SkillDamageAction : ChessAction
             BattleManager.Instance.AddBattleText("-" + (Damage).ToString(), targetChess.position, new UnityEngine.Vector2(0, 60), SysColor.Battle.DamageColor, 7);
 
             targetChess.OnHpChanged();
+
+            // 技能伤害结算后结束施法者的待定回合
+            casterChess.FinishPendingAction();
         }
     }
 }

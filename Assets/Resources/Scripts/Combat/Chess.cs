@@ -77,6 +77,9 @@ public class Chess : SceneObj
     public int noMoveCount = 0;
     public int noActionCount = 0;
     public bool isInAttackRange = false;
+    public bool isTurnFinished = false;
+    public bool hasPendingAction = false;
+    public bool isDying = false;
 
     // 持续伤害相关状态
     public List<DamageOverTimeState> dotStates = new List<DamageOverTimeState>();
@@ -219,9 +222,8 @@ public class Chess : SceneObj
             {
                 Ondying();
             }
-        }        
+        }
 
-        buffs.Where(x => tickIndex > x.endTime).ToList().ForEach(x => BuffManager.RemoveBuff(this, x.id));
         SkillManager.LogicUpdate(this, tickIndex);
 
         CheckHpReg();
@@ -236,7 +238,6 @@ public class Chess : SceneObj
             {
                 dotState.tickCount = 0;
 
-                // 造成伤害
                 if (hp > 0)
                 {
                     var caster = BattleManager.Instance.GetChess(dotState.casterId);
@@ -247,9 +248,142 @@ public class Chess : SceneObj
                 }
             }
         }
+    }
 
-        MoveAndFight(tickIndex);
+    public void OnTurnStart()
+    {
+        isTurnFinished = false;
+        hasPendingAction = false;
+        // 重置攻击点数
+        attackPoint = SystemConst.Battle.ATTACK_POINT_THRESHOLD; // 回合制下每回合可以行动一次
 
+        // 召唤物生命周期
+        if (dieAfterLifeTime)
+        {
+            lifeTickCount--;
+            if (lifeTickCount <= 0)
+            {
+                Ondying();
+                isTurnFinished = true;
+                return;
+            }
+        }
+
+        // 技能延迟效果
+        SkillManager.LogicUpdate(this, BattleManager.Instance.tickIndex);
+
+        // 生命回复
+        CheckHpReg();
+
+        // 持续伤害（DoT）
+        for (int i = dotStates.Count - 1; i >= 0; i--)
+        {
+            var dotState = dotStates[i];
+            dotState.tickCount++;
+
+            if (dotState.tickCount >= dotState.tickInterval)
+            {
+                dotState.tickCount = 0;
+
+                if (hp > 0)
+                {
+                    var caster = BattleManager.Instance.GetChess(dotState.casterId);
+                    if (caster != null)
+                    {
+                        DoSkillDamage(caster, dotState.skillId, (int)dotState.damage);
+                    }
+                }
+            }
+        }
+    }
+
+    public void OnTurnAction()
+    {
+        if (hp <= 0)
+        {
+            isTurnFinished = true;
+            return;
+        }
+
+        // 被控制则跳过
+        if (noActionCount > 0)
+        {
+            isTurnFinished = true;
+            return;
+        }
+
+        // 寻找目标
+        FindTarget();
+
+        var targetChess = BattleManager.Instance.GetChess(targetChessId);
+        if (targetChess == null || targetChess.hp <= 0)
+        {
+            isTurnFinished = true;
+            return;
+        }
+
+        // 检查辅助技能
+        if (SkillManager.CheckAidSkill(this, BattleManager.Instance.tickIndex))
+        {
+            isTurnFinished = true;
+            return;
+        }
+
+        // 检查目标是否在攻击范围内
+        if (BattleManager.CheckInRange(position, targetChess.position, attackRange))
+        {
+            if (!isInAttackRange)
+            {
+                isInAttackRange = true;
+                viewObj?.PlaySodAnim("idle");
+            }
+            // 执行攻击，等待伤害结算后结束回合
+            SkillManager.AimTarget(this, targetChess);
+            Attack(targetChess, hitEffect, BattleManager.Instance.tickIndex);
+            hasPendingAction = true;
+            return;
+        }
+
+        // 不在攻击范围，尝试移动
+        if (noMoveCount > 0 || moveSpeed == 0)
+        {
+            isTurnFinished = true;
+            return;
+        }
+
+        if (isInAttackRange)
+        {
+            isInAttackRange = false;
+            viewObj?.PlaySodAnim("sodmove");
+        }
+
+        var moveDest = GetMoveDest();
+        if (moveDest != Vector3.zero)
+        {
+            targetChess = BattleManager.Instance.GetChess(targetChessId);
+            var moveAction = new MoveAction(id, BattleManager.Instance.tickIndex, targetChess != null ? targetChess.id : -1, moveDest);
+            BattleManager.Instance.AddChessAction(moveAction);
+        }
+
+        isTurnFinished = true;
+    }
+
+    public void OnTurnEnd()
+    {
+        isTurnFinished = true;
+        hasPendingAction = false;
+    }
+
+    /// <summary>
+    /// 伤害结算后调用，结束攻击者的待定回合
+    /// </summary>
+    public void FinishPendingAction()
+    {
+        if (hasPendingAction)
+        {
+            hasPendingAction = false;
+            isTurnFinished = true;
+        }
     }
 
     public override void RenderUpdate(int tickIndex, float indexMini, float timeElapsed)
@@ -524,20 +658,23 @@ public class Chess : SceneObj
             if(!string.IsNullOrEmpty(hitEffect))
                 EffectManager.PlayHitEffect(this, victim, hitEffect);
 
-            SkillManager.OnAttack(this, victim, damType, damage); 
+            SkillManager.OnAttack(this, victim, damType, damage);
         }
 
         if (isHero && actualDamage > 0)
         {
             BattleStatManager.AddDamage(forceId, heroId, actualDamage);
         }
-        
+
         if (victim.isHero && actualDamage > 0)
         {
             BattleStatManager.AddBeDamaged(victim.forceId, victim.heroId, actualDamage);
         }
 
-        victim.OnHpChanged();   
+        victim.OnHpChanged();
+
+        // 伤害结算后结束攻击者的待定回合
+        FinishPendingAction();
     }
 
     public void DoSkillDamage(Chess caster, int skillId, int damage, bool isFeedback = false)
@@ -564,6 +701,8 @@ public class Chess : SceneObj
 
     public void Ondying()
     {
+        if (isDying) return;
+        isDying = true;
         var action = new RemoveChessAction(id, BattleManager.Instance.tickIndex);
         BattleManager.Instance.AddChessAction(action);
     }
@@ -649,14 +788,14 @@ public class Chess : SceneObj
         return nowTick < lastAttackTime + SystemConst.Battle.IN_FIGHT_TICK_THRESHOLD;
     }
 
-    public void AddBuff(Buff buff, Chess caster, int endTick)
+    public void AddBuff(Buff buff, Chess caster, int endRound)
     {
         // 保留原有的buff刷新逻辑
         foreach(var item in buffs)
         {
             if(item.id == buff.id)
             {
-                item.Refresh(caster, endTick);
+                item.Refresh(caster, endRound);
                 return;
             }
         }

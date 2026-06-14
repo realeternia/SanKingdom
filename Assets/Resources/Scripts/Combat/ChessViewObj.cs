@@ -120,7 +120,8 @@ public class ChessViewObj : MonoBehaviour
         {
             if (soldier != null)
             {
-                var animator = soldier.transform.Find("body")?.GetComponent<Animator>();
+                var bodyTransform = soldier.transform.Find("body") ?? soldier.transform.Find("upNode/body");
+                var animator = bodyTransform?.GetComponent<Animator>();
                 animator?.Play(name);
             }
         }

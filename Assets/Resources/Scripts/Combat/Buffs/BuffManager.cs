@@ -14,8 +14,9 @@ public static class BuffManager
 
     public static void DoAddBuff(Chess target, Chess caster, int skillId, int buffId, float lastTime)
     {
-        var endTick = BattleManager.Instance.tickIndex + BattleManager.Instance.GetTickFromTime(lastTime);
-        
+        // lastTime now represents rounds instead of seconds
+        var endRound = BattleManager.Instance.round + (int)lastTime;
+
        // UnityEngine.Debug.Log("AddBuff buffId=" + buffId.ToString() + " skillId=" + skillId.ToString() + " time=" + time.ToString());
 
         Buff buff = null;
@@ -23,37 +24,37 @@ public static class BuffManager
         switch (buffCfg.ScriptName)
         {
             case "BuffShield":
-                buff = new BuffShield(buffId, skillId, caster, target, endTick);
+                buff = new BuffShield(buffId, skillId, caster, target, endRound);
                 break;
             case "BuffShieldValue":
-                buff = new BuffShieldValue(buffId, skillId, caster, target, endTick);
+                buff = new BuffShieldValue(buffId, skillId, caster, target, endRound);
                 break;
             case "BuffCoolDown":
-                buff = new BuffCoolDown(buffId, skillId, caster, target, endTick);
-                break; 
+                buff = new BuffCoolDown(buffId, skillId, caster, target, endRound);
+                break;
             case "BuffNoAction":
-                buff = new BuffNoAction(buffId, skillId, caster, target, endTick);
+                buff = new BuffNoAction(buffId, skillId, caster, target, endRound);
                 break;
             case "BuffNoMove":
-                buff = new BuffNoMove(buffId, skillId, caster, target, endTick);    
+                buff = new BuffNoMove(buffId, skillId, caster, target, endRound);
                 break;
             case "BuffLock":
-                buff = new BuffLock(buffId, skillId, caster, target, endTick);
+                buff = new BuffLock(buffId, skillId, caster, target, endRound);
                 break;
             case "BuffSuck":
-                buff = new BuffSuck(buffId, skillId, caster, target, endTick);
+                buff = new BuffSuck(buffId, skillId, caster, target, endRound);
                 break;
             case "BuffDamageAddRate":
-                buff = new BuffDamageAddRate(buffId, skillId, caster, target, endTick);
-                break;                
+                buff = new BuffDamageAddRate(buffId, skillId, caster, target, endRound);
+                break;
             case "BuffDamagedAddRate":
-                buff = new BuffDamagedAddRate(buffId, skillId, caster, target, endTick);
+                buff = new BuffDamagedAddRate(buffId, skillId, caster, target, endRound);
                 break;
             case "BuffSpeedDown":
-                buff = new BuffSpeedDown(buffId, skillId, caster, target, endTick);
+                buff = new BuffSpeedDown(buffId, skillId, caster, target, endRound);
                 break;
             case "BuffTimeDamage":
-                buff = new BuffTimeDamage(buffId, skillId, caster, target, endTick);
+                buff = new BuffTimeDamage(buffId, skillId, caster, target, endRound);
                 break;
 
         }
@@ -64,7 +65,7 @@ public static class BuffManager
             return;
         }
 
-        target.AddBuff(buff, caster, endTick);
+        target.AddBuff(buff, caster, endRound);
     }
 
     public static void RemoveBuff(Chess chess, int buffId)

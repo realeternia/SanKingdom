@@ -17,7 +17,7 @@ public class Skill : IRecoverable
     public bool isGivenSkill; //别人给的技能
     [NonSerialized]
     public SkillConfig skillCfg;
-    public int lastUpdateTick; // 上次更新CD的时间 (tick index)
+    public int lastUseRound; // 上次更新CD的回合
     [NonSerialized]
     public bool isBurst;
     public int skillId{ get{ return id; } }
@@ -54,7 +54,8 @@ public class Skill : IRecoverable
             var cdTime = skillCfg.CD;
             SkillManager.OnCheckCD(owner, skillCfg, ref cdTime);
 
-            lastUpdateTick = BattleManager.Instance.tickIndex + BattleManager.Instance.GetTickFromTime(cdTime);
+            // CD now represents rounds instead of seconds
+            lastUseRound = BattleManager.Instance.round + (int)cdTime;
         }
     }
 
@@ -67,7 +68,7 @@ public class Skill : IRecoverable
         if(skillCfg.CD <= 0)
             return false;
 
-        return BattleManager.Instance.tickIndex < lastUpdateTick;
+        return BattleManager.Instance.round < lastUseRound;
     }
 
     public bool CheckBurst(Chess target)
@@ -92,13 +93,13 @@ public class Skill : IRecoverable
         return isBurst;
     }
 
-    protected void RegisterDelayEffect(int tickIndex, float time, int count)
+    protected void RegisterDelayEffect(int currentRound, float roundsDelay, int count)
     {
         delayedFrames.Clear();
         for (int i = 0; i < count; i++)
         {
-            var tickDelay = BattleManager.Instance.GetTickFromTime(time * (i + 1) / count);
-            delayedFrames.Add(tickIndex + tickDelay);
+            var roundDelay = (int)(roundsDelay * (i + 1) / count);
+            delayedFrames.Add(currentRound + roundDelay);
         }
     }
 
@@ -109,7 +110,7 @@ public class Skill : IRecoverable
 
     public virtual void LogicUpdate(int tickIndex)
     {
-        if(delayedFrames.Count > 0 && delayedFrames[0] == tickIndex)
+        if(delayedFrames.Count > 0 && delayedFrames[0] <= BattleManager.Instance.round)
         {
             delayedFrames.RemoveAt(0);
             OnDelayEffectHit();

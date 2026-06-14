@@ -3,8 +3,8 @@ public class BuffShield : Buff
 {
     public int hp;
 
-    public BuffShield(int id, int skillId, Chess caster, Chess target, int lastTime)
-     : base(id, skillId, caster, target, lastTime)
+    public BuffShield(int id, int skillId, Chess caster, Chess target, int endRound)
+     : base(id, skillId, caster, target, endRound)
     {
     }
 
@@ -15,9 +15,9 @@ public class BuffShield : Buff
 
     }
 
-    public override void Refresh(Chess caster, int lastTime)
+    public override void Refresh(Chess caster, int endRound)
     {
-        base.Refresh(caster, lastTime);
+        base.Refresh(caster, endRound);
         hp = (int)(skillCfg.SkillAttrRate * caster.maxHp);
     }
 

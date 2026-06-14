@@ -25,7 +25,7 @@ public class SkillHitRegion : Skill
 
             var summonTime = GetSummonTime();
             var term = (int) System.Math.Floor(summonTime / skillCfg.SummonHitInterval);
-            RegisterDelayEffect(BattleManager.Instance.tickIndex, summonTime, term);
+            RegisterDelayEffect(BattleManager.Instance.round, summonTime, term);
         }
     }
 

@@ -464,6 +464,10 @@ public static class SystemConst
         public const float SOD_BONUS_MIN = 0.01f;
         public const float SOD_BONUS_MAX = 0.30f;
         public const float HERO_ATTR_TO_COMBAT_RATE = 0.7f;
+        /// <summary>
+        /// 回合间等待时间（秒）
+        /// </summary>
+        public const float TURN_END_WAIT_TIME = 0.5f;
     }
 
     public static class WorldMap

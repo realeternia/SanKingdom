@@ -4,15 +4,15 @@ public class AddBuffAction : ChessAction
     public int CasterId;
     public int SkillId;
     public int BuffId;
-    public float LastTime;
+    public float LastRounds;
 
-    public AddBuffAction(int sourceId, int tick, int casterId, int skillId, int buffId, float lastTime)
+    public AddBuffAction(int sourceId, int tick, int casterId, int skillId, int buffId, float lastRounds)
         : base(sourceId, tick)
     {
         CasterId = casterId;
         SkillId = skillId;
         BuffId = buffId;
-        LastTime = lastTime;
+        LastRounds = lastRounds;
     }
 
     public override void Doing()
@@ -21,7 +21,7 @@ public class AddBuffAction : ChessAction
         var caster = BattleManager.Instance.GetChess(CasterId);
         if (sourceChess != null && caster != null)
         {
-            BuffManager.DoAddBuff(sourceChess, caster, SkillId, BuffId, LastTime);
+            BuffManager.DoAddBuff(sourceChess, caster, SkillId, BuffId, LastRounds);
         }
     }
 }

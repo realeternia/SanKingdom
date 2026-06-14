@@ -54,7 +54,7 @@ public class SkillHitWall : Skill
             
             var summonTime = GetSummonTime();
             var term = (int)Math.Floor(summonTime / skillCfg.SummonHitInterval);
-            RegisterDelayEffect(BattleManager.Instance.tickIndex, summonTime, term);
+            RegisterDelayEffect(BattleManager.Instance.round, summonTime, term);
         }
     }
 

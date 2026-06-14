@@ -7,18 +7,20 @@ using UnityEngine.UI;
 public class GmPanelManager : MonoBehaviour
 {
     public Button fightBtn;
+    public Button fightQuickBtn;
     public Button closeBtn;
 
     void Start()
     {
         fightBtn.onClick.AddListener(OnFight);
+        fightQuickBtn.onClick.AddListener(OnFightQuick);
         closeBtn.onClick.AddListener(() =>
         {
             PanelManager.Instance.HideGmPanel();
         });
     }
 
-    private void OnFight()
+    private void StartTestBattle(bool quickMode, bool showUI)
     {
         var forces = GameManager.Instance.SaveData.forces;
         if (forces.Count < 2)
@@ -50,7 +52,7 @@ public class GmPanelManager : MonoBehaviour
             defenderSoldierMap[troop.heroId1] = SystemConst.Hero.MAX_SOLDIER_PER_HERO;
         }
 
-        BattleManager.Instance.SetMode(false, true);
+        BattleManager.Instance.SetMode(quickMode, showUI);
 
         var firstCity = GameManager.Instance.SaveData.cities.FirstOrDefault();
         int battleCityId = firstCity != null ? firstCity.cityId : 0;
@@ -58,6 +60,16 @@ public class GmPanelManager : MonoBehaviour
         BattleManager.Instance.BattleBegin(force1, force2, attackTroops, defenderTroops, attackSoldierMap, defenderSoldierMap, battleCityId);
 
         PanelManager.Instance.HideGmPanel();
+    }
+
+    private void OnFight()
+    {
+        StartTestBattle(false, true);
+    }
+
+    private void OnFightQuick()
+    {
+        StartTestBattle(true, false);
     }
 
     public void OnShow()

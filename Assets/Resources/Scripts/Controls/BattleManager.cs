@@ -11,6 +11,17 @@ public enum BattleResult
     Draw
 }
 
+public enum BattleTurnPhase
+{
+    RoundStart,
+    TurnStart,
+    TurnAction,
+    TurnPending,
+    TurnEnd,
+    NextTurn,
+    RoundEnd
+}
+
 [Serializable]
 public class BattleManager : MonoBehaviour
 {
@@ -53,9 +64,15 @@ public class BattleManager : MonoBehaviour
     private BattleResult battleResult;
     public int idCounter = 100;
     public int tickIndex = 1;
-    public int lastFoodDeductionTick = 0;    
     public int round = 0;
     public const int MaxRound = SystemConst.Battle.MAX_ROUND;
+
+    public BattleTurnPhase turnPhase = BattleTurnPhase.RoundStart;
+    public int currentTurnIndex = 0;
+    public List<int> turnOrder = new List<int>();
+    [NonSerialized]
+    public float turnEndWaitTimer = 0f;
+    public const float TURN_END_WAIT_TIME = SystemConst.Battle.TURN_END_WAIT_TIME;
 
     [NonSerialized]
     public bool quickMode = true;
@@ -128,12 +145,12 @@ public class BattleManager : MonoBehaviour
         actions.Clear();
         gridOccupancy.Clear();
         idCounter = 100;
-        lastFoodDeductionTick = 0;        
         battleId = GameManager.Instance.SaveData.battleStatManager.OnNewBattle();
         SkillManager.isReplay = false;
 
         gameFinish = false;
         round = 0;
+        turnPhase = BattleTurnPhase.RoundStart;
         playerDeployPositions.Clear();
 
         InitUI(force1, force2);
@@ -195,6 +212,7 @@ public class BattleManager : MonoBehaviour
         IsBattleRunning = true;
         
         LoadFromFile("battlereplayer" + replayBattleId + ".json");
+        GameLog.Info($"ReplayBattle replayBattleId={replayBattleId}");
         SkillManager.isReplay = true;
 
         chessList.Clear();
@@ -207,6 +225,7 @@ public class BattleManager : MonoBehaviour
         var player2 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
         
         InitUI(player1, player2);
+        battleUIManager.HideDeployConfirmButton();
 
         currentBattleCoroutine = StartCoroutine(GameUpdate(null, null, true));
     }
@@ -494,121 +513,269 @@ public class BattleManager : MonoBehaviour
     }
 
     public static float tickTimeReal = 0.1f; //加速功能
+
+    public void SortTurnOrder()
+    {
+        turnOrder.Clear();
+        var aliveChess = chessList.Where(x => x != null && x.hp > 0 && !x.isShadow).ToList();
+        aliveChess.Sort((a, b) =>
+        {
+            int speedCompare = b.moveSpeed.CompareTo(a.moveSpeed);
+            if (speedCompare != 0) return speedCompare;
+            int forceCompare = a.forceId.CompareTo(b.forceId);
+            if (forceCompare != 0) return forceCompare;
+            return a.id.CompareTo(b.id);
+        });
+        turnOrder = aliveChess.Select(x => x.id).ToList();
+    }
+
+    public void ProcessTurnState()
+    {
+        // 每次调用只推进一个棋子的行动，然后return让Actions有机会执行
+        // while循环仅跳过中间状态（RoundStart/TurnStart/TurnEnd/RoundEnd）
+        while (true)
+        {
+            if (gameFinish) return;
+
+            switch (turnPhase)
+            {
+                case BattleTurnPhase.RoundStart:
+                    round++;
+                    if (round > MaxRound)
+                    {
+                        gameFinish = true;
+                        battleResult = BattleResult.Draw;
+                        GameLog.Info($"战斗达到{MaxRound}回合，强制结束，平局");
+                        return;
+                    }
+                    SortTurnOrder();
+                    currentTurnIndex = 0;
+                    if (showUI)
+                        BattleInfoTop.Instance.UpdateRound(round, MaxRound);
+                    // 回合开始：检查Buff过期
+                    foreach (var chess in chessList.ToArray())
+                    {
+                        if (chess != null && chess.hp > 0)
+                        {
+                            chess.buffs.Where(x => round >= x.endRound).ToList().ForEach(x => BuffManager.RemoveBuff(chess, x.id));
+                        }
+                    }
+                    turnPhase = BattleTurnPhase.TurnStart;
+                    continue;
+
+                case BattleTurnPhase.TurnStart:
+                    if (currentTurnIndex >= turnOrder.Count)
+                    {
+                        turnPhase = BattleTurnPhase.RoundEnd;
+                        continue;
+                    }
+                    var currentChess = GetChess(turnOrder[currentTurnIndex]);
+                    if (currentChess == null || currentChess.hp <= 0 || currentChess.isDying)
+                    {
+                        currentTurnIndex++;
+                        continue;
+                    }
+                    currentChess.OnTurnStart();
+                    turnPhase = BattleTurnPhase.TurnAction;
+                    continue;
+
+                case BattleTurnPhase.TurnAction:
+                    var actionChess = GetChess(turnOrder[currentTurnIndex]);
+                    if (actionChess == null || actionChess.hp <= 0 || actionChess.isDying)
+                    {
+                        turnPhase = BattleTurnPhase.TurnEnd;
+                        continue;
+                    }
+                    actionChess.OnTurnAction();
+                    if (actionChess.hasPendingAction)
+                        turnPhase = BattleTurnPhase.TurnPending;
+                    else
+                        turnPhase = BattleTurnPhase.TurnEnd;
+                    return; // 执行了行动，必须return让Actions执行
+
+                case BattleTurnPhase.TurnPending:
+                    var pendingChess = GetChess(turnOrder[currentTurnIndex]);
+                    if (pendingChess == null || pendingChess.hp <= 0 || pendingChess.isDying || pendingChess.isTurnFinished)
+                        turnPhase = BattleTurnPhase.TurnEnd;
+                    return; // 等待或已结算，return让Actions执行
+
+                case BattleTurnPhase.TurnEnd:
+                    var endChess = GetChess(turnOrder[currentTurnIndex]);
+                    if (endChess != null && endChess.hp > 0 && !endChess.isDying)
+                    {
+                        endChess.OnTurnEnd();
+                    }
+                    turnEndWaitTimer = 0;
+                    turnPhase = BattleTurnPhase.NextTurn;
+                    continue;
+
+                case BattleTurnPhase.NextTurn:
+                    if (!quickMode)
+                    {
+                        turnEndWaitTimer++;
+                        if (turnEndWaitTimer < GetTickFromTime(TURN_END_WAIT_TIME))
+                            return;
+                    }
+                    currentTurnIndex++;
+                    while (currentTurnIndex < turnOrder.Count)
+                    {
+                        var nextChess = GetChess(turnOrder[currentTurnIndex]);
+                        if (nextChess != null && nextChess.hp > 0 && !nextChess.isDying)
+                            break;
+                        currentTurnIndex++;
+                    }
+                    if (currentTurnIndex >= turnOrder.Count)
+                        turnPhase = BattleTurnPhase.RoundEnd;
+                    else
+                        turnPhase = BattleTurnPhase.TurnStart;
+                    return; // 切换棋子，return让tick推进
+
+                case BattleTurnPhase.RoundEnd:
+                    turnPhase = BattleTurnPhase.RoundStart;
+                    continue;
+            }
+            break;
+        }
+    }
     
     private IEnumerator GameUpdate(Dictionary<int, int> attackSoldierMap, Dictionary<int, int> defenderSoldierMap, bool replay = false)
     {
         yield return new WaitForSeconds(0.5f);
 
         GameLog.Debug($"GameUpdatett start battleId={battleId} realTime={Time.time} cityId={cityId}");
-        var speed = 1;
-        if (quickMode && showUI)
-            speed = 10;
-        else if(quickMode)
-            speed = 400;
         tickIndex = 1;
 
         var waitTick = GetTickFromTime(SystemConst.Battle.WAIT_TIME);
         var battleBeginTick = GetTickFromTime(SystemConst.Battle.BATTLE_BEGIN_TIME);
-        var foodDeductionTick = GetTickFromTime(SystemConst.Battle.FOOD_DEDUCTION_INTERVAL);
 
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var magicHelperUnitId = SpawnUnitsForRegion(player1, SystemConst.Battle.MAGIC_HELPER_UNIT_ID, new Vector3(1, 7, 1), 10);
 
+        bool battleInitialized = false;
+        float tickAccumulator = 0f;
+        int replayMaxTick = replay && actions.Count > 0 ? actions.Max(x => x.Tick) : 0;
+
         while (!gameFinish)
         {
-            for (int i = 0; i < 4; i++)
-            {
-                yield return new WaitForSeconds(tickTimeReal / 4); //高频帧，给missile这种表现用
+            float frameDelta = Time.deltaTime;
 
-                if(showUI)
+            // 渲染帧：给Missile和Chess的RenderUpdate用
+            if (showUI)
+            {
+                for (int j = 0; j < missileList.Count; j++)
                 {
-                    for (int j = 0; j < missileList.Count; j++)                                                             
-                    {
-                        var missile = missileList[j];
-                        if (missile != null)
-                            missile.RenderUpdate(tickIndex, (float)i / 4, 1f/40);
-                    }
-                    foreach (var chess in chessList.ToArray())
-                    {
-                        if (chess != null)
-                            chess.RenderUpdate(tickIndex, (float)i / 4, 1f/40);
-                    }
+                    var missile = missileList[j];
+                    if (missile != null)
+                        missile.RenderUpdate(tickIndex, 0, frameDelta);
+                }
+                foreach (var chess in chessList.ToArray())
+                {
+                    if (chess != null)
+                        chess.RenderUpdate(tickIndex, 0, frameDelta);
                 }
             }
 
-            //  var sw = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 0; i < speed; i++)
+            // quickMode下每帧执行多个Tick，正常模式按真实时间推进
+            int ticksThisFrame = quickMode ? (showUI ? 10 : 100) : 1;
+            if (!quickMode)
+                tickAccumulator += frameDelta;
+
+            for (int t = 0; t < ticksThisFrame; t++)
             {
+                if (gameFinish) break;
 
-                if(!replay)
+                if (!quickMode)
                 {
-                    if(waitTick > 0 && tickIndex >= waitTick)
-                    {
-                        InitSummon(magicHelperUnitId, attackSoldierMap, defenderSoldierMap);
-                        waitTick = 0;
-                    }
-
-                    if(battleBeginTick > 0)
-                    {
-                        if(tickIndex >= battleBeginTick)
-                        {
-                            foreach (var chess in chessList.ToArray()) //防止召唤
-                                SkillManager.CheckAddSkill(chess);  
-                            foreach (var chess in chessList.ToArray()) //防止召唤
-                                SkillManager.BattleBegin(chess);
-                            lastFoodDeductionTick = tickIndex;                                
-                            battleBeginTick = 0;
-                        }
-                    }
-
-                    if(battleBeginTick == 0)
-                    {
-                        foreach (var chess in chessList.ToArray())
-                        {
-                            if (chess != null)
-                                chess.LogicUpdate(tickIndex);
-                        }
-                        foreach (var missile in missileList.ToArray())
-                        {
-                            if (missile != null)
-                                missile.LogicUpdate(tickIndex);
-                        }
-                        // 每个回合结束，玩家消耗食物
-                        if (tickIndex - lastFoodDeductionTick >= foodDeductionTick)
-                        {
-                            lastFoodDeductionTick = tickIndex;                            
-                            var roundAction = new RoundUpdateAction(0, tickIndex, round + 1);
-                            AddChessAction(roundAction);
-                            if (round >= MaxRound)
-                            {
-                                gameFinish = true;
-                                battleResult = BattleResult.Draw;
-                                GameLog.Info($"战斗达到{MaxRound}回合，强制结束，平局");
-                            }
-                        }
-                    }
-
+                    if (tickAccumulator < tickTimeReal)
+                        break;
+                    tickAccumulator -= tickTimeReal;
                 }
+
+                // Missile逻辑更新（不受回合制影响）
+                foreach (var missile in missileList.ToArray())
+                {
+                    if (missile != null)
+                        missile.LogicUpdate(tickIndex);
+                }
+
+                // 初始化阶段：召唤棋子和技能初始化
+                if (!battleInitialized)
+                {
+                    if (replay)
+                    {
+                        // 回放模式：跳过InitSummon，棋子由保存的CreateChessAction恢复
+                        battleInitialized = true;
+                    }
+                    else
+                    {
+                        if (waitTick > 0 && tickIndex >= waitTick)
+                        {
+                            InitSummon(magicHelperUnitId, attackSoldierMap, defenderSoldierMap);
+                            waitTick = 0;
+                        }
+
+                        if (battleBeginTick > 0 && tickIndex >= battleBeginTick)
+                        {
+                            foreach (var chess in chessList.ToArray())
+                                SkillManager.CheckAddSkill(chess);
+                            foreach (var chess in chessList.ToArray())
+                                SkillManager.BattleBegin(chess);
+                            battleBeginTick = 0;
+                            battleInitialized = true;
+                            turnPhase = BattleTurnPhase.RoundStart;
+                        }
+                    }
+                }
+                else
+                {
+                    // 回放模式：不驱动回合制状态机，由保存的Actions自然回放
+                    if (!replay)
+                    {
+                        // 回合制状态机驱动
+                        ProcessTurnState();
+                    }
+                }
+
+                // 执行Action队列
                 isDoingAction = true;
                 actions.FindAll(x => x.Tick == tickIndex).ForEach(x => x.Doing());
                 isDoingAction = false;
                 coroutineManager.Update(tickTimeReal);
-                tickIndex++;                
+
+                // 每Tick检查死亡单位（在Action执行之后，确保伤害已结算；回放模式由保存的RemoveChessAction处理，跳过）
+                if (!replay)
+                {
+                    foreach (var chess in chessList.ToArray())
+                    {
+                        if (chess != null && chess.hp <= 0 && !chess.isDying)
+                            chess.Ondying();
+                    }
+                }
+
+                // 回放模式：所有Action执行完毕后结束战斗
+                if (replay && replayMaxTick > 0 && tickIndex > replayMaxTick)
+                {
+                    gameFinish = true;
+                    if (battleResult == default(BattleResult))
+                        battleResult = BattleResult.Draw;
+                }
+
+                tickIndex++;
             }
 
-            if(showUI)
+            if (showUI)
             {
                 var leftSoldierTotal = chessList.Sum(x => x.forceId == playerInfoList[0].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
                 var rightSoldierTotal = chessList.Sum(x => x.forceId == playerInfoList[1].forceId && x.isHero ? Math.Max(0, x.hp) : 0);
                 BattleInfoTop.Instance.UpdateSoldierCount(leftSoldierTotal, rightSoldierTotal);
             }
-            //    sw.Stop();
-            //    UnityEngine.Debug.Log($"GameUpdate 循环耗时: {sw.ElapsedMilliseconds} ms");
+
+            yield return null;
         }
+
         GameLog.Info($"GameUpdatett end battleId={battleId} realTime={Time.time} cityId={cityId}");
 
-
-        if(showUI)
+        if (showUI)
             battleUIManager.OnBattleEnd(battleResult, replay);
 
         // 调用战斗结束回调
@@ -633,18 +800,18 @@ public class BattleManager : MonoBehaviour
             battleEndCallback(battleResult, attackerResult, defenderResult);
         }
 
-        if(!replay)
+        if (!replay)
         {
             var soldierLoss1 = playerInfoList[0].soldierNumInit - chessList.Where(x => x.forceId == playerInfoList[0].forceId && x.isHero).Sum(x => Math.Max(0, x.hp));
             var soldierLoss2 = playerInfoList[1].soldierNumInit - chessList.Where(x => x.forceId == playerInfoList[1].forceId && x.isHero).Sum(x => Math.Max(0, x.hp));
-            
+
             GameManager.Instance.SaveData.battleStatManager.SaveCurrentBattle(
                 cityId,
                 playerInfoList[0].forceId, playerInfoList[1].forceId,
                 battleResult,
                 round,
                 soldierLoss1, soldierLoss2);
-            
+
             LogBattleResult();
             SaveToFile("battlereplayer" + battleId + ".json");
         }
@@ -830,7 +997,11 @@ public class BattleManager : MonoBehaviour
 
         chessList.Remove(dieUnit);
 
-        gameFinish = false;
+        // 回放模式由replayMaxTick控制结束，不修改gameFinish
+        if (!SkillManager.isReplay)
+        {
+            gameFinish = false;
+        }
         battleResult = BattleResult.Lose;
         bool[] sideHasUnits = new bool[playerInfoList.Count];
         int aliveSideCount = 0;
