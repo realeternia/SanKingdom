@@ -21,9 +21,13 @@ public class ChessChangeHpAction : ChessAction
                 return;
 
             GameLog.Info($"ChessChangeHpAction[{ActionId}] chess={SourceId} val={Value}");
-            
+
             var hpval = Math.Clamp(sourceChess.hp + Value, 1, sourceChess.maxHp);
             sourceChess.hp = hpval;
+
+            if(Value > 0)
+                BattleManager.Instance.AddBattleText("+" + Value.ToString(), sourceChess.position, new UnityEngine.Vector2(0, 60), SysColor.Battle.HealColor, 7);
+
             sourceChess.OnHpChanged();
         }
     }

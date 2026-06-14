@@ -35,10 +35,18 @@ public class GmPanelManager : MonoBehaviour
         var attackTroops = new List<SaveTroopsData>();
         var defenderTroops = new List<SaveTroopsData>();
 
-        attackTroops.Add(new SaveTroopsData{ heroId1 = 100001, armsId = 603 });
-        attackTroops.Add(new SaveTroopsData{ heroId1 = 101001, armsId = 201 });
-        defenderTroops.Add(new SaveTroopsData{ heroId1 = 100002, armsId = 101 });
-        defenderTroops.Add(new SaveTroopsData{ heroId1 = 102002, armsId = SystemConst.Hero.DEFAULT_ARMS_ID });
+        // 五虎上将
+        attackTroops.Add(new SaveTroopsData{ heroId1 = 101002, armsId = 101 }); // 关羽-骑兵
+        attackTroops.Add(new SaveTroopsData{ heroId1 = 101001, armsId = 602 }); // 张飞-枪兵
+        attackTroops.Add(new SaveTroopsData{ heroId1 = 101008, armsId = 101 }); // 赵云-骑兵
+        attackTroops.Add(new SaveTroopsData{ heroId1 = 106001, armsId = 101 }); // 马超-骑兵
+        attackTroops.Add(new SaveTroopsData{ heroId1 = 107002, armsId = 201 }); // 黄忠-弓兵
+        // 五子良将
+        defenderTroops.Add(new SaveTroopsData{ heroId1 = 105001, armsId = 101 }); // 张辽-骑兵
+        defenderTroops.Add(new SaveTroopsData{ heroId1 = 102007, armsId = 603 }); // 徐晃-戟兵
+        defenderTroops.Add(new SaveTroopsData{ heroId1 = 102009, armsId = 601 }); // 于禁-刀兵
+        defenderTroops.Add(new SaveTroopsData{ heroId1 = 102012, armsId = 602 }); // 乐进-枪兵
+        defenderTroops.Add(new SaveTroopsData{ heroId1 = 104001, armsId = 201 }); // 张郃-弓兵
 
         var attackSoldierMap = new Dictionary<int, int>();
         foreach (var troop in attackTroops)

@@ -26,12 +26,6 @@ public class SkillAttackAddDamage : Skill
         }
     }
 
-    public override void OnAttack(Chess defender, string damType, int damage)
-    {
-        if(isBurst)
-            BattleManager.Instance.AddBattleText(damage.ToString() + "!", defender.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
-    }
-
     public override void OnPlaySkill(Chess target, int parm1)
     {
         owner.PlayerAnim(skillCfg.Action);

@@ -36,6 +36,5 @@ public class SkillHitRepeat : Skill
     public override void OnPlaySkill(Chess target, int parm1)
     {
         owner.PlayerAnim(skillCfg.Action);
-        BattleManager.Instance.AddBattleText(parm1.ToString() + "!", target.position, new UnityEngine.Vector2(0, 60), Color.red, 3);
     }
  }

@@ -126,6 +126,7 @@ public static class SysColor
     public static class Battle
     {
         public static readonly Color DamageColor = new Color(1f, 0f, 0f);
+        public static readonly Color HealColor = new Color(0f, 1f, 0f);
         public static readonly Color FoodLossColor = Color.red;
         public static readonly Color FoodGainColor = Color.green;
         public static readonly Color DeadColor = new Color(0.3f, 0.3f, 0.3f, 1f);

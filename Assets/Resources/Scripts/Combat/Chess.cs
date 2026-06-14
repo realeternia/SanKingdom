@@ -651,6 +651,9 @@ public class Chess : SceneObj
             BattleManager.Instance.AddBattleText("闪!", victim.position, new UnityEngine.Vector2(0, 40), Color.red, 3);
 
         if(damage > 0)
+            BattleManager.Instance.AddBattleText("-" + damage.ToString(), victim.position, new UnityEngine.Vector2(0, 60), SysColor.Battle.DamageColor, 7);
+
+        if(damage > 0)
         {
             if(!string.IsNullOrEmpty(hitEffect))
                 EffectManager.PlayHitEffect(this, victim, hitEffect);
