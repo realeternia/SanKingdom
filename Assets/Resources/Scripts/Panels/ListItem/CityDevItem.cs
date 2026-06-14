@@ -204,7 +204,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
 
     private void UpdateHeroDisplay()
     {
-        if (isRunType)
+        if (isRunType || devId == SystemConst.CityDev.IDLE_DEV_ID)
         {
             if (heroImg != null) heroImg.gameObject.SetActive(false);
             if (heroImgBG != null) heroImgBG.gameObject.SetActive(false);
@@ -234,7 +234,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
     {
         if (blackMaskImg != null && blackMaskImg.gameObject != null)
         {
-            if (isRunType)
+            if (isRunType || devId == SystemConst.CityDev.IDLE_DEV_ID)
             {
                 blackMaskImg.gameObject.SetActive(false);
             }

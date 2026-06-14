@@ -210,6 +210,7 @@ namespace CommonConfig
             config[21408] = new CityDevConfig(21408, "金矿", "提升金钱", "normal", true, false, "", "gold", 0, 1, "gold", new float[]{8f,6f,5f,4f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0, 0, 0, "");
             config[21409] = new CityDevConfig(21409, "盐矿", "提升盐", "normal", true, false, "", "salt", 0, 1, "salt", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0, 0, 0, "");
             config[21410] = new CityDevConfig(21410, "渔场", "提升鱼", "normal", true, false, "", "fish", 0, 1, "fish", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Str"}, "", 0, 0, 0, "");
+            config[21999] = new CityDevConfig(21999, "赋闲", "免除工作", "normal", false, false, "", "ququ", 0, 1, "", new float[0], "", new float[0], null, "", 0, 0, 0, "");
 
             RebuildIndex();
 

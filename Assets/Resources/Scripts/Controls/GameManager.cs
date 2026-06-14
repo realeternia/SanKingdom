@@ -243,7 +243,10 @@ public class GameManager : MonoBehaviour
             {
                 var heroIds = new int[] { assignment.heroId };
                 var devCfg = CityDevConfig.GetConfig(assignment.devId);
-                
+
+                if (assignment.devId == SystemConst.CityDev.IDLE_DEV_ID)
+                    continue;
+
                 List<PopResultPanelManager.AttrData> attrDatas = null;
                 
                 if (devCfg.Type == "normal")

@@ -330,19 +330,19 @@ public class CityTroopsItem : MonoBehaviour
             {
                 hero1IconImage.gameObject.SetActive(true);
                 hero1IconImage.sprite = null;
-                hero1IconImage.color = Color.white;
+                hero1IconImage.color = SysColor.Theme.CellNormalDark;
             }
             if (hero2IconImage != null)
             {
                 hero2IconImage.gameObject.SetActive(true);
                 hero2IconImage.sprite = null;
-                hero2IconImage.color = Color.white;
+                hero2IconImage.color = SysColor.Theme.CellNormalDark;
             }
             if (hero3IconImage != null)
             {
                 hero3IconImage.gameObject.SetActive(true);
                 hero3IconImage.sprite = null;
-                hero3IconImage.color = Color.white;
+                hero3IconImage.color = SysColor.Theme.CellNormalDark;
             }
             UpdateButtonsState();
             return;
@@ -414,16 +414,17 @@ public class CityTroopsItem : MonoBehaviour
         if (iconImage == null) return;
 
         iconImage.gameObject.SetActive(true);
-        iconImage.color = Color.white;
 
         if (heroId > 0)
         {
+            iconImage.color = Color.white;
             var heroConfig = HeroConfig.GetConfig(heroId);
             SetHeroIcon(iconImage, heroConfig.Icon);
         }
         else
         {
             iconImage.sprite = null;
+            iconImage.color = SysColor.Theme.CellNormalDark;
         }
     }
 

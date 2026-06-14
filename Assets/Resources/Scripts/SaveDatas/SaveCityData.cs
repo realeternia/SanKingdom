@@ -526,6 +526,9 @@ public class SaveCityData
         
         foreach (var assignment in devAssignments)
         {
+            if (assignment.devId == SystemConst.CityDev.IDLE_DEV_ID)
+                continue;
+
             var devCfg = CityDevConfig.GetConfig(assignment.devId);
             var heroData = GameManager.Instance.GetHero(assignment.heroId);
             GameLog.Debug($"CalculateDevAttrAddons devId={assignment.devId} DevAttr1={devCfg.DevAttr1} DevAttr2={devCfg.DevAttr2}");

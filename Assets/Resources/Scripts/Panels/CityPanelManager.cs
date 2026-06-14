@@ -519,7 +519,21 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         
         var cityData = GameManager.Instance.GetCity(cityId);
         var devCfg = CityDevConfig.GetConfig(targetNode.GetDevId());
-        
+        bool isIdleDev = targetNode.GetDevId() == SystemConst.CityDev.IDLE_DEV_ID;
+
+        if (isIdleDev)
+        {
+            if (heroToDevNodeMap.TryGetValue(heroId, out CityDevItem idleOldNode))
+            {
+                idleOldNode.RemoveHero(heroId);
+            }
+            cityData.RemoveDevAssignment(heroId);
+            UpdateAllHeroWorkState();
+            UpdateAllResItemAddons();
+            GameLog.Info($"Hero {heroId} assigned to idle, dev assignment cleared");
+            return true;
+        }
+
         bool isHeroAlreadyAssigned = heroToDevNodeMap.ContainsKey(heroId);
         var nodeHeroIds = targetNode.GetHeroIds();
         bool isTargetNodeFull = nodeHeroIds.Count >= devCfg.HeroCount;

@@ -596,6 +596,7 @@ public static class SystemConst
     {
         public const int MOVE_DEV_ID = 21102;
         public const int BATTLE_DEV_ID = 21103;
+        public const int IDLE_DEV_ID = 21999;
     }
 
     public static class Diplomacy
