@@ -500,6 +500,62 @@ namespace DesignCoder
             MarkCurrentConfigModified();
         }
 
+        private void btnMultiply_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1 == null || dataGridView1.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("请先选中要成倍计算的单元格", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 检查选中的单元格是否都是 int 类型
+            foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
+            {
+                if (cell.RowIndex < HeaderRowCount) continue;
+                int fieldIdx = GetFieldIndexFromColumnIndex(cell.ColumnIndex);
+                if (fieldIdx >= 0 && fieldIdx < currentConfig.Fields.Count)
+                {
+                    string fieldType = currentConfig.Fields[fieldIdx].Type.ToLower();
+                    if (fieldType != "int")
+                    {
+                        MessageBox.Show(string.Format("成倍操作仅支持int类型字段，字段\"{0}\"的类型为{1}", currentConfig.Fields[fieldIdx].Name, currentConfig.Fields[fieldIdx].Type), "类型错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+            }
+
+            string input = ShowInputDialog("成倍计算", "请输入倍数（浮点数，如0.7）：");
+            if (input == null) return;
+
+            float multiplier;
+            if (!float.TryParse(input, out multiplier))
+            {
+                MessageBox.Show("请输入有效的浮点数", "输入错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            bool anyChanged = false;
+            foreach (DataGridViewCell cell in dataGridView1.SelectedCells)
+            {
+                if (cell.RowIndex < HeaderRowCount || cell.ColumnIndex < 0) continue;
+
+                string cellValue = cell.Value != null ? cell.Value.ToString() : "0";
+                int intVal;
+                if (int.TryParse(cellValue, out intVal))
+                {
+                    int newVal = (int)Math.Round(intVal * multiplier);
+                    cell.Value = newVal.ToString();
+                    anyChanged = true;
+                }
+            }
+
+            if (anyChanged)
+            {
+                SyncDataTableToConfig();
+                MarkCurrentConfigModified();
+            }
+        }
+
         private int GetFieldIndexFromColumnIndex(int colIdx)
         {
             if (colIdx <= 0) return -1;

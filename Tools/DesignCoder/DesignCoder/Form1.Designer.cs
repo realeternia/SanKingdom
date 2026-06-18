@@ -27,6 +27,7 @@ namespace DesignCoder
             this.btnDeleteRow = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnBatchFill = new System.Windows.Forms.ToolStripButton();
+            this.btnMultiply = new System.Windows.Forms.ToolStripButton();
             this.btnForeColor = new System.Windows.Forms.ToolStripButton();
             this.btnBackColor = new System.Windows.Forms.ToolStripButton();
             this.btnClearColors = new System.Windows.Forms.ToolStripButton();
@@ -50,6 +51,7 @@ namespace DesignCoder
             this.contextMenuStripCell = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuDeleteRowCtx = new System.Windows.Forms.ToolStripMenuItem();
             this.menuCellBatchFill = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuCellMultiply = new System.Windows.Forms.ToolStripMenuItem();
             this.menuCellForeColor = new System.Windows.Forms.ToolStripMenuItem();
             this.menuCellBackColor = new System.Windows.Forms.ToolStripMenuItem();
             this.menuCellClearColors = new System.Windows.Forms.ToolStripMenuItem();
@@ -76,6 +78,7 @@ namespace DesignCoder
             this.btnDeleteRow,
             this.toolStripSeparator2,
             this.btnBatchFill,
+            this.btnMultiply,
             this.btnForeColor,
             this.btnBackColor,
             this.btnClearColors});
@@ -150,6 +153,17 @@ namespace DesignCoder
             this.btnBatchFill.Size = new System.Drawing.Size(69, 24);
             this.btnBatchFill.Text = "批量填充";
             this.btnBatchFill.Click += new System.EventHandler(this.btnBatchFill_Click);
+            //
+            // btnMultiply
+            //
+            this.btnMultiply.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnMultiply.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.btnMultiply.ForeColor = System.Drawing.Color.White;
+            this.btnMultiply.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnMultiply.Name = "btnMultiply";
+            this.btnMultiply.Size = new System.Drawing.Size(41, 24);
+            this.btnMultiply.Text = "成倍";
+            this.btnMultiply.Click += new System.EventHandler(this.btnMultiply_Click);
             // 
             // btnForeColor
             // 
@@ -358,6 +372,7 @@ namespace DesignCoder
             this.contextMenuStripCell.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuDeleteRowCtx,
             this.menuCellBatchFill,
+            this.menuCellMultiply,
             this.menuCellForeColor,
             this.menuCellBackColor,
             this.menuCellClearColors});
@@ -377,6 +392,13 @@ namespace DesignCoder
             this.menuCellBatchFill.Size = new System.Drawing.Size(136, 22);
             this.menuCellBatchFill.Text = "批量填充";
             this.menuCellBatchFill.Click += new System.EventHandler(this.btnBatchFill_Click);
+            //
+            // menuCellMultiply
+            //
+            this.menuCellMultiply.Name = "menuCellMultiply";
+            this.menuCellMultiply.Size = new System.Drawing.Size(136, 22);
+            this.menuCellMultiply.Text = "成倍";
+            this.menuCellMultiply.Click += new System.EventHandler(this.btnMultiply_Click);
             // 
             // menuCellForeColor
             // 
@@ -436,6 +458,7 @@ namespace DesignCoder
         private System.Windows.Forms.ToolStripButton btnDeleteRow;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton btnBatchFill;
+        private System.Windows.Forms.ToolStripButton btnMultiply;
         private System.Windows.Forms.ToolStripButton btnForeColor;
         private System.Windows.Forms.ToolStripButton btnBackColor;
         private System.Windows.Forms.ToolStripButton btnClearColors;
@@ -459,6 +482,7 @@ namespace DesignCoder
         private System.Windows.Forms.ContextMenuStrip contextMenuStripCell;
         private System.Windows.Forms.ToolStripMenuItem menuDeleteRowCtx;
         private System.Windows.Forms.ToolStripMenuItem menuCellBatchFill;
+        private System.Windows.Forms.ToolStripMenuItem menuCellMultiply;
         private System.Windows.Forms.ToolStripMenuItem menuCellForeColor;
         private System.Windows.Forms.ToolStripMenuItem menuCellBackColor;
         private System.Windows.Forms.ToolStripMenuItem menuCellClearColors;
