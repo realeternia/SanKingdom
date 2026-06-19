@@ -653,6 +653,23 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     public void SetCityId(int cityId)
     {
         this.cityId = cityId;
+        
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData != null)
+        {
+            var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
+            if (SysSwitch.CanViewOtherForceCity && cityData.forceId != playerForce?.forceId)
+            {
+                isViewOnly = true;
+                viewForceId = cityData.forceId;
+            }
+            else
+            {
+                isViewOnly = false;
+                viewForceId = playerForce?.forceId ?? 0;
+            }
+        }
+        
         UpdateCityInfo();
         InitTopNodeResItems();
     }
@@ -755,7 +772,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         
         if (!isViewOnly)
         {
-            PanelManager.Instance.UpdateForceResItemAddons();
+            PanelManager.Instance.RefreshForceResItems(viewForceId);
         }
     }
 

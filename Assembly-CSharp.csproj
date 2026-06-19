@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Generated file, do not modify, your changes will be overwritten (use AssetPostprocessor.OnGeneratedCSProject) -->
   <PropertyGroup>
@@ -110,6 +110,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\WorldPieceControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ConfigManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\AIConst.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellInfoCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />

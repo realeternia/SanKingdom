@@ -174,11 +174,11 @@ namespace CommonConfig
         {
             config.Clear();
             config[1] = new ArmsConfig(1, "dyb", "动员兵", ArmsType.SodWalk, 0, 0, 0, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 1f, 4, 0, 0, 0, 0);
-            config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 1, 30, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHorseSpear", 1f, 6, 2, 0, 0, 0);
-            config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 1, 25, 5, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 1f, 4, 0, 0, 1, 0);
-            config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 1, 5, 5, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 0f, 4, 0, 1, 0, 0);
-            config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 15, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodSpear", 1f, 4, 0, 1, 1, 0);
-            config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 10, 15, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHalberd", 1f, 4, 0, 1, 1, 0);
+            config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 1, 35, 5, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHorseSpear", 1f, 6, 2, 0, 0, 0);
+            config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 1, 10, 0, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 1f, 4, 0, 0, 1, 0);
+            config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 1, 10, 8, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 0f, 4, 0, 1, 0, 0);
+            config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 20, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodSpear", 1f, 4, 0, 1, 1, 0);
+            config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 10, 20, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHalberd", 1f, 4, 0, 1, 1, 0);
 
             RebuildIndex();
 

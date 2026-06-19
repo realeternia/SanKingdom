@@ -59,7 +59,7 @@ public class HeroDispatcher
                     combatCount++;
             }
             
-            int neededCombat = SystemConst.AIStrategy.FRONTLINE_COMBAT_HEROES_TARGET - combatCount;
+            int neededCombat = AIConst.AIStrategy.FRONTLINE_COMBAT_HEROES_TARGET - combatCount;
             
             for (int i = 0; i < neededCombat && rearCombatHeroes.Count > 0; i++)
             {
@@ -70,7 +70,7 @@ public class HeroDispatcher
                 var srcCity = GameManager.Instance.GetCity(srcCityId);
 
                 if (rearCityHeroMap.ContainsKey(srcCityId) && 
-                    rearCityHeroMap[srcCityId].Count > SystemConst.AIHero.MIN_REAR_HEROES)
+                    rearCityHeroMap[srcCityId].Count > AIConst.AIHero.MIN_REAR_HEROES)
                 {
                     force.MoveHeroToCity(srcCityId, cityId, new int[] { heroToMove.heroId });
                     rearCityHeroMap[srcCityId].Remove(heroToMove);

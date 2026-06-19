@@ -17,9 +17,9 @@ public class CityStrategyAttack : CityStrategyBase
     {
         GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(Force.forceId)} - [{ConfigNameHelper.GetCityName(City.cityId)}] 执行进攻策略，目标: {ConfigNameHelper.GetCityName(_targetCityId)}");
         
+        AssignResProduction();
         AssignHeroesToDev();
         FormTroops();
-        AssignAdvancedArms();
         CreateWarPlan();
     }
     
@@ -59,7 +59,7 @@ public class CityStrategyAttack : CityStrategyBase
 
         int totalSoldier = heroSoldierDict.Values.Sum();
 
-        if (totalSoldier < SystemConst.AIStrategy.AI_MIN_ATTACK_SOLDIER)
+        if (totalSoldier < AIConst.AIStrategy.AI_MIN_ATTACK_SOLDIER)
             return;
 
         int foodNeeded = SysFormula.AIStrategy.CalculateFoodNeeded(totalSoldier);

@@ -44,7 +44,8 @@ Unity (C#) | JsonUtility | UGUI | TextMeshPro
 
 ### 公式与常量
 
-- 数值常量：`SystemConst` 嵌套静态类
+- 数值常量：`SystemConst` 嵌套静态类（`SystemTool/SystemConst.cs`）
+- AI相关常量：`AIConst` 嵌套静态类（`Controls/AI/AIConst.cs`），禁止将AI常量放在 `SystemConst` 中
 - 计算公式：`SysFormula` 嵌套静态类
 - 禁止魔法数字和内联计算公式
 

@@ -13,9 +13,9 @@ public class CityStrategyDefense : CityStrategyBase
     {
         GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(Force.forceId)} - [{ConfigNameHelper.GetCityName(City.cityId)}] 执行防御策略");
         
+        AssignResProduction();
         AssignHeroesToDev();
         FormTroops();
-        AssignAdvancedArms();
     }
     
     protected override List<CityDevConfig> GetSortedDevConfigs()

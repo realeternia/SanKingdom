@@ -188,9 +188,9 @@ public static class SysFormula
             int combatScore = str + leadship + inte;
             int domesticScore = inte + fair + charm;
 
-            if (combatScore >= SystemConst.AIHero.COMBAT_THRESHOLD && combatScore > domesticScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
+            if (combatScore >= AIConst.AIHero.COMBAT_THRESHOLD && combatScore > domesticScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
                 return HeroType.Combat;
-            else if (domesticScore >= SystemConst.AIHero.DOMESTIC_THRESHOLD && domesticScore > combatScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
+            else if (domesticScore >= AIConst.AIHero.DOMESTIC_THRESHOLD && domesticScore > combatScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
                 return HeroType.Domestic;
 
             return HeroType.Balanced;
@@ -315,35 +315,35 @@ public static class SysFormula
 
         public static int CalculateEffectiveSoldier(int citySoldier, int heroCount)
         {
-            int maxSoldierByHeroes = (heroCount - 1) * SystemConst.AIStrategy.MAX_SOLDIER_PER_HERO;
+            int maxSoldierByHeroes = (heroCount - 1) * AIConst.AIStrategy.MAX_SOLDIER_PER_HERO;
             return Math.Min(citySoldier, maxSoldierByHeroes);
         }
 
         public static bool CheckOwnCityAttackAdvantage(int mySoldier, int targetSoldier)
         {
-            return mySoldier >= targetSoldier * SystemConst.AIStrategy.AI_OWN_CITY_ATTACK_ADVANTAGE_RATIO;
+            return mySoldier >= targetSoldier * AIConst.AIStrategy.AI_OWN_CITY_ATTACK_ADVANTAGE_RATIO;
         }
 
         public static bool CheckAttackFoodSufficient(int soldier, int food)
         {
-            return food >= soldier / SystemConst.AIStrategy.AI_ATTACK_FOOD_DIVISOR;
+            return food >= soldier / AIConst.AIStrategy.AI_ATTACK_FOOD_DIVISOR;
         }
 
         public static bool HasThreat(int enemySoldier)
         {
-            return enemySoldier >= SystemConst.AIStrategy.AI_THREAT_ENEMY_SOLDIER_THRESHOLD;
+            return enemySoldier >= AIConst.AIStrategy.AI_THREAT_ENEMY_SOLDIER_THRESHOLD;
         }
 
         public static bool CanExpand(int totalGold, int totalFood, int totalSoldier)
         {
-            return totalGold >= SystemConst.AIStrategy.MIN_RESOURCE_FOR_ATTACK
-                && totalFood >= SystemConst.AIStrategy.MIN_RESOURCE_FOR_ATTACK
-                && totalSoldier >= SystemConst.AIStrategy.MIN_SOLDIER_FOR_ATTACK;
+            return totalGold >= AIConst.AIStrategy.MIN_RESOURCE_FOR_ATTACK
+                && totalFood >= AIConst.AIStrategy.MIN_RESOURCE_FOR_ATTACK
+                && totalSoldier >= AIConst.AIStrategy.MIN_SOLDIER_FOR_ATTACK;
         }
 
         public static int CalculateFoodNeeded(int totalSoldier)
         {
-            return totalSoldier / SystemConst.AIStrategy.AI_FOOD_NEED_DIVISOR;
+            return totalSoldier / AIConst.AIStrategy.AI_FOOD_NEED_DIVISOR;
         }
 
         public static int CalculateTroopLimit(int commanderCount, int heroCount, int citySoldier)
@@ -351,7 +351,7 @@ public static class SysFormula
             int limitByCommander = commanderCount;
             int soldierPerCorps = CalculateSoldierPerCorps(heroCount);
             int limitBySoldier = citySoldier / soldierPerCorps;
-            int hardLimit = SystemConst.AIStrategy.TROOP_CITY_HARD_LIMIT;
+            int hardLimit = AIConst.AIStrategy.TROOP_CITY_HARD_LIMIT;
 
             return Math.Max(0, Math.Min(hardLimit, Math.Min(limitByCommander, limitBySoldier)));
         }
@@ -362,10 +362,10 @@ public static class SysFormula
         /// </summary>
         public static int CalculateSoldierPerCorps(int heroCount)
         {
-            int baseValue = SystemConst.AIStrategy.TROOP_SOLDIER_PER_CORPS;
-            int minValue = SystemConst.AIStrategy.TROOP_SOLDIER_PER_CORPS_RELAXED;
-            int startThreshold = SystemConst.AIStrategy.TROOP_HERO_RICH_THRESHOLD;
-            int endThreshold = SystemConst.AIStrategy.TROOP_HERO_FULL_RICH_THRESHOLD;
+            int baseValue = AIConst.AIStrategy.TROOP_SOLDIER_PER_CORPS;
+            int minValue = AIConst.AIStrategy.TROOP_SOLDIER_PER_CORPS_RELAXED;
+            int startThreshold = AIConst.AIStrategy.TROOP_HERO_RICH_THRESHOLD;
+            int endThreshold = AIConst.AIStrategy.TROOP_HERO_FULL_RICH_THRESHOLD;
 
             if (heroCount <= startThreshold) return baseValue;
             if (heroCount >= endThreshold) return minValue;

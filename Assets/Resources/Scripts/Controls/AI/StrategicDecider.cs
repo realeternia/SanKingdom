@@ -26,9 +26,9 @@ public class AttackCandidate
 
 public class StrategicDecider
 {
-    private const int MAX_ATK_CITIES = SystemConst.AIStrategy.MAX_ATK_CITIES;
-    private const int MIN_CITY_SOLDIER_FOR_ATTACK = SystemConst.AIStrategy.MIN_CITY_SOLDIER_FOR_ATTACK;
-    private const int MIN_CITY_HEROES_FOR_ATTACK = SystemConst.AIStrategy.MIN_CITY_HEROES_FOR_ATTACK;
+    private const int MAX_ATK_CITIES = AIConst.AIStrategy.MAX_ATK_CITIES;
+    private const int MIN_CITY_SOLDIER_FOR_ATTACK = AIConst.AIStrategy.MIN_CITY_SOLDIER_FOR_ATTACK;
+    private const int MIN_CITY_HEROES_FOR_ATTACK = AIConst.AIStrategy.MIN_CITY_HEROES_FOR_ATTACK;
     
     private static Dictionary<int, HashSet<int>> attackedTargetsThisRound = new Dictionary<int, HashSet<int>>();
     private static Dictionary<int, int> attackTargets = new Dictionary<int, int>();
@@ -203,7 +203,7 @@ public class StrategicDecider
         int mySoldier = CalculateEffectiveSoldier(bestCity);
         int targetSoldier = (int)Math.Floor(targetCity.GetAttr("soldier"));
         
-        if (mySoldier < targetSoldier * SystemConst.AIStrategy.AI_ATTACK_SOURCE_ADVANTAGE_RATIO)
+        if (mySoldier < targetSoldier * AIConst.AIStrategy.AI_ATTACK_SOURCE_ADVANTAGE_RATIO)
             return null;
 
         return bestCity.cityId;
