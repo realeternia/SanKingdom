@@ -346,20 +346,35 @@ public static class SysFormula
             return totalSoldier / SystemConst.AIStrategy.AI_FOOD_NEED_DIVISOR;
         }
 
-        public static int CalculateTroopLimit(int cityLevel, int idleHeroCount, int citySoldier)
+        public static int CalculateTroopLimit(int commanderCount, int heroCount, int citySoldier)
         {
-            int limitByLevel;
-            if (cityLevel <= SystemConst.AIStrategy.CITY_LEVEL_LOW)
-                limitByLevel = SystemConst.AIStrategy.TROOP_LIMIT_LOW;
-            else if (cityLevel <= SystemConst.AIStrategy.CITY_LEVEL_HIGH)
-                limitByLevel = SystemConst.AIStrategy.TROOP_LIMIT_MID;
-            else
-                limitByLevel = SystemConst.AIStrategy.TROOP_LIMIT_HIGH;
+            int limitByCommander = commanderCount;
+            int soldierPerCorps = CalculateSoldierPerCorps(heroCount);
+            int limitBySoldier = citySoldier / soldierPerCorps;
+            int hardLimit = SystemConst.AIStrategy.TROOP_CITY_HARD_LIMIT;
 
-            int limitByHeroes = idleHeroCount / SystemConst.AIStrategy.TROOP_IDLE_HERO_THRESHOLD;
-            int limitBySoldier = citySoldier / SystemConst.AIStrategy.TROOP_MIN_SOLDIER;
+            return Math.Max(0, Math.Min(hardLimit, Math.Min(limitByCommander, limitBySoldier)));
+        }
 
-            return Math.Max(1, Math.Min(limitByLevel, Math.Min(limitByHeroes, limitBySoldier)));
+        /// <summary>
+        /// 梯度计算每个军团所需士兵数：武将越多，每个军团所需士兵越少
+        /// ≤6武将=50，7~11武将线性递减至30，11+武将保持30
+        /// </summary>
+        public static int CalculateSoldierPerCorps(int heroCount)
+        {
+            int baseValue = SystemConst.AIStrategy.TROOP_SOLDIER_PER_CORPS;
+            int minValue = SystemConst.AIStrategy.TROOP_SOLDIER_PER_CORPS_RELAXED;
+            int startThreshold = SystemConst.AIStrategy.TROOP_HERO_RICH_THRESHOLD;
+            int endThreshold = SystemConst.AIStrategy.TROOP_HERO_FULL_RICH_THRESHOLD;
+
+            if (heroCount <= startThreshold) return baseValue;
+            if (heroCount >= endThreshold) return minValue;
+
+            int range = baseValue - minValue;
+            int steps = endThreshold - startThreshold;
+            int progress = heroCount - startThreshold;
+
+            return baseValue - progress * range / steps;
         }
     }
 

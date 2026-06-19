@@ -30,50 +30,36 @@ public abstract class CityStrategyBase
 
     protected void FormTroops()
     {
-        var existingTroops = SaveTroopsData.GetTroopsByCity(City.cityId);
-
         var normalHeroes = City.GetNormalHeroList();
         if (normalHeroes.Count == 0) return;
 
-        var assignedHeroIds = new HashSet<int>();
+        // 新回合重新计算军团，先清理旧军团
+        SaveTroopsData.RemoveAllTroopsByCity(City.cityId);
 
-        foreach (var troop in existingTroops)
-        {
-            if (troop.heroId1 > 0) assignedHeroIds.Add(troop.heroId1);
-            if (troop.heroId2 > 0) assignedHeroIds.Add(troop.heroId2);
-            if (troop.heroId3 > 0) assignedHeroIds.Add(troop.heroId3);
-        }
-
-        var idleHeroes = normalHeroes
+        var allHeroes = normalHeroes
             .Select(id => GameManager.Instance.GetHero(id))
-            .Where(h => h != null && !assignedHeroIds.Contains(h.heroId))
+            .Where(h => h != null)
             .ToList();
 
-        if (idleHeroes.Count < SystemConst.AIStrategy.TROOP_MIN_HEROES) return;
-
-        var commanders = idleHeroes
-            .Where(h => HeroDispatcher.ClassifyHero(h) != HeroType.Domestic)
+        // 筛选高统帅主将（非内政英雄且统帅≥阈值）
+        var commanders = allHeroes
+            .Where(h => HeroDispatcher.ClassifyHero(h) != HeroType.Domestic
+                      && h.GetAttr("leadship") >= SystemConst.AIStrategy.TROOP_COMMANDER_LEADSHIP_THRESHOLD)
             .OrderByDescending(h => h.GetAttr("leadship"))
             .ToList();
 
-        var viceHeroes = idleHeroes
-            .Where(h => HeroDispatcher.ClassifyHero(h) != HeroType.Combat)
+        if (commanders.Count == 0) return;
+
+        var viceHeroes = allHeroes
+            .Where(h => !commanders.Any(c => c.heroId == h.heroId))
             .OrderByDescending(h => h.GetAttr("inte") + h.GetAttr("charm"))
             .ToList();
 
-        if (commanders.Count == 0)
-        {
-            commanders = idleHeroes.OrderByDescending(h => h.GetAttr("leadship")).ToList();
-            viceHeroes = new List<SaveHeroData>();
-        }
-
-        int cityLevel = City.GetLevel();
         int citySoldier = (int)Math.Floor(City.GetAttr("soldier"));
 
-        int troopLimit = SysFormula.AIStrategy.CalculateTroopLimit(cityLevel, idleHeroes.Count, citySoldier);
+        int troopLimit = SysFormula.AIStrategy.CalculateTroopLimit(commanders.Count, normalHeroes.Count, citySoldier);
 
-        int existingCount = existingTroops.Count;
-        int newTroopCount = Math.Max(0, Math.Min(troopLimit, commanders.Count) - existingCount);
+        int newTroopCount = Math.Min(troopLimit, commanders.Count);
 
         if (newTroopCount == 0) return;
 
@@ -109,7 +95,7 @@ public abstract class CityStrategyBase
 
         if (formedCount > 0)
         {
-            GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(Force.forceId)} - [{ConfigNameHelper.GetCityName(City.cityId)}] 组建{formedCount}个军团(等级{cityLevel} 空闲武将{idleHeroes.Count} 士兵{citySoldier})");
+            GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(Force.forceId)} - [{ConfigNameHelper.GetCityName(City.cityId)}] 组建{formedCount}个军团(高统帅主将{commanders.Count} 武将{normalHeroes.Count} 士兵{citySoldier})");
         }
     }
     

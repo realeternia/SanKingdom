@@ -529,39 +529,34 @@ public static class SystemConst
         /// AI威胁敌方士兵阈值
         /// </summary>
         public const int AI_THREAT_ENEMY_SOLDIER_THRESHOLD = 500;
-        public const int TROOP_MIN_HEROES = 1;
         /// <summary>
         /// 军团最大英雄数
         /// </summary>
         public const int TROOP_MAX_HEROES = 3;
         /// <summary>
-        /// 军团最低士兵数
+        /// 军团主将高统帅阈值
         /// </summary>
-        public const int TROOP_MIN_SOLDIER = 100;
+        public const int TROOP_COMMANDER_LEADSHIP_THRESHOLD = 50;
         /// <summary>
-        /// 城市等级1-5军团上限
+        /// 军团士兵比例（士兵数/此值=军团上限）
         /// </summary>
-        public const int TROOP_LIMIT_LOW = 1;
+        public const int TROOP_SOLDIER_PER_CORPS = 60;
         /// <summary>
-        /// 城市等级6-14军团上限
+        /// 武将充足时军团士兵比例（放宽）
         /// </summary>
-        public const int TROOP_LIMIT_MID = 2;
+        public const int TROOP_SOLDIER_PER_CORPS_RELAXED = 40;
         /// <summary>
-        /// 城市等级15-20军团上限
+        /// 武将充足阈值（超过此数开始放宽士兵比例）
         /// </summary>
-        public const int TROOP_LIMIT_HIGH = 3;
+        public const int TROOP_HERO_RICH_THRESHOLD = 6;
         /// <summary>
-        /// 低等级城市阈值
+        /// 武将极度充足阈值（超过此数士兵比例降至最低）
         /// </summary>
-        public const int CITY_LEVEL_LOW = 5;
+        public const int TROOP_HERO_FULL_RICH_THRESHOLD = 12;
         /// <summary>
-        /// 高等级城市阈值
+        /// 城市军团硬上限
         /// </summary>
-        public const int CITY_LEVEL_HIGH = 15;
-        /// <summary>
-        /// 军团组建空闲英雄阈值
-        /// </summary>
-        public const int TROOP_IDLE_HERO_THRESHOLD = 3;
+        public const int TROOP_CITY_HARD_LIMIT = 5;
     }
 
     public static class AIHero
