@@ -256,7 +256,7 @@ public class PanelManager : MonoBehaviour
         systemPanel = null;
     }
 
-    public void ShowCityBattle(int forceId)
+    public void ShowCityBattle(int forceId, int targetCityId = 0, List<int> srcCityIds = null, List<SaveTroopsData> attackTroops = null, Dictionary<int, int> attackSoldierMap = null)
     {
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         if (cityBattlePanel == null)
@@ -266,7 +266,10 @@ public class PanelManager : MonoBehaviour
         }
         cityBattlePanel.SetActive(true);
         var cityBattlePanelManager = cityBattlePanel.GetComponent<CityBattlePanelManager>();
-        cityBattlePanelManager.Init(forceId);
+        if (targetCityId > 0)
+            cityBattlePanelManager.InitDefense(forceId, targetCityId, srcCityIds, attackTroops, attackSoldierMap);
+        else
+            cityBattlePanelManager.Init(forceId);
         cityBattlePanelManager.OnShow();
 
         ChangePanelCount(cityBattlePanel, true);
@@ -275,12 +278,15 @@ public class PanelManager : MonoBehaviour
     public void HideCityBattle()
     {
         BGMPlayer.Instance.PlaySound("Sounds/deck");
-        cityBattlePanel.SetActive(false);
-        cityBattlePanel.GetComponent<CityBattlePanelManager>().OnHide();
+        if (cityBattlePanel != null)
+        {
+            cityBattlePanel.SetActive(false);
+            cityBattlePanel.GetComponent<CityBattlePanelManager>().OnHide();
 
-        ChangePanelCount(cityBattlePanel, false);
-        Destroy(cityBattlePanel);
-        cityBattlePanel = null;
+            ChangePanelCount(cityBattlePanel, false);
+            Destroy(cityBattlePanel);
+            cityBattlePanel = null;
+        }
     }
 
     public void ShowCityMove(int forceId, int sourceCityId)

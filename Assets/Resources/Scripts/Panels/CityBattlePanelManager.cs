@@ -23,6 +23,13 @@ public class CityBattlePanelManager : MonoBehaviour
 
     private static Dictionary<int, int> heroSoldierAllocations = new Dictionary<int, int>();
 
+    // 防御模式相关字段
+    private bool isDefenseMode = false;
+    private int defenseTargetCityId;
+    private List<int> defenseSrcCityIds;
+    private List<SaveTroopsData> defenseAttackTroops;
+    private Dictionary<int, int> defenseAttackSoldierMap;
+
     public static void SetAllocatedSoldier(int heroId, int soldier)
     {
         heroSoldierAllocations[heroId] = soldier;
@@ -49,6 +56,7 @@ public class CityBattlePanelManager : MonoBehaviour
     {
         closeButton.onClick.AddListener(() =>
         {
+            if (isDefenseMode) return;
             PanelManager.Instance.HideCityBattle();
         });
         destButton.onClick.AddListener(() =>
@@ -86,12 +94,46 @@ public class CityBattlePanelManager : MonoBehaviour
     public void Init(int forceId)
     {
         this.forceId = forceId;
+        this.isDefenseMode = false;
         heroSoldierAllocations.Clear();
+        destButton.gameObject.SetActive(true);
+        if (battleButton != null)
+        {
+            var label = battleButton.GetComponentInChildren<TMP_Text>();
+            if (label != null) label.text = "出征";
+        }
+        CreateCityBattleItems(forceId);
+    }
+
+    public void InitDefense(int forceId, int targetCityId, List<int> srcCityIds, List<SaveTroopsData> attackTroops, Dictionary<int, int> attackSoldierMap)
+    {
+        this.forceId = forceId;
+        this.isDefenseMode = true;
+        this.defenseTargetCityId = targetCityId;
+        this.defenseSrcCityIds = srcCityIds;
+        this.defenseAttackTroops = attackTroops;
+        this.defenseAttackSoldierMap = attackSoldierMap;
+        this.selectedCityId = targetCityId;
+        heroSoldierAllocations.Clear();
+
+        // 防御模式下隐藏目标选择按钮，显示当前防守城市名
+        destButton.gameObject.SetActive(false);
+        var cityCfg = WorldConfig.GetConfig(targetCityId);
+        attrVal1Text.text = cityCfg.Cname;
+
+        if (battleButton != null)
+        {
+            var label = battleButton.GetComponentInChildren<TMP_Text>();
+            if (label != null) label.text = "防御";
+        }
+
         CreateCityBattleItems(forceId);
     }
 
     public bool CanSelectItem()
     {
+        if (isDefenseMode)
+            return true;
         return selectedCityId > 0;
     }
 
@@ -125,6 +167,12 @@ public class CityBattlePanelManager : MonoBehaviour
 
     private void OnBattle()
     {
+        if (isDefenseMode)
+        {
+            OnDefenseBattle();
+            return;
+        }
+
         if (selectedCityId <= 0)
         {
             SystemTip.Instance.ShowTip("请选择目标城市");
@@ -161,6 +209,55 @@ public class CityBattlePanelManager : MonoBehaviour
         }, "atk2.mp4");
     }
 
+    private void OnDefenseBattle()
+    {
+        var cityData = GameManager.Instance.GetCity(defenseTargetCityId);
+        int totalSoldiers = (int)cityData.soldier;
+        int totalAllocated = 0;
+
+        List<SaveTroopsData> defenceTroops = new List<SaveTroopsData>();
+        foreach (var itemObj in cityBattleItems)
+        {
+            if (itemObj == null) continue;
+            var item = itemObj.GetComponent<CityBattleItem>();
+            if (item == null) continue;
+            var troop = item.GetWarTeamData();
+            if (troop.heroId1 > 0)
+            {
+                int allocated = GetAllocatedSoldier(troop.heroId1);
+                if (allocated > 0)
+                {
+                    defenceTroops.Add(troop);
+                    totalAllocated += allocated;
+                }
+            }
+        }
+
+        if (defenceTroops.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("请为部队分配兵力");
+            return;
+        }
+
+        if (totalAllocated < totalSoldiers)
+        {
+            SystemTip.Instance.ShowTip($"防御模式必须配满兵力，当前分配{totalAllocated}，总兵力{totalSoldiers}");
+            return;
+        }
+
+        // 防御模式下所有出场部队的士兵数已在分配时确定，无需再选择
+        Dictionary<int, int> defenceSoldierMap = new Dictionary<int, int>();
+        foreach (var troop in defenceTroops)
+        {
+            defenceSoldierMap[troop.heroId1] = heroSoldierAllocations[troop.heroId1];
+        }
+
+        PanelManager.Instance.HideCityBattle();
+        heroSoldierAllocations.Clear();
+
+        GameManager.Instance.OnDefenseConfirmed(defenceTroops, defenceSoldierMap);
+    }
+
     private void OnRun(int targetCityId, List<SaveTroopsData> attackTroops)
     {
         var sourceCityIds = attackTroops
@@ -194,26 +291,88 @@ public class CityBattlePanelManager : MonoBehaviour
         }
         cityBattleItems.Clear();
 
-        var cities = GameManager.Instance.GetCitiesByForce(forceId);
-
-        HashSet<int> adjacentCityIds = null;
-        if (selectedCityId > 0)
-        {
-            adjacentCityIds = new HashSet<int>(MapTool.GetAdjacentCityIds(selectedCityId));
-        }
-
         List<SaveTroopsData> allTeams = new List<SaveTroopsData>();
-        foreach (var city in cities)
-        {
-            if (adjacentCityIds != null && !adjacentCityIds.Contains(city.cityId))
-                continue;
+        List<int> assignedHeroIds = new List<int>();
 
+        if (isDefenseMode)
+        {
+            // 防御模式：只显示目标城市的部队
+            var city = GameManager.Instance.GetCity(defenseTargetCityId);
             foreach (var troop in SaveTroopsData.GetTroopsByCity(city.cityId))
             {
                 if (troop.heroId1 > 0)
                 {
                     allTeams.Add(troop);
+                    assignedHeroIds.Add(troop.heroId1);
+                    if (troop.heroId2 > 0) assignedHeroIds.Add(troop.heroId2);
+                    if (troop.heroId3 > 0) assignedHeroIds.Add(troop.heroId3);
                 }
+            }
+        }
+        else
+        {
+            // 进攻模式：显示相邻城市的部队
+            var cities = GameManager.Instance.GetCitiesByForce(forceId);
+
+            HashSet<int> adjacentCityIds = null;
+            if (selectedCityId > 0)
+            {
+                adjacentCityIds = new HashSet<int>(MapTool.GetAdjacentCityIds(selectedCityId));
+            }
+
+            foreach (var city in cities)
+            {
+                if (adjacentCityIds != null && !adjacentCityIds.Contains(city.cityId))
+                    continue;
+
+                foreach (var troop in SaveTroopsData.GetTroopsByCity(city.cityId))
+                {
+                    if (troop.heroId1 > 0)
+                    {
+                        allTeams.Add(troop);
+                        assignedHeroIds.Add(troop.heroId1);
+                        if (troop.heroId2 > 0) assignedHeroIds.Add(troop.heroId2);
+                        if (troop.heroId3 > 0) assignedHeroIds.Add(troop.heroId3);
+                    }
+                }
+            }
+        }
+
+        // 添加非军团内的hero作为临时动员兵军团
+        List<SaveCityData> relevantCities;
+        if (isDefenseMode)
+        {
+            relevantCities = new List<SaveCityData> { GameManager.Instance.GetCity(defenseTargetCityId) };
+        }
+        else
+        {
+            HashSet<int> adjacentCityIds = null;
+            if (selectedCityId > 0)
+            {
+                adjacentCityIds = new HashSet<int>(MapTool.GetAdjacentCityIds(selectedCityId));
+            }
+            relevantCities = GameManager.Instance.GetCitiesByForce(forceId)
+                .Where(c => adjacentCityIds == null || adjacentCityIds.Contains(c.cityId))
+                .ToList();
+        }
+
+        foreach (var city in relevantCities)
+        {
+            var heroes = city.GetNormalHeroList();
+            foreach (var heroId in heroes)
+            {
+                if (assignedHeroIds.Contains(heroId))
+                    continue;
+                var hero = GameManager.Instance.GetHero(heroId);
+                if (hero == null) continue;
+
+                var tempTroop = new SaveTroopsData();
+                tempTroop.heroId1 = heroId;
+                tempTroop.armsId = SystemConst.Hero.DEFAULT_ARMS_ID;
+                tempTroop.cityId = city.cityId;
+                tempTroop.forceId = forceId;
+                allTeams.Add(tempTroop);
+                assignedHeroIds.Add(heroId);
             }
         }
 

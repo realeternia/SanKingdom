@@ -500,10 +500,8 @@ public static class SystemConst
         public const int RELATION_DEFAULT = 50;
         public const int RELATION_FRIENDLY_THRESHOLD = 65;
         public const int RELATION_HOSTILE_THRESHOLD = 35;
-        public const int PEACE_DECAY_MIN = 1;
-        public const int PEACE_DECAY_MAX = 4;
-        public const int PEACE_DECAY_ADJACENT_MIN = 1;
-        public const int PEACE_DECAY_ADJACENT_MAX = 2;
+        public const int PEACE_DECAY_ADJACENT = 1;
+        public const int PEACE_IMPROVE_NON_ADJACENT = 1;
         public const int BATTLE_RISE_MIN = 3;
         public const int BATTLE_RISE_MAX = 8;
     }

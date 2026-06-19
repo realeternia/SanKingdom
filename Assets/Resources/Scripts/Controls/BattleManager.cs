@@ -106,7 +106,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private Dictionary<int, int> deployDefenderSoldierMap;
     [NonSerialized]
-    private int playerSideIndex = -1;
+    public int playerSideIndex = -1;
 
 
     private void Awake()

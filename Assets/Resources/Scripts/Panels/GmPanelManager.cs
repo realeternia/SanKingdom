@@ -8,12 +8,14 @@ public class GmPanelManager : MonoBehaviour
 {
     public Button fightBtn;
     public Button fightQuickBtn;
+    public Button beAttackBtn;
     public Button closeBtn;
 
     void Start()
     {
         fightBtn.onClick.AddListener(OnFight);
         fightQuickBtn.onClick.AddListener(OnFightQuick);
+        beAttackBtn.onClick.AddListener(OnBeAttack);
         closeBtn.onClick.AddListener(() =>
         {
             PanelManager.Instance.HideGmPanel();
@@ -78,6 +80,80 @@ public class GmPanelManager : MonoBehaviour
     private void OnFightQuick()
     {
         StartTestBattle(true, false);
+    }
+
+    private void OnBeAttack()
+    {
+        var forces = GameManager.Instance.SaveData.forces;
+        if (forces.Count < 2)
+        {
+            GameLog.Error("GmPanelManager.OnBeAttack: 势力数量不足");
+            return;
+        }
+
+        // 找到玩家势力
+        var playerForce = forces.FirstOrDefault(f => f.isPlayer);
+        if (playerForce == null)
+        {
+            GameLog.Error("GmPanelManager.OnBeAttack: 找不到玩家势力");
+            return;
+        }
+
+        // 找到随机AI势力
+        var aiForces = forces.Where(f => !f.isPlayer).ToList();
+        if (aiForces.Count == 0)
+        {
+            GameLog.Error("GmPanelManager.OnBeAttack: 找不到AI势力");
+            return;
+        }
+        var attackerForce = aiForces[SysRandom.Range(0, aiForces.Count)];
+
+        // 随机选AI的一个城市作为攻击源
+        var aiCities = GameManager.Instance.GetCitiesByForce(attackerForce.forceId);
+        if (aiCities.Count == 0)
+        {
+            GameLog.Error("GmPanelManager.OnBeAttack: AI势力没有城市");
+            return;
+        }
+        var srcCity = aiCities[SysRandom.Range(0, aiCities.Count)];
+
+        // 获取攻击源城市的英雄
+        var heroList = srcCity.GetNormalHeroList();
+        if (heroList.Count == 0)
+        {
+            GameLog.Error($"GmPanelManager.OnBeAttack: AI城市{srcCity.cityId}没有英雄");
+            return;
+        }
+
+        // 随机选择1-3个英雄作为攻击部队
+        int attackHeroCount = Mathf.Min(3, heroList.Count);
+        var selectedHeroes = heroList.OrderBy(_ => SysRandom.Value).Take(attackHeroCount).ToArray();
+
+        var attackTroops = new List<SaveTroopsData>();
+        var attackSoldierMap = new Dictionary<int, int>();
+        foreach (var heroId in selectedHeroes)
+        {
+            var troop = new SaveTroopsData();
+            troop.heroId1 = heroId;
+            troop.armsId = SystemConst.Hero.DEFAULT_ARMS_ID;
+            attackTroops.Add(troop);
+            // 给一个测试用的士兵数
+            attackSoldierMap[heroId] = Mathf.Min(50, (int)srcCity.soldier / selectedHeroes.Length);
+        }
+
+        // 随机选玩家的一个城市作为目标
+        var playerCities = GameManager.Instance.GetCitiesByForce(playerForce.forceId);
+        if (playerCities.Count == 0)
+        {
+            GameLog.Error("GmPanelManager.OnBeAttack: 玩家没有城市");
+            return;
+        }
+        var targetCity = playerCities[SysRandom.Range(0, playerCities.Count)];
+
+        PanelManager.Instance.HideGmPanel();
+
+        GameManager.Instance.StartTestDefense(attackerForce, targetCity.cityId,
+            new List<int> { srcCity.cityId }, attackTroops, attackSoldierMap);
     }
 
     public void OnShow()

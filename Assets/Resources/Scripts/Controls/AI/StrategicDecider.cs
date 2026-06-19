@@ -26,9 +26,7 @@ public class AttackCandidate
 
 public class StrategicDecider
 {
-    private const int MAX_ATK_CITIES = AIConst.AIStrategy.MAX_ATK_CITIES;
     private const int MIN_CITY_SOLDIER_FOR_ATTACK = AIConst.AIStrategy.MIN_CITY_SOLDIER_FOR_ATTACK;
-    private const int MIN_CITY_HEROES_FOR_ATTACK = AIConst.AIStrategy.MIN_CITY_HEROES_FOR_ATTACK;
     
     private static Dictionary<int, HashSet<int>> attackedTargetsThisRound = new Dictionary<int, HashSet<int>>();
     private static Dictionary<int, int> attackTargets = new Dictionary<int, int>();
@@ -52,6 +50,53 @@ public class StrategicDecider
         return SysFormula.AIStrategy.CalculateEffectiveSoldier(citySoldier, heroCount);
     }
     
+    /// <summary>
+    /// 加权随机选择一个交恶势力，关系越差（分数越低）被选中的概率越大
+    /// </summary>
+    private static int PickHostileForceRandom(SaveForceData force, SaveForceRelation relation)
+    {
+        var hostileList = new List<(int forceId, int score, int weight)>();
+        int totalWeight = 0;
+        
+        var allForces = GameManager.Instance.SaveData.forces;
+        foreach (var other in allForces)
+        {
+            if (other.forceId == force.forceId || other.isEliminated)
+                continue;
+            if (relation.GetRelationLevel(force.forceId, other.forceId) != RelationLevel.Hostile)
+                continue;
+            
+            int score = relation.GetRelation(force.forceId, other.forceId);
+            int weight = SystemConst.Diplomacy.RELATION_HOSTILE_THRESHOLD - score + 1; // score越低weight越大
+            totalWeight += weight;
+            hostileList.Add((other.forceId, score, weight));
+        }
+        
+        if (hostileList.Count == 0)
+            return -1;
+        
+        int roll = SysRandom.Range(0, totalWeight);
+        int cumulative = 0;
+        foreach (var hf in hostileList)
+        {
+            cumulative += hf.weight;
+            if (roll < cumulative)
+                return hf.forceId;
+        }
+        return hostileList[0].forceId;
+    }
+    
+    /// <summary>
+    /// 根据关系分数计算攻击发动概率，关系越差概率越高
+    /// </summary>
+    private static float GetAttackProbability(int relationScore)
+    {
+        // score ∈ [1, 35], 越接近1关系越差
+        float prob = (SystemConst.Diplomacy.RELATION_HOSTILE_THRESHOLD - relationScore + 1) 
+            / (float)(SystemConst.Diplomacy.RELATION_HOSTILE_THRESHOLD);
+        return Math.Clamp(prob, 0.05f, 1f);
+    }
+    
     public static Dictionary<int, CityStrategyBase> DetermineCityStrategies(SaveForceData force, AIStrategyContext context)
     {
         var result = new Dictionary<int, CityStrategyBase>();
@@ -64,47 +109,56 @@ public class StrategicDecider
         }
         
         int atkCount = 0;
-        if (CanExpand(force))
+        var relation = GameManager.Instance.SaveData.forceRelation;
+        int targetForceId = PickHostileForceRandom(force, relation);
+        
+        if (targetForceId > 0)
         {
-            var allCandidates = new List<AttackCandidate>();
-            var targetBasedCandidates = SelectAttackTargetsByEnemy(force, 2);
-            allCandidates.AddRange(targetBasedCandidates);
-
-            var ownCityCandidates = SelectAttackTargetsByOwnCity(force, 2);
-            allCandidates.AddRange(ownCityCandidates);    
+            int relationScore = relation.GetRelation(force.forceId, targetForceId);
+            float attackProb = GetAttackProbability(relationScore);
             
-            var usedSources = new HashSet<int>();
-            var usedTargets = new HashSet<int>();
-
+            GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} 选中交恶势力:{ConfigNameHelper.GetForceName(targetForceId)} 关系分:{relationScore} 攻击概率:{attackProb:F2}");
             
-            allCandidates.Sort((a, b) => b.advantage.CompareTo(a.advantage));
-            
-            foreach (var candidate in allCandidates)
+            if (SysRandom.Value < attackProb)
             {
-                if (atkCount >= MAX_ATK_CITIES)
-                    break;
+                var allCandidates = new List<AttackCandidate>();
+                var targetBasedCandidates = SelectAttackTargetsByEnemy(force, targetForceId, 10);
+                allCandidates.AddRange(targetBasedCandidates);
+
+                var ownCityCandidates = SelectAttackTargetsByOwnCity(force, targetForceId, 10);
+                allCandidates.AddRange(ownCityCandidates);    
                 
-                if (usedSources.Contains(candidate.sourceCityId))
-                    continue;
+                var usedSources = new HashSet<int>();
                 
-                if (usedTargets.Contains(candidate.targetCityId))
-                    continue;
+                allCandidates.Sort((a, b) => b.advantage.CompareTo(a.advantage));
                 
-                var sourceCity = cities.FirstOrDefault(c => c.cityId == candidate.sourceCityId);
-                if (sourceCity != null)
+                foreach (var candidate in allCandidates)
                 {
-                    result[candidate.sourceCityId] = CityStrategyFactory.CreateStrategy(
-                        CityStrategyState.Atk, context, sourceCity, force, candidate.targetCityId);
+                    // 每个源城市只发起一次攻击，不限制目标城市数（允许多城围攻）
+                    if (usedSources.Contains(candidate.sourceCityId))
+                        continue;
+                    
+                    var sourceCity = cities.FirstOrDefault(c => c.cityId == candidate.sourceCityId);
+                    if (sourceCity != null)
+                    {
+                        result[candidate.sourceCityId] = CityStrategyFactory.CreateStrategy(
+                            CityStrategyState.Atk, context, sourceCity, force, candidate.targetCityId);
+                    }
+                    
+                    attackTargets[candidate.sourceCityId] = candidate.targetCityId;
+                    usedSources.Add(candidate.sourceCityId);
+                    atkCount++;
+                    
+                    var targetCity = GameManager.Instance.GetCity(candidate.targetCityId);
+                    string targetForceName = targetCity != null ? ConfigNameHelper.GetForceName(targetCity.forceId) : "未知";
+                    GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(candidate.sourceCityId)}] 决定进攻[{ConfigNameHelper.GetCityName(candidate.targetCityId)}] 目标势力:{targetForceName} 优势比:{candidate.advantage:F2} 来源:{candidate.sourceType}");
                 }
                 
-                attackTargets[candidate.sourceCityId] = candidate.targetCityId;
-                usedSources.Add(candidate.sourceCityId);
-                usedTargets.Add(candidate.targetCityId);
-                atkCount++;
-                
-                var targetCity = GameManager.Instance.GetCity(candidate.targetCityId);
-                string targetForceName = targetCity != null ? ConfigNameHelper.GetForceName(targetCity.forceId) : "未知";
-                GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(candidate.sourceCityId)}] 决定进攻[{ConfigNameHelper.GetCityName(candidate.targetCityId)}] 目标势力:{targetForceName} 优势比:{candidate.advantage:F2} 来源:{candidate.sourceType}");
+                GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} 本轮发起{atkCount}路进攻");
+            }
+            else
+            {
+                GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} 随机检定未通过，本轮不进攻{ConfigNameHelper.GetForceName(targetForceId)}");
             }
         }
         
@@ -128,7 +182,7 @@ public class StrategicDecider
         return result;
     }
     
-    private static List<AttackCandidate> SelectAttackTargetsByEnemy(SaveForceData force, int maxCount)
+    private static List<AttackCandidate> SelectAttackTargetsByEnemy(SaveForceData force, int targetForceId, int maxCount)
     {
         var result = new List<AttackCandidate>();
         var cities = force.GetCityList();
@@ -145,6 +199,10 @@ public class StrategicDecider
                     continue;
                 
                 if (HasAttackedTarget(force.forceId, nearId))
+                    continue;
+                
+                var nearCity = GameManager.Instance.GetCity(nearId);
+                if (nearCity == null || nearCity.forceId != targetForceId)
                     continue;
                 
                 potentialTargets.Add(nearId);
@@ -209,7 +267,7 @@ public class StrategicDecider
         return bestCity.cityId;
     }
     
-    private static List<AttackCandidate> SelectAttackTargetsByOwnCity(SaveForceData force, int maxCount)
+    private static List<AttackCandidate> SelectAttackTargetsByOwnCity(SaveForceData force, int targetForceId, int maxCount)
     {
         var result = new List<AttackCandidate>();
         var cities = force.GetCityList();
@@ -221,9 +279,8 @@ public class StrategicDecider
                 break;
             
             int soldier = CalculateEffectiveSoldier(city);
-            int heroCount = city.GetNormalHeroList().Count;
             
-            if (soldier >= MIN_CITY_SOLDIER_FOR_ATTACK && heroCount >= MIN_CITY_HEROES_FOR_ATTACK)
+            if (soldier > MIN_CITY_SOLDIER_FOR_ATTACK)
             {
                 var enemyNearIds = MapTool.GetAdjacentEnemyCityIdsForCity(city.cityId, force.forceId);
                 
@@ -239,17 +296,17 @@ public class StrategicDecider
                         continue;
                     
                     var nearCity = GameManager.Instance.GetCity(nearId);
-                    if (nearCity != null)
+                    if (nearCity == null || nearCity.forceId != targetForceId)
+                        continue;
+                    
+                    int targetSoldier = (int)Math.Floor(nearCity.GetAttr("soldier"));
+                    
+                    if (SysFormula.AIStrategy.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && SysFormula.AIStrategy.CheckAttackFoodSufficient(soldier, (int)city.food))
                     {
-                        int targetSoldier = (int)Math.Floor(nearCity.GetAttr("soldier"));
-                        
-                        if (SysFormula.AIStrategy.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && SysFormula.AIStrategy.CheckAttackFoodSufficient(soldier, (int)city.food))
+                        if (targetSoldier < minTargetSoldier)
                         {
-                            if (targetSoldier < minTargetSoldier)
-                            {
-                                minTargetSoldier = targetSoldier;
-                                bestTarget = nearId;
-                            }
+                            minTargetSoldier = targetSoldier;
+                            bestTarget = nearId;
                         }
                     }
                 }
@@ -280,23 +337,5 @@ public class StrategicDecider
             }
         }
         return false;
-    }
-    
-    private static bool CanExpand(SaveForceData force)
-    {
-        var cities = force.GetCityList();
-        var forceData = GameManager.Instance.GetForce(force.forceId);
-        
-        int totalGold = (int)forceData.gold;
-        int totalFood = 0;
-        int totalSoldier = 0;
-        
-        foreach (var city in cities)
-        {
-            totalFood += (int)city.food;
-            totalSoldier += (int)Math.Floor(city.GetAttr("soldier"));
-        }
-        
-        return SysFormula.AIStrategy.CanExpand(totalGold, totalFood, totalSoldier);
     }
 }

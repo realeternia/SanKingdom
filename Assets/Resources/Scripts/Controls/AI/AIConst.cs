@@ -20,7 +20,7 @@ public static class AIConst
         /// <summary>
         /// 城市攻击所需最小士兵
         /// </summary>
-        public const int MIN_CITY_SOLDIER_FOR_ATTACK = 5000;
+        public const int MIN_CITY_SOLDIER_FOR_ATTACK = 200;
         /// <summary>
         /// 城市攻击所需最小英雄数
         /// </summary>
@@ -30,9 +30,9 @@ public static class AIConst
         /// </summary>
         public const int MAX_SOLDIER_PER_HERO = 100;
         /// <summary>
-        /// AI最小攻击士兵数
+        /// AI最小攻击士兵总数
         /// </summary>
-        public const int AI_MIN_ATTACK_SOLDIER = 500;
+        public const int AI_MIN_ATTACK_SOLDIER = 100;
         /// <summary>
         /// AI粮草需求除数
         /// </summary>

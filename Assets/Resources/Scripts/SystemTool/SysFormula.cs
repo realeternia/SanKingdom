@@ -334,13 +334,6 @@ public static class SysFormula
             return enemySoldier >= AIConst.AIStrategy.AI_THREAT_ENEMY_SOLDIER_THRESHOLD;
         }
 
-        public static bool CanExpand(int totalGold, int totalFood, int totalSoldier)
-        {
-            return totalGold >= AIConst.AIStrategy.MIN_RESOURCE_FOR_ATTACK
-                && totalFood >= AIConst.AIStrategy.MIN_RESOURCE_FOR_ATTACK
-                && totalSoldier >= AIConst.AIStrategy.MIN_SOLDIER_FOR_ATTACK;
-        }
-
         public static int CalculateFoodNeeded(int totalSoldier)
         {
             return totalSoldier / AIConst.AIStrategy.AI_FOOD_NEED_DIVISOR;
@@ -395,11 +388,14 @@ public static class SysFormula
 
     public static class Diplomacy
     {
-        public static int CalculatePeaceDecay(bool isAdjacent)
+        public static int CalculatePeaceDecay()
         {
-            if (isAdjacent)
-                return SysRandom.Range(SystemConst.Diplomacy.PEACE_DECAY_ADJACENT_MIN, SystemConst.Diplomacy.PEACE_DECAY_ADJACENT_MAX + 1);
-            return SysRandom.Range(SystemConst.Diplomacy.PEACE_DECAY_MIN, SystemConst.Diplomacy.PEACE_DECAY_MAX + 1);
+            return SystemConst.Diplomacy.PEACE_DECAY_ADJACENT;
+        }
+
+        public static int CalculatePeaceImprove()
+        {
+            return SystemConst.Diplomacy.PEACE_IMPROVE_NON_ADJACENT;
         }
 
         public static int CalculateBattleRise()

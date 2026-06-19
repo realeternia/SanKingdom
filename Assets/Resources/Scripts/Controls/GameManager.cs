@@ -18,6 +18,14 @@ public class GameManager : MonoBehaviour
         get { return GetForce(currentForceId); } 
     }
 
+    // 防御面板相关字段
+    private bool _waitingForDefenseSetup = false;
+    private SaveForceData _pendingDestForce;
+    private List<int> _pendingSrcCityIds;
+    private List<SaveTroopsData> _pendingAttackTroops;
+    private Dictionary<int, int> _pendingAttackSoldierMap;
+    private int _pendingTargetCityId;
+
     private void Awake()
     {
         Instance = this;
@@ -210,13 +218,34 @@ public class GameManager : MonoBehaviour
             {
                 var citySrc = GetCity(warPlan.sourceCityId);
                 var (attackTroops, attackSoldierMap) = TroopsBuilder.BuildAttackTroopsFromHeroList(citySrc, warPlan.heroIds, warPlan.heroSoldierDict, warPlan.heroArmsDict);
-                force.ExecuteBattle(
-                    new List<int> { warPlan.sourceCityId },
-                    attackTroops,
-                    attackSoldierMap,
-                    warPlan.targetCityId,
-                    !force.isPlayer
-                );
+                var destForce = GetForce(GetCity(warPlan.targetCityId).forceId);
+
+                if (!force.isPlayer && destForce.isPlayer)
+                {
+                    // AI攻击玩家，弹出防御面板
+                    _waitingForDefenseSetup = true;
+                    _pendingDestForce = destForce;
+                    _pendingSrcCityIds = new List<int> { warPlan.sourceCityId };
+                    _pendingAttackTroops = attackTroops;
+                    _pendingAttackSoldierMap = attackSoldierMap;
+                    _pendingTargetCityId = warPlan.targetCityId;
+                    PanelManager.Instance.ShowCityBattle(destForce.forceId, warPlan.targetCityId, _pendingSrcCityIds, attackTroops, attackSoldierMap);
+                    GameLog.Info($"AI势力 {force.Name} 进攻玩家城市 {warPlan.targetCityId}，等待玩家布防");
+                    while (_waitingForDefenseSetup)
+                    {
+                        yield return null;
+                    }
+                }
+                else
+                {
+                    force.ExecuteBattle(
+                        new List<int> { warPlan.sourceCityId },
+                        attackTroops,
+                        attackSoldierMap,
+                        warPlan.targetCityId,
+                        !force.isPlayer
+                    );
+                }
 
                 while (BattleManager.Instance.IsBattleRunning)
                 {
@@ -229,6 +258,40 @@ public class GameManager : MonoBehaviour
 
         SaveData.currentForceIndex++; 
         StartNextForceTurn();
+    }
+
+    public void OnDefenseConfirmed(List<SaveTroopsData> defenceTroops, Dictionary<int, int> defenceSoldierMap)
+    {
+        if (!_waitingForDefenseSetup)
+        {
+            GameLog.Warn("OnDefenseConfirmed 非等待防御状态");
+            return;
+        }
+        GameLog.Info($"OnDefenseConfirmed 防御部队确认 targetCityId={_pendingTargetCityId} defenceCount={defenceTroops.Count}");
+        var attackerForce = GetForce(GetCity(_pendingSrcCityIds[0]).forceId);
+        attackerForce.ExecuteBattle(_pendingSrcCityIds, _pendingAttackTroops, _pendingAttackSoldierMap, _pendingTargetCityId, true,
+            defenceTroops, defenceSoldierMap);
+        _waitingForDefenseSetup = false;
+    }
+
+    public void StartTestDefense(SaveForceData attackerForce, int targetCityId, List<int> srcCityIds, List<SaveTroopsData> attackTroops, Dictionary<int, int> attackSoldierMap)
+    {
+        if (_waitingForDefenseSetup)
+        {
+            // 已在防御流程中，重新弹出面板
+            PanelManager.Instance.ShowCityBattle(_pendingDestForce.forceId, _pendingTargetCityId, _pendingSrcCityIds, _pendingAttackTroops, _pendingAttackSoldierMap);
+            GameLog.Info("StartTestDefense 防御面板重新弹出");
+            return;
+        }
+        var destForce = GetForce(GetCity(targetCityId).forceId);
+        _waitingForDefenseSetup = true;
+        _pendingDestForce = destForce;
+        _pendingSrcCityIds = srcCityIds;
+        _pendingAttackTroops = attackTroops;
+        _pendingAttackSoldierMap = attackSoldierMap;
+        _pendingTargetCityId = targetCityId;
+        PanelManager.Instance.ShowCityBattle(destForce.forceId, targetCityId, srcCityIds, attackTroops, attackSoldierMap);
+        GameLog.Info($"StartTestDefense 势力{attackerForce.Name}进攻玩家城市{targetCityId}");
     }
     
     private IEnumerator ExecuteForceDevActions(SaveForceData force)

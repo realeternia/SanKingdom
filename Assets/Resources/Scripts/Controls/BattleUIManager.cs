@@ -65,9 +65,18 @@ public class BattleUIManager : MonoBehaviour
 
     public void OnBattleEnd(BattleResult result, bool replay)
     {
-        if (result == BattleResult.Win)
+        // BattleResult.Win/Lose 是从攻击方(side[0])视角定义的
+        // 玩家在防守方(side[1])时需要翻转
+        BattleResult playerResult = result;
+        if (BattleManager.Instance.playerSideIndex == 1)
+        {
+            if (result == BattleResult.Win) playerResult = BattleResult.Lose;
+            else if (result == BattleResult.Lose) playerResult = BattleResult.Win;
+        }
+
+        if (playerResult == BattleResult.Win)
             textRestart.text = "你获胜了!!!";
-        else if (result == BattleResult.Lose)
+        else if (playerResult == BattleResult.Lose)
             textRestart.text = "你输了!!!";
         else
             textRestart.text = "平局!!!";

@@ -155,15 +155,24 @@ public class SaveForceRelation
                 if (HasBattle(force1.forceId, force2.forceId))
                 {
                     int rise = SysFormula.Diplomacy.CalculateBattleRise();
-                    AddRelation(force1.forceId, force2.forceId, rise);
-                    GameLog.Info($"外交: {force1.Name}与{force2.Name}交战，关系+{rise}，当前{GetRelation(force1.forceId, force2.forceId)}");
+                    AddRelation(force1.forceId, force2.forceId, -rise);
+                    GameLog.Info($"外交: {force1.Name}与{force2.Name}交战，关系-{rise}，当前{GetRelation(force1.forceId, force2.forceId)}");
                 }
                 else
                 {
                     bool isAdjacent = MapTool.AreForcesAdjacent(force1.forceId, force2.forceId);
-                    int decay = SysFormula.Diplomacy.CalculatePeaceDecay(isAdjacent);
-                    AddRelation(force1.forceId, force2.forceId, -decay);
-                    GameLog.Info($"外交: {force1.Name}与{force2.Name}和平{(isAdjacent ? "(相邻)" : "")}，关系-{decay}，当前{GetRelation(force1.forceId, force2.forceId)}");
+                    if (isAdjacent)
+                    {
+                        int decay = SysFormula.Diplomacy.CalculatePeaceDecay();
+                        AddRelation(force1.forceId, force2.forceId, -decay);
+                        GameLog.Info($"外交: {force1.Name}与{force2.Name}相邻和平，关系-{decay}，当前{GetRelation(force1.forceId, force2.forceId)}");
+                    }
+                    else
+                    {
+                        int improve = SysFormula.Diplomacy.CalculatePeaceImprove();
+                        AddRelation(force1.forceId, force2.forceId, improve);
+                        GameLog.Info($"外交: {force1.Name}与{force2.Name}和平，关系+{improve}，当前{GetRelation(force1.forceId, force2.forceId)}");
+                    }
                 }
             }
         }

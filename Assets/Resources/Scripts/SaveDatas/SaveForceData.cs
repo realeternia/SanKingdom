@@ -494,22 +494,43 @@ public class SaveForceData
         return addon;
     }
 
-    public void ExecuteBattle(List<int> srcCityIds, List<SaveTroopsData> attackTroops, Dictionary<int, int> attackSoldierMap, int targetCityId, bool isAI)
+    public void ExecuteBattle(List<int> srcCityIds, List<SaveTroopsData> attackTroops, Dictionary<int, int> attackSoldierMap, int targetCityId, bool isAI,
+        List<SaveTroopsData> prebuiltDefenceTroops = null, Dictionary<int, int> prebuiltDefenceSoldierMap = null)
     {
         var cityDest = GameManager.Instance.GetCity(targetCityId);
 
-        if (isAI)
-            BattleManager.Instance.SetMode(true, false);
-        else
+        var destForce = GameManager.Instance.GetForce(cityDest.forceId);
+        bool isPlayerInvolved = !isAI || destForce.isPlayer;
+        if (isPlayerInvolved)
             BattleManager.Instance.SetMode(false, true);
+        else
+            BattleManager.Instance.SetMode(true, false);
+
+        // 过滤兵力为0的troops
+        var validAttackTroops = new List<SaveTroopsData>();
+        var validAttackSoldierMap = new Dictionary<int, int>();
+        for (int i = 0; i < attackTroops.Count; i++)
+        {
+            var t = attackTroops[i];
+            if (t.heroId1 > 0 && attackSoldierMap.ContainsKey(t.heroId1) && attackSoldierMap[t.heroId1] > 0)
+            {
+                validAttackTroops.Add(t);
+                validAttackSoldierMap[t.heroId1] = attackSoldierMap[t.heroId1];
+            }
+        }
+        if (validAttackTroops.Count == 0)
+        {
+            GameLog.Warn($"ExecuteBattle 攻击方无有效部队，跳过战斗 targetCityId={targetCityId}");
+            return;
+        }
 
         foreach (var srcCityId in srcCityIds)
         {
             var citySrc = GameManager.Instance.GetCity(srcCityId);
             citySrc.OnBattle();
-            int totalSoldiers = attackTroops
+            int totalSoldiers = validAttackTroops
                 .Where(t => t.heroId1 > 0 && GameManager.Instance.GetHero(t.heroId1).cityId == srcCityId)
-                .Sum(t => attackSoldierMap.ContainsKey(t.heroId1) ? attackSoldierMap[t.heroId1] : 0);
+                .Sum(t => validAttackSoldierMap.ContainsKey(t.heroId1) ? validAttackSoldierMap[t.heroId1] : 0);
             GameLog.Info($"ExecuteBattle 扣除士兵和粮食 cityId={srcCityId} totalSoldiers={totalSoldiers}");
             citySrc.AddAttr("soldier", -totalSoldiers, "出征扣除士兵");
             citySrc.AddAttr("food", -totalSoldiers, "出征扣除粮草");
@@ -518,9 +539,54 @@ public class SaveForceData
         int srcForceId = forceId;
         int destForceId = cityDest.forceId;
         GameManager.Instance.SaveData.forceRelation.RecordBattle(srcForceId, destForceId);
-        var (defenceTroops, defenceSoldierMap) = TroopsBuilder.BuildDefenceTroops(cityDest);
+
+        List<SaveTroopsData> defenceTroops;
+        Dictionary<int, int> defenceSoldierMap;
+        if (prebuiltDefenceTroops != null && prebuiltDefenceSoldierMap != null)
+        {
+            defenceTroops = new List<SaveTroopsData>();
+            defenceSoldierMap = new Dictionary<int, int>();
+            int totalDefenceSoldiers = 0;
+            for (int i = 0; i < prebuiltDefenceTroops.Count; i++)
+            {
+                var t = prebuiltDefenceTroops[i];
+                if (t.heroId1 > 0 && prebuiltDefenceSoldierMap.ContainsKey(t.heroId1) && prebuiltDefenceSoldierMap[t.heroId1] > 0)
+                {
+                    defenceTroops.Add(t);
+                    defenceSoldierMap[t.heroId1] = prebuiltDefenceSoldierMap[t.heroId1];
+                    totalDefenceSoldiers += prebuiltDefenceSoldierMap[t.heroId1];
+                }
+            }
+            cityDest.AddAttr("soldier", -totalDefenceSoldiers, "防御扣除士兵");
+            cityDest.AddAttr("food", -totalDefenceSoldiers, "防御扣除粮草");
+            GameLog.Info($"ExecuteBattle 使用预建防御部队 count={defenceTroops.Count} totalSoldiers={totalDefenceSoldiers}");
+        }
+        else
+        {
+            (defenceTroops, defenceSoldierMap) = TroopsBuilder.BuildDefenceTroops(cityDest);
+            // 过滤兵力为0的防守troops
+            var filteredDefenceTroops = new List<SaveTroopsData>();
+            var filteredDefenceSoldierMap = new Dictionary<int, int>();
+            for (int i = 0; i < defenceTroops.Count; i++)
+            {
+                var t = defenceTroops[i];
+                if (t.heroId1 > 0 && defenceSoldierMap.ContainsKey(t.heroId1) && defenceSoldierMap[t.heroId1] > 0)
+                {
+                    filteredDefenceTroops.Add(t);
+                    filteredDefenceSoldierMap[t.heroId1] = defenceSoldierMap[t.heroId1];
+                }
+            }
+            defenceTroops = filteredDefenceTroops;
+            defenceSoldierMap = filteredDefenceSoldierMap;
+        }
+
+        if (defenceTroops.Count == 0)
+        {
+            GameLog.Warn($"ExecuteBattle 防守方无有效部队，跳过战斗 targetCityId={targetCityId}");
+            return;
+        }
         
-        BattleManager.Instance.BattleBegin(this, cityDest.GetForce(), attackTroops, defenceTroops, attackSoldierMap, defenceSoldierMap, targetCityId,
+        BattleManager.Instance.BattleBegin(this, cityDest.GetForce(), validAttackTroops, defenceTroops, validAttackSoldierMap, defenceSoldierMap, targetCityId,
             (result, attackerSoldierCount, defenderSoldierCount) => OnBattleEnd(result, attackerSoldierCount, defenderSoldierCount, srcCityIds, targetCityId, srcForceId, destForceId));
     }
 

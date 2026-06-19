@@ -52,34 +52,35 @@ public static class AIToolHeroDev
         }
         
         var devConfigs = CityDevConfig.ConfigList
-            .Where(c => c.Type == "normal" && c.AiPriotyDev > 0 && SaveCityData.IsDevAvailableForCity(city.cityId, c))
-            .OrderByDescending(c => c.AiPriotyDev)
+            .Where(c => c.Type == "normal" && c.AiWeightDev > 0 && SaveCityData.IsDevAvailableForCity(city.cityId, c))
             .ToList();
         
         if (devConfigs.Count == 0) return;
         
         int newAssignedCount = 0;
         
-        foreach (var devCfg in devConfigs)
+        while (assignedHeroIds.Count < maxJobCount)
         {
-            while (assignedHeroIds.Count < maxJobCount)
-            {
-                int currentCount = devAssignmentCounts.ContainsKey(devCfg.Id) ? devAssignmentCounts[devCfg.Id] : 0;
-                if (currentCount >= devCfg.HeroCount) break;
-                
-                var bestHero = FindBestHeroForDev(normalHeroes, assignedHeroIds, devCfg, city, force);
-                if (bestHero == null) break;
-                
-                city.SetDevAssignment(bestHero.heroId, devCfg.Id);
-                assignedHeroIds.Add(bestHero.heroId);
-                newAssignedCount++;
-                
-                if (!devAssignmentCounts.ContainsKey(devCfg.Id))
-                    devAssignmentCounts[devCfg.Id] = 0;
-                devAssignmentCounts[devCfg.Id]++;
-                
-                GameLog.SetTag("AI").Debug($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 派遣 {ConfigNameHelper.GetHeroName(bestHero.heroId)} 进行 {devCfg.Cname}");
-            }
+            var available = devConfigs
+                .Where(c => (devAssignmentCounts.ContainsKey(c.Id) ? devAssignmentCounts[c.Id] : 0) < c.HeroCount)
+                .ToList();
+            if (available.Count == 0) break;
+            
+            var devCfg = WeightedRandomPickDev(available);
+            if (devCfg == null) break;
+            
+            var bestHero = FindBestHeroForDev(normalHeroes, assignedHeroIds, devCfg, city, force);
+            if (bestHero == null) break;
+            
+            city.SetDevAssignment(bestHero.heroId, devCfg.Id);
+            assignedHeroIds.Add(bestHero.heroId);
+            newAssignedCount++;
+            
+            if (!devAssignmentCounts.ContainsKey(devCfg.Id))
+                devAssignmentCounts[devCfg.Id] = 0;
+            devAssignmentCounts[devCfg.Id]++;
+            
+            GameLog.SetTag("AI").Debug($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 派遣 {ConfigNameHelper.GetHeroName(bestHero.heroId)} 进行 {devCfg.Cname}");
         }
         
         GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} - [{ConfigNameHelper.GetCityName(city.cityId)}] 派遣完成，共 {assignedHeroIds.Count}/{maxJobCount} 人(新增{newAssignedCount})");
@@ -224,5 +225,31 @@ public static class AIToolHeroDev
         effect -= devCfg.GoldCost;
 
         return effect;
+    }
+
+    /// <summary>
+    /// 按 AiWeightDev 加权随机选择一个发展配置
+    /// </summary>
+    public static CityDevConfig WeightedRandomPickDev(List<CityDevConfig> candidates)
+    {
+        if (candidates == null || candidates.Count == 0)
+            return null;
+        
+        float totalWeight = 0f;
+        foreach (var c in candidates)
+            totalWeight += c.AiWeightDev;
+        
+        if (totalWeight <= 0f)
+            return null;
+        
+        float roll = (float)SysRandom.Range(0, (int)(totalWeight * 1000)) / 1000f;
+        float cumulative = 0f;
+        foreach (var c in candidates)
+        {
+            cumulative += c.AiWeightDev;
+            if (roll < cumulative)
+                return c;
+        }
+        return candidates[candidates.Count - 1];
     }
 }
