@@ -248,7 +248,9 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             var troop = playerTroops[i];
-            var spawnPos = GetSpawnPosition(playerSideIndex + 1, i);
+            var row = i / SystemConst.Battle.DEPLOY_GRID_COLS;
+            var col = i % SystemConst.Battle.DEPLOY_GRID_COLS;
+            var spawnPos = GetSpawnPosition(playerSideIndex + 1, row, col);
             CreateDeployChess(playerForce, troop, spawnPos);
         }
 
@@ -467,14 +469,13 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private Vector3 GetSpawnPosition(int side, int indx)
+    private Vector3 GetSpawnPosition(int side, int row, int col)
     {
-        int row = indx % 5;
-        int zRow = (row + 1) % 5;
+        int zRow = (col + 1) % 5;
         if(side == 1)
-            return new Vector3(330 - (indx / 5) * 15, 7, 255 - zRow * 15);
+            return new Vector3(330 - row * 15, 7, 255 - zRow * 15);
         else
-            return new Vector3(435 + (indx / 5) * 15, 7, 255 - zRow * 15);
+            return new Vector3(435 + row * 15, 7, 255 - zRow * 15);
     }
 
     public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)
@@ -828,26 +829,42 @@ public class BattleManager : MonoBehaviour
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var player2 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
 
+        // 防守方出生点：远程兵种固定放第二排(row=1)，近战先放第一排(row=0)再放第三排(row=2)
+        int defMeleeR0Col = 0, defMeleeR2Col = 0, defRangedCol = 0;
         int count = Math.Min(defenderTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++)
         {
-            // 防守方是玩家时优先使用布阵位置
-            var spawnPos = playerSideIndex == 1 && playerDeployPositions.ContainsKey(defenderTroops[i].heroId1)
-                ? playerDeployPositions[defenderTroops[i].heroId1]
-                : GetSpawnPosition(2, i);
+            Vector3 spawnPos;
+            if (playerSideIndex == 1 && playerDeployPositions.ContainsKey(defenderTroops[i].heroId1))
+            {
+                // 防守方是玩家时优先使用布阵位置
+                spawnPos = playerDeployPositions[defenderTroops[i].heroId1];
+            }
+            else
+            {
+                spawnPos = GetAISpawnPosition(defenderTroops, i, 2, ref defMeleeR0Col, ref defMeleeR2Col, ref defRangedCol);
+            }
             var tick = tickIndex + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, spawnPos, "SoftFireBigRed", 0.7f);
             AddChessAction(eff);
             SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, spawnPos, defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0);
         }
 
+        // 攻击方出生点：远程兵种固定放第二排(row=1)，近战先放第一排(row=0)再放第三排(row=2)
+        int atkMeleeR0Col = 0, atkMeleeR2Col = 0, atkRangedCol = 0;
         count = Math.Min(attackTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++)
         {
-            // 攻击方是玩家时优先使用布阵位置
-            var spawnPos = playerSideIndex == 0 && playerDeployPositions.ContainsKey(attackTroops[i].heroId1)
-                ? playerDeployPositions[attackTroops[i].heroId1]
-                : GetSpawnPosition(1, i);
+            Vector3 spawnPos;
+            if (playerSideIndex == 0 && playerDeployPositions.ContainsKey(attackTroops[i].heroId1))
+            {
+                // 攻击方是玩家时优先使用布阵位置
+                spawnPos = playerDeployPositions[attackTroops[i].heroId1];
+            }
+            else
+            {
+                spawnPos = GetAISpawnPosition(attackTroops, i, 1, ref atkMeleeR0Col, ref atkMeleeR2Col, ref atkRangedCol);
+            }
             var tick = tickIndex + SystemConst.Battle.ATTACKER_SPAWN_DELAY_TICKS + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, spawnPos, "LightningExplosionBlue", 0.7f);
             AddChessAction(eff);
@@ -855,6 +872,65 @@ public class BattleManager : MonoBehaviour
         }
 
         GameLog.Info($"InitSummon {player1.Name} {attackTroops.Count} {player2.Name} {defenderTroops.Count}");
+    }
+
+    /// <summary>
+    /// AI布阵位置计算：远程兵种(Range>=RANGE_ATTACK_THRESHOLD)固定放第二排(row=1)，
+    /// 溢出时依次填第三排(row=2)、第一排(row=0)；近战先放第一排(row=0)再放第三排(row=2)，
+    /// 溢出时填第二排(row=1)。
+    /// 左边(side=1)和右边(side=2)的X坐标算法不同：左边X随row增大而减小(远离右侧敌人)，右边X随row增大而增大(远离左侧敌人)
+    /// </summary>
+    private Vector3 GetAISpawnPosition(List<SaveTroopsData> troops, int index, int side, ref int meleeR0Col, ref int meleeR2Col, ref int rangedCol)
+    {
+        var armsCfg = ArmsConfig.GetConfig(troops[index].armsId);
+        bool isRanged = armsCfg.Range >= SystemConst.Battle.RANGE_ATTACK_THRESHOLD;
+        int cols = SystemConst.Battle.DEPLOY_GRID_COLS;
+
+        if (isRanged)
+        {
+            if (rangedCol < cols)
+            {
+                int col = rangedCol % cols;
+                rangedCol++;
+                return GetSpawnPosition(side, 1, col);
+            }
+            else if (rangedCol < cols * 2)
+            {
+                // 第二排已满，溢出到第三排
+                int col = (rangedCol - cols) % cols;
+                rangedCol++;
+                return GetSpawnPosition(side, 2, col);
+            }
+            else
+            {
+                // 第三排也满，溢出到第一排
+                int col = (rangedCol - cols * 2) % cols;
+                rangedCol++;
+                return GetSpawnPosition(side, 0, col);
+            }
+        }
+        else
+        {
+            if (meleeR0Col < cols)
+            {
+                int col = meleeR0Col % cols;
+                meleeR0Col++;
+                return GetSpawnPosition(side, 0, col);
+            }
+            else if (meleeR2Col < cols)
+            {
+                int col = meleeR2Col % cols;
+                meleeR2Col++;
+                return GetSpawnPosition(side, 2, col);
+            }
+            else
+            {
+                // 第一排和第三排都满，溢出到第二排
+                int col = (meleeR2Col - cols) % cols;
+                meleeR2Col++;
+                return GetSpawnPosition(side, 1, col);
+            }
+        }
     }
 
     public int GetTickFromTime(float time)
