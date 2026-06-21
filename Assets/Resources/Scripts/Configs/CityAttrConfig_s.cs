@@ -132,7 +132,7 @@ namespace CommonConfig
         {
             config.Clear();
             config[1] = new CityAttrConfig(1, "level", "等级", false, false, false, true, 99, 0, "");
-            config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, true, false, 999, 0, "citydev");
+            config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, false, true, 999, 0, "");
             config[5] = new CityAttrConfig(5, "food", "粮食", false, false, true, false, 999, 0, "cityfood");
             config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, true, false, 999, 0, "armscount");
             config[7] = new CityAttrConfig(7, "wall", "城墙", false, false, true, false, 999, 0, "citywall");

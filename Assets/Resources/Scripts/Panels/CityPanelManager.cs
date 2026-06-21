@@ -13,7 +13,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
     public int cityId;
     public Button closeBtn;
     public TMP_Text cityName;
-    public TMP_Text cityAttrText;
+    public TMP_Text cityExp;
+    public Image cityExpBar;
     public Image cityImage;
 
     public Button buttonDev;
@@ -249,8 +250,37 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         if (cityCfg != null)
         {
             int level = cityData != null ? cityData.GetLevel() : 1;
-            cityName.text = $"{cityCfg.Cname}({level}级)";
+            cityName.text = $"{cityCfg.Cname}({level})";
             cityImage.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.CityView(cityCfg.ViewPrefab));
+
+            if (cityData != null)
+            {
+                int currentExp = cityData.exp;
+                int currentLevelExp = currentExp - SaveCityData.GetExpByLevel(level);
+                int nextLevelTotalExp = level <= 20 && CityLevelConfig.HasConfig(level)
+                    ? CityLevelConfig.GetConfig(level).ExpNeed
+                    : -1;
+
+                if (nextLevelTotalExp > 0)
+                {
+                    int expNeededForNextLevel = nextLevelTotalExp - SaveCityData.GetExpByLevel(level);
+                    if (cityExp != null)
+                        cityExp.text = $"{currentLevelExp} / {expNeededForNextLevel}";
+                    if (cityExpBar != null)
+                    {
+                        float ratio = (float)currentLevelExp / expNeededForNextLevel;
+                        ratio = Mathf.Clamp01(ratio);
+                        cityExpBar.rectTransform.sizeDelta = new Vector2(300f * ratio, cityExpBar.rectTransform.sizeDelta.y);
+                    }
+                }
+                else
+                {
+                    if (cityExp != null)
+                        cityExp.text = $"Max / Max";
+                    if (cityExpBar != null)
+                        cityExpBar.rectTransform.sizeDelta = new Vector2(300f, cityExpBar.rectTransform.sizeDelta.y);
+                }
+            }
         }
     }
 
