@@ -619,18 +619,14 @@ public class SaveForceData
         {
             if (kvp.Value > 0)
             {
-                var troop = SaveTroopsData.FindByHeroId(kvp.Key);
-                if (troop != null)
+                var hero = GameManager.Instance.GetHero(kvp.Key);
+                if (hero != null && hero.state == HeroState.Normal)
                 {
-                    var hero = GameManager.Instance.GetHero(kvp.Key);
-                    if (hero != null && hero.state == HeroState.Normal)
+                    var heroCity = GameManager.Instance.GetCity(hero.cityId);
+                    if (heroCity != null)
                     {
-                        var heroCity = GameManager.Instance.GetCity(hero.cityId);
-                        if (heroCity != null)
-                        {
-                            heroCity.AddAttr("soldier", kvp.Value, "攻击方退回士兵");
-                            GameLog.Info($"OnBattleEnd 攻击方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
-                        }
+                        heroCity.AddAttr("soldier", kvp.Value, "攻击方退回士兵");
+                        GameLog.Info($"OnBattleEnd 攻击方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
                     }
                 }
             }
@@ -640,18 +636,14 @@ public class SaveForceData
         {
             if (kvp.Value > 0)
             {
-                var troop = SaveTroopsData.FindByHeroId(kvp.Key);
-                if (troop != null)
+                var hero = GameManager.Instance.GetHero(kvp.Key);
+                if (hero != null && hero.state == HeroState.Normal)
                 {
-                    var hero = GameManager.Instance.GetHero(kvp.Key);
-                    if (hero != null && hero.state == HeroState.Normal)
+                    var heroCity = GameManager.Instance.GetCity(hero.cityId);
+                    if (heroCity != null)
                     {
-                        var heroCity = GameManager.Instance.GetCity(hero.cityId);
-                        if (heroCity != null)
-                        {
-                            heroCity.AddAttr("soldier", kvp.Value, "防守方退回士兵");
-                            GameLog.Info($"OnBattleEnd 防守方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
-                        }
+                        heroCity.AddAttr("soldier", kvp.Value, "防守方退回士兵");
+                        GameLog.Info($"OnBattleEnd 防守方退回士兵 heroId={kvp.Key} soldier={kvp.Value} cityId={hero.cityId}");
                     }
                 }
             }

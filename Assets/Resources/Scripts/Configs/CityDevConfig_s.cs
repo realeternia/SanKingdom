@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -196,7 +196,7 @@ namespace CommonConfig
             config[21003] = new CityDevConfig(21003, "征兵", "提升士兵数量", "normal", false, false, "", "zhengbing", 4, 1, "soldier", new float[]{12f,10f,8f,5f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Charm"}, "sod", 5f, 8f, 5f, "zhengbing2.mp4");
             config[21004] = new CityDevConfig(21004, "加固城墙", "提升城防", "normal", false, false, "", "wall", 2, 1, "wall", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Str"}, "def", 0f, 3f, 5f, "fix4.mp4");
             config[21005] = new CityDevConfig(21005, "治安", "提升城市治安", "normal", false, false, "", "train", 0, 1, "happy", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "sod", 5f, 2f, 2f, "train3.mp4");
-            config[21102] = new CityDevConfig(21102, "移动", "移动到其他城市", "run", false, true, "Move", "move", 0, 10, "", new float[0], "", new float[0], new string[]{"LeadShip","Charm"}, "", 5f, 5f, 5f, "move2.mp4");
+            config[21102] = new CityDevConfig(21102, "移动", "移动到其他城市", "run", false, true, "Move", "move", 0, 10, "", new float[0], "", new float[0], new string[]{"LeadShip","Charm"}, "", 0f, 0f, 0f, "move2.mp4");
             config[21103] = new CityDevConfig(21103, "出战", "出兵攻打敌人", "run", false, true, "Battle", "battle", 0, 10, "", new float[0], "", new float[0], new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f, "atk2.mp4");
             config[21202] = new CityDevConfig(21202, "走访", "搜集人才和宝物", "normal", false, false, "", "find", 0, 1, "gold", new float[]{3f,2f,1f,1f}, "", new float[0], new string[]{"Charm","Inte"}, "find", 5f, 0f, 4f, "search2.mp4");
             config[21203] = new CityDevConfig(21203, "交易", "买粮食", "normal", false, false, "", "change", 8, 1, "food", new float[]{8f,6f,5f,4f}, "", new float[0], new string[]{"Inte"}, "", 2f, 3f, 2f, "change.mp4");

@@ -53,7 +53,7 @@ namespace CommonConfig
             {"Soldier", new FieldMetaInfo("士兵", "int", 60)},
             {"Wall", new FieldMetaInfo("防御", "int", 60)},
             {"ResAddon", new FieldMetaInfo("资源加成", "int[]", 0)},
-            {"WorldNearIds", new FieldMetaInfo("相邻", "int[]", 0)},
+            {"WorldNearIds", new FieldMetaInfo("相邻", "int[]", 404)},
             {"SpecialBuildings", new FieldMetaInfo("特有建筑", "int[]", 157)},
             {"MiniMapOffsets", new FieldMetaInfo("Mini地图偏移", "int[]", 0)},
             {"ViewPrefab", new FieldMetaInfo("view位置", "string", 0)},
@@ -210,7 +210,7 @@ namespace CommonConfig
             config[10035] = new WorldConfig(10035, "zitong", "梓潼", 43, 1004, 506, 274, 8, 2, 187, 107, 66, new int[0], new int[]{10030,10033,10037,10036}, new int[]{21403}, new int[0], "xinye");
             config[10036] = new WorldConfig(10036, "shangyong", "上庸", 493, 909, 241, 233, 9, 1, 272, 145, 96, new int[0], new int[]{10030,10035,10037,10028,10005,10021}, new int[0], new int[]{-10,15}, "xinye");
             config[10037] = new WorldConfig(10037, "hanzhong", "汉中", 145, 770, 348, 311, 9, 3, 125, 207, 58, new int[0], new int[]{10035,10036,10021,10023}, new int[]{21408}, new int[]{5,0}, "chengdu");
-            config[10038] = new WorldConfig(10038, "runan", "汝南", 1027, 940, 273, 231, 10, 4, 164, 100, 84, new int[0], new int[]{10001,10029,10004,10039,10010}, new int[0], new int[]{7,-10}, "xinye");
+            config[10038] = new WorldConfig(10038, "runan", "汝南", 1027, 940, 273, 231, 10, 4, 164, 100, 84, new int[0], new int[]{10001,10029,10004,10039}, new int[0], new int[]{7,-10}, "xinye");
             config[10039] = new WorldConfig(10039, "shouchun", "寿春", 1264, 876, 297, 248, 10, 4, 249, 205, 71, new int[0], new int[]{10038,10002,10007,10008,10010,10029,10013}, new int[]{21408}, new int[]{0,5}, "chengdu");
             config[10040] = new WorldConfig(10040, "beiping", "北平", 1351, 54, 288, 317, 11, 2, 209, 200, 92, new int[0], new int[]{10041,10042,10017}, new int[]{21404}, new int[0], "beiping");
             config[10041] = new WorldConfig(10041, "ji", "蓟", 980, 105, 397, 280, 11, 3, 117, 140, 63, new int[0], new int[]{10017,10019,10018,10040}, new int[]{21404}, new int[]{30,0}, "beiping");

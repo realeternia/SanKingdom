@@ -160,7 +160,8 @@ public class SaveCityData
     public Dictionary<int, int> DistributeSoldierDefault(int[] heroIds, int maxPerHero = SystemConst.Hero.MAX_SOLDIER_PER_HERO)
     {
         var result = new Dictionary<int, int>();
-        int citySoldier = (int)Math.Floor(soldier);
+        int initialSoldier = (int)Math.Floor(soldier);
+        int citySoldier = initialSoldier;
 
         var heroList = heroIds.Select(id => GameManager.Instance.GetHero(id))
             .Where(h => h != null)
@@ -175,8 +176,8 @@ public class SaveCityData
             citySoldier -= toAssign;
         }
 
-        var attrConfig = CityAttrConfig.GetConfigByname("soldier");
-        AddAttr("soldier", citySoldier, "分配士兵后剩余更新");
+        int totalDistributed = initialSoldier - citySoldier;
+        AddAttr("soldier", -totalDistributed, "分配士兵扣除");
         
         PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = "soldier", Value = GetAttr("soldier") });
         
