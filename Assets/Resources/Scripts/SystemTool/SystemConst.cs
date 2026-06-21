@@ -472,7 +472,7 @@ public static class SystemConst
     public static class WorldMap
     {
         public const float MAP_SCALE_FACTOR = 1.25f;
-        public const float ROAD_WIDTH = 6f;
+        public const float ROAD_WIDTH = 12f;
     }
 
     public static class ResourceCache

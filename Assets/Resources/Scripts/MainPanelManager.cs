@@ -362,7 +362,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         var city2 = GameManager.Instance.GetCity(cityId2);
 
         if (city1.forceId == city2.forceId)
-            return SysColor.WorldMap.RoadInternalColor;
+            return SysColor.WorldMap.RoadFriendlyColor;
 
         var relationLevel = GameManager.Instance.SaveData.forceRelation.GetRelationLevel(city1.forceId, city2.forceId);
 

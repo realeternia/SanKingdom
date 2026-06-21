@@ -140,10 +140,6 @@ public static class SysColor
 
     public static class Hero
     {
-        public static readonly Color StateNormalColor = Color.white;
-        public static readonly Color StateWildColor = Color.yellow;
-        public static readonly Color StateCapturedColor = Color.red;
-
         public static readonly Color TierHighColor = Color.red;
         public static readonly Color TierMediumColor = Color.yellow;
         public static readonly Color TierLowColor = Color.green;
@@ -164,18 +160,13 @@ public static class SysColor
 
     public static class WorldMap
     {
-        public static readonly Color RoadColor = new Color(0.6f, 0.5f, 0.35f, 0.4f);
-        public static readonly Color RoadInternalColor = new Color(0.5f, 0.5f, 0.5f, 0.4f);
         public static readonly Color RoadFriendlyColor = new Color(0.2f, 0.8f, 0.2f, 0.4f);
-        public static readonly Color RoadNeutralColor = new Color(0.9f, 0.8f, 0.2f, 0.4f);
+        public static readonly Color RoadNeutralColor = new Color(0.6f, 0.5f, 0.35f, 0.4f);
         public static readonly Color RoadHostileColor = new Color(0.9f, 0.2f, 0.2f, 0.4f);
     }
 
     public static class City
     {
-        public static readonly Color HeroOverlayColor = new Color(0f, 0f, 0f, 0.92f);
-        public static readonly Color WildHeroBorderColor = Color.yellow;
-        public static readonly Color CapturedHeroBorderColor = Color.red;
         public static readonly Color LevelColor = new Color(0.56f, 0.93f, 0.56f, 1f);
     }
 }
