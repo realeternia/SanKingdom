@@ -92,6 +92,30 @@ public class SaveTroopsData
         return hero.forceId;
     }
 
+    public int GetInte()
+    {
+        if (heroId1 <= 0) return 0;
+
+        var hero1 = GameManager.Instance.GetHero(heroId1);
+        if (hero1 == null)
+        {
+            GameLog.Warn($"SaveTroopsData.GetInte 主将不存在 heroId1={heroId1}");
+            return 0;
+        }
+
+        var hero2 = heroId2 > 0 ? GameManager.Instance.GetHero(heroId2) : null;
+        var hero3 = heroId3 > 0 ? GameManager.Instance.GetHero(heroId3) : null;
+
+        return Math.Max(Math.Max(hero1.inte, hero2?.inte ?? 0), hero3?.inte ?? 0);
+    }
+
+    public int GetSodValue(int armsId)
+    {
+        if (armsId <= 0) return 0;
+        var armsConfig = ArmsConfig.GetConfig(armsId);
+        return SysFormula.Battle.GetTroopMaxSod(this, armsConfig.Type);
+    }
+
     public static SaveTroopsData FindByHeroId(int heroId)
     {
         return GameManager.Instance.SaveData.troops.FirstOrDefault(t =>

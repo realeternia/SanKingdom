@@ -275,10 +275,7 @@ public class BattleManager : MonoBehaviour
             return;
 
         var heroData1 = GameManager.Instance.GetHero(troop.heroId1);
-        var heroData2 = troop.heroId2 > 0 ? GameManager.Instance.GetHero(troop.heroId2) : null;
-        var heroData3 = troop.heroId3 > 0 ? GameManager.Instance.GetHero(troop.heroId3) : null;
-
-        int inte = Math.Max(Math.Max(heroData1.inte, heroData2?.inte ?? 0), heroData3?.inte ?? 0);
+        int inte = troop.GetInte();
         var (atk, def) = SysFormula.Battle.CalculateCombatAttrForTroop(troop);
 
         var id = idCounter++;
@@ -500,15 +497,12 @@ public class BattleManager : MonoBehaviour
             return;
 
         var heroData1 = GameManager.Instance.GetHero(troop.heroId1);
-        var heroData2 = troop.heroId2 > 0 ? GameManager.Instance.GetHero(troop.heroId2) : null;
-        var heroData3 = troop.heroId3 > 0 ? GameManager.Instance.GetHero(troop.heroId3) : null;
-
-        int inte = Math.Max(Math.Max(heroData1.inte, heroData2?.inte ?? 0), heroData3?.inte ?? 0);
+        int inte = troop.GetInte();
 
         var (atk, def) = SysFormula.Battle.CalculateCombatAttrForTroop(troop);
-        
+
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickAdd, id, force.forceId, 
+        var action = new CreateChessAction(0, tickAdd, id, force.forceId,
             troop.heroId1, troop.heroId2, troop.heroId3, 
             heroData1.GetLevel(), 
             soldierCount, troop.armsId, atk, def, inte, spawnPoint);

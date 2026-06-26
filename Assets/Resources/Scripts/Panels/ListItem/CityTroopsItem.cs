@@ -13,6 +13,7 @@ public class CityTroopsItem : MonoBehaviour
 
     public TMP_Text atkText;
     public TMP_Text defText;
+    public TMP_Text inteText;
     public Image hero1IconImage;
     public Image hero2IconImage;
     public Image hero3IconImage;
@@ -289,7 +290,7 @@ public class CityTroopsItem : MonoBehaviour
             return;
         }
 
-        SideArmysSelector.SetContextForTroop(warTeamData.armsId, (newArmsId) =>
+        SideArmysSelector.SetContextForTroop(warTeamData.armsId, warTeamData, (newArmsId) =>
         {
             warTeamData.SetArmsId(newArmsId);
             RefreshUI();
@@ -418,6 +419,12 @@ public class CityTroopsItem : MonoBehaviour
                 if (atkText != null) atkText.text = "0";
                 if (defText != null) defText.text = "0";
             }
+        }
+
+        if (inteText != null)
+        {
+            int inte = warTeamData.heroId1 > 0 ? warTeamData.GetInte() : 0;
+            inteText.text = inte.ToString();
         }
 
         RefreshHeroSlot(hero1IconImage, warTeamData.heroId1);

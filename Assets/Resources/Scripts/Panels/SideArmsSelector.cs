@@ -14,11 +14,13 @@ public class SideArmysSelector : MonoBehaviour
     public Button confirmButton;
 
     private static int currentArmsIdForTroop;
+    private static SaveTroopsData currentTroop;
     private static System.Action<int> onArmsIdSelected;
 
-    public static void SetContextForTroop(int armsId, System.Action<int> callback)
+    public static void SetContextForTroop(int armsId, SaveTroopsData troop, System.Action<int> callback)
     {
         currentArmsIdForTroop = armsId;
+        currentTroop = troop;
         onArmsIdSelected = callback;
         GameLog.Info($"SideArmysSelector.SetContextForTroop: armsId={armsId}");
     }
@@ -53,7 +55,7 @@ public class SideArmysSelector : MonoBehaviour
             GameObject item = Instantiate(itemPrefab.gameObject, subRegionMain.transform);
             item.transform.localScale = Vector3.one;
             SideArmsItem armsItem = item.GetComponent<SideArmsItem>();
-            armsItem.SetData(config.Id);
+            armsItem.SetData(config.Id, currentTroop);
             armsItem.SetOnClickCallback(OnItemSelected);
 
             if (config.Id == currentArmsId)

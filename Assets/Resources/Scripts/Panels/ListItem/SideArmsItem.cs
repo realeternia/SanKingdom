@@ -35,11 +35,21 @@ public class SideArmsItem : MonoBehaviour
         
     }
 
-    public void SetData(int armId)
+    public void SetData(int armId, SaveTroopsData troop = null)
     {
         armsId = armId;
         ArmsConfig config = ArmsConfig.GetConfig(armId);
-        NameText.text = config.NameS;
+
+        if (troop != null)
+        {
+            int sodValue = troop.GetSodValue(armId);
+            string gradeColored = SysColor.GetColoredTextWithRule(config.Type.ToString(), sodValue);
+            NameText.text = $"{config.NameS} ({gradeColored})";
+        }
+        else
+        {
+            NameText.text = config.NameS;
+        }
         NameText.color = GetColorByLevel(config.Level);
         AtkText.text = config.Atk.ToString();
         DefText.text = config.Def.ToString();

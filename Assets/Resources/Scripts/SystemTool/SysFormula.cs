@@ -13,22 +13,6 @@ public static class SysFormula
             return SystemConst.Battle.BASE_DAMAGE + powerDiff / SystemConst.Battle.DAMAGE_POWER_DIFF_DIVISOR;
         }
 
-        private static float CalculateSodBonus(SaveHeroData heroData, ArmsType armsType)
-        {
-            var heroConfig = HeroConfig.GetConfig(heroData.heroId);
-            int sodValue = armsType switch
-            {
-                ArmsType.SodWalk => heroConfig.SodWalk, 
-                ArmsType.SodHorse => heroConfig.SodHorse,
-                ArmsType.SodBow => heroConfig.SodBow,
-                ArmsType.SodWater => heroConfig.SodWater,
-                ArmsType.SodTank => heroConfig.SodTank,
-                _ => 1
-            };
-            float bonus = sodValue * SystemConst.Battle.SOD_BONUS_RATE_PER_POINT;
-            return Math.Clamp(bonus, SystemConst.Battle.SOD_BONUS_MIN, SystemConst.Battle.SOD_BONUS_MAX);
-        }
-
         private static int GetSodValueFromHero(SaveHeroData heroData, ArmsType armsType)
         {
             if (heroData == null) return 0;
@@ -44,20 +28,29 @@ public static class SysFormula
             };
         }
 
+        public static int GetTroopMaxSod(SaveTroopsData troop, ArmsType armsType)
+        {
+            if (troop == null || troop.heroId1 <= 0) return 0;
+
+            var hero1 = GameManager.Instance.GetHero(troop.heroId1);
+            var hero2 = troop.heroId2 > 0 ? GameManager.Instance.GetHero(troop.heroId2) : null;
+            var hero3 = troop.heroId3 > 0 ? GameManager.Instance.GetHero(troop.heroId3) : null;
+
+            int sod1 = GetSodValueFromHero(hero1, armsType);
+            int sod2 = hero2 != null ? GetSodValueFromHero(hero2, armsType) : 0;
+            int sod3 = hero3 != null ? GetSodValueFromHero(hero3, armsType) : 0;
+
+            return Math.Max(Math.Max(sod1, sod2), sod3);
+        }
+
         public static (int atk, int def) CalculateCombatAttrForTroop(SaveTroopsData troop)
         {
             if (troop == null || troop.heroId1 <= 0 || troop.armsId <= 0)
                 return (0, 0);
-            
+
             var hero1 = GameManager.Instance.GetHero(troop.heroId1);
-            var hero2 = troop.heroId2 > 0 ? GameManager.Instance.GetHero(troop.heroId2) : null;
-            var hero3 = troop.heroId3 > 0 ? GameManager.Instance.GetHero(troop.heroId3) : null;
-            
             var armsConfig = ArmsConfig.GetConfig(troop.armsId);
-            int sod1 = GetSodValueFromHero(hero1, armsConfig.Type);
-            int sod2 = hero2 != null ? GetSodValueFromHero(hero2, armsConfig.Type) : 0;
-            int sod3 = hero3 != null ? GetSodValueFromHero(hero3, armsConfig.Type) : 0;
-            int maxSod = Math.Max(Math.Max(sod1, sod2), sod3);
+            int maxSod = GetTroopMaxSod(troop, armsConfig.Type);
             float sodBonus = Math.Clamp(maxSod * SystemConst.Battle.SOD_BONUS_RATE_PER_POINT, SystemConst.Battle.SOD_BONUS_MIN, SystemConst.Battle.SOD_BONUS_MAX);
 
             int atk = (int)(hero1.str * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Atk * (1f + sodBonus));

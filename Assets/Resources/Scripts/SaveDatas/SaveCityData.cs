@@ -140,7 +140,7 @@ public class SaveCityData
         var heroIds = new List<int>();
         foreach (var member in GameManager.Instance.SaveData.heros)
         {
-            if(member.cityId == cityId && member.state == HeroState.Normal)
+            if(member.cityId == cityId && member.state == HeroState.Normal && member.forceId == forceId)
                 heroIds.Add(member.heroId);
         }
         return heroIds;
@@ -331,6 +331,7 @@ public class SaveCityData
 
     public void MoveHeroTo(int[] heroIds, int destCityId)
     {
+        var destCity = GameManager.Instance.GetCity(destCityId);
         foreach (var heroId in heroIds)
         {
             SaveHeroData hero = GameManager.Instance.GetHero(heroId);
@@ -338,6 +339,8 @@ public class SaveCityData
             {
                 RemoveDevAssignment(heroId);
                 hero.cityId = destCityId;
+                if (destCity != null)
+                    hero.forceId = destCity.forceId;
             }
         }
     }
