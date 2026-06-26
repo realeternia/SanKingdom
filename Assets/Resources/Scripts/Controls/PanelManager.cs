@@ -101,7 +101,7 @@ public class PanelManager : MonoBehaviour
             var resObj = Instantiate(resBasePrefab, topNode.transform);
             var resItem = resObj.GetComponent<ResItem>();
             resItem.Init(attrConfig.name);
-            float currentWidth = SysFormula.City.GetResBaseWidth(attrConfig);
+            float currentWidth = ResItem.GetBaseWidth(attrConfig);
             if (index > 0 && currentWidth < prevWidth)
                 offsetX -= (prevWidth - currentWidth) / 2;
             resObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(offsetX, 0);

@@ -163,13 +163,13 @@ public class SaveForceRelation
                     bool isAdjacent = MapTool.AreForcesAdjacent(force1.forceId, force2.forceId);
                     if (isAdjacent)
                     {
-                        int decay = SysFormula.Diplomacy.CalculatePeaceDecay();
+                        int decay = SystemConst.Diplomacy.PEACE_DECAY_ADJACENT;
                         AddRelation(force1.forceId, force2.forceId, -decay);
                         GameLog.Info($"外交: {force1.Name}与{force2.Name}相邻和平，关系-{decay}，当前{GetRelation(force1.forceId, force2.forceId)}");
                     }
                     else
                     {
-                        int improve = SysFormula.Diplomacy.CalculatePeaceImprove();
+                        int improve = SystemConst.Diplomacy.PEACE_IMPROVE_NON_ADJACENT;
                         AddRelation(force1.forceId, force2.forceId, improve);
                         GameLog.Info($"外交: {force1.Name}与{force2.Name}和平，关系+{improve}，当前{GetRelation(force1.forceId, force2.forceId)}");
                     }

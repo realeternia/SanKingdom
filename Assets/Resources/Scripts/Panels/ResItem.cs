@@ -15,6 +15,28 @@ public class ResItem : MonoBehaviour
     private float addon;
     private CityAttrConfig config;
 
+    public static int GetDisplayMaxLength(CityAttrConfig config)
+    {
+        var digitCount = config.IsForceAttr ? config.ValMaxForce.ToString().Length : config.ValMaxCity.ToString().Length;
+        if (config.IsConsumeRes)
+        {
+            return digitCount * 2 + 3;
+        }
+        if (config.IsPosRes)
+            return digitCount * 2 + 2;
+        return digitCount;
+    }
+
+    public static int GetItemWidth(CityAttrConfig config)
+    {
+        return GetDisplayMaxLength(config) * 20;
+    }
+
+    public static int GetBaseWidth(CityAttrConfig config)
+    {
+        return 60 + GetDisplayMaxLength(config) * 20;
+    }
+
     void Start()
     {
 
@@ -35,8 +57,8 @@ public class ResItem : MonoBehaviour
 
         GetComponent<IconLoader>().SetId(item.Id);
 
-        int resItemWidth = SysFormula.City.GetResItemWidth(item);
-        int resBaseWidth = SysFormula.City.GetResBaseWidth(item);
+        int resItemWidth = GetItemWidth(item);
+        int resBaseWidth = GetBaseWidth(item);
         itemNum.rectTransform.sizeDelta = new Vector2(resItemWidth, itemNum.rectTransform.sizeDelta.y);
         var rt = GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(resBaseWidth, rt.sizeDelta.y);
