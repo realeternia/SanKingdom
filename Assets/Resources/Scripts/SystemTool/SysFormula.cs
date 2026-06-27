@@ -1,6 +1,13 @@
 using System;
 using CommonConfig;
 
+public enum HeroType
+{
+    Combat,
+    Domestic,
+    Balanced
+}
+
 public static class SysFormula
 {
     private static readonly System.Random _random = new System.Random();
@@ -209,6 +216,12 @@ public static class SysFormula
 
             return HeroType.Balanced;
         }
+
+        public static HeroType ClassifyHero(SaveHeroData hero)
+        {
+            return ClassifyHero(hero.GetAttr("str"), hero.GetAttr("leadship"), hero.GetAttr("inte"),
+                hero.GetAttr("fair"), hero.GetAttr("charm"));
+        }
     }
 
     public static class City
@@ -381,6 +394,30 @@ public static class SysFormula
             int progress = heroCount - startThreshold;
 
             return baseValue - progress * range / steps;
+        }
+
+        /// <summary>
+        /// 计算登庸目标优先级分数
+        /// 优先级：1日名将 > 2日名将 > 1日普通 > 2日普通
+        /// 忠诚越低优先级系数越高
+        /// </summary>
+        public static int CalculateRecruitPriority(int dayDistance, bool isStarHero, int loyalty)
+        {
+            // 组别基础分：1日名将 > 2日名将 > 1日普通 > 2日普通（间距10000确保组别优先于忠诚差异）
+            int groupBase;
+            if (dayDistance <= 1 && isStarHero)
+                groupBase = 40000;
+            else if (dayDistance <= 2 && isStarHero)
+                groupBase = 30000;
+            else if (dayDistance <= 1)
+                groupBase = 20000;
+            else
+                groupBase = 10000;
+
+            // 忠诚越低系数越高（0~100）
+            int loyaltyBonus = (SystemConst.Hero.MAX_LOYALTY - loyalty) * 10;
+
+            return groupBase + loyaltyBonus;
         }
     }
 

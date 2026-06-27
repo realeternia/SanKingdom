@@ -12,10 +12,7 @@ public static class AI
         StrategicDecider.ClearRoundData();
         
         var context = new AIStrategyContext(force);
-        
-        // 英雄调度：前后线战斗英雄 → 名将保障 → 名将均衡 → 全英雄均衡
-        HeroDispatcher.DispatchHeroes(force);
-        
+
         // 决定各城市战略状态（攻击/防御/发展）并执行
         var cityStrategies = StrategicDecider.DetermineCityStrategies(force, context);
         
@@ -26,7 +23,10 @@ public static class AI
         
         // 金钱为负则逐步移除收益最低的发展委派
         AIToolHeroDev.AdjustForGoldBalance(force);
-        
+
+        // 君主行动判断（褒奖/移动/登庸，除战斗外的判断均在此进行）
+        AIToolKingAction.CheckKingAction(force);
+
         // 确认计划，进入执行阶段
         GameManager.Instance.ConfirmPlan(force.forceId);
         

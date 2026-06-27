@@ -72,6 +72,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamageAddRate.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShieldValue.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SystemAttrConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolKingAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedShadow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitFood.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\GmPanelManager.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Assets\Resources\Scripts\PO\SignalData.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityTroopsItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\BuffConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolMove.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\HeroAttrTool.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\Skill.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ResItem.cs" />
@@ -178,6 +180,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\MissileEffName.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySummonTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRegion.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolRecruit.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\HeroInfoPanelManager.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModulePhysics2D.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\DevAssignmentData.cs" />
@@ -253,7 +256,6 @@
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveCityData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddDodge.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddBuffAction.cs" />
-    <Compile Include="Assets\Resources\Scripts\Controls\AI\HeroDispatcher.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SkillConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackReboundArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
@@ -267,6 +269,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRepeat.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\AttrInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysColor.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolPraise.cs" />
     <Compile Include="Assets\Resources\Scripts\SideBar.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />

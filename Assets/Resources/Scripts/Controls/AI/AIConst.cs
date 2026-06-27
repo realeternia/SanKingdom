@@ -130,4 +130,20 @@ public static class AIConst
         /// </summary>
         public const int MIN_REAR_HEROES = 1;
     }
+
+    public static class AIKingAction
+    {
+        /// <summary>
+        /// 褒奖忠诚阈值（≤此值需褒奖）
+        /// </summary>
+        public const int PRAISE_LOYALTY_THRESHOLD = 90;
+        /// <summary>
+        /// 登庸属性阈值（魅力或智力＞此值可登庸）
+        /// </summary>
+        public const int RECRUIT_ATTR_THRESHOLD = 80;
+        /// <summary>
+        /// 登庸最大人次
+        /// </summary>
+        public const int MAX_RECRUIT_COUNT = 6;
+    }
 }

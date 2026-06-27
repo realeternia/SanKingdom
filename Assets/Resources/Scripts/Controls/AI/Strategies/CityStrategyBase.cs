@@ -110,7 +110,7 @@ public abstract class CityStrategyBase
 
         // 筛选高统帅主将（非内政英雄且统帅≥阈值）
         var commanders = allHeroes
-            .Where(h => HeroDispatcher.ClassifyHero(h) != HeroType.Domestic
+            .Where(h => SysFormula.Hero.ClassifyHero(h) != HeroType.Domestic
                       && h.GetAttr("leadship") >= AIConst.AIStrategy.TROOP_COMMANDER_LEADSHIP_THRESHOLD)
             .OrderByDescending(h => h.GetAttr("leadship"))
             .ToList();

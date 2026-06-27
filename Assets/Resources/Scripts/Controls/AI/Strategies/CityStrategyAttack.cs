@@ -38,7 +38,7 @@ public class CityStrategyAttack : CityStrategyBase
 
         var combatHeroes = normalHeroes
             .Select(id => GameManager.Instance.GetHero(id))
-            .Where(h => h != null && HeroDispatcher.ClassifyHero(h) == HeroType.Combat)
+            .Where(h => h != null && SysFormula.Hero.ClassifyHero(h) == HeroType.Combat)
             .ToList();
 
         if (combatHeroes.Count == 0)

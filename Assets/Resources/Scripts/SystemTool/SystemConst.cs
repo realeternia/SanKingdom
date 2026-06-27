@@ -509,6 +509,8 @@ public static class SystemConst
         public const int MOVE_DEV_ID = 21102;
         public const int BATTLE_DEV_ID = 21103;
         public const int IDLE_DEV_ID = 21999;
+        public const int USE_HERO_DEV_ID = 21401;
+        public const int PRAISE_DEV_ID = 21402;
         /// <summary>
         /// 城市日程：相邻为1日，曼哈顿距离阈值≤此值算2日
         /// </summary>
