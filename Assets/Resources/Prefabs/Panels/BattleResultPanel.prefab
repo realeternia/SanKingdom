@@ -96,7 +96,7 @@ MonoBehaviour:
   rankRegionRight: {fileID: 3772063916559642046}
   closeBtn: {fileID: 2008911989125620064}
   retryBtn: {fileID: 783438470568515273}
-  textTitle: {fileID: 0}
+  textTitle: {fileID: 4763161471666987331}
   textForceLeft: {fileID: 4812400758322324530}
   textSoldierLeft: {fileID: 3097938414987489521}
   textForceRight: {fileID: 8883549814042197890}
@@ -1336,8 +1336,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 221, y: -50}
-  m_SizeDelta: {x: 200, y: 80}
+  m_AnchoredPosition: {x: 430, y: -50}
+  m_SizeDelta: {x: 600, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &510417091642384342
 CanvasRenderer:

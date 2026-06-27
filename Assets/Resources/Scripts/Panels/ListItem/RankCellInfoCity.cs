@@ -105,10 +105,10 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
         var cityData = GameManager.Instance.GetCity(cityId);
         cityName.text = WorldConfig.GetConfig(cityId).Cname;
         cityLevel.text = cityData.GetLevel().ToString();
-        cityFood.text = cityData.food.ToString();
-        citySoldier.text = cityData.soldier.ToString();
-        cityWall.text = cityData.wall.ToString();
-        cityHappy.text = cityData.happy.ToString();
+        cityFood.text = Mathf.Floor(cityData.food).ToString();
+        citySoldier.text = Mathf.Floor(cityData.soldier).ToString();
+        cityWall.text = Mathf.Floor(cityData.wall).ToString();
+        cityHappy.text = Mathf.Floor(cityData.happy).ToString();
         
     }
 

@@ -193,7 +193,7 @@ namespace CommonConfig
             config.Clear();
             config[21001] = new CityDevConfig(21001, "农田", "提升粮食产量", "normal", false, false, "", "farm", 0, 1, "food", new float[]{12f,10f,8f,5f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Str"}, "dev", 11f, 5f, 10f, "farm.mp4");
             config[21002] = new CityDevConfig(21002, "市场", "提升金钱收入", "normal", false, false, "", "market", 0, 1, "gold", new float[]{6f,5f,4f,3f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "dev", 10f, 5f, 5f, "shop3.mp4");
-            config[21003] = new CityDevConfig(21003, "征兵", "提升士兵数量", "normal", false, false, "", "zhengbing", 4, 1, "soldier", new float[]{12f,10f,8f,5f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Charm"}, "sod", 5f, 8f, 5f, "zhengbing2.mp4");
+            config[21003] = new CityDevConfig(21003, "征兵", "提升士兵数量", "normal", false, false, "", "zhengbing", 4, 1, "soldier", new float[]{16f,12f,10f,8f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Charm"}, "sod", 5f, 8f, 5f, "zhengbing2.mp4");
             config[21004] = new CityDevConfig(21004, "加固城墙", "提升城防", "normal", false, false, "", "wall", 2, 1, "wall", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Str"}, "def", 0f, 3f, 5f, "fix4.mp4");
             config[21005] = new CityDevConfig(21005, "治安", "提升城市治安", "normal", false, false, "", "train", 0, 1, "happy", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "sod", 5f, 2f, 2f, "train3.mp4");
             config[21102] = new CityDevConfig(21102, "移动", "移动到其他城市", "run", false, true, "Move", "move", 0, 10, "", new float[0], "", new float[0], new string[]{"LeadShip","Charm"}, "", 0f, 0f, 0f, "move2.mp4");

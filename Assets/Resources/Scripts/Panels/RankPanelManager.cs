@@ -225,9 +225,12 @@ public class RankPanelManager : MonoBehaviour
         // 新增势力战力模式的处理
         else if (prefabName == "RankCellMainForce")
         {
-            // 显示所有势力信息
+            // 显示所有势力信息（跳过灭亡或没有城市的势力）
             foreach (var forceData in GameManager.Instance.SaveData.forces)
             {
+                if (forceData.isEliminated || GameManager.Instance.GetCitiesByForce(forceData.forceId).Count == 0)
+                    continue;
+                    
                 // 实例化 RankCell
                 GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
                 cell.transform.localScale = Vector3.one;

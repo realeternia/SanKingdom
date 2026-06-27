@@ -407,6 +407,29 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         return whiteSprite;
     }
 
+    private void RefreshRoadsByCity(int cityId)
+    {
+        foreach (Transform child in roadLayer.transform)
+        {
+            string name = child.name;
+            if (!name.StartsWith("Road_")) continue;
+
+            string[] parts = name.Split('_');
+            if (parts.Length < 3) continue;
+
+            if (!int.TryParse(parts[1], out int id1) || !int.TryParse(parts[2], out int id2))
+                continue;
+
+            if (id1 != cityId && id2 != cityId) continue;
+
+            Image image = child.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = GetRoadColor(id1, id2);
+            }
+        }
+    }
+
     private void RefreshRoadsByForce(int forceId1, int forceId2)
     {
         foreach (Transform child in roadLayer.transform)
@@ -470,6 +493,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
             var piece = worldPieces.Find(x => x.pieceId == signal.CityId);
             if (piece != null)
                 piece.RefreshCityDisplay();
+            RefreshRoadsByCity(signal.CityId);
         }
         else if(data.Name == "CityHeroChange")
         {

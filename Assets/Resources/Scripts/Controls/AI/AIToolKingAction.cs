@@ -16,11 +16,11 @@ public static class AIToolKingAction
         // 1. 排除 WarPlan 中的英雄
         var excludedHeroIds = CollectWarPlanHeroIds(force);
 
-        // 2. 褒奖：忠心 ≤ 阈值的武将先褒奖
-        AIToolPraise.Process(force, excludedHeroIds);
-
         // 3. 移动：前后线战斗英雄调度 → 名将保障 → 名将均衡 → 全英雄均衡
         AIToolMove.Process(force, excludedHeroIds);
+
+        // 2. 褒奖：忠心 ≤ 阈值的武将先褒奖
+        AIToolPraise.Process(force, excludedHeroIds);        
 
         // 4. 登庸：空闲英雄魅力/智力 > 阈值去登庸，最多 MAX_RECRUIT_COUNT 人次
         AIToolRecruit.Process(force, excludedHeroIds);

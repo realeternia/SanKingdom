@@ -34,6 +34,10 @@ public static class AIConst
         /// </summary>
         public const int AI_MIN_ATTACK_SOLDIER = 100;
         /// <summary>
+        /// AI攻击最小部队数
+        /// </summary>
+        public const int MIN_ATTACK_TROOPS = 2;
+        /// <summary>
         /// AI粮草需求除数
         /// </summary>
         public const int AI_FOOD_NEED_DIVISOR = 2;
@@ -129,6 +133,10 @@ public static class AIConst
         /// 后方最小英雄数
         /// </summary>
         public const int MIN_REAR_HEROES = 1;
+        /// <summary>
+        /// 补充英雄最大拉人数
+        /// </summary>
+        public const int FILL_HERO_MAX_PULL = 3;
     }
 
     public static class AIKingAction

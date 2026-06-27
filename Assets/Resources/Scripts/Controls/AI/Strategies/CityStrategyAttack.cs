@@ -46,12 +46,48 @@ public class CityStrategyAttack : CityStrategyBase
             combatHeroes = normalHeroes
                 .Select(id => GameManager.Instance.GetHero(id))
                 .Where(h => h != null)
-                .Take(3)
+                .Take(AIConst.AIStrategy.MIN_ATTACK_TROOPS)
                 .ToList();
         }
 
         if (combatHeroes.Count == 0)
             return;
+
+        // 补足至少MIN_ATTACK_TROOPS只部队
+        if (combatHeroes.Count < AIConst.AIStrategy.MIN_ATTACK_TROOPS)
+        {
+            var remaining = normalHeroes
+                .Select(id => GameManager.Instance.GetHero(id))
+                .Where(h => h != null && !combatHeroes.Any(c => c.heroId == h.heroId))
+                .ToList();
+
+            while (combatHeroes.Count < AIConst.AIStrategy.MIN_ATTACK_TROOPS && remaining.Count > 0)
+            {
+                combatHeroes.Add(remaining[0]);
+                remaining.RemoveAt(0);
+            }
+        }
+
+        // 从已编军团获取兵种，非动员兵优先
+        var cityTroops = SaveTroopsData.GetTroopsByCity(City.cityId);
+        var heroArmsDict = new Dictionary<int, int>();
+        foreach (var hero in combatHeroes)
+        {
+            var troop = cityTroops.FirstOrDefault(t => t.heroId1 == hero.heroId);
+            if (troop != null)
+                heroArmsDict[hero.heroId] = troop.armsId;
+        }
+
+        // 排序：非动员兵优先，其次统帅降序
+        combatHeroes.Sort((a, b) =>
+        {
+            int armsA = heroArmsDict.ContainsKey(a.heroId) ? heroArmsDict[a.heroId] : SystemConst.Hero.DEFAULT_ARMS_ID;
+            int armsB = heroArmsDict.ContainsKey(b.heroId) ? heroArmsDict[b.heroId] : SystemConst.Hero.DEFAULT_ARMS_ID;
+            bool isMilitiaA = armsA == SystemConst.Hero.DEFAULT_ARMS_ID;
+            bool isMilitiaB = armsB == SystemConst.Hero.DEFAULT_ARMS_ID;
+            if (isMilitiaA != isMilitiaB) return isMilitiaA ? 1 : -1;
+            return b.leadShip.CompareTo(a.leadShip);
+        });
 
         var heroIds = combatHeroes.Select(h => h.heroId).ToArray();
         var heroSoldierDict = City.DistributeSoldierDefault(heroIds);
@@ -71,7 +107,8 @@ public class CityStrategyAttack : CityStrategyBase
             sourceCityId = City.cityId,
             targetCityId = _targetCityId,
             heroIds = heroIds,
-            heroSoldierDict = heroSoldierDict
+            heroSoldierDict = heroSoldierDict,
+            heroArmsDict = heroArmsDict
         };
 
         Force.AddWarPlan(warPlan);

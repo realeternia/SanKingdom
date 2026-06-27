@@ -115,6 +115,7 @@ public class RankCellInfoForce : MonoBehaviour, IRankDetailInfo, IRankDetailInfo
         // 统计城市数量
         var cities = GameManager.Instance.GetCitiesByForce(forceId);
         citiesValue = cities.Count;
+         
         forceCities.text = citiesValue.ToString();
         
         // 统计武将数量
@@ -150,17 +151,17 @@ public class RankCellInfoForce : MonoBehaviour, IRankDetailInfo, IRankDetailInfo
         goldValue = totalGold;
         foodValue = totalFood;
         
-        // 显示时转换为"万"单位
-        forceSoldier.text = FormatToWan(totalSoldier);
-        forceGold.text = FormatToWan(totalGold);
-        forceFood.text = FormatToWan(totalFood);
+        // 显示时转换为"百"单位
+        forceSoldier.text = FormatToBai(totalSoldier);
+        forceGold.text = FormatToBai(totalGold);
+        forceFood.text = FormatToBai(totalFood);
     }
 
-    // 将数值转换为"万"单位的字符串
-    private string FormatToWan(int value)
+    // 将数值转换为"百"单位的字符串
+    private string FormatToBai(int value)
     {
-        float wanValue = value / 10000f;
-        return wanValue.ToString("F1") + "万";
+        int baiValue = value / 100;
+        return baiValue.ToString() + "百";
     }
 
     // Update is called once per frame

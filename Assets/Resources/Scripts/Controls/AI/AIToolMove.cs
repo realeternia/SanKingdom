@@ -17,7 +17,7 @@ public static class AIToolMove
     {
         int currentRound = GameManager.Instance.SaveData.round;
 
-        DispatchCombatHeroesToFrontline(force, excludedHeroIds, currentRound);
+        FillHeroForSoldierCapacity(force, excludedHeroIds, currentRound);
         EnsureMinStarHeroPerCity(force, excludedHeroIds, currentRound);
         DoHeroBalance(force, onlyStarHero: true, thresholdRatio: 2f, loop: false, excludedHeroIds, currentRound);
         DoHeroBalance(force, onlyStarHero: false, thresholdRatio: 2.5f, loop: true, excludedHeroIds, currentRound);
@@ -33,72 +33,55 @@ public static class AIToolMove
     }
 
     /// <summary>
-    /// 前后线战斗英雄调度：将后方战斗型英雄调往前线，每城目标3名
+    /// 补充城市英雄：英雄数不足（< 士兵数/100）时，从其他城市拉非军团英雄，优先统帅高者
     /// </summary>
-    private static void DispatchCombatHeroesToFrontline(SaveForceData force, HashSet<int> excludedHeroIds, int currentRound)
+    private static void FillHeroForSoldierCapacity(SaveForceData force, HashSet<int> excludedHeroIds, int currentRound)
     {
-        var frontlineCities = MapTool.GetFrontlineCityIds(force.forceId);
-        var rearCities = MapTool.GetRearCityIds(force.forceId);
+        var cities = force.GetCityList();
+        if (cities.Count < 2) return;
 
-        if (frontlineCities.Count == 0 || rearCities.Count == 0)
-            return;
-
-        var rearCombatHeroes = new List<SaveHeroData>();
-        var rearCityHeroMap = new Dictionary<int, List<SaveHeroData>>();
-
-        foreach (var cityId in rearCities)
+        foreach (var city in cities)
         {
-            var city = GameManager.Instance.GetCity(cityId);
-            var heroIds = city.GetNormalHeroList();
-            rearCityHeroMap[cityId] = new List<SaveHeroData>();
+            int heroCount = city.GetNormalHeroList().Count(hid => !excludedHeroIds.Contains(hid));
+            int neededHeroes = (int)(city.soldier / AIConst.AIStrategy.MAX_SOLDIER_PER_HERO) - heroCount;
+            if (neededHeroes <= 0) continue;
 
-            foreach (var heroId in heroIds)
+            int maxPull = Math.Min(neededHeroes, AIConst.AIHero.FILL_HERO_MAX_PULL);
+            int pulled = 0;
+
+            var candidates = new List<(int heroId, int leadShip, int srcCityId)>();
+            foreach (var otherCity in cities)
             {
-                if (excludedHeroIds.Contains(heroId)) continue;
-                var hero = GameManager.Instance.GetHero(heroId);
-                rearCityHeroMap[cityId].Add(hero);
+                if (otherCity.cityId == city.cityId) continue;
 
-                if (IsHeroAvailable(heroId, currentRound) && SysFormula.Hero.ClassifyHero(hero) == HeroType.Combat)
+                foreach (var hid in otherCity.GetNormalHeroList())
                 {
-                    rearCombatHeroes.Add(hero);
+                    if (excludedHeroIds.Contains(hid)) continue;
+                    if (!IsHeroAvailable(hid, currentRound)) continue;
+                    if (SaveTroopsData.FindByHeroId(hid) != null) continue;
+
+                    var hero = GameManager.Instance.GetHero(hid);
+                    candidates.Add((hid, hero.leadShip, otherCity.cityId));
                 }
             }
-        }
 
-        foreach (var cityId in frontlineCities)
-        {
-            var city = GameManager.Instance.GetCity(cityId);
-            var heroIds = city.GetNormalHeroList();
-            int combatCount = 0;
+            candidates.Sort((a, b) => b.leadShip.CompareTo(a.leadShip));
 
-            foreach (var heroId in heroIds)
+            foreach (var (heroId, _, srcCityId) in candidates)
             {
-                if (excludedHeroIds.Contains(heroId)) continue;
-                var hero = GameManager.Instance.GetHero(heroId);
-                if (SysFormula.Hero.ClassifyHero(hero) == HeroType.Combat)
-                    combatCount++;
-            }
+                if (pulled >= maxPull) break;
 
-            int neededCombat = AIConst.AIStrategy.FRONTLINE_COMBAT_HEROES_TARGET - combatCount;
+                var srcCity = GameManager.Instance.GetCity(srcCityId);
+                if (srcCity.GetNormalHeroList().Count <= AIConst.AIHero.MIN_REAR_HEROES) continue;
 
-            for (int i = 0; i < neededCombat && rearCombatHeroes.Count > 0; i++)
-            {
-                var heroToMove = rearCombatHeroes[0];
-                rearCombatHeroes.RemoveAt(0);
+                force.MoveHeroToCity(srcCityId, city.cityId, new int[] { heroId });
+                pulled++;
 
-                int srcCityId = heroToMove.cityId;
-
-                if (rearCityHeroMap.ContainsKey(srcCityId) &&
-                    rearCityHeroMap[srcCityId].Count > AIConst.AIHero.MIN_REAR_HEROES)
-                {
-                    force.MoveHeroToCity(srcCityId, cityId, new int[] { heroToMove.heroId });
-                    rearCityHeroMap[srcCityId].Remove(heroToMove);
-
-                    GameLog.SetTag("AI").Info($"AI调度: 英雄{heroToMove.heroId}从后方城市{srcCityId}调往前线城市{cityId}");
-                }
+                GameLog.SetTag("AI").Info($"补充英雄: 英雄{heroId}从城市{ConfigNameHelper.GetCityName(srcCityId)}调往城市{ConfigNameHelper.GetCityName(city.cityId)}");
             }
         }
     }
+
 
     /// <summary>
     /// 每个城市尽量保证一个名将：从名将最多的城市调一个给无名将的城市
