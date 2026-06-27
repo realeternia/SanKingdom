@@ -378,6 +378,18 @@ public class CityBattlePanelManager : MonoBehaviour
 
         if (allTeams.Count == 0) return;
 
+        // 进攻模式：已行动武将（本回合已出战）排到末尾；防御模式不限制
+        if (!isDefenseMode)
+        {
+            int currentRound = GameManager.Instance.SaveData.round;
+            allTeams = allTeams.OrderBy(t =>
+                {
+                    var hero = GameManager.Instance.GetHero(t.heroId1);
+                    return hero != null && hero.round >= currentRound ? 1 : 0;
+                })
+                .ToList();
+        }
+
         heroSoldierAllocations.Clear();
 
         var itemPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelListItem("CityBattleItem"));
@@ -417,7 +429,13 @@ public class CityBattlePanelManager : MonoBehaviour
             CityBattleItem itemScript = itemObj.GetComponent<CityBattleItem>();
             if (itemScript != null)
             {
-                itemScript.Init(allTeams[i]);
+                bool acted = false;
+                if (!isDefenseMode)
+                {
+                    var commander = GameManager.Instance.GetHero(allTeams[i].heroId1);
+                    acted = commander != null && commander.round >= GameManager.Instance.SaveData.round;
+                }
+                itemScript.Init(allTeams[i], acted);
             }
 
             cityBattleItems.Add(itemObj);

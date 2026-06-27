@@ -168,7 +168,11 @@ public class CityPraisePanelManager : MonoBehaviour
             }
         }
 
-        allHeroes = allHeroes.OrderBy(h => h.loyalty).ToList();
+        int currentRound = GameManager.Instance.SaveData.round;
+        // 已行动武将排到末尾，再按忠诚升序
+        allHeroes = allHeroes.OrderBy(h => h.round >= currentRound ? 1 : 0)
+                             .ThenBy(h => h.loyalty)
+                             .ToList();
 
         if (allHeroes.Count == 0) return;
 
@@ -210,7 +214,8 @@ public class CityPraisePanelManager : MonoBehaviour
             if (itemScript != null)
             {
                 string attText = GetHeroAttText(allHeroes[i]);
-                itemScript.Init(allHeroes[i].heroId, attText, forceId);
+                bool hasActed = allHeroes[i].round >= GameManager.Instance.SaveData.round;
+                itemScript.Init(allHeroes[i].heroId, attText, forceId, hasActed);
             }
 
             heroHeadItems.Add(itemObj);

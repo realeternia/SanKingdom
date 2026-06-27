@@ -15,9 +15,12 @@ public class CityUseHeroPanelManager : MonoBehaviour
     private int cityId;
     private int devId;
     private List<int> selectedHeroIds = new List<int>();
+    private int currentDayFilter = SystemConst.CityDev.CITY_DAY_MIN;
 
     public Button heroButton;
+    public Button dayButton;
     public TMP_Text attrVal1Text;
+    public TMP_Text dayButtonText;
 
     public Button closeButton;
     public Button okButton;
@@ -32,7 +35,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
         });
         heroButton.onClick.AddListener(() =>
         {
-            SideHeroSelector.SetContext(cityId, forceId, (newHeroIds) =>
+            SideHeroSelector.SetContext(cityId, forceId, currentDayFilter, (newHeroIds) =>
             {
                 selectedHeroIds = newHeroIds;
                 if (newHeroIds == null || newHeroIds.Count == 0)
@@ -52,10 +55,32 @@ public class CityUseHeroPanelManager : MonoBehaviour
             PanelManager.Instance.ShowSideBar("SideHeroSelector");
         });
 
+        if (dayButton != null)
+        {
+            dayButton.onClick.AddListener(OnDayButtonClick);
+        }
+
         if (okButton != null)
         {
             okButton.onClick.AddListener(OnUseHero);
         }
+
+        UpdateDayButtonText();
+    }
+
+    private void OnDayButtonClick()
+    {
+        currentDayFilter = currentDayFilter >= SystemConst.CityDev.CITY_DAY_MAX
+            ? SystemConst.CityDev.CITY_DAY_MIN
+            : currentDayFilter + 1;
+        UpdateDayButtonText();
+        SideHeroSelector.UpdateDayFilter(currentDayFilter);
+    }
+
+    private void UpdateDayButtonText()
+    {
+        if (dayButtonText != null)
+            dayButtonText.text = currentDayFilter + "日";
     }
 
     void Update()
@@ -69,7 +94,9 @@ public class CityUseHeroPanelManager : MonoBehaviour
         this.cityId = cityId;
         this.devId = devId;
         this.selectedHeroIds.Clear();
+        currentDayFilter = SystemConst.CityDev.CITY_DAY_MIN;
         attrVal1Text.text = "-";
+        UpdateDayButtonText();
         CreateHeroHeadItems();
     }
 
@@ -135,6 +162,9 @@ public class CityUseHeroPanelManager : MonoBehaviour
 
         var cities = GameManager.Instance.GetCitiesByForce(forceId);
 
+        int currentRound = GameManager.Instance.SaveData.round;
+        int kingHeroId = ForceConfig.GetConfig(forceId).HeroId;
+
         List<int> heroList = new List<int>();
         foreach (var city in cities)
         {
@@ -144,10 +174,15 @@ public class CityUseHeroPanelManager : MonoBehaviour
 
         if (heroList.Count == 0) return;
 
-        int kingHeroId = ForceConfig.GetConfig(forceId).HeroId;
-        heroList = heroList.OrderByDescending(h => h == kingHeroId ? 1 : 0)
-                           .ThenByDescending(h => GameManager.Instance.GetHero(h).GetAttr("charm"))
-                           .ToList();
+        // 已行动武将排到末尾，再按君主优先、魅力降序
+        heroList = heroList.OrderBy(h =>
+            {
+                var hero = GameManager.Instance.GetHero(h);
+                return hero != null && hero.round >= currentRound ? 1 : 0;
+            })
+            .ThenByDescending(h => h == kingHeroId ? 1 : 0)
+            .ThenByDescending(h => GameManager.Instance.GetHero(h).GetAttr("charm"))
+            .ToList();
 
         var itemPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelGismo("HeroHeadItem"));
 
@@ -187,7 +222,9 @@ public class CityUseHeroPanelManager : MonoBehaviour
             if (itemScript != null)
             {
                 string attText = GetHeroAttText(heroList[i]);
-                itemScript.Init(heroList[i], attText, forceId);
+                var heroData = GameManager.Instance.GetHero(heroList[i]);
+                bool hasActed = heroData != null && heroData.round >= currentRound;
+                itemScript.Init(heroList[i], attText, forceId, hasActed);
             }
 
             heroHeadItems.Add(itemObj);

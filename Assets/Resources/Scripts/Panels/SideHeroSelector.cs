@@ -18,20 +18,35 @@ public class SideHeroSelector : MonoBehaviour
 
     private const int MAX_SELECT_COUNT = 3;
 
+    private static SideHeroSelector instance;
+
     private static int currentCityId;
     private static int currentForceId;
+    private static int currentDayFilter = SystemConst.CityDev.CITY_DAY_MIN;
     private static System.Action<List<int>> onHeroIdsSelected;
 
-    public static void SetContext(int cityId, int forceId, System.Action<List<int>> callback)
+    public static void SetContext(int cityId, int forceId, int dayFilter, System.Action<List<int>> callback)
     {
         currentCityId = cityId;
         currentForceId = forceId;
+        currentDayFilter = dayFilter;
         onHeroIdsSelected = callback;
-        GameLog.Info($"SideHeroSelector.SetContext: cityId={cityId}, forceId={forceId}");
+        GameLog.Info($"SideHeroSelector.SetContext: cityId={cityId}, forceId={forceId}, dayFilter={dayFilter}");
+    }
+
+    /// <summary>
+    /// 更新日程过滤并刷新列表（供 dayButton 点击时调用）
+    /// </summary>
+    public static void UpdateDayFilter(int dayFilter)
+    {
+        currentDayFilter = dayFilter;
+        if (instance != null)
+            instance.LoadHeroList();
     }
 
     void Start()
     {
+        instance = this;
         LoadHeroList();
 
         if (confirmButton != null)
@@ -87,18 +102,27 @@ public class SideHeroSelector : MonoBehaviour
             return result;
         }
 
+        // 排他性日程带：只显示精确匹配 currentDayFilter 距离的武将
+        // 2日剔除1日，3日剔除1日和2日
+        int loyaltyThreshold = SysFormula.Hero.GetRecruitLoyaltyThreshold(currentDayFilter);
+
         foreach (var hero in saveData.heros)
         {
-            if (hero.state == HeroState.Catched && hero.cityId == currentCityId)
+            int distance = SysFormula.City.CalculateCityDayDistance(currentCityId, hero.cityId);
+            if (distance != currentDayFilter)
+                continue;
+
+            if (hero.state == HeroState.Wild)
             {
                 result.Add(hero.heroId);
             }
-            else if (hero.state == HeroState.Normal && hero.forceId != currentForceId && hero.loyalty < SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD)
+            else if (hero.state == HeroState.Catched && hero.cityId == currentCityId)
             {
-                if (MapTool.IsAdjacentCity(currentCityId, hero.cityId))
-                {
-                    result.Add(hero.heroId);
-                }
+                result.Add(hero.heroId);
+            }
+            else if (hero.state == HeroState.Normal && hero.forceId != currentForceId && hero.loyalty < loyaltyThreshold)
+            {
+                result.Add(hero.heroId);
             }
         }
 

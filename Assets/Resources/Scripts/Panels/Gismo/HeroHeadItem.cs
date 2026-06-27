@@ -16,12 +16,14 @@ public class HeroHeadItem : MonoBehaviour
     private int heroId;
     private bool isSelected = false;
     private int forceId;
+    private bool hasActed = false;
 
-    public void Init(int heroId, string attText, int forceId)
+    public void Init(int heroId, string attText, int forceId, bool hasActed = false)
     {
         this.heroId = heroId;
         this.forceId = forceId;
         isSelected = false;
+        this.hasActed = hasActed;
         UpdateBgColor();
         RefreshUI(attText);
 
@@ -68,21 +70,29 @@ public class HeroHeadItem : MonoBehaviour
                 nameText = "★" + nameText;
             }
 
-            bool isKing = false;
-            if (forceId > 0)
+            if (hasActed)
             {
-                var forceCfg = ForceConfig.GetConfig(forceId);
-                isKing = forceCfg.HeroId == heroId;
-            }
-
-            if (isKing)
-            {
-                string goldHex = "FFD700";
-                itemName.text = $"<color=#{goldHex}>{nameText}</color>";
+                string grayHex = ColorUtility.ToHtmlStringRGB(SysColor.Theme.ActedHeroTextColor);
+                itemName.text = $"<color=#{grayHex}>{nameText}</color>";
             }
             else
             {
-                itemName.text = nameText;
+                bool isKing = false;
+                if (forceId > 0)
+                {
+                    var forceCfg = ForceConfig.GetConfig(forceId);
+                    isKing = forceCfg.HeroId == heroId;
+                }
+
+                if (isKing)
+                {
+                    string goldHex = "FFD700";
+                    itemName.text = $"<color=#{goldHex}>{nameText}</color>";
+                }
+                else
+                {
+                    itemName.text = nameText;
+                }
             }
         }
 

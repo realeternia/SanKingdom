@@ -59,13 +59,33 @@ public class SideHeroItem : MonoBehaviour
             }
         }
 
-        string stateText = heroData.state == HeroState.Catched ? "俘虏" : "正常";
-        string forceName = ForceConfig.GetConfig(heroData.forceId)?.Cname ?? "";
-        Color forceColor = SysColor.GetForceColor(heroData.forceId);
+        string stateText;
+        if (heroData.state == HeroState.Wild)
+            stateText = "在野";
+        else if (heroData.state == HeroState.Catched)
+            stateText = "俘虏";
+        else
+            stateText = "正常";
+
+        string forceName;
+        Color forceColor;
+        if (heroData.forceId == SystemConst.Hero.WILD_FORCE_ID)
+        {
+            forceName = "在野";
+            forceColor = Color.white;
+        }
+        else
+        {
+            forceName = ForceConfig.GetConfig(heroData.forceId).Cname;
+            forceColor = SysColor.GetForceColor(heroData.forceId);
+        }
         string forceHex = ColorUtility.ToHtmlStringRGB(forceColor);
         textState.text = $"{stateText}/<color=#{forceHex}>{forceName}</color>";
 
-        textLoyal.text = $"忠:{heroData.loyalty}";
+        int displayLoyalty = heroData.state == HeroState.Wild
+            ? SystemConst.Hero.WILD_HERO_LOYALTY
+            : heroData.loyalty;
+        textLoyal.text = $"忠:{displayLoyalty}";
 
         SetSelected(false);
     }

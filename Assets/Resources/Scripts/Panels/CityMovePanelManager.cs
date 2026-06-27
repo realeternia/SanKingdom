@@ -172,6 +172,16 @@ public class CityMovePanelManager : MonoBehaviour
 
         if (heroList.Count == 0) return;
 
+        int currentRound = GameManager.Instance.SaveData.round;
+        // 已行动武将排到末尾，再按君主城市优先
+        heroList = heroList.OrderBy(h =>
+            {
+                var hero = GameManager.Instance.GetHero(h);
+                return hero != null && hero.round >= currentRound ? 1 : 0;
+            })
+            .ThenByDescending(h => GameManager.Instance.GetHero(h).cityId == kingCityId ? 1 : 0)
+            .ToList();
+
         var itemPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelGismo("HeroHeadItem"));
 
         RectTransform containerRect = itemRegionMain.GetComponent<RectTransform>();
@@ -210,7 +220,9 @@ public class CityMovePanelManager : MonoBehaviour
             if (itemScript != null)
             {
                 string attText = GetHeroAttText(heroList[i]);
-                itemScript.Init(heroList[i], attText, forceId);
+                var heroData = GameManager.Instance.GetHero(heroList[i]);
+                bool hasActed = heroData != null && heroData.round >= GameManager.Instance.SaveData.round;
+                itemScript.Init(heroList[i], attText, forceId, hasActed);
             }
 
             heroHeadItems.Add(itemObj);

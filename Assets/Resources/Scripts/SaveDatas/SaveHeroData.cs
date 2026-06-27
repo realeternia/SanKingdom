@@ -24,6 +24,12 @@ public class SaveHeroData
     public int charm;
     public int leadShip;
 
+    /// <summary>
+    /// 行动占用截止回合：执行 KingAction 时设为 currentRound + dayDiff。
+    /// hero.round >= SaveData.round 表示仍被占用（不可再执行 KingAction）。
+    /// </summary>
+    public int round;
+
     public void InitAttrsFromConfig()
     {
         var heroConfig = HeroConfig.GetConfig(heroId);

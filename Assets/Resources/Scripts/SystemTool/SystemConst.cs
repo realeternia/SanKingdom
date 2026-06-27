@@ -46,9 +46,17 @@ public static class SystemConst
         /// </summary>
         public const int LOW_LOYALTY_THRESHOLD = 80;
         /// <summary>
-        /// 登用敌方英雄忠诚度阈值
+        /// 登用敌方英雄忠诚度阈值（1日程）
         /// </summary>
-        public const int RECRUIT_ENEMY_LOYALTY_THRESHOLD = 95;
+        public const int RECRUIT_ENEMY_LOYALTY_THRESHOLD = 90;
+        /// <summary>
+        /// 登用敌方英雄忠诚度阈值（2日程）
+        /// </summary>
+        public const int RECRUIT_ENEMY_LOYALTY_THRESHOLD_2DAY = 85;
+        /// <summary>
+        /// 登用敌方英雄忠诚度阈值（3日程）
+        /// </summary>
+        public const int RECRUIT_ENEMY_LOYALTY_THRESHOLD_3DAY = 80;
         /// <summary>
         /// 默认兵种ID
         /// </summary>
@@ -61,8 +69,18 @@ public static class SystemConst
         /// 每个英雄最大士兵数
         /// </summary>
         public const int MAX_SOLDIER_PER_HERO = 100;
+        /// <summary>
+        /// 在野武将基础登庸成功率
         /// </summary>
         public const int RECRUIT_WILD_BASE_RATE = 30;
+        /// <summary>
+        /// 在野武将显示衷心度
+        /// </summary>
+        public const int WILD_HERO_LOYALTY = 50;
+        /// <summary>
+        /// 在野武将位于非己方势力城市时的成功率惩罚系数（0.5=下降50%）
+        /// </summary>
+        public const float RECRUIT_WILD_NON_FRIENDLY_PENALTY = 0.5f;
         /// <summary>
         /// 登用俘虏公式参数A
         /// </summary>
@@ -491,6 +509,18 @@ public static class SystemConst
         public const int MOVE_DEV_ID = 21102;
         public const int BATTLE_DEV_ID = 21103;
         public const int IDLE_DEV_ID = 21999;
+        /// <summary>
+        /// 城市日程：相邻为1日，曼哈顿距离阈值≤此值算2日
+        /// </summary>
+        public const int DAY_DISTANCE_THRESHOLD_2 = 600;
+        /// <summary>
+        /// 城市日程最小日数
+        /// </summary>
+        public const int CITY_DAY_MIN = 1;
+        /// <summary>
+        /// 城市日程最大日数
+        /// </summary>
+        public const int CITY_DAY_MAX = 3;
     }
 
     public static class Diplomacy

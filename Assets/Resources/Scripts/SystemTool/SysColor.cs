@@ -103,6 +103,7 @@ public static class SysColor
         public static readonly Color CellNormalDark = new Color(0, 0, 0, 1);
         public static readonly Color CellSelected = new Color(0.3f, 0.7f, 0.4f, 1f);
         public static readonly Color CellDisabled = new Color(0.1f, 0.1f, 0.1f, 0.5f);
+        public static readonly Color ActedHeroTextColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     }
 
     public static class UI

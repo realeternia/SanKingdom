@@ -139,6 +139,27 @@ public static class SysFormula
             return baseRate;
         }
 
+        /// <summary>
+        /// 按日程获取登庸敌方武将的忠诚度阈值：1日=90，2日=85，3日=80
+        /// </summary>
+        public static int GetRecruitLoyaltyThreshold(int dayFilter)
+        {
+            switch (dayFilter)
+            {
+                case 2: return SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD_2DAY;
+                case 3: return SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD_3DAY;
+                default: return SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD;
+            }
+        }
+
+        /// <summary>
+        /// 在野武将位于非己方势力城市时的成功率惩罚：rate * 0.5
+        /// </summary>
+        public static int ApplyWildNonFriendlyPenalty(int rate)
+        {
+            return (int)Math.Round(rate * SystemConst.Hero.RECRUIT_WILD_NON_FRIENDLY_PENALTY);
+        }
+
         public static int CalculateCaptureChance(int str)
         {
             int effectiveStr = str > 0 ? str : 50;
@@ -250,6 +271,27 @@ public static class SysFormula
         public static int CalculateDistance(int x1, int y1, int x2, int y2)
         {
             return Math.Abs(x1 - x2) + Math.Abs(y1 - y2);
+        }
+
+        /// <summary>
+        /// 计算两城市间日程数：相邻=1日，曼哈顿距离≤阈值=2日，否则=3日
+        /// </summary>
+        public static int CalculateCityDayDistance(int cityId1, int cityId2)
+        {
+            if (cityId1 == cityId2)
+                return SystemConst.CityDev.CITY_DAY_MIN;
+
+            var cfg1 = WorldConfig.GetConfig(cityId1);
+            var cfg2 = WorldConfig.GetConfig(cityId2);
+
+            if (cfg1.WorldNearIds != null && Array.IndexOf(cfg1.WorldNearIds, cityId2) >= 0)
+                return SystemConst.CityDev.CITY_DAY_MIN;
+
+            int manhattan = Math.Abs(cfg1.X - cfg2.X) + Math.Abs(cfg1.Y - cfg2.Y);
+            if (manhattan <= SystemConst.CityDev.DAY_DISTANCE_THRESHOLD_2)
+                return SystemConst.CityDev.CITY_DAY_MIN + 1;
+
+            return SystemConst.CityDev.CITY_DAY_MAX;
         }
 
         public static bool CityHasResAddon(int cityId, string attrName)

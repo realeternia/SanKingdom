@@ -22,10 +22,12 @@ public class CityBattleItem : MonoBehaviour
 
     private SaveTroopsData warTeamData;
     private bool isSelected = false;
+    private bool hasActed = false;
 
-    public void Init(SaveTroopsData data)
+    public void Init(SaveTroopsData data, bool hasActed = false)
     {
         warTeamData = data;
+        this.hasActed = hasActed;
 
         if (editButton != null)
         {
@@ -93,7 +95,16 @@ public class CityBattleItem : MonoBehaviour
                 var heroConfig = HeroConfig.GetConfig(warTeamData.heroId1);
                 heroName = heroConfig.Name;
             }
-            heroNameText.text = heroName;
+
+            if (hasActed && !string.IsNullOrEmpty(heroName))
+            {
+                string grayHex = ColorUtility.ToHtmlStringRGB(SysColor.Theme.ActedHeroTextColor);
+                heroNameText.text = $"<color=#{grayHex}>{heroName}</color>";
+            }
+            else
+            {
+                heroNameText.text = heroName;
+            }
         }
 
         if (armsText != null)

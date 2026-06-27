@@ -524,6 +524,9 @@ public class SaveForceData
             return;
         }
 
+        // 标记攻击方武将本回合已行动
+        MarkHeroesActed(validAttackSoldierMap.Keys);
+
         foreach (var srcCityId in srcCityIds)
         {
             var citySrc = GameManager.Instance.GetCity(srcCityId);
@@ -666,7 +669,7 @@ public class SaveForceData
             GameLog.Warn("MoveHeroToCity: destCityId is invalid");
             return;
         }
-        
+
         if (srcCityId > 0)
         {
             var citySrc = GameManager.Instance.GetCity(srcCityId);
@@ -676,28 +679,29 @@ public class SaveForceData
                 citySrc.RecalculateHeros();
             }
         }
-        
+
         var cityDest = GameManager.Instance.GetCity(destCityId);
         if (cityDest != null)
         {
             cityDest.RecalculateHeros();
         }
-         
+
          PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = destCityId });
     }
 
-    public void ExecuteCityMoveDev(int cityId, int devId, int[] heroList, int foodUse, int targetCityId)
+    /// <summary>
+    /// 标记英雄执行 KingAction 后的占用回合：hero.round = currentRound + dayDiff。
+    /// dayDiff=0 表示仅本回合占用；dayDiff>0 表示额外占用多日（远距离等）。
+    /// </summary>
+    private void MarkHeroesActed(IEnumerable<int> heroIds, int dayDiff = 0)
     {
-        var citySrc = GameManager.Instance.GetCity(cityId);
-
-        citySrc.AddAttr("food", -foodUse, "运粮移出粮草");
-        var cityDest = GameManager.Instance.GetCity(targetCityId);
-        if (cityDest != null && cityDest.forceId == citySrc.forceId)
+        int currentRound = GameManager.Instance.SaveData.round;
+        foreach (var heroId in heroIds)
         {
-            cityDest.AddAttr("food", foodUse, "运粮移入粮草");
+            var hero = GameManager.Instance.GetHero(heroId);
+            if (hero != null)
+                hero.round = currentRound + dayDiff;
         }
-
-        MoveHeroToCity(cityId, targetCityId, heroList);
     }
 
     public List<SaveCityData> GetCityList()
@@ -795,6 +799,12 @@ public class SaveForceData
         if (hero.state == HeroState.Wild)
         {
             baseSuccessRate = SystemConst.Hero.RECRUIT_WILD_BASE_RATE;
+            // 在野武将位于非己方势力城市时，成功率下降50%
+            var heroCity = GameManager.Instance.GetCity(hero.cityId);
+            if (heroCity == null || heroCity.forceId != cityData.forceId)
+            {
+                baseSuccessRate = SysFormula.Hero.ApplyWildNonFriendlyPenalty(baseSuccessRate);
+            }
         }
         else if (hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
         {
@@ -874,6 +884,17 @@ public class SaveForceData
         }
 
         cityData.AddAction(devId, myHeroIds.Length);
+
+        // 仅标记执行方（去登庸的武将），被登庸武将不标记。
+        // dayDiff 按各执行方所在城市到目标城市的日程计算：distance - 1
+        int currentRound = GameManager.Instance.SaveData.round;
+        foreach (var executorId in myHeroIds)
+        {
+            var executor = GameManager.Instance.GetHero(executorId);
+            if (executor == null) continue;
+            int distance = SysFormula.City.CalculateCityDayDistance(executor.cityId, cityId);
+            executor.round = currentRound + (distance - 1);
+        }
         return true;
     }
 
@@ -927,7 +948,8 @@ public class SaveForceData
         }
 
         cityData.AddAction(devId, heroList.Length);
-        
+
+        MarkHeroesActed(heroList);
         return true;
     }
 
