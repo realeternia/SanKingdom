@@ -62,7 +62,7 @@ public static class AIToolHeroDev
         while (assignedHeroIds.Count < maxJobCount)
         {
             var available = devConfigs
-                .Where(c => (devAssignmentCounts.ContainsKey(c.Id) ? devAssignmentCounts[c.Id] : 0) < c.HeroCount)
+                .Where(c => c.HeroCount == 0 || (devAssignmentCounts.ContainsKey(c.Id) ? devAssignmentCounts[c.Id] : 0) < c.HeroCount)
                 .ToList();
             if (available.Count == 0) break;
             

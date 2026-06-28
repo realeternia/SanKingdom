@@ -262,16 +262,16 @@ public static class AIToolMove
 
         int troopCount = SaveTroopsData.GetTroopsCountByCity(fromCityId);
         bool isCommander = SaveTroopsData.IsHeroCommander(pickedHeroId, fromCityId);
+        List<int> viceHeroIds = null;
 
         if (isCommander && troopCount > 3)
         {
             var troop = SaveTroopsData.FindByHeroId(pickedHeroId);
             if (troop != null)
             {
-                if (troop.heroId2 > 0) heroIdsToMove.Add(troop.heroId2);
-                if (troop.heroId3 > 0) heroIdsToMove.Add(troop.heroId3);
-                var troopsToMove = new List<SaveTroopsData> { troop };
-                SaveTroopsData.MoveTroopsToCity(troopsToMove, toCityId);
+                viceHeroIds = new List<int>();
+                if (troop.heroId2 > 0) { heroIdsToMove.Add(troop.heroId2); viceHeroIds.Add(troop.heroId2); }
+                if (troop.heroId3 > 0) { heroIdsToMove.Add(troop.heroId3); viceHeroIds.Add(troop.heroId3); }
             }
         }
 
@@ -281,9 +281,21 @@ public static class AIToolMove
             return false;
         }
 
-        force.MoveHeroToCity(fromCityId, toCityId, heroIdsToMove.ToArray());
+        // 只移动主将，MoveHeroWithTroop会自动将军团整体跟随到新城市
+        force.MoveHeroToCity(fromCityId, toCityId, new int[] { pickedHeroId });
 
-        string tag = isCommander && troopCount > 3 ? "（整troop）" : "";
+        // 整编移动时，副将的hero.cityId需手动更新（军团已跟随主将，副将保留在军团中）
+        if (viceHeroIds != null)
+        {
+            foreach (var viceId in viceHeroIds)
+            {
+                var viceHero = GameManager.Instance.GetHero(viceId);
+                if (viceHero != null)
+                    viceHero.cityId = toCityId;
+            }
+        }
+
+        string tag = viceHeroIds != null ? "（整troop）" : "";
         GameLog.SetTag("AI").Info($"均衡调度{tag}: 英雄[{string.Join(",", heroIdsToMove)}]从城市{fromCityId}调往城市{toCityId}");
         return true;
     }

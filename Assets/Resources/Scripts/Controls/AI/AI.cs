@@ -27,6 +27,9 @@ public static class AI
         // 君主行动判断（褒奖/移动/登庸，除战斗外的判断均在此进行）
         AIToolKingAction.CheckKingAction(force);
 
+        // KingAction 调动的英雄导致城市dev位空缺，重新分配填充
+        AIToolHeroDev.AssignHeroesToDev(force);
+
         // 确认计划，进入执行阶段
         GameManager.Instance.ConfirmPlan(force.forceId);
         

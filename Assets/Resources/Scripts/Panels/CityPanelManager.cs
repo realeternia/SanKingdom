@@ -628,7 +628,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             oldNode.RemoveHero(heroId);
         }
 
-        if (isTargetNodeFull && !nodeHeroIds.Contains(heroId))
+        if (isTargetNodeFull && !nodeHeroIds.Contains(heroId) && nodeHeroIds.Count > 0)
         {
             int firstHeroId = nodeHeroIds[0];
             targetNode.RemoveHero(firstHeroId);

@@ -143,6 +143,57 @@ public class SaveTroopsData
         GameManager.Instance.SaveData.troops.Add(troop);
     }
 
+    /// <summary>
+    /// 英雄移动时的军团同步：主将移动→军团cityId跟随；副将移动→从军团中移除
+    /// </summary>
+    public static void MoveHeroWithTroop(int heroId, int destCityId)
+    {
+        var troop = FindByHeroId(heroId);
+        if (troop == null) return;
+
+        if (troop.heroId1 == heroId)
+        {
+            // 主将移动，整个军团跟随
+            troop.cityId = destCityId;
+            var destCity = GameManager.Instance.GetCity(destCityId);
+            if (destCity != null)
+                troop.forceId = destCity.forceId;
+        }
+        else if (troop.heroId2 == heroId)
+        {
+            // 副将移动，从军团中移除
+            troop.heroId2 = 0;
+        }
+        else if (troop.heroId3 == heroId)
+        {
+            // 副将移动，从军团中移除
+            troop.heroId3 = 0;
+        }
+    }
+
+    /// <summary>
+    /// 从军团中移除英雄（不移动军团）：主将移除→解散军团；副将移除→设为0
+    /// 适用于城破逃亡、俘虏逃跑等被动场景
+    /// </summary>
+    public static void RemoveHeroFromTroop(int heroId)
+    {
+        var troop = FindByHeroId(heroId);
+        if (troop == null) return;
+
+        if (troop.heroId1 == heroId)
+        {
+            RemoveTroopFromCity(troop);
+        }
+        else if (troop.heroId2 == heroId)
+        {
+            troop.heroId2 = 0;
+        }
+        else if (troop.heroId3 == heroId)
+        {
+            troop.heroId3 = 0;
+        }
+    }
+
     public static void RemoveTroopFromCity(SaveTroopsData troop)
     {
         GameManager.Instance.SaveData.troops.Remove(troop);

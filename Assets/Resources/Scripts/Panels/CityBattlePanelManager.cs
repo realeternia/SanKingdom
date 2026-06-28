@@ -211,10 +211,6 @@ public class CityBattlePanelManager : MonoBehaviour
 
     private void OnDefenseBattle()
     {
-        var cityData = GameManager.Instance.GetCity(defenseTargetCityId);
-        int totalSoldiers = (int)cityData.soldier;
-        int totalAllocated = 0;
-
         List<SaveTroopsData> defenceTroops = new List<SaveTroopsData>();
         foreach (var itemObj in cityBattleItems)
         {
@@ -228,7 +224,6 @@ public class CityBattlePanelManager : MonoBehaviour
                 if (allocated > 0)
                 {
                     defenceTroops.Add(troop);
-                    totalAllocated += allocated;
                 }
             }
         }
@@ -239,13 +234,7 @@ public class CityBattlePanelManager : MonoBehaviour
             return;
         }
 
-        if (totalAllocated < totalSoldiers)
-        {
-            SystemTip.Instance.ShowTip($"防御模式必须配满兵力，当前分配{totalAllocated}，总兵力{totalSoldiers}");
-            return;
-        }
-
-        // 防御模式下所有出场部队的士兵数已在分配时确定，无需再选择
+        // 防御模式不消耗粮草，无需配满全部兵力，未分配的士兵自动参与防守
         Dictionary<int, int> defenceSoldierMap = new Dictionary<int, int>();
         foreach (var troop in defenceTroops)
         {

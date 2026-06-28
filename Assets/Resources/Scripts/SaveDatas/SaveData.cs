@@ -133,6 +133,7 @@ public class SaveData
                         {
                             city.RemoveDevAssignment(hero.heroId);
                         }
+                        SaveTroopsData.RemoveHeroFromTroop(hero.heroId);
                         hero.state = HeroState.Normal;
                         hero.cityId = destCityId;
 

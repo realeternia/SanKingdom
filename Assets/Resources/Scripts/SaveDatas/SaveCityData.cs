@@ -160,24 +160,44 @@ public class SaveCityData
     public Dictionary<int, int> DistributeSoldierDefault(int[] heroIds, int maxPerHero = SystemConst.Hero.MAX_SOLDIER_PER_HERO)
     {
         var result = new Dictionary<int, int>();
-        int initialSoldier = (int)Math.Floor(soldier);
-        int citySoldier = initialSoldier;
+        int totalSoldiers = (int)Math.Floor(soldier);
 
         var heroList = heroIds.Select(id => GameManager.Instance.GetHero(id))
             .Where(h => h != null)
             .OrderByDescending(h => h.GetAttr("leadship"))
             .ToList();
 
+        if (heroList.Count == 0) return result;
+
+        // 按统帅权重比例分配，强者多得
+        float totalWeight = heroList.Sum(h => (float)h.GetAttr("leadship"));
+
+        int distributed = 0;
         foreach (var hero in heroList)
         {
-            if (citySoldier <= 0) break;
-            int toAssign = Math.Min(maxPerHero, citySoldier);
-            result[hero.heroId] = toAssign;
-            citySoldier -= toAssign;
+            float weight = hero.GetAttr("leadship");
+            int share = (int)(totalSoldiers * weight / totalWeight);
+            share = Math.Min(share, maxPerHero);
+            result[hero.heroId] = share;
+            distributed += share;
         }
 
-        int totalDistributed = initialSoldier - citySoldier;
-        AddAttr("soldier", -totalDistributed, "分配士兵扣除");
+        // 取整余数按统帅从高到低补足
+        int remaining = totalSoldiers - distributed;
+        for (int i = 0; i < heroList.Count && remaining > 0; i++)
+        {
+            int heroId = heroList[i].heroId;
+            int space = maxPerHero - result[heroId];
+            if (space > 0)
+            {
+                int add = Math.Min(space, remaining);
+                result[heroId] += add;
+                distributed += add;
+                remaining -= add;
+            }
+        }
+
+        AddAttr("soldier", -distributed, "分配士兵扣除");
         
         PanelManager.Instance.SendSignal(new CityResChangeSignal { CityId = cityId, ResType = "soldier", Value = GetAttr("soldier") });
         
@@ -338,6 +358,7 @@ public class SaveCityData
             if (hero != null)
             {
                 RemoveDevAssignment(heroId);
+                SaveTroopsData.MoveHeroWithTroop(heroId, destCityId);
                 hero.cityId = destCityId;
                 if (destCity != null)
                     hero.forceId = destCity.forceId;
@@ -416,6 +437,7 @@ public class SaveCityData
                 {
                     if (heroId == kingHeroId)
                     {
+                        SaveTroopsData.RemoveHeroFromTroop(heroId);
                         hero.cityId = GameManager.Instance.GetRandomForceCityId(cityId, forceLose);
                         destCityIds.Add(hero.cityId);
                     }
@@ -424,11 +446,13 @@ public class SaveCityData
                         int catchChance = SysFormula.Hero.CalculateCaptureChance(hero.str);
                         if (SysRandom.Range(0, 100) >= catchChance)
                         {
+                            SaveTroopsData.RemoveHeroFromTroop(heroId);
                             hero.cityId = GameManager.Instance.GetRandomForceCityId(cityId, forceLose);
                             destCityIds.Add(hero.cityId);
                         }
                         else
                         {
+                            SaveTroopsData.RemoveHeroFromTroop(heroId);
                             hero.state = HeroState.Catched;
                             BattleStatManager.RecordHeroCatched(hero.forceId, heroId);
                         }
@@ -449,6 +473,7 @@ public class SaveCityData
                 var hero = GameManager.Instance.GetHero(heroId);
                 if (hero != null)
                 {
+                    SaveTroopsData.RemoveHeroFromTroop(heroId);
                     hero.state = HeroState.Wild;
                     hero.forceId = SystemConst.Hero.WILD_FORCE_ID;
                     hero.loyalty = SystemConst.Hero.ELIMINATED_HERO_LOYALTY;
@@ -466,7 +491,10 @@ public class SaveCityData
         {
             var hero = GameManager.Instance.GetHero(heroId);
             if (hero != null)
+            {
+                SaveTroopsData.MoveHeroWithTroop(heroId, cityId);
                 hero.cityId = cityId;
+            }
         }
 
         RecalculateHeros();
