@@ -91,6 +91,15 @@ public class NLMutiCheckButton : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 外部设置选中索引（不触发回调）
+    /// </summary>
+    public void SetSelectedIndexExternal(int index)
+    {
+        if (index < 0 || index >= buttons.Count) return;
+        SetSelectedIndex(index);
+    }
+
     private void ClearButtons()
     {
         for (int i = buttons.Count - 1; i >= 1; i--)

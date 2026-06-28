@@ -16,11 +16,14 @@ public class CityUseHeroPanelManager : MonoBehaviour
     private int devId;
     private List<int> selectedHeroIds = new List<int>();
     private int currentDayFilter = SystemConst.CityDev.CITY_DAY_MIN;
+    private int useHeroCount;
 
     public Button heroButton;
     public Button dayButton;
     public TMP_Text attrVal1Text;
     public TMP_Text dayButtonText;
+
+    public ResCheckItem resCheckItem;    
 
     public Button closeButton;
     public Button okButton;
@@ -37,20 +40,21 @@ public class CityUseHeroPanelManager : MonoBehaviour
         {
             SideHeroSelector.SetContext(cityId, forceId, currentDayFilter, (newHeroIds) =>
             {
-                selectedHeroIds = newHeroIds;
-                if (newHeroIds == null || newHeroIds.Count == 0)
+                selectedHeroIds = newHeroIds ?? new List<int>();
+                if (selectedHeroIds.Count == 0)
                 {
                     attrVal1Text.text = "-";
                 }
                 else
                 {
-                    var names = newHeroIds.Select(id =>
+                    var names = selectedHeroIds.Select(id =>
                     {
                         var cfg = HeroConfig.GetConfig(id);
                         return cfg != null ? cfg.Name : id.ToString();
                     });
                     attrVal1Text.text = string.Join(",", names);
                 }
+                RefreshHeroHeadItemsForRecruit();
             });
             PanelManager.Instance.ShowSideBar("SideHeroSelector");
         });
@@ -95,6 +99,12 @@ public class CityUseHeroPanelManager : MonoBehaviour
         this.devId = devId;
         this.selectedHeroIds.Clear();
         currentDayFilter = SystemConst.CityDev.CITY_DAY_MIN;
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+        useHeroCount = devCfg != null ? devCfg.HeroCount : 0;
+
+        InitResCheckItem();
+
         attrVal1Text.text = "-";
         UpdateDayButtonText();
         CreateHeroHeadItems();
@@ -118,6 +128,47 @@ public class CityUseHeroPanelManager : MonoBehaviour
             }
         }
         return selected;
+    }
+
+    private void InitResCheckItem()
+    {
+        if (resCheckItem == null) return;
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+        if (devCfg == null) return;
+
+        var force = GameManager.Instance.GetForce(forceId);
+        int usedCount = force != null ? force.GetKingActionCount(devId) : 0;
+        resCheckItem.Init(ResPath.Texture.AttrIcon(devCfg.Icon), $"{usedCount}/{useHeroCount}");
+    }
+
+    private bool CanSelectHero()
+    {
+        var force = GameManager.Instance.GetForce(forceId);
+        int usedCount = force != null ? force.GetKingActionCount(devId) : 0;
+        return usedCount + GetSelectedItems().Count < useHeroCount;
+    }
+
+    private void OnHeroSelectionChanged()
+    {
+        UpdateResCheckDisplay();
+    }
+
+    private void UpdateResCheckDisplay()
+    {
+        if (resCheckItem == null) return;
+
+        var force = GameManager.Instance.GetForce(forceId);
+        int usedCount = force != null ? force.GetKingActionCount(devId) : 0;
+        int totalCount = usedCount + GetSelectedItems().Count;
+        if (totalCount >= useHeroCount)
+        {
+            resCheckItem.UpdateDisplay("<color=red>已满</color>");
+        }
+        else
+        {
+            resCheckItem.UpdateDisplay($"{totalCount}/{useHeroCount}");
+        }
     }
 
     private void OnUseHero()
@@ -150,6 +201,18 @@ public class CityUseHeroPanelManager : MonoBehaviour
 
     private void CreateHeroHeadItems()
     {
+        // 保存当前选中的执行武将，便于重建后恢复选中状态
+        var selectedExecutorIds = new HashSet<int>();
+        foreach (var itemObj in heroHeadItems)
+        {
+            if (itemObj == null) continue;
+            var itemScript = itemObj.GetComponent<HeroHeadItem>();
+            if (itemScript != null && itemScript.IsSelected())
+            {
+                selectedExecutorIds.Add(itemScript.GetHeroId());
+            }
+        }
+
         foreach (var item in heroHeadItems)
         {
             if (item != null)
@@ -164,6 +227,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
 
         int currentRound = GameManager.Instance.SaveData.round;
         int kingHeroId = ForceConfig.GetConfig(forceId).HeroId;
+        bool hasTargets = selectedHeroIds.Count > 0;
 
         List<int> heroList = new List<int>();
         foreach (var city in cities)
@@ -174,12 +238,13 @@ public class CityUseHeroPanelManager : MonoBehaviour
 
         if (heroList.Count == 0) return;
 
-        // 已行动武将排到末尾，再按君主优先、魅力降序
+        // 已行动武将排到末尾；有登庸目标时按成功率倒排，再按君主优先、魅力降序
         heroList = heroList.OrderBy(h =>
             {
                 var hero = GameManager.Instance.GetHero(h);
                 return hero != null && hero.round >= currentRound ? 1 : 0;
             })
+            .ThenByDescending(h => hasTargets ? CalculateBestRecruitRate(h) : 0)
             .ThenByDescending(h => h == kingHeroId ? 1 : 0)
             .ThenByDescending(h => GameManager.Instance.GetHero(h).GetAttr("charm"))
             .ToList();
@@ -221,10 +286,17 @@ public class CityUseHeroPanelManager : MonoBehaviour
             HeroHeadItem itemScript = itemObj.GetComponent<HeroHeadItem>();
             if (itemScript != null)
             {
-                string attText = GetHeroAttText(heroList[i]);
-                var heroData = GameManager.Instance.GetHero(heroList[i]);
+                int heroId = heroList[i];
+                string attText = hasTargets ? CalculateBestRecruitRate(heroId) + "%" : GetHeroAttText(heroId);
+                var heroData = GameManager.Instance.GetHero(heroId);
                 bool hasActed = heroData != null && heroData.round >= currentRound;
-                itemScript.Init(heroList[i], attText, forceId, hasActed);
+                itemScript.Init(heroId, attText, forceId, hasActed);
+                itemScript.SetCallbacks(CanSelectHero, OnHeroSelectionChanged);
+
+                if (selectedExecutorIds.Contains(heroId))
+                {
+                    itemScript.SetSelected(true);
+                }
             }
 
             heroHeadItems.Add(itemObj);
@@ -233,6 +305,31 @@ public class CityUseHeroPanelManager : MonoBehaviour
         int totalRows = (heroList.Count + itemsPerRow - 1) / itemsPerRow;
         float contentHeight = totalRows * itemHeight + (totalRows - 1) * spacing;
         containerRect.sizeDelta = new Vector2(containerRect.sizeDelta.x, contentHeight);
+    }
+
+    /// <summary>
+    /// 当登庸目标变化时，重建 HeroHeadItem：ItemAttr 显示登庸成功率，按成功率倒排
+    /// </summary>
+    private void RefreshHeroHeadItemsForRecruit()
+    {
+        CreateHeroHeadItems();
+    }
+
+    /// <summary>
+    /// 计算执行武将对当前选中目标的最佳登庸成功率
+    /// </summary>
+    private int CalculateBestRecruitRate(int executorHeroId)
+    {
+        int bestRate = 0;
+        foreach (int targetId in selectedHeroIds)
+        {
+            int rate = SysFormula.Hero.CalculateRecruitRate(cityId, executorHeroId, targetId);
+            if (rate > bestRate)
+            {
+                bestRate = rate;
+            }
+        }
+        return bestRate;
     }
 
     public void OnShow()

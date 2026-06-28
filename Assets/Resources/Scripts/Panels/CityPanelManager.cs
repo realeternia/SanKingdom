@@ -477,6 +477,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             if (isKing && !cfg.KingAction) continue;
             if (!isKing && cfg.KingAction) continue;
             if (!SaveCityData.IsDevAvailableForCity(cityId, cfg)) continue;
+            // 21206(奖赏)集成在21205(褒奖)面板中，不在城市开发列表单独显示
+            if (cfg.Id == SystemConst.CityDev.PRAISE_PAID_DEV_ID) continue;
             int row = devIndex / itemsPerRow;
             int col = devIndex % itemsPerRow;
 

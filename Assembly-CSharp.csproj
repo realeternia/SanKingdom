@@ -219,6 +219,7 @@
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIStrategyContext.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SeasonConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BattleRandom.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\Gismo\ResCheckItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitAround.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXLightFade.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\ResPath.cs" />
@@ -270,6 +271,7 @@
     <Compile Include="Assets\Resources\Scripts\PO\AttrInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysColor.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolPraise.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\KingActionCountData.cs" />
     <Compile Include="Assets\Resources\Scripts\SideBar.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />

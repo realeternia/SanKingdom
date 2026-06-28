@@ -82,33 +82,57 @@ public static class SystemConst
         /// </summary>
         public const float RECRUIT_WILD_NON_FRIENDLY_PENALTY = 0.5f;
         /// <summary>
-        /// 登用俘虏公式参数A
+        /// 登用俘虏/敌方公式斜率分子（rate = diff * SLOPE / DIVISOR - OFFSET）
         /// </summary>
-        public const int RECRUIT_CAPTURED_FORMULA_A = 22;
+        public const int RECRUIT_CAPTURED_RATE_SLOPE = 3;
         /// <summary>
-        /// 登用俘虏公式参数B
+        /// 登用俘虏/敌方公式斜率分母
         /// </summary>
-        public const int RECRUIT_CAPTURED_FORMULA_B = 8;
+        public const int RECRUIT_CAPTURED_RATE_DIVISOR = 4;
         /// <summary>
-        /// 魅力加成第一档
+        /// 登用俘虏/敌方公式偏移量（loyalty=80 即 diff=20 时为 10%）
         /// </summary>
-        public const int CHARM_BONUS_TIER1 = 90;
+        public const int RECRUIT_CAPTURED_RATE_OFFSET = 5;
         /// <summary>
-        /// 魅力加成第二档
+        /// 魅力加成阈值，超过此值每点魅力 +1% 成功率
         /// </summary>
-        public const int CHARM_BONUS_TIER2 = 80;
+        public const int CHARM_BONUS_THRESHOLD = 75;
         /// <summary>
-        /// 登用第一档倍率
+        /// 魅力加成每点增加的成功率
         /// </summary>
-        public const int RECRUIT_TIER1_MULTIPLIER = 130;
-        /// <summary>
-        /// 登用第二档倍率
-        /// </summary>
-        public const int RECRUIT_TIER2_MULTIPLIER = 115;
+        public const int CHARM_BONUS_PER_POINT = 1;
         /// <summary>
         /// 君主登用倍率
         /// </summary>
         public const int KING_RECRUIT_MULTIPLIER = 110;
+        /// <summary>
+        /// 登庸成功率上限
+        /// </summary>
+        public const int RECRUIT_RATE_MAX = 100;
+        /// <summary>
+        /// 目标喜欢执行人时的加成
+        /// </summary>
+        public const int RECRUIT_LIKE_EXECUTOR_BONUS = 10;
+        /// <summary>
+        /// 目标喜欢君主时的加成（执行人非君主才计算）
+        /// </summary>
+        public const int RECRUIT_LIKE_KING_BONUS = 10;
+        /// <summary>
+        /// 目标厌恶执行人时的惩罚
+        /// </summary>
+        public const int RECRUIT_HATE_EXECUTOR_PENALTY = -30;
+        /// <summary>
+        /// 目标厌恶君主时的惩罚
+        /// </summary>
+        public const int RECRUIT_HATE_KING_PENALTY = -50;
+        /// <summary>
+        /// 执行人与目标派系相同时的加成（加法，直接加到基础率）
+        /// </summary>
+        public const int RECRUIT_SAME_FACTION_BONUS = 5;
+        /// <summary>
+        /// 执行人与目标每有一个相同爱好的加成（加法，直接加到基础率）
+        /// </summary>
+        public const int RECRUIT_SHARED_HOBBY_BONUS_PER = 1;
         /// <summary>
         /// 俘虏逃跑概率
         /// </summary>
@@ -125,10 +149,6 @@ public static class SystemConst
         /// 野外英雄移动概率
         /// </summary>
         public const int WILD_HERO_MOVE_CHANCE = 20;
-        /// <summary>
-        /// 褒奖每个英雄花费金币
-        /// </summary>
-        public const int PRAISE_GOLD_COST_PER_HERO = 100;
         /// <summary>
         /// 褒奖忠诚度增加最小值
         /// </summary>
@@ -509,8 +529,9 @@ public static class SystemConst
         public const int MOVE_DEV_ID = 21102;
         public const int BATTLE_DEV_ID = 21103;
         public const int IDLE_DEV_ID = 21999;
-        public const int USE_HERO_DEV_ID = 21401;
-        public const int PRAISE_DEV_ID = 21402;
+        public const int USE_HERO_DEV_ID = 21204;
+        public const int PRAISE_DEV_ID = 21205;
+        public const int PRAISE_PAID_DEV_ID = 21206;
         /// <summary>
         /// 城市日程：相邻为1日，曼哈顿距离阈值≤此值算2日
         /// </summary>

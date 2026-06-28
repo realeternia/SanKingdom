@@ -13,10 +13,15 @@ public class HeroHeadItem : MonoBehaviour
     public Image BG;
     public Button itemButton;
 
+    public delegate bool CanSelectHandler();
+    public delegate void SelectionChangedHandler();
+
     private int heroId;
     private bool isSelected = false;
     private int forceId;
     private bool hasActed = false;
+    private CanSelectHandler canSelectCallback;
+    private SelectionChangedHandler selectionChangedCallback;
 
     public void Init(int heroId, string attText, int forceId, bool hasActed = false)
     {
@@ -47,10 +52,22 @@ public class HeroHeadItem : MonoBehaviour
         UpdateBgColor();
     }
 
+    public void SetCallbacks(CanSelectHandler canSelect, SelectionChangedHandler selectionChanged)
+    {
+        canSelectCallback = canSelect;
+        selectionChangedCallback = selectionChanged;
+    }
+
     private void OnItemClick()
     {
+        if (!isSelected && canSelectCallback != null && !canSelectCallback())
+            return;
+
         isSelected = !isSelected;
         UpdateBgColor();
+
+        if (selectionChangedCallback != null)
+            selectionChangedCallback();
     }
 
     private void UpdateBgColor()

@@ -15,12 +15,13 @@ public class CityPraisePanelManager : MonoBehaviour
     public Button okButton;
     public NLMutiCheckButton checkBtn;
 
-    public TMP_Text goldCostText;
-
     private int forceId;
     private int cityId;
     private int devId;
     private int methodId = 1;
+    private int praiseHeroCount;
+
+    public ResCheckItem resCheckItem;
 
     private List<GameObject> heroHeadItems = new List<GameObject>();
 
@@ -53,32 +54,103 @@ public class CityPraisePanelManager : MonoBehaviour
         this.forceId = forceId;
         this.cityId = cityId;
         this.devId = devId;
-        this.methodId = 1;
-        UpdateMethodUI();
+        // 根据入口 devId 决定默认 methodId（21205→褒奖, 21206→奖赏）
+        this.methodId = (devId == SystemConst.CityDev.PRAISE_PAID_DEV_ID) ? 2 : 1;
+
+        var praiseDevCfg = CityDevConfig.GetConfig(SystemConst.CityDev.PRAISE_DEV_ID);
+        praiseHeroCount = praiseDevCfg != null ? praiseDevCfg.HeroCount : 0;
+
+        if (checkBtn != null)
+        {
+            checkBtn.SetSelectedIndexExternal(methodId - 1);
+        }
+        InitResCheckItem();
         CreateHeroHeadItems();
     }
 
     private void OnCheckBtnChange(int index)
     {
         methodId = index + 1;
-        UpdateMethodUI();
+        InitResCheckItem();
     }
 
-    private void UpdateMethodUI()
+    /// <summary>
+    /// 根据 methodId 获取实际的 devId（褒奖=21205, 奖赏=21206）
+    /// 面板集成两个行动，读取配置时需按当前 methodId 取对应 devId
+    /// </summary>
+    private int GetActualDevId()
     {
-        if (goldCostText != null)
+        return methodId == 2
+            ? SystemConst.CityDev.PRAISE_PAID_DEV_ID
+            : SystemConst.CityDev.PRAISE_DEV_ID;
+    }
+
+    private void InitResCheckItem()
+    {
+        if (resCheckItem == null) return;
+
+        var devCfg = CityDevConfig.GetConfig(GetActualDevId());
+        if (devCfg == null) return;
+
+        if (methodId == 1)
         {
-            if (methodId == 2)
+            var force = GameManager.Instance.GetForce(forceId);
+            int praisedCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.PRAISE_DEV_ID) : 0;
+            resCheckItem.Init(ResPath.Texture.AttrIcon("armscount"), $"{praisedCount}/{praiseHeroCount}");
+        }
+        else
+        {
+            resCheckItem.Init(ResPath.Texture.AttrIcon("citygold"), ((int)(GameManager.Instance.GetForce(forceId)?.gold ?? 0)).ToString());
+        }
+    }
+
+    private bool CanSelectHero()
+    {
+        if (methodId == 1)
+        {
+            var force = GameManager.Instance.GetForce(forceId);
+            int praisedCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.PRAISE_DEV_ID) : 0;
+            return praisedCount + GetSelectedItems().Count < praiseHeroCount;
+        }
+        return true;
+    }
+
+    private void OnHeroSelectionChanged()
+    {
+        UpdateResCheckDisplay();
+    }
+
+    private void UpdateResCheckDisplay()
+    {
+        if (resCheckItem == null) return;
+
+        if (methodId == 1)
+        {
+            var force = GameManager.Instance.GetForce(forceId);
+            int praisedCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.PRAISE_DEV_ID) : 0;
+            int totalCount = praisedCount + GetSelectedItems().Count;
+            if (totalCount >= praiseHeroCount)
             {
-                int selectedCount = GetSelectedItems().Count;
-                int cost = selectedCount * SystemConst.Hero.PRAISE_GOLD_COST_PER_HERO;
-                var force = GameManager.Instance.GetForce(forceId);
-                goldCostText.text = string.Format("{0} / {1}", cost, force != null ? (int)force.gold : 0);
-                goldCostText.gameObject.SetActive(true);
+                resCheckItem.UpdateDisplay("<color=red>已满</color>");
             }
             else
             {
-                goldCostText.gameObject.SetActive(false);
+                resCheckItem.UpdateDisplay($"{totalCount}/{praiseHeroCount}");
+            }
+        }
+        else
+        {
+            var force = GameManager.Instance.GetForce(forceId);
+            var devCfg = CityDevConfig.GetConfig(GetActualDevId());
+            int gold = force != null ? (int)force.gold : 0;
+            int cost = GetSelectedItems().Count * (devCfg != null ? devCfg.GoldCost : 0);
+            if (cost > gold)
+            {
+                resCheckItem.UpdateDisplay($"<color=red>{cost}</color>/{gold}");
+            }
+            else
+            {
+                resCheckItem.UpdateDisplay($"{cost}/{gold}");
             }
         }
     }
@@ -107,10 +179,14 @@ public class CityPraisePanelManager : MonoBehaviour
             return;
         }
 
+        // 面板集成 21205/21206，按 methodId 取实际 devId 的配置
+        int actualDevId = GetActualDevId();
+        var devCfg = CityDevConfig.GetConfig(actualDevId);
+
         var force = GameManager.Instance.GetForce(forceId);
-        if (methodId == 2)
+        if (devCfg.GoldCost > 0)
         {
-            int totalCost = selectedItems.Count * SystemConst.Hero.PRAISE_GOLD_COST_PER_HERO;
+            int totalCost = selectedItems.Count * devCfg.GoldCost;
             if (force != null && force.gold < totalCost)
             {
                 SystemTip.Instance.ShowTip("黄金不足");
@@ -124,15 +200,14 @@ public class CityPraisePanelManager : MonoBehaviour
             heroIds.Add(item.GetHeroId());
         }
 
-        var devCfg = CityDevConfig.GetConfig(devId);
-        bool success = force.ExecuteCityPraiseHero(cityId, devId, heroIds.ToArray(), methodId, out var attrDatas);
+        bool success = force.ExecuteCityPraiseHero(cityId, actualDevId, heroIds.ToArray(), out var attrDatas);
 
         if (success)
         {
             PanelManager.Instance.ShowPopResultPanel(devCfg.Cname, attrDatas, () =>
             {
                 PanelManager.Instance.HideCityPraise();
-            }, devCfg != null ? devCfg.Mp4 : "", false);
+            }, devCfg.Mp4, false);
         }
     }
 
@@ -161,7 +236,7 @@ public class CityPraisePanelManager : MonoBehaviour
             foreach (var hid in heroIds)
             {
                 var heroData = GameManager.Instance.GetHero(hid);
-                if (heroData != null)
+                if (heroData != null && heroData.loyalty < SystemConst.Hero.MAX_LOYALTY)
                 {
                     allHeroes.Add(heroData);
                 }
@@ -216,6 +291,7 @@ public class CityPraisePanelManager : MonoBehaviour
                 string attText = GetHeroAttText(allHeroes[i]);
                 bool hasActed = allHeroes[i].round >= GameManager.Instance.SaveData.round;
                 itemScript.Init(allHeroes[i].heroId, attText, forceId, hasActed);
+                itemScript.SetCallbacks(CanSelectHero, OnHeroSelectionChanged);
             }
 
             heroHeadItems.Add(itemObj);
@@ -237,6 +313,6 @@ public class CityPraisePanelManager : MonoBehaviour
 
     private string GetHeroAttText(SaveHeroData heroData)
     {
-        return $"忠{heroData.loyalty}";
+        return $"忠{SysColor.GetColoredText("loyalty", heroData.loyalty)}";
     }
 }

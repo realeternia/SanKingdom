@@ -333,7 +333,7 @@ public class GameManager : MonoBehaviour
                     var praiseableHeroes = GetPraiseableHeroList(force.forceId);
                     if (praiseableHeroes.Count > 0)
                     {
-                        force.ExecuteCityPraiseHero(city.cityId, assignment.devId, praiseableHeroes.ToArray(), 1, out attrDatas);
+                        force.ExecuteCityPraiseHero(city.cityId, assignment.devId, praiseableHeroes.ToArray(), out attrDatas);
                     }
                 }
                 

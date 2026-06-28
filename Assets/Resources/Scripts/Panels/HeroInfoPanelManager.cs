@@ -348,13 +348,13 @@ public class HeroInfoPanelManager : MonoBehaviour
             stateText.text = heroData.state == HeroState.Normal ? "正常" : 
                              heroData.state == HeroState.Wild ? "在野" : "俘虏";
             lvText.text = heroData.GetLevel().ToString();
-            loyalText.text = heroData.loyalty.ToString();
+            loyalText.text = SysColor.GetColoredText("loyalty", heroData.loyalty);
         }
         else
         {
             stateText.text = "在野";
             lvText.text = "1";
-            loyalText.text = "0";
+            loyalText.text = SysColor.GetColoredText("loyalty", 0);
         }
         
         leaderText.text = heroData.forceId == 0 ? "-" : ForceConfig.GetConfig(heroData.forceId).Cname;

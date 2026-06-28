@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using CommonConfig;
 
 /// <summary>
 /// AI褒奖工具类
 /// 忠心 ≤ 阈值的武将进行褒奖（methodId=1 褒奖，不花黄金）
+/// 仅处理免费褒奖（21205），不管付费奖赏（21206）
 /// </summary>
 public static class AIToolPraise
 {
@@ -12,14 +14,25 @@ public static class AIToolPraise
     /// </summary>
     public static void Process(SaveForceData force, HashSet<int> excludedHeroIds)
     {
-        var praiseableHeroes = new List<int>();
-        foreach (var hero in GameManager.Instance.GetHerosByForce(force.forceId))
-        {
-            if (excludedHeroIds.Contains(hero.heroId)) continue;
-            if (hero.state != HeroState.Normal) continue;
-            if (hero.loyalty <= AIConst.AIKingAction.PRAISE_LOYALTY_THRESHOLD)
-                praiseableHeroes.Add(hero.heroId);
-        }
+        int devId = SystemConst.CityDev.PRAISE_DEV_ID;
+        var devCfg = CityDevConfig.GetConfig(devId);
+
+        // 计算本回合剩余可参与人数（HeroCount=0 表示不限）
+        int usedCount = force.GetKingActionCount(devId);
+        int remaining = devCfg.HeroCount > 0
+            ? System.Math.Max(0, devCfg.HeroCount - usedCount)
+            : int.MaxValue;
+        if (remaining == 0) return;
+
+        // 忠心升序，优先褒奖忠心最低的武将（忠心≥阈值的不褒奖）
+        var praiseableHeroes = GameManager.Instance.GetHerosByForce(force.forceId)
+            .Where(h => !excludedHeroIds.Contains(h.heroId))
+            .Where(h => h.state == HeroState.Normal)
+            .Where(h => h.loyalty < AIConst.AIKingAction.PRAISE_LOYALTY_THRESHOLD)
+            .OrderBy(h => h.loyalty)
+            .Take(remaining)
+            .Select(h => h.heroId)
+            .ToList();
 
         if (praiseableHeroes.Count == 0) return;
 
@@ -27,9 +40,9 @@ public static class AIToolPraise
         var firstCity = force.GetCityList().FirstOrDefault();
         if (firstCity == null) return;
 
-        force.ExecuteCityPraiseHero(firstCity.cityId, SystemConst.CityDev.PRAISE_DEV_ID,
-            praiseableHeroes.ToArray(), 1, out var attrDatas);
+        force.ExecuteCityPraiseHero(firstCity.cityId, devId,
+            praiseableHeroes.ToArray(), out var attrDatas);
 
-        GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} 褒奖{praiseableHeroes.Count}名忠心≤{AIConst.AIKingAction.PRAISE_LOYALTY_THRESHOLD}的武将");
+        GameLog.SetTag("AI").Info($"{ConfigNameHelper.GetForceName(force.forceId)} 褒奖{praiseableHeroes.Count}名忠心<{AIConst.AIKingAction.PRAISE_LOYALTY_THRESHOLD}的武将");
     }
 }

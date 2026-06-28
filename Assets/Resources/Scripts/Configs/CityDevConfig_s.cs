@@ -191,26 +191,27 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[21001] = new CityDevConfig(21001, "农田", "提升粮食产量", "normal", false, false, "", "farm", 0, 1, "food", new float[]{12f,10f,8f,5f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Str"}, "dev", 11f, 5f, 10f, "farm.mp4");
-            config[21002] = new CityDevConfig(21002, "市场", "提升金钱收入", "normal", false, false, "", "market", 0, 1, "gold", new float[]{6f,5f,4f,3f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "dev", 10f, 5f, 5f, "shop3.mp4");
-            config[21003] = new CityDevConfig(21003, "征兵", "提升士兵数量", "normal", false, false, "", "zhengbing", 4, 1, "soldier", new float[]{16f,12f,10f,8f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Charm"}, "sod", 5f, 8f, 5f, "zhengbing2.mp4");
-            config[21004] = new CityDevConfig(21004, "加固城墙", "提升城防", "normal", false, false, "", "wall", 2, 1, "wall", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Str"}, "def", 0f, 3f, 5f, "fix4.mp4");
-            config[21005] = new CityDevConfig(21005, "治安", "提升城市治安", "normal", false, false, "", "train", 0, 1, "happy", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "sod", 5f, 2f, 2f, "train3.mp4");
-            config[21102] = new CityDevConfig(21102, "移动", "移动到其他城市", "run", false, true, "Move", "move", 0, 10, "", new float[0], "", new float[0], new string[]{"LeadShip","Charm"}, "", 0f, 0f, 0f, "move2.mp4");
-            config[21103] = new CityDevConfig(21103, "出战", "出兵攻打敌人", "run", false, true, "Battle", "battle", 0, 10, "", new float[0], "", new float[0], new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f, "atk2.mp4");
-            config[21202] = new CityDevConfig(21202, "走访", "搜集人才和宝物", "normal", false, false, "", "find", 0, 1, "gold", new float[]{3f,2f,1f,1f}, "", new float[0], new string[]{"Charm","Inte"}, "find", 5f, 0f, 4f, "search2.mp4");
-            config[21203] = new CityDevConfig(21203, "交易", "买粮食", "normal", false, false, "", "change", 8, 1, "food", new float[]{8f,6f,5f,4f}, "", new float[0], new string[]{"Inte"}, "", 2f, 3f, 2f, "change.mp4");
-            config[21401] = new CityDevConfig(21401, "登用", "提拔在野武将", "run", false, true, "UseHero", "wild", 0, 1, "", new float[0], "", new float[0], new string[]{"Charm","Inte"}, "", 0f, 0f, 0f, "wild.mp4");
-            config[21402] = new CityDevConfig(21402, "褒奖", "提升武将忠心度", "run", false, true, "Praise", "praise", 0, 5, "", new float[0], "", new float[0], new string[]{"Charm","Inte"}, "", 0f, 0f, 0f, "wild.mp4");
-            config[21403] = new CityDevConfig(21403, "采石场", "提升石料", "normal", true, false, "", "stone", 0, 1, "stone", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f, "");
-            config[21404] = new CityDevConfig(21404, "马场", "提升马场", "normal", true, false, "", "horse", 0, 1, "horse", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f, "");
-            config[21405] = new CityDevConfig(21405, "木材场", "提升木材", "normal", false, false, "", "wood", 0, 1, "wood", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f, "");
-            config[21406] = new CityDevConfig(21406, "铁匠铺", "提升铁", "normal", false, false, "", "steel", 0, 1, "steel", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f, "");
-            config[21407] = new CityDevConfig(21407, "象棚", "提升战象", "normal", true, false, "", "elephant", 0, 1, "elephant", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f, "");
-            config[21408] = new CityDevConfig(21408, "金矿", "提升金钱", "normal", true, false, "", "gold", 0, 1, "gold", new float[]{8f,6f,5f,4f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 10f, 5f, 8f, "");
-            config[21409] = new CityDevConfig(21409, "盐矿", "提升盐", "normal", true, false, "", "salt", 0, 1, "salt", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 10f, 5f, 8f, "");
-            config[21410] = new CityDevConfig(21410, "渔场", "提升鱼", "normal", true, false, "", "fish", 0, 1, "fish", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Str"}, "", 10f, 5f, 8f, "");
-            config[21999] = new CityDevConfig(21999, "赋闲", "免除工作", "normal", false, false, "", "ququ", 0, 1, "", new float[0], "", new float[0], null, "", 0f, 0f, 0f, "");
+            config[21001] = new CityDevConfig(21001, "农田", "提升粮食产量", "normal", false, false, "", "farm", 0, 0, "food", new float[]{12f,10f,8f,5f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Str"}, "dev", 11f, 5f, 10f, "farm.mp4");
+            config[21002] = new CityDevConfig(21002, "市场", "提升金钱收入", "normal", false, false, "", "market", 0, 0, "gold", new float[]{6f,5f,4f,3f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "dev", 10f, 5f, 5f, "shop3.mp4");
+            config[21003] = new CityDevConfig(21003, "征兵", "提升士兵数量", "normal", false, false, "", "zhengbing", 4, 0, "soldier", new float[]{16f,12f,10f,8f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Charm"}, "sod", 5f, 8f, 5f, "zhengbing2.mp4");
+            config[21004] = new CityDevConfig(21004, "加固城墙", "提升城防", "normal", false, false, "", "wall", 2, 0, "wall", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Str"}, "def", 0f, 3f, 5f, "fix4.mp4");
+            config[21005] = new CityDevConfig(21005, "治安", "提升城市治安", "normal", false, false, "", "train", 0, 0, "happy", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "sod", 5f, 2f, 2f, "train3.mp4");
+            config[21102] = new CityDevConfig(21102, "移动", "移动到其他城市", "run", false, true, "Move", "move", 0, 5, "", new float[0], "", new float[0], new string[]{"LeadShip","Charm"}, "", 0f, 0f, 0f, "move2.mp4");
+            config[21103] = new CityDevConfig(21103, "出战", "出兵攻打敌人", "run", false, true, "Battle", "battle", 0, 0, "", new float[0], "", new float[0], new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f, "atk2.mp4");
+            config[21202] = new CityDevConfig(21202, "走访", "搜集人才和宝物", "normal", false, false, "", "find", 0, 0, "gold", new float[]{3f,2f,1f,1f}, "", new float[0], new string[]{"Charm","Inte"}, "find", 5f, 0f, 4f, "search2.mp4");
+            config[21203] = new CityDevConfig(21203, "交易", "买粮食", "normal", false, false, "", "change", 8, 0, "food", new float[]{8f,6f,5f,4f}, "", new float[0], new string[]{"Inte"}, "", 2f, 3f, 2f, "change.mp4");
+            config[21204] = new CityDevConfig(21204, "登用", "提拔在野武将", "run", false, true, "UseHero", "wild", 0, 5, "", new float[0], "", new float[0], new string[]{"Charm","Inte"}, "", 0f, 0f, 0f, "wild.mp4");
+            config[21205] = new CityDevConfig(21205, "褒奖", "提升武将忠心度", "run", false, true, "Praise", "praise", 0, 5, "", new float[0], "", new float[0], new string[]{"Charm","Inte"}, "", 0f, 0f, 0f, "wild.mp4");
+            config[21206] = new CityDevConfig(21206, "奖赏", "提升武将忠心度", "run", false, true, "Praise", "praise", 10, 0, "", new float[0], "", new float[0], new string[]{"Charm","Inte"}, "", 0f, 0f, 0f, "wild.mp4");
+            config[21403] = new CityDevConfig(21403, "采石场", "提升石料", "normal", true, false, "", "stone", 0, 0, "stone", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f, "");
+            config[21404] = new CityDevConfig(21404, "马场", "提升马场", "normal", true, false, "", "horse", 0, 0, "horse", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f, "");
+            config[21405] = new CityDevConfig(21405, "木材场", "提升木材", "normal", false, false, "", "wood", 0, 0, "wood", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f, "");
+            config[21406] = new CityDevConfig(21406, "铁匠铺", "提升铁", "normal", false, false, "", "steel", 0, 0, "steel", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f, "");
+            config[21407] = new CityDevConfig(21407, "象棚", "提升战象", "normal", true, false, "", "elephant", 0, 0, "elephant", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f, "");
+            config[21408] = new CityDevConfig(21408, "金矿", "提升金钱", "normal", true, false, "", "gold", 0, 0, "gold", new float[]{8f,6f,5f,4f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 10f, 5f, 8f, "");
+            config[21409] = new CityDevConfig(21409, "盐矿", "提升盐", "normal", true, false, "", "salt", 0, 0, "salt", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 10f, 5f, 8f, "");
+            config[21410] = new CityDevConfig(21410, "渔场", "提升鱼", "normal", true, false, "", "fish", 0, 0, "fish", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Str"}, "", 10f, 5f, 8f, "");
+            config[21999] = new CityDevConfig(21999, "赋闲", "免除工作", "normal", false, false, "", "ququ", 0, 0, "", new float[0], "", new float[0], null, "", 0f, 0f, 0f, "");
 
             RebuildIndex();
 

@@ -27,11 +27,16 @@ public class SideHeroSelector : MonoBehaviour
 
     public static void SetContext(int cityId, int forceId, int dayFilter, System.Action<List<int>> callback)
     {
-        currentCityId = cityId;
         currentForceId = forceId;
         currentDayFilter = dayFilter;
         onHeroIdsSelected = callback;
-        GameLog.Info($"SideHeroSelector.SetContext: cityId={cityId}, forceId={forceId}, dayFilter={dayFilter}");
+
+        // 用主公所在城市作为日程计算基准
+        var force = GameManager.Instance.GetForce(forceId);
+        var kingCity = force != null ? force.GetKingCity() : null;
+        currentCityId = kingCity != null ? kingCity.cityId : cityId;
+
+        GameLog.Info($"SideHeroSelector.SetContext: cityId={cityId}, kingCityId={currentCityId}, forceId={forceId}, dayFilter={dayFilter}");
     }
 
     /// <summary>

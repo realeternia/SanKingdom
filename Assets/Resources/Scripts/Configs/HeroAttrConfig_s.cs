@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace CommonConfig
@@ -99,7 +99,7 @@ namespace CommonConfig
             config[3] = new HeroAttrConfig(3, "fair", "内政", "", "95:#FF0000,90:#FFFF00,0:#FFFFFF", "herofair", false);
             config[4] = new HeroAttrConfig(4, "charm", "魅力", "", "95:#FF0000,90:#FFFF00,0:#FFFFFF", "herocharm", false);
             config[5] = new HeroAttrConfig(5, "leadShip", "统帅", "", "95:#FF0000,90:#FFFF00,0:#FFFFFF", "herolead", false);
-            config[6] = new HeroAttrConfig(6, "loyalty", "忠诚度", "", "80:#FFFFFF,50:#FFA500,0:#FF0000", "", false);
+            config[6] = new HeroAttrConfig(6, "loyalty", "忠诚度", "", "90:#FFFFFF,80-89:#FFFF00,70-79:#FFA500,0-69:#FF0000", "", false);
             config[7] = new HeroAttrConfig(7, "weightedAttr", "加权属性2", "", "90:#FF0000,80:#FFFF00,70:#00FF00,0:#FFFFFF", "", false);
             config[8] = new HeroAttrConfig(8, "SodWalk", "步兵驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms1", true);
             config[9] = new HeroAttrConfig(9, "SodHorse", "骑兵驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms2", true);

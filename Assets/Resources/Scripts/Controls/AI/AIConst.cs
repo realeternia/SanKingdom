@@ -142,9 +142,9 @@ public static class AIConst
     public static class AIKingAction
     {
         /// <summary>
-        /// 褒奖忠诚阈值（≤此值需褒奖）
+        /// 褒奖忠诚阈值（＜此值需褒奖）
         /// </summary>
-        public const int PRAISE_LOYALTY_THRESHOLD = 90;
+        public const int PRAISE_LOYALTY_THRESHOLD = 95;
         /// <summary>
         /// 登庸属性阈值（魅力或智力＞此值可登庸）
         /// </summary>

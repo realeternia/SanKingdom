@@ -25,6 +25,11 @@ public class SaveForceData
     [NonSerialized]
     private Dictionary<string, int> resUsedCache = new Dictionary<string, int>();
 
+    public List<KingActionCountData> kingActionCountList = new List<KingActionCountData>();
+
+    [NonSerialized]
+    public Dictionary<int, int> kingActionCounts = new Dictionary<int, int>();
+
     public void AddAttr(string type, float add, string reason = "")
     {
         var attrConfig = CityAttrConfig.GetConfigByname(type.ToLower());
@@ -248,6 +253,7 @@ public class SaveForceData
         planConfirmed = false;
         posResCache = new Dictionary<string, float>();
         resUsedCache = new Dictionary<string, int>();
+        SyncKingActionCountsFromList();
         RecalculatePosRes();
         RecalculateResUsed();
     }
@@ -267,6 +273,51 @@ public class SaveForceData
     {
         warPlans = new List<WarPlanData>();
         planConfirmed = false;
+        kingActionCountList.Clear();
+        kingActionCounts.Clear();
+    }
+
+    /// <summary>
+    /// 获取本回合指定 KingAction 已参与的英雄数
+    /// </summary>
+    public int GetKingActionCount(int devId)
+    {
+        if (kingActionCounts.TryGetValue(devId, out int count))
+            return count;
+        return 0;
+    }
+
+    /// <summary>
+    /// 累加本回合指定 KingAction 的参与英雄数
+    /// </summary>
+    public void AddKingActionCount(int devId, int count)
+    {
+        if (kingActionCounts.ContainsKey(devId))
+            kingActionCounts[devId] += count;
+        else
+            kingActionCounts.Add(devId, count);
+
+        SyncKingActionCountsToList();
+    }
+
+    /// <summary>
+    /// 从 List 同步到 Dictionary（加载后调用）
+    /// </summary>
+    private void SyncKingActionCountsFromList()
+    {
+        kingActionCounts = new Dictionary<int, int>();
+        foreach (var item in kingActionCountList)
+            kingActionCounts[item.devId] = item.count;
+    }
+
+    /// <summary>
+    /// 从 Dictionary 同步到 List（修改后调用，确保序列化正确）
+    /// </summary>
+    private void SyncKingActionCountsToList()
+    {
+        kingActionCountList.Clear();
+        foreach (var kv in kingActionCounts)
+            kingActionCountList.Add(new KingActionCountData(kv.Key, kv.Value));
     }
 
     public void StartPlanningPhase()
@@ -686,6 +737,8 @@ public class SaveForceData
             cityDest.RecalculateHeros();
         }
 
+        MarkHeroesActed(heroIds);
+
          PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = destCityId });
     }
 
@@ -788,41 +841,7 @@ public class SaveForceData
 
     private int CalculateRecruitRate(int cityId, int myHeroId, int targetHeroId)
     {
-        var cityData = GameManager.Instance.GetCity(cityId);
-        var hero = GameManager.Instance.GetHero(targetHeroId);
-
-        if (hero.state == HeroState.Normal && hero.forceId == cityData.forceId)
-            return 0;
-
-        int baseSuccessRate = 0;
-
-        if (hero.state == HeroState.Wild)
-        {
-            baseSuccessRate = SystemConst.Hero.RECRUIT_WILD_BASE_RATE;
-            // 在野武将位于非己方势力城市时，成功率下降50%
-            var heroCity = GameManager.Instance.GetCity(hero.cityId);
-            if (heroCity == null || heroCity.forceId != cityData.forceId)
-            {
-                baseSuccessRate = SysFormula.Hero.ApplyWildNonFriendlyPenalty(baseSuccessRate);
-            }
-        }
-        else if (hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
-        {
-            baseSuccessRate = SysFormula.Hero.CalculateRecruitCapturedRate(hero.loyalty);
-        }
-
-        if (myHeroId > 0)
-        {
-            var executorHero = GameManager.Instance.GetHero(myHeroId);
-            if (executorHero != null)
-            {
-                int charm = executorHero.GetAttr("charm");
-                bool isKing = myHeroId == ForceConfig.GetConfig(executorHero.forceId).HeroId;
-                baseSuccessRate = SysFormula.Hero.ApplyCharmBonus(baseSuccessRate, charm, isKing);
-            }
-        }
-
-        return baseSuccessRate;
+        return SysFormula.Hero.CalculateRecruitRate(cityId, myHeroId, targetHeroId);
     }
 
     public bool ExecuteCityUseHero(int cityId, int devId, int[] myHeroIds, int[] targetHeroIds, out List<PopResultPanelManager.AttrData> attrDatas)
@@ -884,36 +903,34 @@ public class SaveForceData
         }
 
         cityData.AddAction(devId, myHeroIds.Length);
+        AddKingActionCount(devId, myHeroIds.Length);
 
         // 仅标记执行方（去登庸的武将），被登庸武将不标记。
-        // dayDiff 按各执行方所在城市到目标城市的日程计算：distance - 1
-        int currentRound = GameManager.Instance.SaveData.round;
-        foreach (var executorId in myHeroIds)
-        {
-            var executor = GameManager.Instance.GetHero(executorId);
-            if (executor == null) continue;
-            int distance = SysFormula.City.CalculateCityDayDistance(executor.cityId, cityId);
-            executor.round = currentRound + (distance - 1);
-        }
+        // dayDiff 按主公所在城市到目标城市的日程计算：distance - 1
+        var kingCity = GetKingCity();
+        int sourceCityId = kingCity != null ? kingCity.cityId : cityId;
+        int distance = SysFormula.City.CalculateCityDayDistance(sourceCityId, cityId);
+        MarkHeroesActed(myHeroIds, distance - 1);
         return true;
     }
 
-    public bool ExecuteCityPraiseHero(int cityId, int devId, int[] heroList, int methodId, out List<PopResultPanelManager.AttrData> attrDatas)
+    public bool ExecuteCityPraiseHero(int cityId, int devId, int[] heroList, out List<PopResultPanelManager.AttrData> attrDatas)
     {
         attrDatas = new List<PopResultPanelManager.AttrData>();
-        
-        var cityData = GameManager.Instance.GetCity(cityId);
-        
-        if(methodId == 2)
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+
+        // KingAction 人均黄金消耗扣除
+        if (devCfg.GoldCost > 0)
         {
-            int totalCost = heroList.Length * SystemConst.Hero.PRAISE_GOLD_COST_PER_HERO;
-            if(gold < totalCost)
+            int totalCost = heroList.Length * devCfg.GoldCost;
+            if (gold < totalCost)
             {
                 SystemTip.Instance.ShowTip("黄金不足");
                 return false;
             }
             int goldOld = (int)gold;
-            AddAttr("gold", -totalCost, "赏赐英雄扣除金钱");
+            AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
@@ -922,12 +939,26 @@ public class SaveForceData
             });
         }
 
+        // KingAction 每回合参与人数上限
+        if (devCfg.HeroCount > 0)
+        {
+            int usedCount = GetKingActionCount(devId);
+            if (usedCount + heroList.Length > devCfg.HeroCount)
+            {
+                SystemTip.Instance.ShowTip($"本回合{devCfg.Cname}已达上限");
+                return false;
+            }
+        }
+
+        // 根据 devId 推导 methodId：21206=奖赏(methodId=2)，其余=褒奖(methodId=1)
+        int methodId = (devId == SystemConst.CityDev.PRAISE_PAID_DEV_ID) ? 2 : 1;
+
         foreach(var heroId in heroList)
         {
             var hero = GameManager.Instance.GetHero(heroId);
             int loyaltyOld = hero.loyalty;
             int loyaltyAdd = 0;
-            
+
             if(methodId == 1)
             {
                 loyaltyAdd = SysFormula.Hero.CalculatePraiseLoyaltyAdd();
@@ -936,9 +967,9 @@ public class SaveForceData
             {
                 loyaltyAdd = SysFormula.Hero.CalculateRewardLoyaltyAdd();
             }
-            
+
             hero.loyalty = System.Math.Min(SystemConst.Hero.MAX_LOYALTY, hero.loyalty + loyaltyAdd);
-            
+
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attrStr = HeroConfig.GetConfig(heroId).Name + "忠心",
@@ -947,7 +978,7 @@ public class SaveForceData
             });
         }
 
-        cityData.AddAction(devId, heroList.Length);
+        AddKingActionCount(devId, heroList.Length);
 
         MarkHeroesActed(heroList);
         return true;

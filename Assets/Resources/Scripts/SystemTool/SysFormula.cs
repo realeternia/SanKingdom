@@ -127,23 +127,142 @@ public static class SysFormula
     public static class Hero
     {
 
-        public static int CalculateRecruitCapturedRate(int loyalty)
+        /// <summary>
+        /// 计算登庸成功率
+        /// 在野：基础30%，非己方城市×0.5
+        /// 俘虏/敌方在职：rate = diff*3/4 - 5（diff=100-忠诚），loyalty=80→10%，loyalty=60→25%
+        /// 加法加成（直接加到基础率）：派系相同+5、每个相同爱好+1
+        /// 乘算加成（彼此加法叠加）：魅力超过75每点+1%，君主+10%，
+        ///   目标喜欢执行人+10%、目标喜欢君主+10%（执行人非君主）、目标厌恶执行人-30%、目标厌恶君主-50%
+        /// </summary>
+        public static int CalculateRecruitRate(int cityId, int myHeroId, int targetHeroId)
         {
-            int diff = 100 - loyalty;
-            return diff * diff / SystemConst.Hero.RECRUIT_CAPTURED_FORMULA_A + diff / SystemConst.Hero.RECRUIT_CAPTURED_FORMULA_B;
+            var cityData = GameManager.Instance.GetCity(cityId);
+            var hero = GameManager.Instance.GetHero(targetHeroId);
+
+            if (hero.state == HeroState.Normal && hero.forceId == cityData.forceId)
+                return 0;
+
+            int baseSuccessRate = 0;
+
+            if (hero.state == HeroState.Wild)
+            {
+                baseSuccessRate = SystemConst.Hero.RECRUIT_WILD_BASE_RATE;
+                var heroCity = GameManager.Instance.GetCity(hero.cityId);
+                if (heroCity == null || heroCity.forceId != cityData.forceId)
+                {
+                    baseSuccessRate = (int)Math.Round(baseSuccessRate * SystemConst.Hero.RECRUIT_WILD_NON_FRIENDLY_PENALTY);
+                }
+            }
+            else if (hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
+            {
+                int diff = 100 - hero.loyalty;
+                baseSuccessRate = diff * SystemConst.Hero.RECRUIT_CAPTURED_RATE_SLOPE / SystemConst.Hero.RECRUIT_CAPTURED_RATE_DIVISOR - SystemConst.Hero.RECRUIT_CAPTURED_RATE_OFFSET;
+                if (baseSuccessRate < 0) baseSuccessRate = 0;
+            }
+
+            if (myHeroId > 0)
+            {
+                var executorHero = GameManager.Instance.GetHero(myHeroId);
+                if (executorHero != null)
+                {
+                    var targetConfig = HeroConfig.GetConfig(targetHeroId);
+                    var executorConfig = HeroConfig.GetConfig(myHeroId);
+
+                    // 加法加成：派系相同、爱好相同，直接加到基础率
+                    baseSuccessRate += GetAdditiveBonus(targetConfig, executorConfig);
+
+                    int charm = executorHero.GetAttr("charm");
+                    int kingHeroId = ForceConfig.GetConfig(executorHero.forceId).HeroId;
+                    bool isKing = myHeroId == kingHeroId;
+
+                    // 乘算加成：魅力、君主、关系（Likes/Hates），彼此加法叠加
+                    int bonusPercent = 0;
+                    if (charm > SystemConst.Hero.CHARM_BONUS_THRESHOLD)
+                    {
+                        bonusPercent += (charm - SystemConst.Hero.CHARM_BONUS_THRESHOLD) * SystemConst.Hero.CHARM_BONUS_PER_POINT;
+                    }
+                    if (isKing)
+                    {
+                        bonusPercent += SystemConst.Hero.KING_RECRUIT_MULTIPLIER - 100;
+                    }
+                    bonusPercent += GetRelationBonusPercent(targetConfig, executorConfig, kingHeroId, isKing);
+
+                    baseSuccessRate = baseSuccessRate * (100 + bonusPercent) / 100;
+                    if (baseSuccessRate < 0) baseSuccessRate = 0;
+                }
+            }
+
+            if (baseSuccessRate > SystemConst.Hero.RECRUIT_RATE_MAX) baseSuccessRate = SystemConst.Hero.RECRUIT_RATE_MAX;
+            return baseSuccessRate;
         }
 
-        public static int ApplyCharmBonus(int baseRate, int charm, bool isKing)
+        /// <summary>
+        /// 加法加成：派系相同、爱好相同，直接返回加到基础率的数值
+        /// </summary>
+        private static int GetAdditiveBonus(HeroConfig targetConfig, HeroConfig executorConfig)
         {
-            if (charm >= SystemConst.Hero.CHARM_BONUS_TIER1)
-                baseRate = baseRate * SystemConst.Hero.RECRUIT_TIER1_MULTIPLIER / 100;
-            else if (charm >= SystemConst.Hero.CHARM_BONUS_TIER2)
-                baseRate = baseRate * SystemConst.Hero.RECRUIT_TIER2_MULTIPLIER / 100;
+            int bonus = 0;
 
-            if (isKing)
-                baseRate = baseRate * SystemConst.Hero.KING_RECRUIT_MULTIPLIER / 100;
+            // 派系相同（非空、非"无"）+5
+            if (!string.IsNullOrEmpty(targetConfig.Paixi) && targetConfig.Paixi != "无"
+                && targetConfig.Paixi == executorConfig.Paixi)
+            {
+                bonus += SystemConst.Hero.RECRUIT_SAME_FACTION_BONUS;
+            }
+            // 每个相同爱好 +1
+            if (targetConfig.Aihao != null && executorConfig.Aihao != null)
+            {
+                foreach (string hobby in targetConfig.Aihao)
+                {
+                    if (Array.IndexOf(executorConfig.Aihao, hobby) >= 0)
+                    {
+                        bonus += SystemConst.Hero.RECRUIT_SHARED_HOBBY_BONUS_PER;
+                    }
+                }
+            }
 
-            return baseRate;
+            return bonus;
+        }
+
+        /// <summary>
+        /// 乘算关系加成百分比：Likes/Hates（彼此加法叠加）
+        /// </summary>
+        private static int GetRelationBonusPercent(HeroConfig targetConfig, HeroConfig executorConfig, int kingHeroId, bool isKing)
+        {
+            var kingConfig = HeroConfig.GetConfig(kingHeroId);
+
+            int bonus = 0;
+            string executorName = executorConfig.Name;
+            string kingName = kingConfig.Name;
+
+            // 目标喜欢执行人 +10%
+            if (ContainsName(targetConfig.Likes, executorName))
+            {
+                bonus += SystemConst.Hero.RECRUIT_LIKE_EXECUTOR_BONUS;
+            }
+            // 目标喜欢君主 +10%（执行人即君主时不重复计算）
+            if (!isKing && ContainsName(targetConfig.Likes, kingName))
+            {
+                bonus += SystemConst.Hero.RECRUIT_LIKE_KING_BONUS;
+            }
+            // 目标厌恶执行人 -30%
+            if (ContainsName(targetConfig.Hates, executorName))
+            {
+                bonus += SystemConst.Hero.RECRUIT_HATE_EXECUTOR_PENALTY;
+            }
+            // 目标厌恶君主 -50%
+            if (ContainsName(targetConfig.Hates, kingName))
+            {
+                bonus += SystemConst.Hero.RECRUIT_HATE_KING_PENALTY;
+            }
+
+            return bonus;
+        }
+
+        private static bool ContainsName(string[] names, string name)
+        {
+            return names != null && Array.IndexOf(names, name) >= 0;
         }
 
         /// <summary>
@@ -157,14 +276,6 @@ public static class SysFormula
                 case 3: return SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD_3DAY;
                 default: return SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD;
             }
-        }
-
-        /// <summary>
-        /// 在野武将位于非己方势力城市时的成功率惩罚：rate * 0.5
-        /// </summary>
-        public static int ApplyWildNonFriendlyPenalty(int rate)
-        {
-            return (int)Math.Round(rate * SystemConst.Hero.RECRUIT_WILD_NON_FRIENDLY_PENALTY);
         }
 
         public static int CalculateCaptureChance(int str)

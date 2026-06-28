@@ -14,9 +14,12 @@ public class CityMovePanelManager : MonoBehaviour
     private int forceId;
     private int sourceCityId;
     private int selectedDestCityId;
+    private int moveHeroCount;
+    private int movedHeroCount;
 
     public Button destButton;
     public TMP_Text attrVal1Text;
+    public ResCheckItem resCheckItem;
 
     public Button closeButton;
     public Button okButton;
@@ -66,6 +69,18 @@ public class CityMovePanelManager : MonoBehaviour
         this.forceId = forceId;
         this.sourceCityId = sourceCityId;
         this.selectedDestCityId = 0;
+
+        var moveDevCfg = CityDevConfig.GetConfig(SystemConst.CityDev.MOVE_DEV_ID);
+        moveHeroCount = moveDevCfg != null ? moveDevCfg.HeroCount : 0;
+
+        var force = GameManager.Instance.GetForce(forceId);
+        movedHeroCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.MOVE_DEV_ID) : 0;
+
+        if (resCheckItem != null && moveDevCfg != null)
+        {
+            resCheckItem.Init(ResPath.Texture.AttrIcon(moveDevCfg.Icon), $"{movedHeroCount}/{moveHeroCount}");
+        }
+
         attrVal1Text.text = "-";
         CreateHeroHeadItems();
     }
@@ -73,6 +88,44 @@ public class CityMovePanelManager : MonoBehaviour
     public bool CanSelectItem()
     {
         return selectedDestCityId > 0;
+    }
+
+    private bool CanSelectHero()
+    {
+        return movedHeroCount + GetSelectedCount() < moveHeroCount;
+    }
+
+    private void OnHeroSelectionChanged()
+    {
+        UpdateResCheckDisplay();
+    }
+
+    private int GetSelectedCount()
+    {
+        int count = 0;
+        foreach (var itemObj in heroHeadItems)
+        {
+            if (itemObj == null) continue;
+            var itemScript = itemObj.GetComponent<HeroHeadItem>();
+            if (itemScript != null && itemScript.IsSelected())
+                count++;
+        }
+        return count;
+    }
+
+    private void UpdateResCheckDisplay()
+    {
+        if (resCheckItem == null) return;
+
+        int totalCount = movedHeroCount + GetSelectedCount();
+        if (totalCount >= moveHeroCount)
+        {
+            resCheckItem.UpdateDisplay("<color=red>已满</color>");
+        }
+        else
+        {
+            resCheckItem.UpdateDisplay($"{totalCount}/{moveHeroCount}");
+        }
     }
 
     private void ClearAllSelections()
@@ -125,6 +178,7 @@ public class CityMovePanelManager : MonoBehaviour
         }
 
         var moveDevCfg = CityDevConfig.GetConfig(SystemConst.CityDev.MOVE_DEV_ID);
+        int devId = SystemConst.CityDev.MOVE_DEV_ID;
         PanelManager.Instance.ShowPopResultPanel("移动", new List<PopResultPanelManager.AttrData>(), () =>
         {
             var force = GameManager.Instance.GetForce(forceId);
@@ -140,6 +194,8 @@ public class CityMovePanelManager : MonoBehaviour
                 int[] heroesToMove = group.Select(h => h.heroId).ToArray();
                 force.MoveHeroToCity(srcCityId, selectedDestCityId, heroesToMove);
             }
+
+            force.AddKingActionCount(devId, heroIds.Count);
 
             PanelManager.Instance.HideCityMove();
         }, moveDevCfg != null ? moveDevCfg.Mp4 : "");
@@ -223,6 +279,7 @@ public class CityMovePanelManager : MonoBehaviour
                 var heroData = GameManager.Instance.GetHero(heroList[i]);
                 bool hasActed = heroData != null && heroData.round >= GameManager.Instance.SaveData.round;
                 itemScript.Init(heroList[i], attText, forceId, hasActed);
+                itemScript.SetCallbacks(CanSelectHero, OnHeroSelectionChanged);
             }
 
             heroHeadItems.Add(itemObj);

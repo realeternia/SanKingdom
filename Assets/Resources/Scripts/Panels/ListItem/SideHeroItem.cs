@@ -71,7 +71,7 @@ public class SideHeroItem : MonoBehaviour
         Color forceColor;
         if (heroData.forceId == SystemConst.Hero.WILD_FORCE_ID)
         {
-            forceName = "在野";
+            forceName = "";
             forceColor = Color.white;
         }
         else
@@ -82,10 +82,9 @@ public class SideHeroItem : MonoBehaviour
         string forceHex = ColorUtility.ToHtmlStringRGB(forceColor);
         textState.text = $"{stateText}/<color=#{forceHex}>{forceName}</color>";
 
-        int displayLoyalty = heroData.state == HeroState.Wild
-            ? SystemConst.Hero.WILD_HERO_LOYALTY
-            : heroData.loyalty;
-        textLoyal.text = $"忠:{displayLoyalty}";
+        textLoyal.text = heroData.state == HeroState.Wild
+            ? "-"
+            : $"忠:{SysColor.GetColoredText("loyalty", heroData.loyalty)}";
 
         SetSelected(false);
     }

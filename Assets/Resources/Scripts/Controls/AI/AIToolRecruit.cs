@@ -75,6 +75,8 @@ public static class AIToolRecruit
     {
         var targets = new List<RecruitTarget>();
         var myCityIds = new HashSet<int>(force.GetCityList().Select(c => c.cityId));
+        var kingCity = force.GetKingCity();
+        int kingCityId = kingCity != null ? kingCity.cityId : 0;
 
         foreach (var hero in GameManager.Instance.SaveData.heros)
         {
@@ -82,9 +84,8 @@ public static class AIToolRecruit
             if (!myCityIds.Contains(hero.cityId)) continue;
 
             var heroCfg = HeroConfig.GetConfig(hero.heroId);
-            int nearestCityId = FindNearestOwnCity(force, hero.cityId);
-            int dayDistance = nearestCityId > 0
-                ? SysFormula.City.CalculateCityDayDistance(nearestCityId, hero.cityId)
+            int dayDistance = kingCityId > 0
+                ? SysFormula.City.CalculateCityDayDistance(kingCityId, hero.cityId)
                 : SystemConst.CityDev.CITY_DAY_MAX;
 
             targets.Add(new RecruitTarget
@@ -132,24 +133,5 @@ public static class AIToolRecruit
         }
 
         return executors;
-    }
-
-    /// <summary>
-    /// 查找距目标城市最近的己方城市
-    /// </summary>
-    private static int FindNearestOwnCity(SaveForceData force, int targetCityId)
-    {
-        int nearestCityId = 0;
-        int minDistance = int.MaxValue;
-        foreach (var city in force.GetCityList())
-        {
-            int dist = MapTool.CalculateCityDistance(city.cityId, targetCityId);
-            if (dist < minDistance)
-            {
-                minDistance = dist;
-                nearestCityId = city.cityId;
-            }
-        }
-        return nearestCityId;
     }
 }
