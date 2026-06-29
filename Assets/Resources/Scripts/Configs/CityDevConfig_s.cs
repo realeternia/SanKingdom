@@ -199,7 +199,7 @@ namespace CommonConfig
             config[21102] = new CityDevConfig(21102, "移动", "移动到其他城市", "run", false, true, "Move", "move", 0, 5, "", new float[0], "", new float[0], new string[]{"LeadShip","Charm"}, "", 0f, 0f, 0f, "move2.mp4");
             config[21103] = new CityDevConfig(21103, "出战", "出兵攻打敌人", "run", false, true, "Battle", "battle", 0, 0, "", new float[0], "", new float[0], new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f, "atk2.mp4");
             config[21202] = new CityDevConfig(21202, "走访", "搜集人才和宝物", "normal", false, false, "", "find", 0, 0, "gold", new float[]{3f,2f,1f,1f}, "", new float[0], new string[]{"Charm","Inte"}, "find", 5f, 0f, 4f, "search2.mp4");
-            config[21203] = new CityDevConfig(21203, "交易", "买粮食", "normal", false, false, "", "change", 8, 0, "food", new float[]{8f,6f,5f,4f}, "", new float[0], new string[]{"Inte"}, "", 2f, 3f, 2f, "change.mp4");
+            config[21203] = new CityDevConfig(21203, "交易", "买粮食和士兵", "run", false, true, "Trade", "change", 10, 0, "", new float[0], "", new float[0], new string[]{"Inte"}, "", 0f, 0f, 0f, "change.mp4");
             config[21204] = new CityDevConfig(21204, "登用", "提拔在野武将", "run", false, true, "UseHero", "wild", 0, 5, "", new float[0], "", new float[0], new string[]{"Charm","Inte"}, "", 0f, 0f, 0f, "wild.mp4");
             config[21205] = new CityDevConfig(21205, "褒奖", "提升武将忠心度", "run", false, true, "Praise", "praise", 0, 5, "", new float[0], "", new float[0], new string[]{"Charm","Inte"}, "", 0f, 0f, 0f, "wild.mp4");
             config[21206] = new CityDevConfig(21206, "奖赏", "提升武将忠心度", "run", false, true, "Praise", "praise", 10, 0, "", new float[0], "", new float[0], new string[]{"Charm","Inte"}, "", 0f, 0f, 0f, "wild.mp4");

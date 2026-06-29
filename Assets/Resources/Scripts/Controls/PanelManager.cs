@@ -21,6 +21,7 @@ public class PanelManager : MonoBehaviour
     private GameObject cityMovePanel;
     private GameObject cityPraisePanel;
     private GameObject cityUseHeroPanel;
+    private GameObject cityTradePanel;
 
     private GameObject popResultPanel;
     private GameObject heroInfoPanel;
@@ -314,6 +315,33 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(cityMovePanel, false);
         Destroy(cityMovePanel);
         cityMovePanel = null;
+    }
+
+    public void ShowCityTrade(int forceId, int sourceCityId)
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        if (cityTradePanel == null)
+        {
+            var cityTradePanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityTradePanel"));
+            cityTradePanel = Instantiate(cityTradePanelPrefab, transform);
+        }
+        cityTradePanel.SetActive(true);
+        var cityTradePanelManager = cityTradePanel.GetComponent<CityTradePanelManager>();
+        cityTradePanelManager.Init(forceId, sourceCityId);
+        cityTradePanelManager.OnShow();
+
+        ChangePanelCount(cityTradePanel, true);
+    }
+
+    public void HideCityTrade()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        cityTradePanel.SetActive(false);
+        cityTradePanel.GetComponent<CityTradePanelManager>().OnHide();
+
+        ChangePanelCount(cityTradePanel, false);
+        Destroy(cityTradePanel);
+        cityTradePanel = null;
     }
 
     public void ShowCityPraise(int forceId, int cityId, int devId)

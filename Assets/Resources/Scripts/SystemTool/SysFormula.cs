@@ -441,6 +441,22 @@ public static class SysFormula
         {
             return (int)(SystemConst.Economy.EXCHANGE_RATE * amount);
         }
+
+        public static int CalculateTradeAmount(int goldCost)
+        {
+            return (int)(goldCost * SystemConst.Economy.TRADE_EXCHANGE_RATIO);
+        }
+
+        /// <summary>
+        /// 计算单个武将的交易量：基数为 goldCost × TRADE_EXCHANGE_RATIO，智力＞阈值时每点加 2%
+        /// </summary>
+        public static int CalculateHeroTradeAmount(int goldCost, int intelligence)
+        {
+            int baseAmount = CalculateTradeAmount(goldCost);
+            int overThreshold = Math.Max(0, intelligence - SystemConst.Economy.TRADE_INT_THRESHOLD);
+            float bonus = overThreshold * SystemConst.Economy.TRADE_INT_BONUS_PER_POINT;
+            return (int)(baseAmount * (1f + bonus));
+        }
     }
 
     public static class AIStrategy

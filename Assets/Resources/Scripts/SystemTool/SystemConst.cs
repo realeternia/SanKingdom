@@ -221,6 +221,18 @@ public static class SystemConst
         /// 兑换最小金币数
         /// </summary>
         public const int EXCHANGE_MIN_GOLD = 300;
+        /// <summary>
+        /// 交易行动兑换比率（1 金币兑换此值的士兵/粮草）
+        /// </summary>
+        public const float TRADE_EXCHANGE_RATIO = 2f;
+        /// <summary>
+        /// 交易智力加成阈值（智力＞此值才触发加成）
+        /// </summary>
+        public const int TRADE_INT_THRESHOLD = 70;
+        /// <summary>
+        /// 交易智力加成每点增量比率
+        /// </summary>
+        public const float TRADE_INT_BONUS_PER_POINT = 0.02f;
     }
 
     public static class Expedition
@@ -532,6 +544,7 @@ public static class SystemConst
         public const int USE_HERO_DEV_ID = 21204;
         public const int PRAISE_DEV_ID = 21205;
         public const int PRAISE_PAID_DEV_ID = 21206;
+        public const int TRADE_DEV_ID = 21203;
         /// <summary>
         /// 城市日程：相邻为1日，曼哈顿距离阈值≤此值算2日
         /// </summary>

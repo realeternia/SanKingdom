@@ -839,6 +839,72 @@ public class SaveForceData
         return true;
     }
 
+    /// <summary>
+    /// 交易行动：派遣 heroIds 武将各执行一次交易，每人花 GoldCost 金币兑换 tradeAmount 士兵/粮草
+    /// </summary>
+    public bool ExecuteCityTrade(int cityId, int devId, int[] heroIds, bool buySoldier, out List<PopResultPanelManager.AttrData> attrDatas)
+    {
+        attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        if (heroIds == null || heroIds.Length == 0)
+        {
+            GameLog.Warn("ExecuteCityTrade heroIds 为空");
+            return false;
+        }
+
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null)
+        {
+            GameLog.Error($"ExecuteCityTrade city not found cityId={cityId}");
+            return false;
+        }
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+        int goldCost = devCfg.GoldCost;
+        int heroCount = heroIds.Length;
+        int totalCost = heroCount * goldCost;
+        int totalGain = 0;
+        foreach (var heroId in heroIds)
+        {
+            var hero = GameManager.Instance.GetHero(heroId);
+            int inte = hero != null ? hero.inte : 0;
+            totalGain += SysFormula.Economy.CalculateHeroTradeAmount(goldCost, inte);
+        }
+
+        if (gold < totalCost)
+        {
+            SystemTip.Instance.ShowTip("黄金不足");
+            return false;
+        }
+
+        string resType = buySoldier ? "soldier" : "food";
+        int resOld = (int)cityData.GetAttr(resType);
+        int goldOld = (int)gold;
+
+        AddAttr("gold", -totalCost, "交易扣除金钱");
+        cityData.AddAttr(resType, totalGain, "交易增加" + resType);
+
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = "Gold",
+            valOld = goldOld,
+            valAddon = -totalCost,
+        });
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = buySoldier ? "Soldier" : "Food",
+            valOld = resOld,
+            valAddon = totalGain,
+        });
+
+        cityData.AddAction(devId, heroCount);
+        AddKingActionCount(devId, heroCount);
+        MarkHeroesActed(heroIds);
+
+        GameLog.Info($"ExecuteCityTrade cityId={cityId} heroCount={heroCount} buySoldier={buySoldier} totalCost={totalCost} totalGain={totalGain}");
+        return true;
+    }
+
     private int CalculateRecruitRate(int cityId, int myHeroId, int targetHeroId)
     {
         return SysFormula.Hero.CalculateRecruitRate(cityId, myHeroId, targetHeroId);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 /// AI君主行动判断入口
 /// 与 AIToolHeroDev（内政派遣）平行，负责除战斗外的君主行动判断
 /// 在 ExecutePlanningPhase 的 AdjustForGoldBalance 之后执行
-/// 流程：排除WarPlan英雄 → 褒奖 → 移动 → 登庸
+/// 流程：排除WarPlan英雄 → 移动 → 褒奖 → 登庸 → 交易
 /// </summary>
 public static class AIToolKingAction
 {
@@ -20,10 +20,13 @@ public static class AIToolKingAction
         AIToolMove.Process(force, excludedHeroIds);
 
         // 2. 褒奖：忠心 ≤ 阈值的武将先褒奖
-        AIToolPraise.Process(force, excludedHeroIds);        
+        AIToolPraise.Process(force, excludedHeroIds);
 
         // 4. 登庸：空闲英雄魅力/智力 > 阈值去登庸，最多 MAX_RECRUIT_COUNT 人次
         AIToolRecruit.Process(force, excludedHeroIds);
+
+        // 5. 交易：城市士兵/粮草＜阈值且金钱充足时交易补足
+        AIToolTrade.Process(force, excludedHeroIds);
     }
 
     /// <summary>

@@ -153,5 +153,9 @@ public static class AIConst
         /// 登庸最大人次
         /// </summary>
         public const int MAX_RECRUIT_COUNT = 6;
+        /// <summary>
+        /// 交易触发资源阈值（士兵/粮草＜此值则交易补足）
+        /// </summary>
+        public const int TRADE_RESOURCE_THRESHOLD = 100;
     }
 }
