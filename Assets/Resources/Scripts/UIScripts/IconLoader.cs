@@ -20,6 +20,11 @@ public class IconLoader : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     void Start()
     {
+        RefreshIcon();
+    }
+
+    public void RefreshIcon()
+    {
         string path = ResolveIconPath();
         if (!string.IsNullOrEmpty(path))
         {

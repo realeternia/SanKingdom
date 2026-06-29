@@ -570,11 +570,11 @@ public class PanelManager : MonoBehaviour
         gmPanel = null;
     }
 
-    public void ShowSideBar(string panelName)
+    public void ShowSideBar(string panelName, System.Action<GameObject> onCreated = null)
     {
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         sideBarPanel.SetActive(true);
-        sideBarPanel.GetComponent<SideBar>().OnShow(panelName);
+        sideBarPanel.GetComponent<SideBar>().OnShow(panelName, onCreated);
     }
 
     public void HideSideBar()

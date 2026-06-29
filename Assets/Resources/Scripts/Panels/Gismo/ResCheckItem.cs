@@ -22,6 +22,10 @@ public class ResCheckItem : MonoBehaviour
         this.isSpecial = false;
 
         GetComponent<IconLoader>().SetId(item.Id);
+        if (!string.IsNullOrEmpty(item.Icon))
+        {
+            icon.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(item.Icon));
+        }
     }
 
     public void Init(string iconPath, string displayText)

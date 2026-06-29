@@ -36,21 +36,24 @@ public class CityMovePanelManager : MonoBehaviour
         {
             var cityIds = MapTool.GetOwnCityIds(forceId);
             cityIds.Remove(sourceCityId);
-            SideCitySelector.SetContext(selectedDestCityId, cityIds, (newCityId) =>
+            PanelManager.Instance.ShowSideBar("SideCitySelector", (panelObj) =>
             {
-                selectedDestCityId = newCityId;
-                if (newCityId == 0)
+                var selector = panelObj.GetComponent<SideCitySelector>();
+                selector.Init(selectedDestCityId, cityIds, "soldier", "hero", (newCityId) =>
                 {
-                    attrVal1Text.text = "-";
-                }
-                else
-                {
-                    var cityCfg = WorldConfig.GetConfig(newCityId);
-                    attrVal1Text.text = cityCfg.Cname;
-                }
-                //ClearAllSelections();
+                    selectedDestCityId = newCityId;
+                    if (newCityId == 0)
+                    {
+                        attrVal1Text.text = "-";
+                    }
+                    else
+                    {
+                        var cityCfg = WorldConfig.GetConfig(newCityId);
+                        attrVal1Text.text = cityCfg.Cname;
+                    }
+                    //ClearAllSelections();
+                });
             });
-            PanelManager.Instance.ShowSideBar("SideCitySelector");
         });
 
         if (okButton != null)

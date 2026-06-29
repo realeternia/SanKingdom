@@ -21,8 +21,7 @@ public class CityTradePanelManager : MonoBehaviour
     public Button switchButton;
 
     private int forceId;
-    private int sourceCityId;
-    private int tradeCityId;
+    private int cityId;
     private bool buySoldier = true;
 
     private int goldCost;
@@ -55,18 +54,13 @@ public class CityTradePanelManager : MonoBehaviour
     public void Init(int forceId, int sourceCityId)
     {
         this.forceId = forceId;
-        this.sourceCityId = sourceCityId;
-        this.tradeCityId = sourceCityId;
+        this.cityId = sourceCityId;
         this.buySoldier = true;
 
         var devCfg = CityDevConfig.GetConfig(SystemConst.CityDev.TRADE_DEV_ID);
         goldCost = devCfg.GoldCost;
 
-        if (resCheckItemGold != null)
-        {
-            string goldIcon = CityAttrConfig.GetConfigByname("gold").Icon;
-            resCheckItemGold.Init(ResPath.Texture.AttrIcon(goldIcon), "");
-        }
+        resCheckItemGold.Init("gold");
 
         UpdateBuyItemIcon();
         RefreshCityDisplay();
@@ -78,19 +72,22 @@ public class CityTradePanelManager : MonoBehaviour
     private void OnDestButtonClick()
     {
         var cityIds = MapTool.GetOwnCityIds(forceId);
-        SideCitySelector.SetContext(tradeCityId, cityIds, (newCityId) =>
+        PanelManager.Instance.ShowSideBar("SideCitySelector", (panelObj) =>
         {
-            if (newCityId == 0) return;
-            tradeCityId = newCityId;
-            buySoldier = true;
-            UpdateBuyItemIcon();
-            RefreshCityDisplay();
-            ClearAllSelections();
-            CreateHeroHeadItems();
-            RefreshGoldDisplay();
-            RefreshBuyDisplay();
+            var selector = panelObj.GetComponent<SideCitySelector>();
+            selector.Init(cityId, cityIds, "soldier", "food", (newCityId) =>
+            {
+                if (newCityId == 0) return;
+                cityId = newCityId;
+                buySoldier = true;
+                UpdateBuyItemIcon();
+                RefreshCityDisplay();
+                ClearAllSelections();
+                CreateHeroHeadItems();
+                RefreshGoldDisplay();
+                RefreshBuyDisplay();
+            });
         });
-        PanelManager.Instance.ShowSideBar("SideCitySelector");
     }
 
     private void OnSwitch()
@@ -105,13 +102,12 @@ public class CityTradePanelManager : MonoBehaviour
     {
         if (resCheckItemBuy == null) return;
         string attrName = buySoldier ? "soldier" : "food";
-        string icon = CityAttrConfig.GetConfigByname(attrName).Icon;
-        resCheckItemBuy.Init(ResPath.Texture.AttrIcon(icon), "");
+        resCheckItemBuy.Init(attrName);
     }
 
     private void RefreshCityDisplay()
     {
-        var cityCfg = WorldConfig.GetConfig(tradeCityId);
+        var cityCfg = WorldConfig.GetConfig(cityId);
         if (cityNameText != null)
         {
             cityNameText.text = cityCfg != null ? cityCfg.Cname : "-";
@@ -122,7 +118,7 @@ public class CityTradePanelManager : MonoBehaviour
     {
         if (resCheckItemBuy == null) return;
 
-        var cityData = GameManager.Instance.GetCity(tradeCityId);
+        var cityData = GameManager.Instance.GetCity(cityId);
         string attrName = buySoldier ? "soldier" : "food";
         int val = cityData != null ? (int)cityData.GetAttr(attrName) : 0;
 
@@ -241,7 +237,7 @@ public class CityTradePanelManager : MonoBehaviour
             return;
         }
 
-        bool success = force.ExecuteCityTrade(tradeCityId, SystemConst.CityDev.TRADE_DEV_ID, heroIds, buySoldier, out var attrDatas);
+        bool success = force.ExecuteCityTrade(cityId, SystemConst.CityDev.TRADE_DEV_ID, heroIds, buySoldier, out var attrDatas);
         if (!success) return;
 
         var devCfg = CityDevConfig.GetConfig(SystemConst.CityDev.TRADE_DEV_ID);
@@ -263,7 +259,7 @@ public class CityTradePanelManager : MonoBehaviour
         }
         heroHeadItems.Clear();
 
-        var cityData = GameManager.Instance.GetCity(tradeCityId);
+        var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData == null) return;
 
         var heroList = cityData.GetNormalHeroList();

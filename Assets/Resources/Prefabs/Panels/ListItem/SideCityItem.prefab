@@ -224,7 +224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sourceType: 1
   iconPath: 
-  configId: 14
+  configId: 101
   image: {fileID: 0}
 --- !u!1 &790010050269385830
 GameObject:
@@ -728,8 +728,10 @@ MonoBehaviour:
   BG: {fileID: 540500472637207055}
   cityName: {fileID: 3898453360415264514}
   textOwner: {fileID: 4581068369294686680}
-  textSoldier: {fileID: 2456063966785250739}
-  textHeroCount: {fileID: 213607511943815035}
+  text1: {fileID: 2456063966785250739}
+  text2: {fileID: 213607511943815035}
+  iconLoader1: {fileID: 3883288759933053951}
+  iconLoader2: {fileID: 5814899622077766669}
   button: {fileID: 1820523622612666520}
 --- !u!1 &8714104638041170913
 GameObject:

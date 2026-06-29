@@ -50,7 +50,7 @@ public class SideBar : MonoBehaviour, IPointerClickHandler
         PanelManager.Instance.HideSideBar();
     }
 
-    public void OnShow(string panelName)
+    public void OnShow(string panelName, System.Action<GameObject> onCreated = null)
     {
         scrollItem.SetActive(true);
 
@@ -64,10 +64,10 @@ public class SideBar : MonoBehaviour, IPointerClickHandler
             .SetEase(Ease.OutCubic)
             .SetUpdate(true);
 
-        LoadSubPanel(panelName);
+        LoadSubPanel(panelName, onCreated);
     }
 
-    private void LoadSubPanel(string panelName)
+    private void LoadSubPanel(string panelName, System.Action<GameObject> onCreated = null)
     {
         foreach (Transform child in subRegionNode.transform)
         {
@@ -84,6 +84,7 @@ public class SideBar : MonoBehaviour, IPointerClickHandler
             rectTransform.offsetMin = Vector2.zero;
             rectTransform.offsetMax = Vector2.zero;
         }
+        onCreated?.Invoke(panelObj);
     }
 
     public void OnHide(Action onComplete = null)

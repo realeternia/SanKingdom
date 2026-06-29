@@ -373,7 +373,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u786E\u5B9A"
+  m_text: "\u6267\u884C"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2c31971a758c934789077706967acc0d, type: 2}
   m_sharedMaterial: {fileID: 1923955419537348613, guid: 2c31971a758c934789077706967acc0d, type: 2}
@@ -914,7 +914,6 @@ MonoBehaviour:
   closeButton: {fileID: 3803804510460581846}
   okButton: {fileID: 4477940777486842754}
   checkBtn: {fileID: 2813202096464532806}
-  goldCostText: {fileID: 0}
   resCheckItem: {fileID: 1990624536526652176}
 --- !u!1 &6496971436850371667
 GameObject:

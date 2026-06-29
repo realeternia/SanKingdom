@@ -14,20 +14,21 @@ public class SideCitySelector : MonoBehaviour
     private SideCityItem selectedItem;
     public Button confirmButton;
 
-    private static int currentCityId;
-    private static List<int> cityIdList;
-    private static System.Action<int> onCityIdSelected;
+    private int currentCityId;
+    private List<int> cityIdList;
+    private System.Action<int> onCityIdSelected;
+    private string attr1Name;
+    private string attr2Name;
 
-    public static void SetContext(int cityId, List<int> cities, System.Action<int> callback)
+    public void Init(int cityId, List<int> cities, string attr1Name, string attr2Name, System.Action<int> callback)
     {
         currentCityId = cityId;
         cityIdList = cities;
         onCityIdSelected = callback;
-        GameLog.Info($"SideCitySelector.SetContext: cityId={cityId}, count={cities.Count}");
-    }
+        this.attr1Name = attr1Name;
+        this.attr2Name = attr2Name;
+        GameLog.Info($"SideCitySelector.Init: cityId={cityId}, count={cities.Count}");
 
-    void Start()
-    {
         LoadCityList();
 
         if (confirmButton != null)
@@ -50,7 +51,7 @@ public class SideCitySelector : MonoBehaviour
             GameObject item = Instantiate(itemPrefab.gameObject, subRegionMain.transform);
             item.transform.localScale = Vector3.one;
             SideCityItem cityItem = item.GetComponent<SideCityItem>();
-            cityItem.SetData(id);
+            cityItem.SetData(id, attr1Name, attr2Name);
             cityItem.SetOnClickCallback(OnItemSelected);
 
             if (id == currentCityId)

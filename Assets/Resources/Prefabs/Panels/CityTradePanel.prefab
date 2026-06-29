@@ -378,7 +378,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u79FB\u52A8"
+  m_text: "\u6267\u884C"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2c31971a758c934789077706967acc0d, type: 2}
   m_sharedMaterial: {fileID: 1923955419537348613, guid: 2c31971a758c934789077706967acc0d, type: 2}
@@ -1634,13 +1634,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollRectMain: {fileID: 4047515678318061556}
   itemRegionMain: {fileID: 3949576956813282007}
+  destButton: {fileID: 4864805673038876313}
+  cityNameText: {fileID: 4237574389699325460}
   resCheckItemGold: {fileID: 2770819945359358272}
   resCheckItemBuy: {fileID: 2934995718874702274}
   closeButton: {fileID: 3803804510460581846}
   okButton: {fileID: 3809562906122315540}
   switchButton: {fileID: 2669485495417206175}
-  cityNameText: {fileID: 4237574389699325460}
-  destButton: {fileID: 4864805673038876313}
 --- !u!1 &6496971436850371667
 GameObject:
   m_ObjectHideFlags: 0

@@ -331,6 +331,10 @@ public class SaveCityData
                 return food;
             case "wall":
                 return wall;
+            case "hero":
+                return GetHeroList(true, true).Count;
+            case "herostar":
+                return GetHeroList(true, true).Count(hid => HeroConfig.GetConfig(hid).StarHero);
             default:
                 return 0;
         }
