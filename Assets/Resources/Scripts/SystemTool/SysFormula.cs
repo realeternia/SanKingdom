@@ -437,11 +437,6 @@ public static class SysFormula
 
     public static class Economy
     {
-        public static int CalculateExchangeResult(int amount, bool isBuying)
-        {
-            return (int)(SystemConst.Economy.EXCHANGE_RATE * amount);
-        }
-
         public static int CalculateTradeAmount(int goldCost)
         {
             return (int)(goldCost * SystemConst.Economy.TRADE_EXCHANGE_RATIO);

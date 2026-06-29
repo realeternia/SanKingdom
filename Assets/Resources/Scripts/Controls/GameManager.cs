@@ -134,17 +134,6 @@ public class GameManager : MonoBehaviour
         return SaveData.heros.Where(h => h.forceId == forceId).ToList();
     }
 
-    public List<int> GetPraiseableHeroList(int forceId)
-    {
-        var heroIds = new List<int>();
-        foreach (var member in SaveData.heros)
-        {
-            if(member.state == HeroState.Normal && member.forceId == forceId && member.loyalty < SystemConst.Hero.MAX_LOYALTY)
-                heroIds.Add(member.heroId);
-        }
-        return heroIds;
-    }
-
     public void NewGame(int forceId)
     {
         SaveData = new SaveData();
@@ -311,32 +300,16 @@ public class GameManager : MonoBehaviour
                     continue;
 
                 List<PopResultPanelManager.AttrData> attrDatas = null;
-                
+
                 if (devCfg.Type == "normal")
                 {
                     force.ExecuteCityDev(city.cityId, assignment.devId, heroIds, out attrDatas);
                 }
-                else if (devCfg.Action == "CityDevChange")
+                else
                 {
-                    force.ExecuteCityChange(city.cityId, assignment.devId, heroIds, true, 300, SystemConst.Economy.EXCHANGE_RATE, out attrDatas);
+                    GameLog.Warn($"ExecuteForceDevActions 跳过非 normal 委派 devId={assignment.devId} type={devCfg.Type}");
                 }
-                else if (devCfg.Action == "UseHero")
-                {
-                    var recruitableHeroes = city.GetRecruitableHeroList();
-                    if (recruitableHeroes.Count > 0)
-                    {
-                        force.ExecuteCityUseHero(city.cityId, assignment.devId, new int[] { assignment.heroId }, recruitableHeroes.ToArray(), out attrDatas);
-                    }
-                }
-                else if (devCfg.Action == "Praise")
-                {
-                    var praiseableHeroes = GetPraiseableHeroList(force.forceId);
-                    if (praiseableHeroes.Count > 0)
-                    {
-                        force.ExecuteCityPraiseHero(city.cityId, assignment.devId, praiseableHeroes.ToArray(), out attrDatas);
-                    }
-                }
-                
+
                 if (attrDatas != null)
                 {
                     foreach (var attrData in attrDatas)

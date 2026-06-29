@@ -214,14 +214,6 @@ public static class SystemConst
     public static class Economy
     {
         /// <summary>
-        /// 金粮兑换比率
-        /// </summary>
-        public const float EXCHANGE_RATE = 0.9f;
-        /// <summary>
-        /// 兑换最小金币数
-        /// </summary>
-        public const int EXCHANGE_MIN_GOLD = 300;
-        /// <summary>
         /// 交易行动兑换比率（1 金币兑换此值的士兵/粮草）
         /// </summary>
         public const float TRADE_EXCHANGE_RATIO = 2f;

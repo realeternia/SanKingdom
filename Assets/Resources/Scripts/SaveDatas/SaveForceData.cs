@@ -757,6 +757,34 @@ public class SaveForceData
         }
     }
 
+    /// <summary>
+    /// 过滤掉本回合已行动（hero.round >= currentRound）的武将，返回可用武将列表。
+    /// KingAction 方法入口的底层防御，配合 UI 层 HeroHeadItem 的选择拦截。
+    /// </summary>
+    private List<int> FilterAvailableHeroes(IEnumerable<int> heroIds)
+    {
+        int currentRound = GameManager.Instance.SaveData.round;
+        var available = new List<int>();
+        int filteredCount = 0;
+        foreach (var heroId in heroIds)
+        {
+            var hero = GameManager.Instance.GetHero(heroId);
+            if (hero != null && hero.round >= currentRound)
+            {
+                filteredCount++;
+            }
+            else
+            {
+                available.Add(heroId);
+            }
+        }
+        if (filteredCount > 0)
+        {
+            GameLog.Warn($"FilterAvailableHeroes 过滤已行动武将 {filteredCount} 人");
+        }
+        return available;
+    }
+
     public List<SaveCityData> GetCityList()
     {
          return GameManager.Instance.GetCitiesByForce(forceId);
@@ -773,72 +801,6 @@ public class SaveForceData
         return null;
     }
 
-    public bool ExecuteCityChange(int cityId, int devId, int[] heroList, bool isBuying, int amount, float rate, out List<PopResultPanelManager.AttrData> attrDatas)
-    {
-        attrDatas = new List<PopResultPanelManager.AttrData>();
-        
-        var cityData = GameManager.Instance.GetCity(cityId);
-
-        if(isBuying)
-        {
-            if(gold < amount)
-            {
-                SystemTip.Instance.ShowTip("黄金不足");
-                return false;
-            }
-
-            int goldOld = (int)gold;
-            AddAttr("gold", -amount, "买粮扣除金钱");
-            attrDatas.Add(new PopResultPanelManager.AttrData()
-            {
-                attr = "Gold",
-                valOld = goldOld,
-                valAddon = - amount,
-            });
-
-            int foodOld = (int)cityData.food;
-            int foodAdd = SysFormula.Economy.CalculateExchangeResult(amount, true);
-            cityData.AddAttr("food", foodAdd, "买粮增加粮草");
-            attrDatas.Add(new PopResultPanelManager.AttrData()
-            {
-                attr = "Food",
-                valOld = foodOld,
-                valAddon = foodAdd,
-            });
-        }
-        else
-        {
-            if(cityData.food < amount)
-            {
-                SystemTip.Instance.ShowTip("粮食不足");
-                return false;
-            }
-
-            int foodOld = (int)cityData.food;
-            cityData.AddAttr("food", -amount, "卖粮扣除粮草");
-            attrDatas.Add(new PopResultPanelManager.AttrData()
-            {
-                attr = "Food",
-                valOld = foodOld,
-                valAddon = -amount,
-            });
-
-            int goldOld = (int)gold;
-            int goldAdd = SysFormula.Economy.CalculateExchangeResult(amount, false);
-            AddAttr("gold", goldAdd, "卖粮增加金钱");
-            attrDatas.Add(new PopResultPanelManager.AttrData()
-            {
-                attr = "Gold",
-                valOld = goldOld,
-                valAddon = goldAdd,
-            });
-        }
-
-        cityData.AddAction(devId, heroList.Length);
-
-        return true;
-    }
-
     /// <summary>
     /// 交易行动：派遣 heroIds 武将各执行一次交易，每人花 GoldCost 金币兑换 tradeAmount 士兵/粮草
     /// </summary>
@@ -851,6 +813,14 @@ public class SaveForceData
             GameLog.Warn("ExecuteCityTrade heroIds 为空");
             return false;
         }
+
+        var availableHeroes = FilterAvailableHeroes(heroIds);
+        if (availableHeroes.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("所选武将本回合已行动");
+            return false;
+        }
+        heroIds = availableHeroes.ToArray();
 
         var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData == null)
@@ -913,6 +883,20 @@ public class SaveForceData
     public bool ExecuteCityUseHero(int cityId, int devId, int[] myHeroIds, int[] targetHeroIds, out List<PopResultPanelManager.AttrData> attrDatas)
     {
         attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        if (myHeroIds == null || myHeroIds.Length == 0)
+        {
+            GameLog.Warn("ExecuteCityUseHero myHeroIds 为空");
+            return false;
+        }
+
+        var availableExecutors = FilterAvailableHeroes(myHeroIds);
+        if (availableExecutors.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("所选武将本回合已行动");
+            return false;
+        }
+        myHeroIds = availableExecutors.ToArray();
 
         var cityData = GameManager.Instance.GetCity(cityId);
         List<int> remainingTargets = new List<int>(targetHeroIds);
@@ -983,6 +967,20 @@ public class SaveForceData
     public bool ExecuteCityPraiseHero(int cityId, int devId, int[] heroList, out List<PopResultPanelManager.AttrData> attrDatas)
     {
         attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        if (heroList == null || heroList.Length == 0)
+        {
+            GameLog.Warn("ExecuteCityPraiseHero heroList 为空");
+            return false;
+        }
+
+        var availableHeroes = FilterAvailableHeroes(heroList);
+        if (availableHeroes.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("所选武将本回合已行动");
+            return false;
+        }
+        heroList = availableHeroes.ToArray();
 
         var devCfg = CityDevConfig.GetConfig(devId);
 

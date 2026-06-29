@@ -16,6 +16,7 @@ public static class AIToolPraise
     {
         int devId = SystemConst.CityDev.PRAISE_DEV_ID;
         var devCfg = CityDevConfig.GetConfig(devId);
+        int currentRound = GameManager.Instance.SaveData.round;
 
         // 计算本回合剩余可参与人数（HeroCount=0 表示不限）
         int usedCount = force.GetKingActionCount(devId);
@@ -28,6 +29,7 @@ public static class AIToolPraise
         var praiseableHeroes = GameManager.Instance.GetHerosByForce(force.forceId)
             .Where(h => !excludedHeroIds.Contains(h.heroId))
             .Where(h => h.state == HeroState.Normal)
+            .Where(h => h.round < currentRound)
             .Where(h => h.loyalty < AIConst.AIKingAction.PRAISE_LOYALTY_THRESHOLD)
             .OrderBy(h => h.loyalty)
             .Take(remaining)

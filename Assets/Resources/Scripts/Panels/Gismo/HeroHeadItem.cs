@@ -60,6 +60,12 @@ public class HeroHeadItem : MonoBehaviour
 
     private void OnItemClick()
     {
+        if (hasActed)
+        {
+            SystemTip.Instance.ShowTip("该武将本回合已行动");
+            return;
+        }
+
         if (!isSelected && canSelectCallback != null && !canSelectCallback())
             return;
 
