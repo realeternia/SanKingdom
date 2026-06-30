@@ -157,5 +157,9 @@ public static class AIConst
         /// 交易触发资源阈值（士兵/粮草＜此值则交易补足）
         /// </summary>
         public const int TRADE_RESOURCE_THRESHOLD = 100;
+        /// <summary>
+        /// 走访单回合最大参与人数（AI 随机选取上限）
+        /// </summary>
+        public const int SEARCH_HERO_MAX_COUNT = 3;
     }
 }

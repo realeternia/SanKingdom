@@ -225,6 +225,14 @@ public static class SystemConst
         /// 交易智力加成每点增量比率
         /// </summary>
         public const float TRADE_INT_BONUS_PER_POINT = 0.02f;
+        /// <summary>
+        /// 走访获得金钱下限（含）
+        /// </summary>
+        public const int SEARCH_GOLD_MIN = 1;
+        /// <summary>
+        /// 走访获得金钱上限（含）
+        /// </summary>
+        public const int SEARCH_GOLD_MAX = 10;
     }
 
     public static class Expedition
@@ -537,6 +545,7 @@ public static class SystemConst
         public const int PRAISE_DEV_ID = 21205;
         public const int PRAISE_PAID_DEV_ID = 21206;
         public const int TRADE_DEV_ID = 21203;
+        public const int SEARCH_DEV_ID = 21202;
         /// <summary>
         /// 城市日程：相邻为1日，曼哈顿距离阈值≤此值算2日
         /// </summary>

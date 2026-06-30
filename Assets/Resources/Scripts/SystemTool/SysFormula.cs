@@ -452,6 +452,14 @@ public static class SysFormula
             float bonus = overThreshold * SystemConst.Economy.TRADE_INT_BONUS_PER_POINT;
             return (int)(baseAmount * (1f + bonus));
         }
+
+        /// <summary>
+        /// 走访获得随机金钱：[SEARCH_GOLD_MIN, SEARCH_GOLD_MAX] 闭区间
+        /// </summary>
+        public static int CalculateSearchGoldAmount()
+        {
+            return SysRandom.Range(SystemConst.Economy.SEARCH_GOLD_MIN, SystemConst.Economy.SEARCH_GOLD_MAX + 1);
+        }
     }
 
     public static class AIStrategy

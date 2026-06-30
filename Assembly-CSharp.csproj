@@ -83,6 +83,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\SideArmsSelector.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillManager.cs" />
     <Compile Include="Assets\Resources\Scripts\OOs\ICityDevNode.cs" />
+    <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolSearch.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Missile.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\SideBarAlphaGradient.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitArea.cs" />
@@ -274,6 +275,7 @@
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysColor.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolPraise.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\KingActionCountData.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\CitySearchPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SideBar.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXPitchRandomizer.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\OOs\IRecoverable.cs" />

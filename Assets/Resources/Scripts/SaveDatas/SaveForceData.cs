@@ -875,6 +875,72 @@ public class SaveForceData
         return true;
     }
 
+    /// <summary>
+    /// 走访行动：派遣 heroIds 武将各执行一次走访，每人随机获得 [SEARCH_GOLD_MIN, SEARCH_GOLD_MAX] 金钱
+    /// </summary>
+    public bool ExecuteCitySearch(int cityId, int devId, int[] heroIds, out List<PopResultPanelManager.AttrData> attrDatas)
+    {
+        attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        if (heroIds == null || heroIds.Length == 0)
+        {
+            GameLog.Warn("ExecuteCitySearch heroIds 为空");
+            return false;
+        }
+
+        var availableHeroes = FilterAvailableHeroes(heroIds);
+        if (availableHeroes.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("所选武将本回合已行动");
+            return false;
+        }
+        heroIds = availableHeroes.ToArray();
+
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null)
+        {
+            GameLog.Error($"ExecuteCitySearch city not found cityId={cityId}");
+            return false;
+        }
+
+        int heroCount = heroIds.Length;
+        int totalGain = 0;
+        var heroGains = new List<KeyValuePair<int, int>>();
+        foreach (var heroId in heroIds)
+        {
+            int gain = SysFormula.Economy.CalculateSearchGoldAmount();
+            heroGains.Add(new KeyValuePair<int, int>(heroId, gain));
+            totalGain += gain;
+        }
+
+        int goldOld = (int)gold;
+        AddAttr("gold", totalGain, "走访获得金钱");
+
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = "Gold",
+            valOld = goldOld,
+            valAddon = totalGain,
+        });
+
+        foreach (var kv in heroGains)
+        {
+            string heroName = HeroConfig.GetConfig(kv.Key).Name;
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attrStr = heroName,
+                valStr = $"金钱+{kv.Value}",
+            });
+        }
+
+        cityData.AddAction(devId, heroCount);
+        AddKingActionCount(devId, heroCount);
+        MarkHeroesActed(heroIds);
+
+        GameLog.Info($"ExecuteCitySearch cityId={cityId} heroCount={heroCount} totalGain={totalGain}");
+        return true;
+    }
+
     private int CalculateRecruitRate(int cityId, int myHeroId, int targetHeroId)
     {
         return SysFormula.Hero.CalculateRecruitRate(cityId, myHeroId, targetHeroId);
