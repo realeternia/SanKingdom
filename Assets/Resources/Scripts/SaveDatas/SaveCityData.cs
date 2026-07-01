@@ -478,9 +478,20 @@ public class SaveCityData
                 if (hero != null)
                 {
                     SaveTroopsData.RemoveHeroFromTroop(heroId);
-                    hero.state = HeroState.Wild;
-                    hero.forceId = SystemConst.Hero.WILD_FORCE_ID;
-                    hero.loyalty = SystemConst.Hero.ELIMINATED_HERO_LOYALTY;
+                    hero.state = HeroState.Catched;
+                    BattleStatManager.RecordHeroCatched(hero.forceId, heroId);
+                }
+            }
+            // 防御性处理：确保势力所有残留英雄也被俘虏
+            foreach (var hero in GameManager.Instance.SaveData.heros)
+            {
+                if (hero.forceId == forceLose && hero.state == HeroState.Normal && !allDefenceHeroIds.Contains(hero.heroId))
+                {
+                    SaveTroopsData.RemoveHeroFromTroop(hero.heroId);
+                    hero.state = HeroState.Catched;
+                    hero.cityId = cityId;
+                    BattleStatManager.RecordHeroCatched(hero.forceId, hero.heroId);
+                    GameLog.Info($"Occupy 额外俘虏不在城中的势力英雄: heroId={hero.heroId}");
                 }
             }
             var force = GameManager.Instance.GetForce(forceLose);
@@ -488,7 +499,7 @@ public class SaveCityData
             {
                 force.isEliminated = true;
             }
-            GameLog.Info($"Occupy 势力 {forceLose} 已被消灭");
+            GameLog.Info($"Occupy 势力 {forceLose} 已被消灭，所有英雄被俘虏");
         }
 
         foreach (var heroId in winHeroIds)
