@@ -225,14 +225,6 @@ public static class SystemConst
         /// 交易智力加成每点增量比率
         /// </summary>
         public const float TRADE_INT_BONUS_PER_POINT = 0.02f;
-        /// <summary>
-        /// 走访获得金钱下限（含）
-        /// </summary>
-        public const int SEARCH_GOLD_MIN = 1;
-        /// <summary>
-        /// 走访获得金钱上限（含）
-        /// </summary>
-        public const int SEARCH_GOLD_MAX = 10;
     }
 
     public static class Expedition

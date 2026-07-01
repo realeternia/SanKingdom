@@ -119,6 +119,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyDevelopment.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateEffectAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\CityDevSearchConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleUIManager.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\UIColorChanger.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineUIControllerTopDownEffects.cs" />

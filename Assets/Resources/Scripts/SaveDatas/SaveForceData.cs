@@ -451,62 +451,7 @@ public class SaveForceData
 
         cityData.AddAction(devId, heroList.Length);
 
-        if (devConfig.ActionName == "find")
-        {
-            CheckFindAction(cityId, cityData, attrDatas);
-        }
-
         return true;
-    }
-
-    private static void CheckFindAction(int cityId, SaveCityData cityData, List<PopResultPanelManager.AttrData> attrDatas)
-    {
-        Dictionary<string, int> cityNameToIdMap = new Dictionary<string, int>();
-        foreach (var cityConfig in WorldConfig.ConfigList)
-        {
-            cityNameToIdMap[cityConfig.Cname] = cityConfig.Id;
-        }
-
-        foreach (var heroConfig in HeroConfig.ConfigList)
-        {
-            int bornCityId;
-            if (!cityNameToIdMap.TryGetValue(heroConfig.BornCity, out bornCityId))
-                continue;
-
-            if (bornCityId != cityId)
-                continue;
-            
-            float currentYear = GameManager.Instance.GetCurrentYear();
-            if (currentYear - heroConfig.BornYear < SystemConst.Game.BORN_AGE)
-                continue;
-
-            bool isHeroInGame = false;
-            foreach (var existingHero in GameManager.Instance.SaveData.heros)
-            {
-                if (existingHero.heroId == heroConfig.Id)
-                {
-                    isHeroInGame = true;
-                    break;
-                }
-            }
-
-            if (!isHeroInGame)
-            {
-                SaveHeroData newHero = SaveHeroData.CreateWildHero(heroConfig.Id, cityId);
-
-                GameManager.Instance.SaveData.heros.Add(newHero);
-
-                attrDatas.Add(new PopResultPanelManager.AttrData()
-                {
-                    attrStr = "发现",
-                    valStr = string.Format("<color=green>{0}</color>", heroConfig.Name),
-                });
-
-                cityData.RecalculateHeros();
-
-                break;
-            }
-        }
     }
 
     private static void ApplyProductionMultiplier(SaveCityData cityData, CityDevConfig devConfig, List<float> results)
@@ -877,6 +822,7 @@ public class SaveForceData
 
     /// <summary>
     /// 走访行动：派遣 heroIds 武将各执行一次走访，每人随机获得 [SEARCH_GOLD_MIN, SEARCH_GOLD_MAX] 金钱
+    /// 并根据 CityDevSearchConfig 触发额外发现（资源/武将）
     /// </summary>
     public bool ExecuteCitySearch(int cityId, int devId, int[] heroIds, out List<PopResultPanelManager.AttrData> attrDatas)
     {
@@ -903,42 +849,183 @@ public class SaveForceData
             return false;
         }
 
-        int heroCount = heroIds.Length;
-        int totalGain = 0;
-        var heroGains = new List<KeyValuePair<int, int>>();
-        foreach (var heroId in heroIds)
+        var devConfig = CityDevConfig.GetConfig(devId);
+        int goldCost = devConfig.GoldCost * heroIds.Length;
+        if (gold < goldCost)
         {
-            int gain = SysFormula.Economy.CalculateSearchGoldAmount();
-            heroGains.Add(new KeyValuePair<int, int>(heroId, gain));
-            totalGain += gain;
+            SystemTip.Instance.ShowTip("黄金不足");
+            GameLog.Warn($"ExecuteCitySearch gold not enough forceId={forceId} gold={gold} cost={goldCost}");
+            return false;
+        }
+        if (devConfig.GoldCost > 0)
+        {
+            AddAttr("gold", -goldCost, "走访扣除金钱");
         }
 
-        int goldOld = (int)gold;
-        AddAttr("gold", totalGain, "走访获得金钱");
+        int heroCount = heroIds.Length;
 
-        attrDatas.Add(new PopResultPanelManager.AttrData()
+        foreach (var heroId in heroIds)
         {
-            attr = "Gold",
-            valOld = goldOld,
-            valAddon = totalGain,
-        });
+            var heroData = GameManager.Instance.GetHero(heroId);
+            if (heroData == null) continue;
 
-        foreach (var kv in heroGains)
-        {
-            string heroName = HeroConfig.GetConfig(kv.Key).Name;
-            attrDatas.Add(new PopResultPanelManager.AttrData()
+            var candidates = new List<CityDevSearchConfig>();
+            foreach (var searchCfg in CityDevSearchConfig.ConfigList)
             {
-                attrStr = heroName,
-                valStr = $"金钱+{kv.Value}",
-            });
+                if (!SysFormula.Hero.CheckHeroCondition(searchCfg.Condition, heroData))
+                    continue;
+
+                if (searchCfg.ResType == "findhero" && !HasUndiscoveredHero(cityId, false))
+                    continue;
+
+                if (searchCfg.ResType == "findherostar" && !HasUndiscoveredHero(cityId, true))
+                    continue;
+
+                candidates.Add(searchCfg);
+            }
+
+            if (candidates.Count == 0)
+                continue;
+
+            float totalWeight = 0;
+            foreach (var c in candidates)
+                totalWeight += c.Weight;
+
+            float roll = SysRandom.Value * totalWeight;
+            float accum = 0;
+            CityDevSearchConfig selected = null;
+            foreach (var c in candidates)
+            {
+                accum += c.Weight;
+                if (roll < accum)
+                {
+                    selected = c;
+                    break;
+                }
+            }
+
+            if (selected == null)
+                continue;
+
+            if (selected.ResType == "findhero" || selected.ResType == "findherostar")
+            {
+                bool starHero = selected.ResType == "findherostar";
+                var newHero = FindUndiscoveredHero(cityId, starHero);
+                if (newHero != null)
+                {
+                    string heroName = HeroConfig.GetConfig(newHero.heroId).Name;
+                    attrDatas.Add(new PopResultPanelManager.AttrData()
+                    {
+                        attrStr = HeroConfig.GetConfig(heroId).Name,
+                        valStr = $"发现<color=green>{heroName}</color>",
+                    });
+                }
+            }
+            else if (selected.ResType == "cityattr" || selected.ResType == "forceattr")
+            {
+                var attrCfg = CityAttrConfig.GetConfig(selected.ResId);
+                int amount = SysRandom.Range(selected.AttrValMin, selected.AttrValMax + 1);
+                string attrName = attrCfg.name;
+
+                if (selected.ResType == "cityattr")
+                {
+                    var heroCity = GameManager.Instance.GetCity(heroData.cityId);
+                    if (heroCity == null)
+                    {
+                        GameLog.Error($"ExecuteCitySearch heroCity not found heroId={heroId} cityId={heroData.cityId}");
+                    }
+                    else
+                    {
+                        heroCity.AddAttr(attrName, amount, "走访发现");
+                    }
+                }
+                else
+                    AddAttr(attrName, amount, "走访发现");
+
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = HeroConfig.GetConfig(heroId).Name,
+                    valStr = $"<color=green>{attrCfg.Cname}+{amount}</color>",
+                });
+            }
         }
 
         cityData.AddAction(devId, heroCount);
         AddKingActionCount(devId, heroCount);
         MarkHeroesActed(heroIds);
 
-        GameLog.Info($"ExecuteCitySearch cityId={cityId} heroCount={heroCount} totalGain={totalGain}");
+        GameLog.Info($"ExecuteCitySearch cityId={cityId} heroCount={heroCount}");
         return true;
+    }
+
+    /// <summary>
+    /// 城市中是否存在未发现的在野武将（BornCity匹配、年龄达标、不在游戏中）
+    /// </summary>
+    private bool HasUndiscoveredHero(int cityId, bool starHero)
+    {
+        return FindUndiscoveredHeroConfig(cityId, starHero) != null;
+    }
+
+    /// <summary>
+    /// 查找城市中未发现在野武将的HeroConfig（BornCity匹配、年龄达标、不在游戏中）
+    /// </summary>
+    private HeroConfig FindUndiscoveredHeroConfig(int cityId, bool starHero)
+    {
+        var cityConfig = WorldConfig.GetConfig(cityId);
+        if (cityConfig == null)
+        {
+            GameLog.Error($"FindUndiscoveredHeroConfig city not found cityId={cityId}");
+            return null;
+        }
+
+        string cityName = cityConfig.Cname;
+        float currentYear = GameManager.Instance.GetCurrentYear();
+
+        var existingHeroIds = new HashSet<int>();
+        foreach (var h in GameManager.Instance.SaveData.heros)
+            existingHeroIds.Add(h.heroId);
+
+        foreach (var heroConfig in HeroConfig.ConfigList)
+        {
+            if (heroConfig.StarHero != starHero)
+                continue;
+
+            if (heroConfig.BornCity != cityName)
+                continue;
+
+            if (currentYear - heroConfig.BornYear < SystemConst.Game.BORN_AGE)
+                continue;
+
+            if (existingHeroIds.Contains(heroConfig.Id))
+                continue;
+
+            return heroConfig;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 查找城市中未发现的在野武将并创建（BornCity匹配、年龄达标、不在游戏中）
+    /// </summary>
+    private SaveHeroData FindUndiscoveredHero(int cityId, bool starHero)
+    {
+        var heroConfig = FindUndiscoveredHeroConfig(cityId, starHero);
+        if (heroConfig == null)
+        {
+            GameLog.Info($"FindUndiscoveredHero 未发现匹配武将 cityId={cityId} starHero={starHero}");
+            return null;
+        }
+
+        var newHero = SaveHeroData.CreateWildHero(heroConfig.Id, cityId);
+        GameManager.Instance.SaveData.heros.Add(newHero);
+
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData != null)
+            cityData.RecalculateHeros();
+
+        GameLog.Info($"FindUndiscoveredHero 发现武将 heroId={heroConfig.Id} name={heroConfig.Name} starHero={starHero} cityId={cityId}");
+        return newHero;
     }
 
     private int CalculateRecruitRate(int cityId, int myHeroId, int targetHeroId)

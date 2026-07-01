@@ -50,17 +50,21 @@ public class CitySearchPanelManager : MonoBehaviour
         int gold = force != null ? (int)force.gold : 0;
         int selectedCount = GetSelectedCount();
 
-        if (resCheckItemGold != null)
+        if (selectedCount == 0)
         {
-            if (selectedCount == 0)
+            resCheckItemGold.UpdateDisplay($"{gold}");
+        }
+        else
+        {
+            var devCfg = CityDevConfig.GetConfig(SystemConst.CityDev.SEARCH_DEV_ID);
+            int cost = selectedCount * (devCfg != null ? devCfg.GoldCost : 0);
+            if (cost > gold)
             {
-                resCheckItemGold.UpdateDisplay($"{gold}");
+                resCheckItemGold.UpdateDisplay($"<color=red>{cost}</color>/{gold}");
             }
             else
             {
-                int minGain = selectedCount * SystemConst.Economy.SEARCH_GOLD_MIN;
-                int maxGain = selectedCount * SystemConst.Economy.SEARCH_GOLD_MAX;
-                resCheckItemGold.UpdateDisplay($"{gold}(<color=green>+{minGain}~{maxGain}</color>)");
+                resCheckItemGold.UpdateDisplay($"{cost}/{gold}");
             }
         }
     }
@@ -141,11 +145,15 @@ public class CitySearchPanelManager : MonoBehaviour
         }
         heroHeadItems.Clear();
 
-        var cityData = GameManager.Instance.GetCity(cityId);
-        if (cityData == null) return;
+        var force = GameManager.Instance.GetForce(forceId);
+        if (force == null) return;
 
-        var heroList = cityData.GetNormalHeroList();
-        if (heroList == null || heroList.Count == 0) return;
+        var heroList = new List<int>();
+        foreach (var city in force.GetCityList())
+        {
+            heroList.AddRange(city.GetNormalHeroList());
+        }
+        if (heroList.Count == 0) return;
 
         int currentRound = GameManager.Instance.SaveData.round;
         heroList = heroList.OrderBy(h =>
@@ -222,6 +230,8 @@ public class CitySearchPanelManager : MonoBehaviour
 
     private string GetHeroAttText(int heroId)
     {
-        return $"+{SystemConst.Economy.SEARCH_GOLD_MIN}~{SystemConst.Economy.SEARCH_GOLD_MAX}";
+        var hero = GameManager.Instance.GetHero(heroId);
+        if (hero == null) return "";
+        return $"智{hero.inte} 魅{hero.charm}";
     }
 }

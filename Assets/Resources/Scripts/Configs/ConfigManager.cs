@@ -32,6 +32,7 @@ public static class ConfigManager
         HeroAttrConfig.Load();
         SystemAttrConfig.Load();
         SeasonConfig.Load();
+        CityDevSearchConfig.Load();
         
         ConfigManager.PostModify();      
 

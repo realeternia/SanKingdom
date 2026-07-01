@@ -10,6 +10,7 @@ public class HeroHeadItem : MonoBehaviour
     public Image itemIcon;
     public TMP_Text itemName;
     public TMP_Text itemAttr;
+    public TMP_Text itemCityName;
     public Image BG;
     public Button itemButton;
 
@@ -141,6 +142,20 @@ public class HeroHeadItem : MonoBehaviour
         if (itemAttr != null)
         {
             itemAttr.text = attText ?? "";
+        }
+
+        if (itemCityName != null)
+        {
+            var hero = GameManager.Instance.GetHero(heroId);
+            if (hero != null)
+            {
+                var cityCfg = WorldConfig.GetConfig(hero.cityId);
+                itemCityName.text = cityCfg != null ? cityCfg.Cname : "";
+            }
+            else
+            {
+                itemCityName.text = "";
+            }
         }
     }
 }

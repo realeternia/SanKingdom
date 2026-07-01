@@ -128,6 +128,54 @@ public static class SysFormula
     {
 
         /// <summary>
+        /// 解析条件字符串(如"inte>=90")并检查英雄属性是否满足
+        /// 支持运算符: >=, <=, ==, !=, >, <
+        /// 空条件返回true
+        /// </summary>
+        public static bool CheckHeroCondition(string condition, SaveHeroData hero)
+        {
+            if (string.IsNullOrEmpty(condition))
+                return true;
+
+            string[] operators = { ">=", "<=", "==", "!=", ">", "<" };
+            string foundOp = null;
+            string attrName = null;
+            string valueStr = null;
+
+            foreach (var op in operators)
+            {
+                int idx = condition.IndexOf(op);
+                if (idx > 0)
+                {
+                    foundOp = op;
+                    attrName = condition.Substring(0, idx).Trim();
+                    valueStr = condition.Substring(idx + op.Length).Trim();
+                    break;
+                }
+            }
+
+            if (foundOp == null)
+                return true;
+
+            int threshold;
+            if (!int.TryParse(valueStr, out threshold))
+                return true;
+
+            int heroValue = hero.GetAttr(attrName);
+
+            switch (foundOp)
+            {
+                case ">=": return heroValue >= threshold;
+                case "<=": return heroValue <= threshold;
+                case ">": return heroValue > threshold;
+                case "<": return heroValue < threshold;
+                case "==": return heroValue == threshold;
+                case "!=": return heroValue != threshold;
+                default: return true;
+            }
+        }
+
+        /// <summary>
         /// 计算登庸成功率
         /// 在野：基础30%，非己方城市×0.5
         /// 俘虏/敌方在职：rate = diff*3/4 - 5（diff=100-忠诚），loyalty=80→10%，loyalty=60→25%
@@ -453,13 +501,6 @@ public static class SysFormula
             return (int)(baseAmount * (1f + bonus));
         }
 
-        /// <summary>
-        /// 走访获得随机金钱：[SEARCH_GOLD_MIN, SEARCH_GOLD_MAX] 闭区间
-        /// </summary>
-        public static int CalculateSearchGoldAmount()
-        {
-            return SysRandom.Range(SystemConst.Economy.SEARCH_GOLD_MIN, SystemConst.Economy.SEARCH_GOLD_MAX + 1);
-        }
     }
 
     public static class AIStrategy
