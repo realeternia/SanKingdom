@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 using CommonConfig;
 public class PanelManager : MonoBehaviour
 {
@@ -32,6 +34,10 @@ public class PanelManager : MonoBehaviour
     public GameObject sideBarPanel;
 
     public GameObject topNode; //显示顶部资源
+    public TMP_Text cityName;
+    public TMP_Text cityExp;
+    public Image cityExpBar;
+    public Image headIcon;
     public GameObject tipNode; //显示tooltip
     private GameObject currentTip;
     private Dictionary<string, ResItem> forceResItemDict = new Dictionary<string, ResItem>();
@@ -42,6 +48,7 @@ public class PanelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        topNode.SetActive(false);
         ShowPick();
     }
   
@@ -61,6 +68,92 @@ public class PanelManager : MonoBehaviour
 
         SwitchBGM();
         InitTopNodeResItems();
+        ShowForceInfo();
+    }
+
+    public void ShowForceInfo()
+    {
+        var playerForce = GameManager.Instance.SaveData.forces.FirstOrDefault(f => f.isPlayer);
+        if (playerForce == null) return;
+        ShowForceInfo(playerForce.forceId);
+    }
+
+    public void ShowForceInfo(int forceId)
+    {
+        var force = GameManager.Instance.GetForce(forceId);
+        if (force == null) return;
+
+        if (cityName != null)
+        {
+            cityName.text = force.Name;
+            cityName.color = SysColor.GetForceColor(forceId);
+        }
+        if (cityExpBar != null) cityExpBar.transform.parent.gameObject.SetActive(false);
+        if (cityExp != null) cityExp.gameObject.SetActive(false);
+
+        UpdateHeadIcon(forceId);
+    }
+
+    private void UpdateHeadIcon(int forceId)
+    {
+        if (headIcon == null) return;
+        headIcon.gameObject.SetActive(true);
+        var forceCfg = ForceConfig.GetConfig(forceId);
+        var heroCfg = HeroConfig.GetConfig(forceCfg.HeroId);
+        Sprite sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg.Icon));
+        if (sprite == null)
+        {
+            sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroDefaultIcon());
+        }
+        if (sprite != null)
+        {
+            headIcon.sprite = sprite;
+        }
+    }
+
+    public void UpdateCityInfo(int cityId)
+    {
+        var cityCfg = WorldConfig.GetConfig(cityId);
+        var cityData = GameManager.Instance.GetCity(cityId);
+
+        if (cityCfg == null) return;
+
+        int level = cityData != null ? cityData.GetLevel() : 1;
+        if (cityName != null)
+        {
+            cityName.text = $"{cityCfg.Cname}{level}";
+            cityName.color = Color.white;
+        }
+        if (cityExp != null) cityExp.gameObject.SetActive(true);
+        if (cityExpBar != null) cityExpBar.transform.parent.gameObject.SetActive(true);
+        if (cityData != null) UpdateHeadIcon(cityData.forceId);
+
+        if (cityData == null) return;
+
+        int currentExp = cityData.exp;
+        int currentLevelExp = currentExp - SaveCityData.GetExpByLevel(level);
+        int nextLevelTotalExp = level <= 20 && CityLevelConfig.HasConfig(level)
+            ? CityLevelConfig.GetConfig(level).ExpNeed
+            : -1;
+
+        if (nextLevelTotalExp > 0)
+        {
+            int expNeededForNextLevel = nextLevelTotalExp - SaveCityData.GetExpByLevel(level);
+            if (cityExp != null)
+                cityExp.text = $"{currentLevelExp} / {expNeededForNextLevel}";
+            if (cityExpBar != null)
+            {
+                float ratio = Mathf.Clamp01((float)currentLevelExp / expNeededForNextLevel);
+                cityExpBar.rectTransform.sizeDelta = new Vector2(160f * ratio, cityExpBar.rectTransform.sizeDelta.y);
+            }
+        }
+        else
+        {
+            if (cityExp != null)
+                cityExp.text = $"Max / Max";
+            if (cityExpBar != null)
+                cityExpBar.rectTransform.sizeDelta = new Vector2(160f, cityExpBar.rectTransform.sizeDelta.y);
+        }
     }
 
     public void HideWorld()
@@ -79,7 +172,10 @@ public class PanelManager : MonoBehaviour
         GameLog.Debug($"PanelManager.InitTopNodeResItems topNode={topNode}");
         foreach (Transform child in topNode.transform)
         {
-            Destroy(child.gameObject);
+            if (child.GetComponent<ResItem>() != null)
+            {
+                Destroy(child.gameObject);
+            }
         }
         forceResItemDict.Clear();
         
@@ -231,6 +327,7 @@ public class PanelManager : MonoBehaviour
         {
             RefreshForceResItems(playerForce.forceId);
         }
+        ShowForceInfo();
     }
 
     public void ShowSystemPanel()

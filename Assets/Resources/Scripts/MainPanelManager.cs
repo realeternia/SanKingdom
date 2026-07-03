@@ -478,6 +478,7 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
         if (SysSwitch.CanViewOtherForceCity)
         {
             PanelManager.Instance.RefreshForceResItems(cityData.forceId);
+            PanelManager.Instance.ShowForceInfo(cityData.forceId);
         }
     }
 
