@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using CommonConfig;
 
 
-public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoHeader
+public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoHeader, ILoopScrollItem
 {
     public RankPanelManager rankPanelManager;
 
@@ -117,6 +117,28 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
         Color forceColor = SysColor.GetForceColor(cityData.forceId);
         string colorHex = ColorUtility.ToHtmlStringRGB(forceColor);
         cityOwner.text = $"<color=#{colorHex}>{forceCfg.Cname}</color>";
+    }
+
+    public void BindData(object data)
+    {
+        if (data is SaveCityData cityData)
+        {
+            SetMode(false);
+            Init(cityData.cityId);
+        }
+        else if (data is int cityId)
+        {
+            SetMode(false);
+            Init(cityId);
+        }
+        else
+        {
+            GameLog.Warn($"RankCellInfoCity.BindData: 数据类型不匹配 data={data?.GetType().Name ?? "null"}");
+        }
+    }
+
+    public void OnReturnToPool()
+    {
     }
 
     // Update is called once per frame

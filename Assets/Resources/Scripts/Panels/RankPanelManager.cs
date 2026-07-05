@@ -29,6 +29,7 @@ public class RankPanelManager : MonoBehaviour
     private IRankDetailInfoHeader rankHeader;
     private RankCellMode lastSelectedMode; // 缓存上次选中的模式
     private RankCellForce lastSelectedForce; // 缓存上次选中的力量
+    private LoopScrollRect loopScrollMain; // 循环列表（仅「全武将」「全城市」模式启用）
 
 
     // Start is called before the first frame update
@@ -36,12 +37,13 @@ public class RankPanelManager : MonoBehaviour
     {
         ConfigManager.Init();
 
+        loopScrollMain = new LoopScrollRect(scrollRectMain);
 
         // 加载所有英雄配置
         LoadHeroRankings();
 
         closeBtn.onClick.AddListener(() =>
-        {      
+        {
             PanelManager.Instance.HideRank();
         });
 
@@ -49,6 +51,27 @@ public class RankPanelManager : MonoBehaviour
 
     public void SortItems(string rankType)
     {
+        if (loopScrollMain != null && loopScrollMain.IsInitialized)
+        {
+            string modeName = lastSelectedMode != null ? lastSelectedMode.modeName.text : "";
+            if (modeName == "势力武将" || modeName == "全武将")
+            {
+                loopScrollMain.SortItems((a, b) =>
+                    GetHeroVal(b as SaveHeroData, rankType).CompareTo(GetHeroVal(a as SaveHeroData, rankType)));
+            }
+            else if (modeName == "势力城市" || modeName == "全城市")
+            {
+                loopScrollMain.SortItems((a, b) =>
+                    GetCityVal(b as SaveCityData, rankType).CompareTo(GetCityVal(a as SaveCityData, rankType)));
+            }
+            if (lastSelectedHero != null)
+            {
+                lastSelectedHero.OnSelectHero(false);
+            }
+            lastSelectedHero = null;
+            return;
+        }
+
         List<IRankDetailInfo> cellInfos = new List<IRankDetailInfo>();
         foreach (Transform child in rankRegionMain.transform)
         {
@@ -65,6 +88,34 @@ public class RankPanelManager : MonoBehaviour
             (cellInfos[i] as MonoBehaviour).gameObject.transform.SetSiblingIndex(i);
         }
         scrollRectMain.normalizedPosition = new Vector2(0, 1);
+    }
+
+    private int GetHeroVal(SaveHeroData h, string rankType)
+    {
+        if (h == null) return 0;
+        switch (rankType)
+        {
+            case "Str": return h.str;
+            case "Inte": return h.inte;
+            case "LeadShip": return h.leadShip;
+            case "Fair": return h.fair;
+            case "Charm": return h.charm;
+            default: return 0;
+        }
+    }
+
+    private int GetCityVal(SaveCityData c, string rankType)
+    {
+        if (c == null) return 0;
+        switch (rankType)
+        {
+            case "Level": return c.GetLevel();
+            case "Food": return Mathf.FloorToInt(c.food);
+            case "Soldier": return Mathf.FloorToInt(c.soldier);
+            case "Wall": return Mathf.FloorToInt(c.wall);
+            case "Happy": return Mathf.FloorToInt(c.happy);
+            default: return 0;
+        }
     }
 
     // 加载英雄排名
@@ -163,6 +214,12 @@ public class RankPanelManager : MonoBehaviour
         foreach (Transform child in rankRegionMain.transform)
             Destroy(child.gameObject);
 
+        // 切换前清理循环列表（若启用）
+        if (loopScrollMain != null && loopScrollMain.IsInitialized)
+        {
+            loopScrollMain.Clear();
+        }
+
         string modeName = lastSelectedMode.modeName.text;
         var prefabName = "RankCellMain";
         if(modeName == "势力城市" || modeName == "全城市")
@@ -181,52 +238,46 @@ public class RankPanelManager : MonoBehaviour
         rankHeader = newHeader;
         
         var rankCellInfoPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelListItem(prefabName));
+        float cellHeight = rankCellInfoPrefab.GetComponent<RectTransform>().sizeDelta.y;
 
         int count = 0;
         if (prefabName == "RankCellMain")
         {
-            List<int> heroList = new List<int>();
             var heroes = (modeName == "全武将")
                 ? GameManager.Instance.SaveData.heros
-                : GameManager.Instance.SaveData.heros.Where(h => h.forceId == lastSelectedForce.forceId);
+                : GameManager.Instance.SaveData.heros.Where(h => h.forceId == lastSelectedForce.forceId).ToList();
+
+            List<int> heroList = new List<int>();
             foreach (var heroData in heroes)
             {
-                GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
-                cell.transform.localScale = Vector3.one;
-
-                RankCellInfo cellInfo = cell.GetComponent<RankCellInfo>();
-                cellInfo.rankPanelManager = this;
-                cellInfo.SetMode(false);
-                if (cellInfo != null)
-                    cellInfo.Init(heroData);
-                count++;
                 heroList.Add(heroData.heroId);
             }
             mHeroList = heroList.ToArray();
+
+            // 势力武将 / 全武将 都走循环列表
+            List<object> dataSource = heroes.Cast<object>().ToList();
+            loopScrollMain.Initialize(dataSource, rankCellInfoPrefab, cellHeight, (cell) =>
+            {
+                if (cell is RankCellInfo info) info.SetManager(this);
+            });
+            count = loopScrollMain.GetTotalCount();
         }
         else if (prefabName == "RankCellMainCity")
         {
             var cities = (modeName == "全城市")
                 ? GameManager.Instance.SaveData.cities
                 : GameManager.Instance.GetCitiesByForce(lastSelectedForce.forceId);
-            foreach (var cityData in cities)
-            {
-                var cityConfig = WorldConfig.GetConfig(cityData.cityId);
-                if (cityConfig == null)
-                    continue;
-                
-                // 实例化RankCell
-                GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
-                cell.transform.localScale = Vector3.one;
 
-                // 获取RankCellInfo组件
-                RankCellInfoCity cellInfo = cell.GetComponent<RankCellInfoCity>();
-                cellInfo.rankPanelManager = this;
-                cellInfo.SetMode(false);
-                if (cellInfo != null)
-                    cellInfo.Init(cityData.cityId);
-                count++;
-            }
+            // 过滤掉 WorldConfig 中不存在的城市，保留原"势力城市"模式的安全性
+            var validCities = cities.Where(c => WorldConfig.GetConfig(c.cityId) != null).ToList();
+
+            // 势力城市 / 全城市 都走循环列表
+            List<object> dataSource = validCities.Cast<object>().ToList();
+            loopScrollMain.Initialize(dataSource, rankCellInfoPrefab, cellHeight, (cell) =>
+            {
+                if (cell is RankCellInfoCity cityInfo) cityInfo.SetManager(this);
+            });
+            count = loopScrollMain.GetTotalCount();
         }
         // 新增势力战力模式的处理
         else if (prefabName == "RankCellMainForce")
@@ -237,11 +288,9 @@ public class RankPanelManager : MonoBehaviour
                 if (forceData.isEliminated || GameManager.Instance.GetCitiesByForce(forceData.forceId).Count == 0)
                     continue;
                     
-                // 实例化 RankCell
                 GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
                 cell.transform.localScale = Vector3.one;
 
-                // 首先尝试获取 RankCellInfoForce 组件（如果预制体被正确配置）
                 RankCellInfoForce cellInfo = cell.GetComponent<RankCellInfoForce>();
                 cellInfo.rankPanelManager = this;
                 cellInfo.SetMode(false);
@@ -250,16 +299,17 @@ public class RankPanelManager : MonoBehaviour
             }
         }
 
-        // Get the RectTransform components
-         RectTransform rankParentRect = rankRegionMain.GetComponent<RectTransform>();
-         RectTransform cellRect = rankCellInfoPrefab.GetComponent<RectTransform>();
-           
-         if (rankParentRect != null && cellRect != null)
-         {
-             // Set the height of rankParent based on the number of cells
-             rankParentRect.sizeDelta = new Vector2(rankParentRect.sizeDelta.x, cellRect.sizeDelta.y * count);
-         }
-        // 确保scrollRect不为空，然后滚动到最前面
+        // 循环列表模式已自行设置 sizeDelta，跳过手动高度计算
+        if (loopScrollMain == null || !loopScrollMain.IsInitialized)
+        {
+            RectTransform rankParentRect = rankRegionMain.GetComponent<RectTransform>();
+            RectTransform cellRect = rankCellInfoPrefab.GetComponent<RectTransform>();
+            if (rankParentRect != null && cellRect != null)
+            {
+                rankParentRect.sizeDelta = new Vector2(rankParentRect.sizeDelta.x, cellRect.sizeDelta.y * count);
+            }
+        }
+
         if (scrollRectMain != null)
         {
             scrollRectMain.normalizedPosition = new Vector2(0, 1);
@@ -338,6 +388,10 @@ public class RankPanelManager : MonoBehaviour
 
     public void OnHide()
     {
+        if (loopScrollMain != null && loopScrollMain.IsInitialized)
+        {
+            loopScrollMain.Clear();
+        }
     }
 
 

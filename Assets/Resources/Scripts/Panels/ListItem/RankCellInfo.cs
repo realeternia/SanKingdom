@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using CommonConfig;
 
 
-public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IRankDetailInfo, IRankDetailInfoHeader
+public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IRankDetailInfo, IRankDetailInfoHeader, ILoopScrollItem
 {
     public RankPanelManager rankPanelManager;
 
@@ -165,7 +165,25 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
             ownerName.text = "";
         }
 
-        
+
+    }
+
+    public void BindData(object data)
+    {
+        if (data is SaveHeroData heroData)
+        {
+            SetMode(false);
+            Init(heroData);
+        }
+        else
+        {
+            GameLog.Warn($"RankCellInfo.BindData: 数据类型不匹配 data={data?.GetType().Name ?? "null"}");
+        }
+    }
+
+    public void OnReturnToPool()
+    {
+        OnSelectHero(false);
     }
 
 

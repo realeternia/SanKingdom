@@ -132,36 +132,38 @@ public class RankCellInfoForce : MonoBehaviour, IRankDetailInfo, IRankDetailInfo
         heroesValue = heroCount;
         forceHeroes.text = heroesValue.ToString();
         
-        // 统计城市的 Soldier、金钱和粮食
-        foreach (var city in cities)
-        {
-            totalSoldier += (int)Math.Floor(city.GetAttr("soldier"));
-        }
-        
-        int totalGold = 0;
+        // 统计城市的 Soldier 和粮食（city 属性，需累加各城市）
         int totalFood = 0;
         foreach (var city in cities)
         {
-            totalGold += (int)Math.Floor(city.GetAttr("gold"));
+            totalSoldier += (int)Math.Floor(city.GetAttr("soldier"));
             totalFood += (int)Math.Floor(city.GetAttr("food"));
         }
+
+        // gold 是 force 属性，直接从 forceData 获取
+        var forceData = GameManager.Instance.GetForce(forceId);
+        int totalGold = (int)Math.Floor(forceData.gold);
         
         // 存储原始值用于排序
         soldierValue = totalSoldier;
         goldValue = totalGold;
         foodValue = totalFood;
         
-        // 显示时转换为"百"单位
-        forceSoldier.text = FormatToBai(totalSoldier);
-        forceGold.text = FormatToBai(totalGold);
-        forceFood.text = FormatToBai(totalFood);
+        // 显示：<=300 精确显示，>300 精确到百级别
+        forceSoldier.text = FormatValue(totalSoldier);
+        forceGold.text = FormatValue(totalGold);
+        forceFood.text = FormatValue(totalFood);
     }
 
-    // 将数值转换为"百"单位的字符串
-    private string FormatToBai(int value)
+    // <=300 精确显示；>300 四舍五入到百级别
+    private string FormatValue(int value)
     {
-        int baiValue = value / 100;
-        return baiValue.ToString() + "百";
+        if (value <= 300)
+        {
+            return value.ToString();
+        }
+        int rounded = (int)Math.Round(value / 100.0) * 100;
+        return rounded.ToString();
     }
 
     // Update is called once per frame
