@@ -160,7 +160,7 @@ public class GmPanelManager : MonoBehaviour
 
     private void OnFair()
     {
-        PanelManager.Instance.ShowPopFairPanel(SystemConst.Fair.FORCE_DESTROY, 1);
+        PanelManager.Instance.ShowPopFairPanel("forceover", 1);
     }
 
     public void OnShow()

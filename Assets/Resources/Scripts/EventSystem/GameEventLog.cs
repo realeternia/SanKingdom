@@ -131,4 +131,19 @@ public class GameEventLog
         if (removed > 0)
             GameLog.Info("GameEventLog 过期清理移除 " + removed + " 条事件 (threshold round<" + threshold + ")");
     }
+
+    /// <summary>
+    /// 获取最近lookbackRounds回合内出现过的Fair事件ID集合
+    /// </summary>
+    public HashSet<int> GetRecentFairIds(int currentRound, int lookbackRounds)
+    {
+        var result = new HashSet<int>();
+        int minRound = currentRound - lookbackRounds + 1;
+        foreach (var evt in events)
+        {
+            if (evt.eventType == GameEventType.Fair && evt.round >= minRound && evt.round <= currentRound)
+                result.Add(evt.effectValue);
+        }
+        return result;
+    }
 }

@@ -599,7 +599,7 @@ public class PanelManager : MonoBehaviour
         popResultPanel = null;
     }
 
-    public void ShowPopFairPanel(int fairId, int forceId)
+    public void ShowPopFairPanel(string name, int forceId, List<int> cityIds = null)
     {
         if (popFairPanel == null)
         {
@@ -607,7 +607,7 @@ public class PanelManager : MonoBehaviour
         }
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         popFairPanel.SetActive(true);
-        popFairPanel.GetComponent<PopFairPanelManager>().Show(fairId, forceId);
+        popFairPanel.GetComponent<PopFairPanelManager>().Show(name, forceId, cityIds);
 
         ChangePanelCount(popFairPanel, true);
     }

@@ -79,7 +79,7 @@ namespace DesignCoder
             if (!match.Success) return;
 
             string body = match.Groups[1].Value;
-            var itemPattern = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""(\w+(?:\[\])?)""(?:\s*,\s*(\d+))?(?:\s*,\s*""([^""]*)"")?(?:\s*,\s*(true|false))?\s*\)\s*\}";
+            var itemPattern = @"\{\s*""(\w+)""\s*,\s*new\s+FieldMetaInfo\s*\(\s*""([^""]*)""\s*,\s*""([^""]+)""(?:\s*,\s*(\d+))?(?:\s*,\s*""([^""]*)"")?(?:\s*,\s*(true|false))?\s*\)\s*\}";
 
             var itemMatches = Regex.Matches(body, itemPattern);
             foreach (Match m in itemMatches)
@@ -143,7 +143,7 @@ namespace DesignCoder
 
         private static void ParseFields(string source, ConfigData data)
         {
-            string pattern = @"///\s*<summary>\s*\r?\n\s*///\s*(.*?)\s*\r?\n\s*///\s*</summary>\s*\r?\n\s*public\s+(\w+(?:\[\])?)\s+(\w+)\s*;";
+            string pattern = @"///\s*<summary>\s*\r?\n\s*///\s*(.*?)\s*\r?\n\s*///\s*</summary>\s*\r?\n\s*public\s+([\w<>]+(?:\[\])?)\s+(\w+)\s*;";
             var matches = Regex.Matches(source, pattern);
             foreach (Match m in matches)
             {

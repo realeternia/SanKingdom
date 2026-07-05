@@ -14,7 +14,8 @@ public enum GameEventType
     Capture,           // 被俘虏
     Wild,              // 下野（新发现英雄初始状态）
     Escape,            // 逃脱（intParam=目标城市 ID）
-    RecruitSuccess     // 招募成功（wild/catched → normal，force 变更）
+    RecruitSuccess,    // 招募成功（wild/catched → normal，force 变更）
+    Fair               // 天灾事件（effectValue=fairId, cityIds存储受影响城市）
 }
 
 [System.Serializable]
@@ -27,6 +28,7 @@ public class GameEventData
     public int forceId;
     public int relatedForceId;
     public int cityId;
+    public List<int> cityIds = new List<int>();
     public List<int> heroIds = new List<int>();
     public List<int> relatedHeroIds = new List<int>();
     public int devId;
@@ -48,6 +50,7 @@ public class GameEventData
     // Wild           = 0 / 0
     // Escape         = 0 / 0
     // RecruitSuccess = 0 / 0
+    // Fair           = fairId / 0
 
     private static int CalcYear(int round)
     {
@@ -243,6 +246,18 @@ public class GameEventData
             relatedForceId = oldForceId,
             cityId = cityId,
             heroIds = new List<int> { heroId }
+        };
+    }
+
+    public static GameEventData CreateFair(int round, int fairId, List<int> cityIds)
+    {
+        return new GameEventData
+        {
+            eventType = GameEventType.Fair,
+            year = CalcYear(round),
+            round = round,
+            cityIds = cityIds != null ? new List<int>(cityIds) : new List<int>(),
+            effectValue = fairId
         };
     }
 }

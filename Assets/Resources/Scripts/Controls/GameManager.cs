@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -150,6 +151,7 @@ public class GameManager : MonoBehaviour
     {
         GameEventLog.OnRoundEnd(SaveData.round);
         SaveData.OnRound();
+        TriggerSeasonFair();
         StartNextForceTurn();
 
         PanelManager.Instance.SendSignal(new RoundChangeSignal { Round = SaveData.round });
@@ -492,6 +494,140 @@ public class GameManager : MonoBehaviour
                 count++;
         }
         return count;
+    }
+
+    private void TriggerSeasonFair()
+    {
+        int round = SaveData.round;
+        int seasonId = SysFormula.Game.CalculateSeasonId(round);
+        var seasonCfg = SeasonConfig.GetConfig(seasonId);
+
+        if (seasonCfg.fairIdList == null || seasonCfg.fairIdList.Length == 0)
+            return;
+
+        // 1. 剔除最近一个月出现过的fair
+        var recentFairIds = GameEventLog.GetRecentFairIds(round - 1, SystemConst.Fair.RECENT_ROUNDS);
+        var candidateFairs = new List<int>();
+        var candidateRates = new List<float>();
+        for (int i = 0; i < seasonCfg.fairIdList.Length; i++)
+        {
+            int fairId = seasonCfg.fairIdList[i];
+            if (recentFairIds.Contains(fairId))
+                continue;
+            candidateFairs.Add(fairId);
+            float rate = i < seasonCfg.fairRateList.Length ? seasonCfg.fairRateList[i] : 0f;
+            candidateRates.Add(rate);
+        }
+
+        if (candidateFairs.Count == 0)
+            return;
+
+        // 2. 随机0-1，判断是否触发，同时加权随机选择一个fair
+        float totalRate = 0f;
+        foreach (var r in candidateRates)
+            totalRate += r;
+
+        float roll = SysRandom.Value;
+        if (roll > totalRate)
+            return;
+
+        float cumulative = 0f;
+        int selectedFairId = candidateFairs[0];
+        for (int i = 0; i < candidateFairs.Count; i++)
+        {
+            cumulative += candidateRates[i];
+            if (roll <= cumulative)
+            {
+                selectedFairId = candidateFairs[i];
+                break;
+            }
+        }
+
+        var fairCfg = FairConfig.GetConfig(selectedFairId);
+        GameLog.Info($"TriggerSeasonFair 触发天灾: {fairCfg.Name} round={round}");
+
+        // 4. 按FairConfig的Filter筛选城市：TagList包含Filter，且happy低于HappyLimit
+        var eligibleCities = new List<SaveCityData>();
+        var weights = new List<float>();
+        foreach (var city in SaveData.cities)
+        {
+            if (city.happy >= fairCfg.HappyLimit)
+                continue;
+
+            if (!string.IsNullOrEmpty(fairCfg.Filter))
+            {
+                var worldCfg = WorldConfig.GetConfig(city.cityId);
+                if (worldCfg.TagList == null)
+                    continue;
+                bool matchTag = false;
+                foreach (var tag in worldCfg.TagList)
+                {
+                    if (tag == fairCfg.Filter)
+                    {
+                        matchTag = true;
+                        break;
+                    }
+                }
+                if (!matchTag)
+                    continue;
+            }
+
+            eligibleCities.Add(city);
+            weights.Add(100f - city.happy);
+        }
+
+        if (eligibleCities.Count == 0)
+        {
+            GameLog.Info($"TriggerSeasonFair 无符合条件的城市（Filter={fairCfg.Filter} HappyLimit={fairCfg.HappyLimit}）");
+            return;
+        }
+
+        // 5. 加权随机3次，选1-3个不同城市
+        var selectedCities = new List<int>();
+        for (int iter = 0; iter < 3; iter++)
+        {
+            float weightSum = 0f;
+            foreach (var w in weights)
+                weightSum += w;
+            float pickWeight = SysRandom.Value * weightSum;
+            float cumulativeWeight = 0f;
+            int pickedIdx = -1;
+            for (int i = 0; i < eligibleCities.Count; i++)
+            {
+                cumulativeWeight += weights[i];
+                if (pickWeight <= cumulativeWeight)
+                {
+                    pickedIdx = i;
+                    break;
+                }
+            }
+            if (pickedIdx >= 0 && !selectedCities.Contains(eligibleCities[pickedIdx].cityId))
+            {
+                selectedCities.Add(eligibleCities[pickedIdx].cityId);
+            }
+        }
+
+        if (selectedCities.Count == 0)
+            return;
+
+        // 6. 施加城市惩罚：粮食减少10%，治安-10
+        foreach (var cityId in selectedCities)
+        {
+            var city = GetCity(cityId);
+            if (city == null)
+                continue;
+            float oldFood = city.food;
+            float oldHappy = city.happy;
+            city.MultiplyAttr("food", SystemConst.Fair.FOOD_REDUCE_RATE);
+            city.AddAttr("happy", -SystemConst.Fair.HAPPY_REDUCE, "天灾惩罚");
+            GameLog.Info($"TriggerSeasonFair cityId={cityId} food: {oldFood}→{city.food} happy: {oldHappy}→{city.happy}");
+        }
+
+        // 7. 记录事件
+        GameEventLog.RecordEvent(GameEventData.CreateFair(round, selectedFairId, selectedCities));
+
+        // 8. 显示面板
+        PanelManager.Instance.ShowPopFairPanel(fairCfg.Name, 0, selectedCities);
     }
 
 }

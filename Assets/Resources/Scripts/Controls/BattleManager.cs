@@ -1145,16 +1145,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private bool HasFriendlyTowerChess(int forceId)
-    {
-        foreach (var chess in chessList)
-        {
-            if (chess.isTower && chess.hp > 0 && chess.forceId == forceId)
-                return true;
-        }
-        return false;
-    }
-
     private bool HasFriendlyGateChess(int forceId)
     {
         foreach (var chess in chessList)
@@ -1168,7 +1158,7 @@ public class BattleManager : MonoBehaviour
     private void FreezeDefenders()
     {
         int defForceId = playerInfoList[1].forceId;
-        if (!HasFriendlyTowerChess(defForceId)) return;
+        if (!HasFriendlyGateChess(defForceId)) return;
         foreach (var chess in chessList)
         {
             if (chess.forceId == defForceId && !chess.isGate && !chess.isWall && !chess.isTower)
@@ -1179,13 +1169,12 @@ public class BattleManager : MonoBehaviour
     private void UnfreezeDefendersIfNoGates()
     {
         int defForceId = playerInfoList[1].forceId;
-        if (HasFriendlyGateChess(defForceId)) return;
         foreach (var chess in chessList)
         {
             if (chess.forceId == defForceId && !chess.isGate && !chess.isWall && !chess.isTower)
                 chess.noActionCount = 0;
         }
-        GameLog.Info("城门全灭，防御方开始行动");
+        GameLog.Info("城门被破，防御方开始行动");
     }
 
     private bool IsGridOccupiedByOtherOrObstacle(int gx, int gz, int unitId)
@@ -1220,8 +1209,8 @@ public class BattleManager : MonoBehaviour
             BattleStatManager.SetHeroDead(dieUnit.forceId, dieUnit.heroId);
         }
 
-        // 城门/箭塔死亡：检查是否解冻防御方
-        if (dieUnit.isGate || dieUnit.isTower)
+        // 城门死亡：解冻防御方
+        if (dieUnit.isGate)
         {
             UnfreezeDefendersIfNoGates();
         }

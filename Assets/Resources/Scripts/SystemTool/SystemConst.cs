@@ -593,14 +593,6 @@ public static class SystemConst
         public const int CITY_DAY_MAX = 3;
     }
 
-    public static class Fair
-    {
-        /// <summary>
-        /// 势力灭亡事件ID
-        /// </summary>
-        public const int FORCE_DESTROY = 1;
-    }
-
     public static class Diplomacy
     {
         public const int RELATION_MIN = 1;
@@ -612,5 +604,25 @@ public static class SystemConst
         public const int PEACE_IMPROVE_NON_ADJACENT = 1;
         public const int BATTLE_RISE_MIN = 3;
         public const int BATTLE_RISE_MAX = 8;
+    }
+
+    public static class Fair
+    {
+        /// <summary>
+        /// 治安阈值，>=此值的城市不参与灾害随机
+        /// </summary>
+        public const int HAPPY_THRESHOLD = 90;
+        /// <summary>
+        /// 灾害触发时治安减少值
+        /// </summary>
+        public const int HAPPY_REDUCE = 10;
+        /// <summary>
+        /// 灾害触发时粮食乘数（0.9 = 减少10%）
+        /// </summary>
+        public const float FOOD_REDUCE_RATE = 0.9f;
+        /// <summary>
+        /// 最近N回合内出现过的fair不再触发（1个月=3旬）
+        /// </summary>
+        public const int RECENT_ROUNDS = 3;
     }
 }

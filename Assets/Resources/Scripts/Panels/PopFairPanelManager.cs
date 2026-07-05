@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -27,12 +28,11 @@ public class PopFairPanelManager : MonoBehaviour
         });
     }
 
-    public void Show(int fairId, int forceId)
+    public void Show(string name, int forceId, List<int> cityIds = null)
     {
-        this.fairId = fairId;
         IsShowing = true;
 
-        var fairCfg = FairConfig.GetConfig(fairId);
+        var fairCfg = FairConfig.GetConfigByName(name);
         titleText.text = fairCfg.Title;
 
         if (!string.IsNullOrEmpty(fairCfg.Image))
@@ -46,11 +46,25 @@ public class PopFairPanelManager : MonoBehaviour
             BGMPlayer.Instance.PlaySound("Sounds/" + fairCfg.Bg);
         }
 
-        var forceCfg = ForceConfig.GetConfig(forceId);
-        Color forceColor = SysColor.GetForceColor(forceId);
-        string colorHex = ColorUtility.ToHtmlStringRGB(forceColor);
-        string forceName = $"<color=#{colorHex}>{forceCfg.Cname}</color>";
-        fairDesText.text = fairCfg.Des.Replace("{forceName}", forceName);
+        string desText = fairCfg.Des;
+        if (desText.Contains("{forceName}"))
+        {
+            var forceCfg = ForceConfig.GetConfig(forceId);
+            Color forceColor = SysColor.GetForceColor(forceId);
+            string colorHex = ColorUtility.ToHtmlStringRGB(forceColor);
+            string forceName = $"<color=#{colorHex}>{forceCfg.Cname}</color>";
+            desText = desText.Replace("{forceName}", forceName);
+        }
+        if (desText.Contains("{cityList}") && cityIds != null && cityIds.Count > 0)
+        {
+            var cityNames = new List<string>();
+            foreach (var cid in cityIds)
+            {
+                cityNames.Add(ConfigNameHelper.GetCityName(cid));
+            }
+            desText = desText.Replace("{cityList}", string.Join(",", cityNames));
+        }
+        fairDesText.text = desText;
     }
 
     public void SetOnClose(Action callback)

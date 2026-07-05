@@ -523,9 +523,6 @@ public class MainPanelManager : MonoBehaviour, IPanelEvent
                 worldPieces[i].UpdateDisplay();
             }
 
-            if(seasonCfg.Video != "")
-                videoPanelManager.Play(seasonCfg.Video);
-
             MoveToPlayerCapital();
         }
         else if(data.Name == "AICheck")
