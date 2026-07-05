@@ -832,7 +832,7 @@ public class SaveForceData
         MarkHeroesActed(heroIds);
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionTrade(
-            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroIds, buySoldier));
+            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroIds, buySoldier, totalGain));
 
         GameLog.Info($"ExecuteCityTrade cityId={cityId} heroCount={heroCount} buySoldier={buySoldier} totalCost={totalCost} totalGain={totalGain}");
         return true;
@@ -881,6 +881,9 @@ public class SaveForceData
         }
 
         int heroCount = heroIds.Length;
+        int searchResultType = 0;
+        int totalResourceAmount = 0;
+        var discoveredHeroIds = new List<int>();
 
         foreach (var heroId in heroIds)
         {
@@ -928,9 +931,14 @@ public class SaveForceData
             if (selected.ResType == "findhero" || selected.ResType == "findherostar")
             {
                 bool starHero = selected.ResType == "findherostar";
+                if (starHero)
+                    searchResultType = System.Math.Max(searchResultType, 4);
+                else
+                    searchResultType = System.Math.Max(searchResultType, 3);
                 var newHero = FindUndiscoveredHero(cityId, starHero);
                 if (newHero != null)
                 {
+                    discoveredHeroIds.Add(newHero.heroId);
                     string heroName = HeroConfig.GetConfig(newHero.heroId).Name;
                     attrDatas.Add(new PopResultPanelManager.AttrData()
                     {
@@ -944,9 +952,11 @@ public class SaveForceData
                 var attrCfg = CityAttrConfig.GetConfig(selected.ResId);
                 int amount = SysRandom.Range(selected.AttrValMin, selected.AttrValMax + 1);
                 string attrName = attrCfg.name;
+                totalResourceAmount += amount;
 
                 if (selected.ResType == "cityattr")
                 {
+                    searchResultType = System.Math.Max(searchResultType, 1);
                     var heroCity = GameManager.Instance.GetCity(heroData.cityId);
                     if (heroCity == null)
                     {
@@ -958,7 +968,10 @@ public class SaveForceData
                     }
                 }
                 else
+                {
+                    searchResultType = System.Math.Max(searchResultType, 2);
                     AddAttr(attrName, amount, "走访发现");
+                }
 
                 attrDatas.Add(new PopResultPanelManager.AttrData()
                 {
@@ -973,7 +986,7 @@ public class SaveForceData
         MarkHeroesActed(heroIds);
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionSearch(
-            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroIds));
+            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroIds, searchResultType, totalResourceAmount, discoveredHeroIds));
 
         GameLog.Info($"ExecuteCitySearch cityId={cityId} heroCount={heroCount}");
         return true;
@@ -1203,6 +1216,7 @@ public class SaveForceData
 
         // 根据 devId 推导 methodId：21206=奖赏(methodId=2)，其余=褒奖(methodId=1)
         int methodId = (devId == SystemConst.CityDev.PRAISE_PAID_DEV_ID) ? 2 : 1;
+        int totalLoyaltyAdd = 0;
 
         foreach(var heroId in heroList)
         {
@@ -1220,12 +1234,14 @@ public class SaveForceData
             }
 
             hero.loyalty = System.Math.Min(SystemConst.Hero.MAX_LOYALTY, hero.loyalty + loyaltyAdd);
+            int actualAdd = hero.loyalty - loyaltyOld;
+            totalLoyaltyAdd += actualAdd;
 
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attrStr = HeroConfig.GetConfig(heroId).Name + "忠心",
                 valOld = loyaltyOld,
-                valAddon = hero.loyalty - loyaltyOld,
+                valAddon = actualAdd,
             });
         }
 
@@ -1234,7 +1250,7 @@ public class SaveForceData
         MarkHeroesActed(heroList);
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionPraise(
-            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroList, methodId));
+            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroList, methodId, totalLoyaltyAdd));
 
         return true;
     }

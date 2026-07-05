@@ -41,6 +41,14 @@ public class HeroInfoPanelManager : MonoBehaviour
     
     private List<ArmsItemControl> armsItems = new List<ArmsItemControl>();
 
+    public Button buttonBasePage;
+    public Button buttonEventPage;
+    public TMP_Text eventDescText;
+
+    public GameObject panelBase;
+    public GameObject panelEvent;
+    public GameObject panelArms;
+
     public Button closeBtn;
 
     private HeroInfoCell lastSelectedMode; // 上次选中的模式单元格
@@ -50,17 +58,44 @@ public class HeroInfoPanelManager : MonoBehaviour
     private int[] currentHeroList;
     private int currentTargetHeroId;
 
+    public ScrollRect scrollRectEvent;
+    public GameObject rankRegionEvent;
+
+    private LoopScrollRect loopScrollEvent;
+
     private static readonly string[] SortOptions = { "所在", "兵种", "统帅", "武力", "智力", "内政", "魅力" };
     private static readonly string[] SortAttrKeys = { "City", "Arms", "leadShip", "str", "inte", "fair", "charm" };
 
     private void Start()
     {
         closeBtn.onClick.AddListener(() =>
-        {      
+        {
             PanelManager.Instance.HideHeroInfoPanel();
         });
-        
+
+        buttonBasePage.onClick.AddListener(() => ShowPage(true));
+        buttonEventPage.onClick.AddListener(() => ShowPage(false));
+
         InitTypeDropdown();
+
+        if (scrollRectEvent != null)
+        {
+            loopScrollEvent = new LoopScrollRect(scrollRectEvent);
+        }
+
+        ShowPage(true);
+    }
+
+    private void ShowPage(bool isBasePage)
+    {
+        if (panelBase != null) panelBase.SetActive(isBasePage);
+        if (panelArms != null) panelArms.SetActive(isBasePage);
+        if (panelEvent != null) panelEvent.SetActive(!isBasePage);
+
+        if (!isBasePage && currentTargetHeroId > 0)
+        {
+            UpdateEventList(currentTargetHeroId);
+        }
     }
     
     private void InitTypeDropdown()
@@ -268,17 +303,61 @@ public class HeroInfoPanelManager : MonoBehaviour
         {
             lastSelectedMode.SetSelected(false);
         }
-        
+
         cellMode.SetSelected(true);
-        
+
         lastSelectedMode = cellMode;
-        
+
         heroId = cellMode.heroId;
         currentTargetHeroId = cellMode.heroId;
-        
+
         ScrollToCell(cellMode);
-        
+
         UpdateHeroInfo(heroId);
+        UpdateEventList(heroId);
+    }
+
+    private void UpdateEventList(int targetHeroId)
+    {
+        if (loopScrollEvent == null)
+        {
+            GameLog.Warn("UpdateEventList: loopScrollEvent 为 null");
+            return;
+        }
+
+        var eventLog = GameManager.Instance?.GameEventLog;
+        if (eventLog == null)
+        {
+            GameLog.Warn("UpdateEventList: GameEventLog 为 null");
+            if (eventDescText != null) eventDescText.text = "事件(0)";
+            return;
+        }
+
+        var heroEvents = eventLog.events
+            .Where(e => e.heroIds != null && e.heroIds.Contains(targetHeroId))
+            .OrderBy(e => e.round)
+            .ToList();
+
+        if (eventDescText != null) eventDescText.text = "事件(" + heroEvents.Count + ")";
+
+        List<object> dataSource;
+        if (heroEvents.Count == 0)
+        {
+            dataSource = new List<object> { "<color=#888888>暂无事件</color>" };
+        }
+        else
+        {
+            dataSource = heroEvents.Cast<object>().ToList();
+        }
+
+        var heroEventCellPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.PanelListItem("HeroEventCell"));
+        float cellHeight = heroEventCellPrefab.GetComponent<RectTransform>().sizeDelta.y;
+        loopScrollEvent.Initialize(dataSource, heroEventCellPrefab, cellHeight);
+
+        if (scrollRectEvent != null)
+        {
+            scrollRectEvent.normalizedPosition = new Vector2(0, 1);
+        }
     }
 
     private void ScrollToCell(HeroInfoCell cellMode)
@@ -477,6 +556,10 @@ public class HeroInfoPanelManager : MonoBehaviour
 
     public void OnHide()
     {
+        if (loopScrollEvent != null && loopScrollEvent.IsInitialized)
+        {
+            loopScrollEvent.Clear();
+        }
     }
 
 }

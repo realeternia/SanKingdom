@@ -73,6 +73,21 @@ Unity (C#) | JsonUtility | UGUI | TextMeshPro
 
 `TurnPhase.None` → `Planning` → `Execution` → `Battle` → 回合结束
 
+### 事件系统 - GameEventLog
+
+与 `SaveData` 平级挂载于 `GameManager`，独立 `game_events.json` 存取，生命周期同步 SaveData。
+
+- **数据类**：`GameEventData`（`EventSystem/GameEventData.cs`），全 int 字段，无 string。`effectValue`/`effectValue2` 按 eventType 区分语义
+- **日志类**：`GameEventLog`（`EventSystem/GameEventLog.cs`），提供 `RecordEvent` 入口和生命周期方法
+- **工厂方法**：`GameEventData.CreateXxx(...)`，禁止直接 new GameEventData 手动赋值
+- **记录时机**：
+  - 战斗：ExecuteBattle 记 BattleAttack+BattleDefend，OnBattleEnd 记 BattleResult
+  - KingAction：各 ExecuteCityXxx 方法内立即记录
+  - 状态变化：Catched/Wild/Escape/RecruitSuccess 在状态变更点立即记录
+  - Dev 委派：不在 SetDevAssignment/RemoveDevAssignment 记录，回合末 OnRoundEnd 通过快照 diff 仅记录净变化（assign/cancel/change）
+- **过期清理**：OnRoundEnd 从队列头移除 `round < currentRound - SEASONS_PER_YEAR` 的事件
+- **Dev 快照**：`lastDevSnapshot` 标记 `[NonSerialized]`，加载后由 `InitLoadedData` 从当前 SaveData 重建
+
 ### 面板信号系统
 
 基类 `SignalData`（Name 字段）+ 派生类（专属字段），通过 `PanelManager.SendSignal` 分发。

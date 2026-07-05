@@ -31,6 +31,23 @@ public class GameEventData
     public List<int> relatedHeroIds = new List<int>();
     public int devId;
     public int intParam;
+    public int effectValue;
+    public int effectValue2;
+
+    // effectValue / effectValue2 语义表（按 eventType）：
+    // BattleAttack   = 0 / 0
+    // BattleDefend   = 0 / 0
+    // BattleResult   = 0 / 0
+    // Dev            = 0 / 0
+    // KingActionMove = 0 / 0
+    // KingActionTrade= totalGain / 0
+    // KingActionSearch= searchResultType(0=无 1=cityattr 2=forceattr 3=findhero 4=findherostar) / 资源总量
+    // KingActionRecruit= 0 / 0
+    // KingActionPraise= totalLoyaltyAdd / 0
+    // Capture        = 0 / 0
+    // Wild           = 0 / 0
+    // Escape         = 0 / 0
+    // RecruitSuccess = 0 / 0
 
     private static int CalcYear(int round)
     {
@@ -110,7 +127,7 @@ public class GameEventData
         };
     }
 
-    public static GameEventData CreateKingActionTrade(int round, int forceId, int cityId, int devId, int[] heroIds, bool buySoldier)
+    public static GameEventData CreateKingActionTrade(int round, int forceId, int cityId, int devId, int[] heroIds, bool buySoldier, int totalGain)
     {
         return new GameEventData
         {
@@ -121,11 +138,12 @@ public class GameEventData
             cityId = cityId,
             heroIds = heroIds != null ? new List<int>(heroIds) : new List<int>(),
             devId = devId,
-            intParam = buySoldier ? 1 : 0
+            intParam = buySoldier ? 1 : 0,
+            effectValue = totalGain
         };
     }
 
-    public static GameEventData CreateKingActionSearch(int round, int forceId, int cityId, int devId, int[] heroIds)
+    public static GameEventData CreateKingActionSearch(int round, int forceId, int cityId, int devId, int[] heroIds, int searchResultType, int totalResourceAmount, List<int> discoveredHeroIds)
     {
         return new GameEventData
         {
@@ -135,7 +153,10 @@ public class GameEventData
             forceId = forceId,
             cityId = cityId,
             heroIds = heroIds != null ? new List<int>(heroIds) : new List<int>(),
-            devId = devId
+            relatedHeroIds = discoveredHeroIds != null ? new List<int>(discoveredHeroIds) : new List<int>(),
+            devId = devId,
+            effectValue = searchResultType,
+            effectValue2 = totalResourceAmount
         };
     }
 
@@ -154,7 +175,7 @@ public class GameEventData
         };
     }
 
-    public static GameEventData CreateKingActionPraise(int round, int forceId, int cityId, int devId, int[] heroIds, int methodId)
+    public static GameEventData CreateKingActionPraise(int round, int forceId, int cityId, int devId, int[] heroIds, int methodId, int totalLoyaltyAdd)
     {
         return new GameEventData
         {
@@ -165,7 +186,8 @@ public class GameEventData
             cityId = cityId,
             heroIds = heroIds != null ? new List<int>(heroIds) : new List<int>(),
             devId = devId,
-            intParam = methodId
+            intParam = methodId,
+            effectValue = totalLoyaltyAdd
         };
     }
 

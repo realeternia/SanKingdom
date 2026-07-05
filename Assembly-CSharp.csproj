@@ -271,6 +271,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSuck.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityPraisePanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\MapConfig.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\HeroEventCellItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffTimeDamage.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUIToolkit.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUtils.cs" />
