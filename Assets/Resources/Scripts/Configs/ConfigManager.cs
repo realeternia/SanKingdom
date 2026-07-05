@@ -33,6 +33,7 @@ public static class ConfigManager
         SystemAttrConfig.Load();
         SeasonConfig.Load();
         CityDevSearchConfig.Load();
+        FairConfig.Load();
         
         ConfigManager.PostModify();      
 

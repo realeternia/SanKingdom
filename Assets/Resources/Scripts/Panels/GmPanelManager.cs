@@ -9,6 +9,7 @@ public class GmPanelManager : MonoBehaviour
     public Button fightBtn;
     public Button fightQuickBtn;
     public Button beAttackBtn;
+    public Button fairBtn;
     public Button closeBtn;
 
     void Start()
@@ -16,6 +17,7 @@ public class GmPanelManager : MonoBehaviour
         fightBtn.onClick.AddListener(OnFight);
         fightQuickBtn.onClick.AddListener(OnFightQuick);
         beAttackBtn.onClick.AddListener(OnBeAttack);
+        fairBtn.onClick.AddListener(OnFair);
         closeBtn.onClick.AddListener(() =>
         {
             PanelManager.Instance.HideGmPanel();
@@ -154,6 +156,11 @@ public class GmPanelManager : MonoBehaviour
 
         GameManager.Instance.StartTestDefense(attackerForce, targetCity.cityId,
             new List<int> { srcCity.cityId }, attackTroops, attackSoldierMap);
+    }
+
+    private void OnFair()
+    {
+        PanelManager.Instance.ShowPopFairPanel(SystemConst.Fair.FORCE_DESTROY, 1);
     }
 
     public void OnShow()

@@ -156,6 +156,7 @@
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackHitAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\PopFairPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysFormula.cs" />
     <Compile Include="Assets\Resources\Scripts\EventSystem\GameEventLog.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityMovePanelManager.cs" />
@@ -273,6 +274,7 @@
     <Compile Include="Assets\Resources\Scripts\PO\MapConfig.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\HeroEventCellItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffTimeDamage.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\FairConfig_s.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUIToolkit.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUtils.cs" />
     <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfoHeader.cs" />

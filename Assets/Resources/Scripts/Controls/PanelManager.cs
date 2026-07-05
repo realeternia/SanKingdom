@@ -27,6 +27,7 @@ public class PanelManager : MonoBehaviour
     private GameObject citySearchPanel;
 
     private GameObject popResultPanel;
+    private GameObject popFairPanel;
     private GameObject heroInfoPanel;
     private GameObject battleResultPanel;
     private GameObject replayPanel;
@@ -597,6 +598,31 @@ public class PanelManager : MonoBehaviour
         Destroy(popResultPanel);
         popResultPanel = null;
     }
+
+    public void ShowPopFairPanel(int fairId, int forceId)
+    {
+        if (popFairPanel == null)
+        {
+            popFairPanel = Instantiate(ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("PopFairPanel")), transform);
+        }
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        popFairPanel.SetActive(true);
+        popFairPanel.GetComponent<PopFairPanelManager>().Show(fairId, forceId);
+
+        ChangePanelCount(popFairPanel, true);
+    }
+
+    public void HidePopFairPanel()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        popFairPanel.SetActive(false);
+        popFairPanel.GetComponent<PopFairPanelManager>().OnHide();
+
+        ChangePanelCount(popFairPanel, false);
+        Destroy(popFairPanel);
+        popFairPanel = null;
+    }
+
     public void ShowHeroInfoPanel(int[] heroList, int targetHeroId)
     {
         if (heroInfoPanel == null)

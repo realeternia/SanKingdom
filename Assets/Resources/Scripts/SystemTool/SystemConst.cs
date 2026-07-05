@@ -593,6 +593,14 @@ public static class SystemConst
         public const int CITY_DAY_MAX = 3;
     }
 
+    public static class Fair
+    {
+        /// <summary>
+        /// 势力灭亡事件ID
+        /// </summary>
+        public const int FORCE_DESTROY = 1;
+    }
+
     public static class Diplomacy
     {
         public const int RELATION_MIN = 1;

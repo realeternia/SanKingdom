@@ -513,6 +513,7 @@ public class SaveCityData
             if (force != null)
             {
                 force.isEliminated = true;
+                PanelManager.Instance.ShowPopFairPanel(SystemConst.Fair.FORCE_DESTROY, forceLose);
             }
             GameLog.Info($"Occupy 势力 {forceLose} 已被消灭，所有英雄被俘虏");
         }

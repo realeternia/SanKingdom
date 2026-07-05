@@ -250,6 +250,11 @@ public class GameManager : MonoBehaviour
                 {
                     yield return new WaitForSeconds(0.1f);
                 }
+
+                while (PopFairPanelManager.IsShowing)
+                {
+                    yield return null;
+                }
             }
         }
         
