@@ -217,6 +217,16 @@ public class BattleManager : MonoBehaviour
         GameLog.Info($"ReplayBattle replayBattleId={replayBattleId}");
         SkillManager.isReplay = true;
 
+        // 清除LoadFromFile恢复的城门/墙棋子视图（GameUpdate中会重建）
+        foreach (var chess in chessList)
+        {
+            if ((chess.isGate || chess.isWall) && chess.viewObj != null)
+            {
+                chess.viewObj.DestroyHUD();
+                UnityEngine.Object.Destroy(chess.viewObj.gameObject);
+            }
+        }
+
         chessList.Clear();
         missileList.Clear();
         gridOccupancy.Clear();
@@ -491,7 +501,7 @@ public class BattleManager : MonoBehaviour
         return id;
     }
 
-    private void SpawnTroopForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, SaveTroopsData troop, int soldierCount)
+    private void SpawnTroopForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, SaveTroopsData troop, int soldierCount, int noActionCount = 0)
     {
         if (troop.heroId1 <= 0)
             return;
@@ -506,6 +516,7 @@ public class BattleManager : MonoBehaviour
             troop.heroId1, troop.heroId2, troop.heroId3, 
             heroData1.GetLevel(), 
             soldierCount, troop.armsId, atk, def, inte, spawnPoint);
+        action.NoActionCount = noActionCount;
         AddChessAction(action);
     }
 
@@ -514,7 +525,7 @@ public class BattleManager : MonoBehaviour
     public void SortTurnOrder()
     {
         turnOrder.Clear();
-        var aliveChess = chessList.Where(x => x != null && x.hp > 0 && !x.isShadow).ToList();
+        var aliveChess = chessList.Where(x => x != null && x.hp > 0 && !x.isShadow && !x.isGate && !x.isWall).ToList();
         aliveChess.Sort((a, b) =>
         {
             int speedCompare = b.moveSpeed.CompareTo(a.moveSpeed);
@@ -549,6 +560,7 @@ public class BattleManager : MonoBehaviour
                     currentTurnIndex = 0;
                     if (showUI)
                         BattleInfoTop.Instance.UpdateRound(round, MaxRound);
+                    AddChessAction(new RoundUpdateAction(0, tickIndex, round));
                     // 回合开始：检查Buff过期
                     foreach (var chess in chessList.ToArray())
                     {
@@ -700,7 +712,8 @@ public class BattleManager : MonoBehaviour
                 {
                     if (replay)
                     {
-                        // 回放模式：跳过InitSummon，棋子由保存的CreateChessAction恢复
+                        // 回放模式：跳过InitSummon和InitWallsAndGates
+                        // 所有棋子（含墙/门）由保存的CreateChessAction恢复
                         battleInitialized = true;
                     }
                     else
@@ -708,6 +721,7 @@ public class BattleManager : MonoBehaviour
                         if (waitTick > 0 && tickIndex >= waitTick)
                         {
                             InitSummon(magicHelperUnitId, attackSoldierMap, defenderSoldierMap);
+                            InitWallsAndGates();
                             waitTick = 0;
                         }
 
@@ -719,6 +733,7 @@ public class BattleManager : MonoBehaviour
                                 SkillManager.BattleBegin(chess);
                             battleBeginTick = 0;
                             battleInitialized = true;
+                            FreezeDefenders();
                             turnPhase = BattleTurnPhase.RoundStart;
                         }
                     }
@@ -814,6 +829,7 @@ public class BattleManager : MonoBehaviour
         }
 
         ResourceCache.ClearBattleCache();
+
         IsBattleRunning = false;
         currentBattleCoroutine = null;
     }
@@ -823,8 +839,9 @@ public class BattleManager : MonoBehaviour
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var player2 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
 
-        // 防守方出生点：远程兵种固定放第二排(row=1)，近战先放第一排(row=0)再放第三排(row=2)
-        int defMeleeR0Col = 0, defMeleeR2Col = 0, defRangedCol = 0;
+        // 防守方出生点：退到城墙后第二排(row=2)待机
+        int defCol = 0;
+        int cols = SystemConst.Battle.DEPLOY_GRID_COLS;
         int count = Math.Min(defenderTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++)
         {
@@ -836,12 +853,13 @@ public class BattleManager : MonoBehaviour
             }
             else
             {
-                spawnPos = GetAISpawnPosition(defenderTroops, i, 2, ref defMeleeR0Col, ref defMeleeR2Col, ref defRangedCol);
+                spawnPos = GetSpawnPosition(2, 2, defCol % cols);
+                defCol++;
             }
             var tick = tickIndex + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, spawnPos, "SoftFireBigRed", 0.7f);
             AddChessAction(eff);
-            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, spawnPos, defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0);
+            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, spawnPos, defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0, noActionCount: 99999);
         }
 
         // 攻击方出生点：远程兵种固定放第二排(row=1)，近战先放第一排(row=0)再放第三排(row=2)
@@ -1041,7 +1059,87 @@ public class BattleManager : MonoBehaviour
     public bool IsPositionFree(Chess unit, Vector3 targetPosition)
     {
         var (gx, gz) = WorldToGridCoord(targetPosition);
-        return !IsGridOccupiedByOther(gx, gz, unit.id);
+        if (IsGridOccupiedByOther(gx, gz, unit.id))
+            return false;
+        if (IsGridBlockedByObstacle(gx, gz, unit.forceId))
+            return false;
+        return true;
+    }
+
+    /// <summary>
+    /// 检查目标格子是否被敌方墙/城门阻挡（墙阻挡所有人，城门只阻挡敌方）
+    /// </summary>
+    public bool IsGridBlockedByObstacle(int gx, int gz, int moverForceId)
+    {
+        foreach (var chess in chessList)
+        {
+            if (chess.hp <= 0 || (!chess.isGate && !chess.isWall)) continue;
+            var (cgx, cgz) = WorldToGridCoord(chess.position);
+            if (cgx == gx && cgz == gz)
+            {
+                if (chess.isWall) return true; // 墙阻挡所有人
+                if (chess.isGate && chess.forceId != moverForceId) return true; // 城门阻挡敌方
+                return false; // 友方城门放行
+            }
+        }
+        return false;
+    }
+
+    private void InitWallsAndGates()
+    {
+        int gx = SystemConst.Battle.DEPLOY_SIDE2_BASE_GX - 1;
+        int baseGz = SystemConst.Battle.DEPLOY_SIDE2_BASE_GZ;
+        int cols = SystemConst.Battle.DEPLOY_GRID_COLS;
+        var defForce = GameManager.Instance.GetForce(playerInfoList[1].forceId);
+
+        for (int i = 0; i < cols; i++)
+        {
+            int gz = baseGz + i;
+            var (gridX, gridZ) = WorldToGridCoord(GridCoordToWorld(gx, gz));
+            if (IsGridOccupiedByOtherOrObstacle(gridX, gridZ, -1)) continue;
+
+            int unitId = (i == 1 || i == 3) ? SystemConst.Battle.GATE_UNIT_ID : SystemConst.Battle.WALL_UNIT_ID;
+            SpawnUnitsForRegion(defForce, unitId, GridCoordToWorld(gx, gz), 0f);
+        }
+    }
+
+    private bool HasFriendlyGateChess(int forceId)
+    {
+        foreach (var chess in chessList)
+        {
+            if (chess.isGate && chess.hp > 0 && chess.forceId == forceId)
+                return true;
+        }
+        return false;
+    }
+
+    private void FreezeDefenders()
+    {
+        int defForceId = playerInfoList[1].forceId;
+        if (!HasFriendlyGateChess(defForceId)) return;
+        foreach (var chess in chessList)
+        {
+            if (chess.forceId == defForceId && !chess.isGate && !chess.isWall)
+                chess.noActionCount = 99999;
+        }
+    }
+
+    private void UnfreezeDefendersIfNoGates()
+    {
+        int defForceId = playerInfoList[1].forceId;
+        if (HasFriendlyGateChess(defForceId)) return;
+        foreach (var chess in chessList)
+        {
+            if (chess.forceId == defForceId && !chess.isGate && !chess.isWall)
+                chess.noActionCount = 0;
+        }
+        GameLog.Info("城门全灭，防御方开始行动");
+    }
+
+    private bool IsGridOccupiedByOtherOrObstacle(int gx, int gz, int unitId)
+    {
+        if (IsGridOccupiedByOther(gx, gz, unitId)) return true;
+        return IsGridBlockedByObstacle(gx, gz, -1);
     }
 
     public bool MoveTo(Chess unit, Vector3 targetPosition, bool isForce = false)
@@ -1070,6 +1168,12 @@ public class BattleManager : MonoBehaviour
             BattleStatManager.SetHeroDead(dieUnit.forceId, dieUnit.heroId);
         }
 
+        // 城门死亡：检查是否解冻防御方
+        if (dieUnit.isGate)
+        {
+            UnfreezeDefendersIfNoGates();
+        }
+
         chessList.Remove(dieUnit);
 
         // 回放模式由replayMaxTick控制结束，不修改gameFinish
@@ -1084,7 +1188,7 @@ public class BattleManager : MonoBehaviour
         var unit = GameManager.Instance.GetHero(dieUnit.heroId);
         foreach (var chessComponent in chessList)
         {
-            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
+            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow && !chessComponent.isGate && !chessComponent.isWall)
             {
                 int sideIndex = -1;
                 for (int i = 0; i < playerInfoList.Count; i++)
@@ -1137,7 +1241,7 @@ public class BattleManager : MonoBehaviour
         List<Chess> unitsInRange = new List<Chess>();
         foreach (var chessComponent in chessList)
         {
-            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
+            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow && !chessComponent.isWall)
             {
                 Vector2Int chessPos = WorldToGridPosition(chessComponent.position, true);
                 if (Vector2Int.Distance(center, chessPos) <= range || range == 0)

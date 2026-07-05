@@ -25,7 +25,7 @@ public class RemoveChessAction : ChessAction
                 ownerChess.viewObj = null;
             }
 
-            if ((ownerChess.forceId == 1 || ownerChess.forceId == 2) && !ownerChess.isShadow && BattleManager.Instance.showUI)
+            if ((ownerChess.forceId == 1 || ownerChess.forceId == 2 || ownerChess.isGate) && !ownerChess.isShadow && BattleManager.Instance.showUI)
                 BGMPlayer.Instance.PlaySound("Sounds/tnt", 7);
 
             BattleManager.Instance.ReleaseGrid(ownerChess.id);

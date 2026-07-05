@@ -65,9 +65,14 @@ public static class ResPath
             return "Prefabs/BattleMaps/Map" + mapId;
         }
 
+        public static string BattleItem(string itemName)
+        {
+            return "Prefabs/BattleItems/" + itemName;
+        }
+
         public static string UnitModel(string model)
         {
-            return "Prefabs/" + model;
+            return "Prefabs/BattleItems/" + model;
         }
 
         public static string Arms(string armsType)
@@ -97,7 +102,7 @@ public static class ResPath
 
         public static string MissileCom()
         {
-            return "Prefabs/MissileCom";
+            return "Prefabs/BattleItems/MissileCom";
         }
 
         public static string MissileEffect(string effectName)

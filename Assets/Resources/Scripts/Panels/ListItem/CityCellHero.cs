@@ -71,66 +71,28 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
 
         if (isCommander)
         {
-            if (job1 != null)
-            {
-                job1.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon("citytroop1"));
-                job1.gameObject.SetActive(true);
-            }
+            SetJobIcon(job1, "citytroop1");
         }
         else if (devId.HasValue)
         {
-            if (job1 != null)
-            {
-                var devCfg = CityDevConfig.GetConfig(devId.Value);
-                if (devCfg != null && !string.IsNullOrEmpty(devCfg.DevAttr1))
-                {
-                    var attrCfg = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower());
-                    if (attrCfg != null && !string.IsNullOrEmpty(attrCfg.Icon))
-                    {
-                        job1.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(attrCfg.Icon));
-                    }
-                }
-                job1.gameObject.SetActive(true);
-            }
+            SetDevJobIcon(job1, devId.Value);
         }
         else
         {
-            if (job1 != null)
-            {
-                job1.gameObject.SetActive(false);
-            }
+            if (job1 != null) job1.gameObject.SetActive(false);
         }
 
         if (isVice)
         {
-            if (job2 != null)
-            {
-                job2.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon("citytroop2"));
-                job2.gameObject.SetActive(true);
-            }
+            SetJobIcon(job2, "citytroop2");
         }
         else if (isCommander && devId.HasValue)
         {
-            if (job2 != null)
-            {
-                var devCfg = CityDevConfig.GetConfig(devId.Value);
-                if (devCfg != null && !string.IsNullOrEmpty(devCfg.DevAttr1))
-                {
-                    var attrCfg = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower());
-                    if (attrCfg != null && !string.IsNullOrEmpty(attrCfg.Icon))
-                    {
-                        job2.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(attrCfg.Icon));
-                    }
-                }
-                job2.gameObject.SetActive(true);
-            }
+            SetDevJobIcon(job2, devId.Value);
         }
         else
         {
-            if (job2 != null)
-            {
-                job2.gameObject.SetActive(false);
-            }
+            if (job2 != null) job2.gameObject.SetActive(false);
         }
     }
 
@@ -138,6 +100,59 @@ public class CityCellHero : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     {
         if (job1 != null) job1.gameObject.SetActive(false);
         if (job2 != null) job2.gameObject.SetActive(false);
+    }
+
+    private void SetJobIcon(Image image, string iconName)
+    {
+        if (image == null) return;
+        if (string.IsNullOrEmpty(iconName))
+        {
+            image.gameObject.SetActive(false);
+            return;
+        }
+
+        var sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(iconName));
+        if (sprite == null)
+        {
+            image.gameObject.SetActive(false);
+            return;
+        }
+
+        image.sprite = sprite;
+        image.gameObject.SetActive(true);
+    }
+
+    private void SetDevJobIcon(Image image, int devId)
+    {
+        if (image == null) return;
+
+        if (!CityDevConfig.HasConfig(devId))
+        {
+            image.gameObject.SetActive(false);
+            return;
+        }
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+        if (devCfg == null || string.IsNullOrEmpty(devCfg.DevAttr1))
+        {
+            image.gameObject.SetActive(false);
+            return;
+        }
+
+        try
+        {
+            var attrCfg = CityAttrConfig.GetConfigByname(devCfg.DevAttr1.ToLower());
+            if (attrCfg == null || string.IsNullOrEmpty(attrCfg.Icon))
+            {
+                image.gameObject.SetActive(false);
+                return;
+            }
+            SetJobIcon(image, attrCfg.Icon);
+        }
+        catch
+        {
+            image.gameObject.SetActive(false);
+        }
     }
 
     public void SetSelected(bool selected)

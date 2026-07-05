@@ -326,6 +326,22 @@ public static class SystemConst
         /// </summary>
         public const int DEPLOY_SIDE2_BASE_GZ = 13;
         /// <summary>
+        /// 城门血量
+        /// </summary>
+        public const int GATE_HP = 100;
+        /// <summary>
+        /// 城墙血量
+        /// </summary>
+        public const int WALL_HP = 999999;
+        /// <summary>
+        /// 城门BattleUnitId
+        /// </summary>
+        public const int GATE_UNIT_ID = 502001;
+        /// <summary>
+        /// 墙BattleUnitId
+        /// </summary>
+        public const int WALL_UNIT_ID = 502002;
+        /// <summary>
         /// 默认暴击伤害倍率
         /// </summary>
         public const float DEFAULT_CRIT_DAMAGE_MULTI = 0.5f;
@@ -469,6 +485,10 @@ public static class SystemConst
         /// 目标评分非英雄
         /// </summary>
         public const int TARGET_SCORE_NONHERO = 30;
+        /// <summary>
+        /// 目标评分城门
+        /// </summary>
+        public const int TARGET_SCORE_GATE = 1;
         /// <summary>
         /// 等级差评分权重
         /// </summary>

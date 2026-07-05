@@ -57,6 +57,8 @@ public class BattleUIManager : MonoBehaviour
         BattleResultPanel.gameObject.SetActive(false);
         foreach (Transform child in NodeUnits.transform)
             UnityEngine.Object.Destroy(child.gameObject);
+        foreach (Transform child in HudNode.transform)
+            UnityEngine.Object.Destroy(child.gameObject);
         ResetHeroInfo();
 
         BattleInfoTop.Instance.UpdateRound(0, maxRound);

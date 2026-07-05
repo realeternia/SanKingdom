@@ -20,6 +20,8 @@ public class Chess : SceneObj
     public bool isFakeHero;
     public bool isShadow;
     public bool isSodNull;
+    public bool isGate;
+    public bool isWall;
 
     public int heroId;
     public int heroId2;
@@ -134,6 +136,27 @@ public class Chess : SceneObj
 
     private void CreateChessView()
     {
+        if (isGate || isWall)
+        {
+            if (BattleManager.Instance.showUI && !BattleManager.Instance.quickMode)
+            {
+                var go = new GameObject($"{(isGate ? "Gate" : "Wall")}_{id}");
+                go.transform.SetParent(BattleManager.Instance.battleUIManager.NodeUnits.transform);
+                go.transform.position = position;
+                viewObj = go.AddComponent<ChessViewObj>();
+                viewObj.Init(this, Color.white);
+
+                var unitConfig = BattleUnitConfig.GetConfig(battleUnitId);
+                var prefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.UnitModel(unitConfig.Model));
+                if (prefab != null)
+                {
+                    var model = UnityEngine.Object.Instantiate(prefab, go.transform);
+                    model.transform.position = new Vector3(position.x - 4f, position.y, position.z);
+                }
+            }
+            return;
+        }
+
         if(heroId > 0)
         {
             var heroConfig = HeroConfig.GetConfig(heroId);
@@ -477,10 +500,17 @@ public class Chess : SceneObj
     // 计算目标分数
     private float CalculateTargetScore(Chess target, float distance)
     {
-        float score = SysFormula.Battle.CalculateTargetScore(
+        if (target.isGate)
+        {
+            float score = SystemConst.Battle.TARGET_SCORE_GATE;
+            if (distance < attackRange * 2)
+                score += 100f / (distance + 1f);
+            return score;
+        }
+        float result = SysFormula.Battle.CalculateTargetScore(
             target.isHero, distance, attackRange,
             SysFormula.Battle.CalculateDamage(atk, hp, target.def), level, target.level, (float)target.hp / target.maxHp);
-        return score;
+        return result;
     }
 
     private void MoveAndFight(int tickIndex)
@@ -597,7 +627,7 @@ public class Chess : SceneObj
 
         foreach (var (gx, gz, _) in candidates)
         {
-            if (!bm.IsGridOccupiedByOther(gx, gz, id))
+            if (!bm.IsGridOccupiedByOther(gx, gz, id) && !bm.IsGridBlockedByObstacle(gx, gz, forceId))
                 return bm.GridCoordToWorld(gx, gz, position.y);
         }
 
@@ -607,7 +637,7 @@ public class Chess : SceneObj
             foreach (int offset in sideOffsets)
             {
                 int newGz = curGz + offset;
-                if (!bm.IsGridOccupiedByOther(curGx, newGz, id))
+                if (!bm.IsGridOccupiedByOther(curGx, newGz, id) && !bm.IsGridBlockedByObstacle(curGx, newGz, forceId))
                     return bm.GridCoordToWorld(curGx, newGz, position.y);
             }
         }
@@ -616,7 +646,7 @@ public class Chess : SceneObj
             foreach (int offset in sideOffsets)
             {
                 int newGx = curGx + offset;
-                if (!bm.IsGridOccupiedByOther(newGx, curGz, id))
+                if (!bm.IsGridOccupiedByOther(newGx, curGz, id) && !bm.IsGridBlockedByObstacle(newGx, curGz, forceId))
                     return bm.GridCoordToWorld(newGx, curGz, position.y);
             }
         }

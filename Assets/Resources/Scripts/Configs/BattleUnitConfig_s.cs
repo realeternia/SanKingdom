@@ -31,6 +31,7 @@ namespace CommonConfig
             {"SoldierHpRate", new FieldMetaInfo("士兵加成hp系数", "float")},
             {"Skills", new FieldMetaInfo("技能", "int[]")},
             {"Model", new FieldMetaInfo("模型", "string")},
+            {"UnitType", new FieldMetaInfo("类型(0=普通 1=城门 2=墙)", "int")},
         };
 
         public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
@@ -83,9 +84,13 @@ namespace CommonConfig
         ///模型
         /// </summary>
         public string Model;
+        /// <summary>
+        ///类型(0=普通 1=城门 2=墙)
+        /// </summary>
+        public int UnitType;
 
 
-        public BattleUnitConfig(int Id, string Name, int Lv, int ArmsId, int Hp, int Atk, int Def, bool IsShadow, float SoldierAtkRate, float SoldierHpRate, int[] Skills, string Model)
+        public BattleUnitConfig(int Id, string Name, int Lv, int ArmsId, int Hp, int Atk, int Def, bool IsShadow, float SoldierAtkRate, float SoldierHpRate, int[] Skills, string Model, int UnitType)
         {
             this.Id = Id;
             this.Name = Name;
@@ -99,6 +104,7 @@ namespace CommonConfig
             this.SoldierHpRate = SoldierHpRate;
             this.Skills = Skills;
             this.Model = Model;
+            this.UnitType = UnitType;
 
         }
 
@@ -119,10 +125,12 @@ namespace CommonConfig
         public static void Load()
 {
 config.Clear();
-config[500001] = new BattleUnitConfig(500001, "小兵", 1, 201, 130, 50, 50, false, 1f, 1f, null, "UnitBing");
-config[500002] = new BattleUnitConfig(500002, "远程小兵", 1, 201, 90, 50, 50, false, .8f, .65f, null, "UnitBing2");
-config[501001] = new BattleUnitConfig(501001, "法术场", 1, 201, 9999, 99, 99, true, 0f, 0f, null, "UnitSpell");
-config[501002] = new BattleUnitConfig(501002, "关羽影子", 1, 201, 2, 50, 50, false, 0f, 0f, null, "UnitHero");
+config[500001] = new BattleUnitConfig(500001, "小兵", 1, 201, 130, 50, 50, false, 1f, 1f, null, "UnitBing", 0);
+config[500002] = new BattleUnitConfig(500002, "远程小兵", 1, 201, 90, 50, 50, false, .8f, .65f, null, "UnitBing2", 0);
+config[501001] = new BattleUnitConfig(501001, "法术场", 1, 201, 9999, 99, 99, true, 0f, 0f, null, "UnitSpell", 0);
+config[501002] = new BattleUnitConfig(501002, "关羽影子", 1, 201, 2, 50, 50, false, 0f, 0f, null, "UnitHero", 0);
+config[502001] = new BattleUnitConfig(502001, "城门", 1, 0, 100, 0, 0, false, 0f, 0f, null, "Wall_B_gate", 1);
+config[502002] = new BattleUnitConfig(502002, "墙", 1, 0, 999999, 0, 0, false, 0f, 0f, null, "Wall_B_wall", 2);
 
 
 

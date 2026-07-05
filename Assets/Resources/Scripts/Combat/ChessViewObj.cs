@@ -32,6 +32,13 @@ public class ChessViewObj : MonoBehaviour
         this.chessUnit = chessUnit;
         this.outlineColor = c;
 
+        if (chessUnit.isGate || chessUnit.isWall)
+        {
+            if (!BattleManager.Instance.quickMode)
+                CreateHUD();
+            return;
+        }
+
         if (chessUnit.isSodNull)
         {
             originalMaterial = rend.sharedMaterial;

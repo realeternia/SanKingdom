@@ -20,6 +20,7 @@ public class CreateChessAction : ChessAction
     public float SummonTime;
 
     public int Inte;
+    public int NoActionCount;
 
     [NonSerialized]
     public Action<int> CallBack;
@@ -43,7 +44,7 @@ public class CreateChessAction : ChessAction
         Inte = inte;
     }
 
-    public CreateChessAction(int sourceId, int tick, int id, int forceId, int battleUnitId, int soldierNum, int armsId, int atk, int def, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb)
+    public CreateChessAction(int sourceId, int tick, int id, int forceId, int battleUnitId, int soldierNum, int armsId, int atk, int def, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb, int noActionCount = 0)
         : base(sourceId, tick)
     {
         Id = id;
@@ -57,6 +58,7 @@ public class CreateChessAction : ChessAction
         SummonTime = summonTime;
         CallBack = cb;
         Inte = 50;
+        NoActionCount = noActionCount;
     }
 
     public override void Doing()
@@ -86,13 +88,23 @@ public class CreateChessAction : ChessAction
             var battleUnitCfg = BattleUnitConfig.GetConfig(BattleUnitId);
             chessObj.battleUnitId = BattleUnitId;
             chessObj.isHero = false;
-            chessObj.isFakeHero = IsFakeHero || battleUnitCfg.Model == "UnitHero";
-            chessObj.isShadow = battleUnitCfg.IsShadow;
+
+            if (battleUnitCfg.UnitType == 1)
+                chessObj.isGate = true;
+            else if (battleUnitCfg.UnitType == 2)
+                chessObj.isWall = true;
+            else
+            {
+                chessObj.isFakeHero = IsFakeHero || battleUnitCfg.Model == "UnitHero";
+                chessObj.isShadow = battleUnitCfg.IsShadow;
+            }
         }
 
         chessObj.hp = chessObj.maxHp;
+        chessObj.noActionCount = NoActionCount;
         battleManager.chessList.Add(chessObj);
-        battleManager.OccupyGrid(chessObj.id, chessObj.position);
+        if (!chessObj.isGate)
+            battleManager.OccupyGrid(chessObj.id, chessObj.position);
         chessObj.Init(ForceId);
 
         if (SummonTime > 0)
