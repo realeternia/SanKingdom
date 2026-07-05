@@ -122,40 +122,11 @@ public class SaveData
                 if (hero.loyalty < 0)
                     hero.loyalty = 0;
 
-                var city = GameManager.Instance.GetCity(hero.cityId);
-                if (SysFormula.Hero.CheckEscape())
-                {
-                    var destCityId = GameManager.Instance.GetRandomForceCityId(hero.cityId, hero.forceId);
-                    if (destCityId > 0)
-                    {
-                        int oldCityId = hero.cityId;
-                        if (city != null)
-                        {
-                            city.RemoveDevAssignment(hero.heroId);
-                        }
-                        SaveTroopsData.RemoveHeroFromTroop(hero.heroId);
-                        hero.state = HeroState.Normal;
-                        hero.cityId = destCityId;
-
-                            PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = oldCityId });
-                            PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = destCityId });
-                    }
-                }
+                hero.TryEscape(round);
             }
             else if (hero.state == HeroState.Wild)
             {
-                if (SysFormula.Hero.CheckWildHeroMove())
-                {
-                    var randomCityId = MapTool.GetRandomAdjacentCityId(hero.cityId);
-                    if (randomCityId != 0)
-                    {
-                        int oldCityId = hero.cityId;
-                        hero.cityId = randomCityId;
-
-                            PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = oldCityId });
-                            PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = randomCityId });
-                    }
-                }
+                hero.TryWildMove();
             }
         }
     }

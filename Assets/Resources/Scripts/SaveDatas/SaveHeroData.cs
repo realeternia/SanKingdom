@@ -91,4 +91,40 @@ public class SaveHeroData
         return newHero;
     }
 
+    public void TryEscape(int round)
+    {
+        if (!SysFormula.Hero.CheckEscape())
+            return;
+        var destCityId = GameManager.Instance.GetRandomForceCityId(cityId, forceId);
+        if (destCityId <= 0)
+            return;
+        int oldCityId = cityId;
+        var city = GameManager.Instance.GetCity(oldCityId);
+        if (city != null)
+            city.RemoveDevAssignment(heroId);
+        SaveTroopsData.RemoveHeroFromTroop(heroId);
+        state = HeroState.Normal;
+        cityId = destCityId;
+
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateEscape(
+            round, forceId, oldCityId, destCityId, heroId));
+
+        PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = oldCityId });
+        PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = destCityId });
+    }
+
+    public void TryWildMove()
+    {
+        if (!SysFormula.Hero.CheckWildHeroMove())
+            return;
+        var randomCityId = MapTool.GetRandomAdjacentCityId(cityId);
+        if (randomCityId == 0)
+            return;
+        int oldCityId = cityId;
+        cityId = randomCityId;
+
+        PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = oldCityId });
+        PanelManager.Instance.SendSignal(new CityHeroChangeSignal { CityId = randomCityId });
+    }
+
 }

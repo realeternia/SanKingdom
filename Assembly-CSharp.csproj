@@ -71,6 +71,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamageAddRate.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShieldValue.cs" />
+    <Compile Include="Assets\Resources\Scripts\OOs\ILoopScrollItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SystemAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolKingAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackedShadow.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AI.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitAttr.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\HeroSelectionTool.cs" />
+    <Compile Include="Assets\Resources\Scripts\SystemTool\LoopScrollRect.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackMultiArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RoundUpdateAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyFactory.cs" />
@@ -155,6 +157,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackHitAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysFormula.cs" />
+    <Compile Include="Assets\Resources\Scripts\EventSystem\GameEventLog.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityMovePanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAidSuddenArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityTradePanelManager.cs" />
@@ -250,6 +253,7 @@
     <Compile Include="Assets\Resources\Scripts\MapDragHandler.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysSwitch.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffDamagedAddRate.cs" />
+    <Compile Include="Assets\Resources\Scripts\EventSystem\GameEventData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackSpinAttack.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleEPOOutline.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAntiShield.cs" />

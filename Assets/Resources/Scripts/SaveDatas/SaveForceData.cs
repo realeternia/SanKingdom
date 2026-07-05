@@ -584,7 +584,13 @@ public class SaveForceData
             GameLog.Warn($"ExecuteBattle 防守方无有效部队，跳过战斗 targetCityId={targetCityId}");
             return;
         }
-        
+
+        int battleRound = GameManager.Instance.SaveData.round;
+        var attackHeroIdList = validAttackSoldierMap.Keys.ToList();
+        var defendHeroIdList = defenceSoldierMap.Keys.ToList();
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateBattleAttack(battleRound, srcForceId, destForceId, targetCityId, attackHeroIdList));
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateBattleDefend(battleRound, destForceId, srcForceId, targetCityId, defendHeroIdList));
+
         BattleManager.Instance.BattleBegin(this, cityDest.GetForce(), validAttackTroops, defenceTroops, validAttackSoldierMap, defenceSoldierMap, targetCityId,
             (result, attackerSoldierCount, defenderSoldierCount) => OnBattleEnd(result, attackerSoldierCount, defenderSoldierCount, srcCityIds, targetCityId, srcForceId, destForceId));
     }
@@ -593,6 +599,12 @@ public class SaveForceData
     {
         var destCity = GameManager.Instance.GetCity(targetCityId);
         GameLog.Info($"OnBattleEnd result={result} attackerCount={attackerSoldierCount.Count} defenderCount={defenderSoldierCount.Count}");
+
+        int resultRound = GameManager.Instance.SaveData.round;
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateBattleResult(
+            resultRound, srcForceId, destForceId, targetCityId,
+            attackerSoldierCount.Keys.ToList(), defenderSoldierCount.Keys.ToList(),
+            result == BattleResult.Win));
 
         if (result == BattleResult.Win)
         {
@@ -683,6 +695,9 @@ public class SaveForceData
         }
 
         MarkHeroesActed(heroIds);
+
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionMove(
+            GameManager.Instance.SaveData.round, forceId, srcCityId, destCityId, heroIds));
 
          PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = destCityId });
     }
@@ -815,6 +830,9 @@ public class SaveForceData
         cityData.AddAction(devId, heroCount);
         AddKingActionCount(devId, heroCount);
         MarkHeroesActed(heroIds);
+
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionTrade(
+            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroIds, buySoldier));
 
         GameLog.Info($"ExecuteCityTrade cityId={cityId} heroCount={heroCount} buySoldier={buySoldier} totalCost={totalCost} totalGain={totalGain}");
         return true;
@@ -954,6 +972,9 @@ public class SaveForceData
         AddKingActionCount(devId, heroCount);
         MarkHeroesActed(heroIds);
 
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionSearch(
+            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroIds));
+
         GameLog.Info($"ExecuteCitySearch cityId={cityId} heroCount={heroCount}");
         return true;
     }
@@ -1020,6 +1041,9 @@ public class SaveForceData
         var newHero = SaveHeroData.CreateWildHero(heroConfig.Id, cityId);
         GameManager.Instance.SaveData.heros.Add(newHero);
 
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateWild(
+            GameManager.Instance.SaveData.round, forceId, cityId, heroConfig.Id));
+
         var cityData = GameManager.Instance.GetCity(cityId);
         if (cityData != null)
             cityData.RecalculateHeros();
@@ -1053,6 +1077,7 @@ public class SaveForceData
 
         var cityData = GameManager.Instance.GetCity(cityId);
         List<int> remainingTargets = new List<int>(targetHeroIds);
+        bool anySuccess = false;
 
         foreach (int myHeroId in myHeroIds)
         {
@@ -1083,11 +1108,16 @@ public class SaveForceData
             if (success)
             {
                 var hero = GameManager.Instance.GetHero(bestTargetId);
+                int oldForceId = hero.forceId;
                 hero.state = HeroState.Normal;
                 hero.forceId = cityData.forceId;
                 hero.loyalty = SystemConst.Hero.RECRUIT_SUCCESS_LOYALTY;
                 MoveHeroToCity(hero.cityId, cityId, new int[] { bestTargetId });
                 remainingTargets.Remove(bestTargetId);
+
+                GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateRecruitSuccess(
+                    GameManager.Instance.SaveData.round, forceId, oldForceId, cityId, bestTargetId));
+                anySuccess = true;
 
                 attrDatas.Add(new PopResultPanelManager.AttrData()
                 {
@@ -1114,6 +1144,10 @@ public class SaveForceData
         int sourceCityId = kingCity != null ? kingCity.cityId : cityId;
         int distance = SysFormula.City.CalculateCityDayDistance(sourceCityId, cityId);
         MarkHeroesActed(myHeroIds, distance - 1);
+
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionRecruit(
+            GameManager.Instance.SaveData.round, forceId, cityId, myHeroIds, targetHeroIds, anySuccess));
+
         return true;
     }
 
@@ -1198,6 +1232,10 @@ public class SaveForceData
         AddKingActionCount(devId, heroList.Length);
 
         MarkHeroesActed(heroList);
+
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionPraise(
+            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroList, methodId));
+
         return true;
     }
 

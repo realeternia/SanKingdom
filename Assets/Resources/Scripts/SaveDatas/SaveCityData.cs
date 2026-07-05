@@ -459,6 +459,8 @@ public class SaveCityData
                             SaveTroopsData.RemoveHeroFromTroop(heroId);
                             hero.state = HeroState.Catched;
                             BattleStatManager.RecordHeroCatched(hero.forceId, heroId);
+                            GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateCapture(
+                                GameManager.Instance.SaveData.round, forceWin, forceLose, cityId, heroId));
                         }
                     }
                 }
@@ -480,6 +482,8 @@ public class SaveCityData
                     SaveTroopsData.RemoveHeroFromTroop(heroId);
                     hero.state = HeroState.Catched;
                     BattleStatManager.RecordHeroCatched(hero.forceId, heroId);
+                    GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateCapture(
+                        GameManager.Instance.SaveData.round, forceWin, forceLose, cityId, heroId));
                 }
             }
             // 防御性处理：确保势力所有残留英雄也被俘虏
@@ -491,6 +495,8 @@ public class SaveCityData
                     hero.state = HeroState.Catched;
                     hero.cityId = cityId;
                     BattleStatManager.RecordHeroCatched(hero.forceId, hero.heroId);
+                    GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateCapture(
+                        GameManager.Instance.SaveData.round, forceWin, forceLose, cityId, hero.heroId));
                     GameLog.Info($"Occupy 额外俘虏不在城中的势力英雄: heroId={hero.heroId}");
                 }
             }

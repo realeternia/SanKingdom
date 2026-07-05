@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     private StreamWriter logWriter;
     public SaveData SaveData;
+    public GameEventLog GameEventLog;
 
     private int currentForceId = 0;
 
@@ -138,16 +139,19 @@ public class GameManager : MonoBehaviour
     {
         SaveData = new SaveData();
         SaveData.OnNewGame(forceId);
+        GameEventLog = new GameEventLog();
+        GameEventLog.OnNewGame();
         StartNextForceTurn();
 
-        SaveToFile();        
+        SaveToFile();
     }
 
     public void NextRound()
     {
+        GameEventLog.OnRoundEnd(SaveData.round);
         SaveData.OnRound();
         StartNextForceTurn();
-        
+
         PanelManager.Instance.SendSignal(new RoundChangeSignal { Round = SaveData.round });
         SaveToFile();
 
@@ -388,7 +392,9 @@ public class GameManager : MonoBehaviour
 
             SaveData.InitLoadedData();
 
-            StartNextForceTurn();            
+            LoadEventLog();
+
+            StartNextForceTurn();
 
             GameLog.Info("游戏数据加载成功 year=" + SaveData.round + ", currentForceId=" + SaveData.forces[SaveData.currentForceIndex].forceId);
         }
@@ -400,6 +406,33 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    private void LoadEventLog()
+    {
+        string eventPath = Application.persistentDataPath + "/game_events.json";
+        try
+        {
+            if (File.Exists(eventPath))
+            {
+                string json = File.ReadAllText(eventPath);
+                GameEventLog log = JsonUtility.FromJson<GameEventLog>(json);
+                if (log == null)
+                    log = new GameEventLog();
+                GameEventLog = log;
+            }
+            else
+            {
+                GameEventLog = new GameEventLog();
+            }
+            GameEventLog.InitLoadedData();
+        }
+        catch (System.Exception e)
+        {
+            GameLog.Error("加载事件数据失败: " + e.Message);
+            GameEventLog = new GameEventLog();
+            GameEventLog.InitLoadedData();
+        }
+    }
+
     public void SaveToFile()
     {
         SaveData.BeforeSave();
@@ -408,12 +441,32 @@ public class GameManager : MonoBehaviour
         {
             string json = JsonUtility.ToJson(SaveData);
             File.WriteAllText(savePath, json);
-            
+
             GameLog.Info("游戏数据保存成功: " + savePath);
         }
         catch (System.Exception e)
         {
             GameLog.Error("保存游戏数据失败: " + e.Message);
+        }
+
+        SaveEventLog();
+    }
+
+    private void SaveEventLog()
+    {
+        if (GameEventLog == null)
+            return;
+        GameEventLog.BeforeSave();
+        string eventPath = Application.persistentDataPath + "/game_events.json";
+        try
+        {
+            string json = JsonUtility.ToJson(GameEventLog);
+            File.WriteAllText(eventPath, json);
+            GameLog.Info("事件数据保存成功: " + eventPath + " events=" + GameEventLog.events.Count);
+        }
+        catch (System.Exception e)
+        {
+            GameLog.Error("保存事件数据失败: " + e.Message);
         }
     }
 
