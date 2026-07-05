@@ -759,6 +759,9 @@ public class PanelManager : MonoBehaviour
         RectTransform tipRect = currentTip.GetComponent<RectTransform>();
         if (tipRect != null)
         {
+            Canvas.ForceUpdateCanvases();
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(tipRect);
+
             Canvas canvas = tipNode.GetComponentInParent<Canvas>();
             Camera uiCamera = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? canvas.worldCamera : null;
 

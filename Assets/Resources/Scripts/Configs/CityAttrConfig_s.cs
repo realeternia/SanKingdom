@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -50,6 +50,7 @@ namespace CommonConfig
             {"ValMaxCity", new FieldMetaInfo("最大值", "int", 0)},
             {"ValMaxForce", new FieldMetaInfo("最大值", "int", 0)},
             {"Icon", new FieldMetaInfo("icon", "string", 0)},
+            {"Description", new FieldMetaInfo("描述", "string", 0)},
         };
 
         public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
@@ -97,9 +98,13 @@ namespace CommonConfig
         ///icon
         /// </summary>
         public string Icon;
+        /// <summary>
+        ///描述
+        /// </summary>
+        public string Description;
 
 
-        public CityAttrConfig(int Id, string name, string Cname, bool IsForceAttr, bool IsPosRes, bool IsConsumeRes, bool NotShow, int ValMaxCity, int ValMaxForce, string Icon)
+        public CityAttrConfig(int Id, string name, string Cname, bool IsForceAttr, bool IsPosRes, bool IsConsumeRes, bool NotShow, int ValMaxCity, int ValMaxForce, string Icon, string Description = "")
         {
             this.Id = Id;
             this.name = name;
@@ -111,6 +116,7 @@ namespace CommonConfig
             this.ValMaxCity = ValMaxCity;
             this.ValMaxForce = ValMaxForce;
             this.Icon = Icon;
+            this.Description = Description;
         }
 
         public CityAttrConfig() { }
@@ -131,22 +137,38 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new CityAttrConfig(1, "level", "等级", false, false, false, true, 99, 0, "");
-            config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, false, true, 999, 0, "");
-            config[5] = new CityAttrConfig(5, "food", "粮食", false, false, true, false, 999, 0, "cityfood");
-            config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, true, false, 999, 0, "armscount");
-            config[7] = new CityAttrConfig(7, "wall", "城墙", false, false, true, false, 999, 0, "citywall");
-            config[8] = new CityAttrConfig(8, "happy", "民心", false, false, true, false, 99, 0, "cityheart");
-            config[12] = new CityAttrConfig(12, "gold", "金钱", true, false, true, false, 0, 999, "citygold");
-            config[13] = new CityAttrConfig(13, "steel", "铁", true, true, false, false, 0, 99, "citysteel");
-            config[14] = new CityAttrConfig(14, "horse", "马", true, true, false, false, 0, 99, "cityhorse");
-            config[15] = new CityAttrConfig(15, "wood", "木材", true, true, false, false, 0, 99, "citywood");
-            config[16] = new CityAttrConfig(16, "stone", "石料", true, true, false, false, 0, 99, "citystone");
-            config[17] = new CityAttrConfig(17, "elephant", "战象", true, true, false, false, 0, 99, "cityelephant");
-            config[18] = new CityAttrConfig(18, "salt", "盐", true, false, false, true, 0, 9, "citysalt");
-            config[19] = new CityAttrConfig(19, "fish", "鱼", true, false, false, true, 0, 9, "cityfish");
-            config[101] = new CityAttrConfig(101, "herostar", "名将", false, false, false, true, 0, 99, "citytroop1");
-            config[102] = new CityAttrConfig(102, "hero", "将军", false, false, false, true, 0, 99, "citytroop2");
+            config[1] = new CityAttrConfig(1, "level", "等级", false, false, false, true, 99, 0, "",
+                "由发展度(exp)决定\n等级越高,可用委派槽位越多");
+            config[2] = new CityAttrConfig(2, "exp", "发展度", false, false, false, true, 999, 0, "",
+                "通过委派工作积累\n达到配置阈值后提升城市等级");
+            config[5] = new CityAttrConfig(5, "food", "粮食", false, false, true, false, 999, 0, "cityfood",
+                "出征消耗粮食(1兵=1粮)\n通过农田委派产出\n快乐度影响产出倍率");
+            config[6] = new CityAttrConfig(6, "soldier", "士兵", false, false, true, false, 999, 0, "armscount",
+                "出征时扣除,战后剩余退回\n通过征兵委派产出\n快乐度影响产出倍率");
+            config[7] = new CityAttrConfig(7, "wall", "城墙", false, false, true, false, 999, 0, "citywall",
+                "决定战斗中城门血量\n城防<100时无城门和城墙\n城防≥100时生成城墙和城门");
+            config[8] = new CityAttrConfig(8, "happy", "民心", false, false, true, false, 99, 0, "cityheart",
+                "影响生产倍率\n通过治安委派提升\n战斗>10回合时每回合-1\n城市被攻陷时减半50%");
+            config[12] = new CityAttrConfig(12, "gold", "金钱", true, false, true, false, 0, 999, "citygold",
+                "用于委派和交易\n通过市场委派产出\n委派需要消耗金钱\n快乐度影响产出倍率");
+            config[13] = new CityAttrConfig(13, "steel", "铁", true, true, false, false, 0, 99, "citysteel",
+                "用于兵种建造\n通过铁匠铺委派产出");
+            config[14] = new CityAttrConfig(14, "horse", "马", true, true, false, false, 0, 99, "cityhorse",
+                "用于骑兵兵种建造\n通过马场委派产出");
+            config[15] = new CityAttrConfig(15, "wood", "木材", true, true, false, false, 0, 99, "citywood",
+                "用于兵种建造\n通过伐木场委派产出");
+            config[16] = new CityAttrConfig(16, "stone", "石料", true, true, false, false, 0, 99, "citystone",
+                "用于兵种建造\n通过采石场委派产出");
+            config[17] = new CityAttrConfig(17, "elephant", "战象", true, true, false, false, 0, 99, "cityelephant",
+                "用于象兵兵种建造\n通过象棚委派产出");
+            config[18] = new CityAttrConfig(18, "salt", "盐", true, false, false, true, 0, 9, "citysalt",
+                "特殊贸易物资");
+            config[19] = new CityAttrConfig(19, "fish", "鱼", true, false, false, true, 0, 9, "cityfish",
+                "特殊贸易物资");
+            config[101] = new CityAttrConfig(101, "herostar", "名将", false, false, false, true, 0, 99, "citytroop1",
+                "城市中拥有的名将数量（仅供排行显示）");
+            config[102] = new CityAttrConfig(102, "hero", "将军", false, false, false, true, 0, 99, "citytroop2",
+                "城市中拥有的将军数量（仅供排行显示）");
 
             RebuildIndex();
 

@@ -209,6 +209,26 @@ public static class SystemConst
         public const int BATTLE_TIME_MAX = 5;
         public const int BATTLE_TIME_INCREMENT = 2;
         public const float WAR_PRODUCTION_MULTIPLIER = 0.7f;
+        /// <summary>
+        /// 城防低于此值不生成城门/城墙
+        /// </summary>
+        public const float GATE_MIN_WALL = 100f;
+        /// <summary>
+        /// 战斗导致dev打折的起始回合数
+        /// </summary>
+        public const int DEFENCE_DISCOUNT_START_ROUND = 10;
+        /// <summary>
+        /// 10回合时的dev打折比例
+        /// </summary>
+        public const float DEFENCE_DISCOUNT_AT_START = 0.05f;
+        /// <summary>
+        /// 民心衰减起始回合数
+        /// </summary>
+        public const int HAPPY_DECAY_START_ROUND = 10;
+        /// <summary>
+        /// 战斗每回合民心衰减值
+        /// </summary>
+        public const float HAPPY_DECAY_PER_ROUND = 1f;
     }
 
     public static class Economy

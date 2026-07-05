@@ -333,6 +333,8 @@ public class GameManager : MonoBehaviour
                 
                 yield return null;
             }
+
+            city.defenceDevDiscount = 1f;
             
             if (attrChanges.Count > 0)
             {

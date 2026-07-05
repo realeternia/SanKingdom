@@ -481,6 +481,22 @@ public static class SysFormula
                 return 0.8f;
             return 0.6f;
         }
+
+        /// <summary>
+        /// 计算战斗导致的防御方dev收入打折倍率
+        /// 10回合: 0.95 (减少5%), 30回合: 0 (无收入), 线性插值
+        /// </summary>
+        public static float GetDefenceDevDiscount(int battleRounds)
+        {
+            if (battleRounds <= SystemConst.City.DEFENCE_DISCOUNT_START_ROUND)
+                return 1f;
+            int maxRound = SystemConst.Battle.MAX_ROUND;
+            if (battleRounds >= maxRound)
+                return 0f;
+            float t = (float)(battleRounds - SystemConst.City.DEFENCE_DISCOUNT_START_ROUND)
+                / (maxRound - SystemConst.City.DEFENCE_DISCOUNT_START_ROUND);
+            return 1f - (SystemConst.City.DEFENCE_DISCOUNT_AT_START + t * (1f - SystemConst.City.DEFENCE_DISCOUNT_AT_START));
+        }
     }
 
     public static class Economy

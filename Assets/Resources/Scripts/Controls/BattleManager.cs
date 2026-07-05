@@ -81,7 +81,7 @@ public class BattleManager : MonoBehaviour
     public bool showUI = true;
 
     [NonSerialized]
-    private Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> battleEndCallback;
+    private Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>, int, float> battleEndCallback;
 
 
 
@@ -125,7 +125,7 @@ public class BattleManager : MonoBehaviour
     [NonSerialized]
     private Coroutine currentBattleCoroutine = null;
     
-    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<SaveTroopsData> troops1, List<SaveTroopsData> troops2, Dictionary<int, int> soldierMap1, Dictionary<int, int> soldierMap2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>> callback = null)
+    public void BattleBegin(SaveForceData force1, SaveForceData force2, List<SaveTroopsData> troops1, List<SaveTroopsData> troops2, Dictionary<int, int> soldierMap1, Dictionary<int, int> soldierMap2, int cityId, Action<BattleResult, Dictionary<int, int>, Dictionary<int, int>, int, float> callback = null)
     {
         if (IsBattleRunning)
         {
@@ -485,7 +485,7 @@ public class BattleManager : MonoBehaviour
             return new Vector3(435 + row * 15, 7, 255 - zRow * 15);
     }
 
-    public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null)
+    public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null, int customHp = -1)
     {
         var id = idCounter++;
 
@@ -493,7 +493,7 @@ public class BattleManager : MonoBehaviour
         var armsId = battleUnitConfig.ArmsId;
         var atk = battleUnitConfig.Atk;
         var def = battleUnitConfig.Def;
-        var soldierNum = battleUnitConfig.Hp;
+        var soldierNum = customHp > 0 ? customHp : battleUnitConfig.Hp;
         
         var action = new CreateChessAction(0, tickIndex, id, force.forceId, battleUnitId, soldierNum, armsId, atk, def, spawnPos, summonTime, cb);
         AddChessAction(action);
@@ -809,7 +809,20 @@ public class BattleManager : MonoBehaviour
                 }
             }
 
-            battleEndCallback(battleResult, attackerResult, defenderResult);
+            float gateTotalHp = 0f;
+            int gateCount = 0;
+            for (int i = 0; i < chessList.Count; i++)
+            {
+                var chess = chessList[i];
+                if (chess.isGate)
+                {
+                    gateTotalHp += Math.Max(0, chess.hp);
+                    gateCount++;
+                }
+            }
+            float gateAvgHp = gateCount > 0 ? gateTotalHp / gateCount : -1f;
+
+            battleEndCallback(battleResult, attackerResult, defenderResult, round, gateAvgHp);
         }
 
         if (!replay)
@@ -1087,11 +1100,25 @@ public class BattleManager : MonoBehaviour
 
     private void InitWallsAndGates()
     {
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null)
+        {
+            GameLog.Warn($"InitWallsAndGates 找不到城市数据 cityId={cityId}");
+            return;
+        }
+        float wallValue = cityData.GetAttr("wall");
+        if (wallValue < SystemConst.City.GATE_MIN_WALL)
+        {
+            GameLog.Info($"InitWallsAndGates 城防低于{SystemConst.City.GATE_MIN_WALL}，不生成城门/城墙 wall={wallValue}");
+            return;
+        }
+
         int gx = SystemConst.Battle.DEPLOY_SIDE2_BASE_GX - 1;
         int baseGz = SystemConst.Battle.DEPLOY_SIDE2_BASE_GZ;
         int cols = SystemConst.Battle.DEPLOY_GRID_COLS;
         var defForce = GameManager.Instance.GetForce(playerInfoList[1].forceId);
 
+        int gateHp = Math.Max(1, (int)wallValue);
         for (int i = 0; i < cols; i++)
         {
             int gz = baseGz + i;
@@ -1099,8 +1126,11 @@ public class BattleManager : MonoBehaviour
             if (IsGridOccupiedByOtherOrObstacle(gridX, gridZ, -1)) continue;
 
             int unitId = (i == 1 || i == 3) ? SystemConst.Battle.GATE_UNIT_ID : SystemConst.Battle.WALL_UNIT_ID;
-            SpawnUnitsForRegion(defForce, unitId, GridCoordToWorld(gx, gz), 0f);
+            int hp = (i == 1 || i == 3) ? gateHp : -1;
+            SpawnUnitsForRegion(defForce, unitId, GridCoordToWorld(gx, gz), 0f, null, hp);
         }
+
+        GameLog.Info($"InitWallsAndGates cityId={cityId} wall={wallValue} gateHp={gateHp}");
     }
 
     private bool HasFriendlyGateChess(int forceId)

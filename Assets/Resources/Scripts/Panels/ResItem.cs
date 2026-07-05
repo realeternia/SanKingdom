@@ -55,7 +55,9 @@ public class ResItem : MonoBehaviour
         this.attrName = name;
         this.config = item;
 
-        GetComponent<IconLoader>().SetId(item.Id);
+        var iconLoader = GetComponent<IconLoader>();
+        iconLoader.SetId(item.Id);
+        iconLoader.SetTipExtra("");
 
         int resItemWidth = GetItemWidth(item);
         int resBaseWidth = GetBaseWidth(item);
@@ -116,6 +118,9 @@ public class ResItem : MonoBehaviour
                 itemNum.text = numStr;
             }
         }
-    }
 
+        var iconLoader = GetComponent<IconLoader>();
+        if (iconLoader != null)
+            iconLoader.SetTipExtra(numStr);
+    }
 }

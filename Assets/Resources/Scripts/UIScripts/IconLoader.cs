@@ -17,6 +17,7 @@ public class IconLoader : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public string iconPath;
     public int configId;
     public Image image;
+    public string tipExtra = "";
 
     void Start()
     {
@@ -46,6 +47,11 @@ public class IconLoader : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void SetId(int id)
     {
         configId = id;
+    }
+
+    public void SetTipExtra(string extra)
+    {
+        tipExtra = extra;
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -86,7 +92,12 @@ public class IconLoader : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                     return null;
                 }
                 CityAttrConfig cfg = CityAttrConfig.GetConfig(configId);
-                return cfg.Cname;
+                string nameLine = cfg.Cname;
+                if (!string.IsNullOrEmpty(tipExtra))
+                    nameLine += ":<color=green>" + tipExtra + "</color>";
+                if (!string.IsNullOrEmpty(cfg.Description))
+                    return nameLine + "\n" + cfg.Description;
+                return nameLine;
             }
             case IconSourceType.HeroAttr:
             {

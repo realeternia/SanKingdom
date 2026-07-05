@@ -592,13 +592,13 @@ public class SaveForceData
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateBattleDefend(battleRound, destForceId, srcForceId, targetCityId, defendHeroIdList));
 
         BattleManager.Instance.BattleBegin(this, cityDest.GetForce(), validAttackTroops, defenceTroops, validAttackSoldierMap, defenceSoldierMap, targetCityId,
-            (result, attackerSoldierCount, defenderSoldierCount) => OnBattleEnd(result, attackerSoldierCount, defenderSoldierCount, srcCityIds, targetCityId, srcForceId, destForceId));
+            (result, attackerSoldierCount, defenderSoldierCount, round, gateAvgHp) => OnBattleEnd(result, attackerSoldierCount, defenderSoldierCount, round, gateAvgHp, srcCityIds, targetCityId, srcForceId, destForceId));
     }
 
-    private void OnBattleEnd(BattleResult result, Dictionary<int, int> attackerSoldierCount, Dictionary<int, int> defenderSoldierCount, List<int> srcCityIds, int targetCityId, int srcForceId, int destForceId)
+    private void OnBattleEnd(BattleResult result, Dictionary<int, int> attackerSoldierCount, Dictionary<int, int> defenderSoldierCount, int round, float gateAvgHp, List<int> srcCityIds, int targetCityId, int srcForceId, int destForceId)
     {
         var destCity = GameManager.Instance.GetCity(targetCityId);
-        GameLog.Info($"OnBattleEnd result={result} attackerCount={attackerSoldierCount.Count} defenderCount={defenderSoldierCount.Count}");
+        GameLog.Info($"OnBattleEnd result={result} round={round} gateAvgHp={gateAvgHp} attackerCount={attackerSoldierCount.Count} defenderCount={defenderSoldierCount.Count}");
 
         int resultRound = GameManager.Instance.SaveData.round;
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateBattleResult(
@@ -614,16 +614,45 @@ public class SaveForceData
             destCity.Occupy(forceId, attackHeroList, destForceId, defenceHeroList);
         }
 
-        destCity.AddAttr("wall", -10, "战斗后城墙减少");
-        GameLog.Info($"OnBattleEnd 防守城市城墙减少10 wall={destCity.GetAttr("wall")}");
-        
         if (result == BattleResult.Win)
         {
-            destCity.AddAttr("happy", -30, "战斗胜利民心减少");
-            GameLog.Info($"OnBattleEnd 攻方胜利，城市民心减少30 happy={destCity.GetAttr("happy")}");
+            float oldWall = destCity.GetAttr("wall");
+            destCity.AddAttr("wall", -oldWall, "攻下城市城墙清零");
+            GameLog.Info($"OnBattleEnd 攻方胜利，城墙清零 wall={destCity.GetAttr("wall")}");
+
+            destCity.MultiplyAttr("happy", 0.5f);
+            GameLog.Info($"OnBattleEnd 攻方胜利，民心减半50% happy={destCity.GetAttr("happy")}");
             
             destCity.MultiplyAttr("food", 0.5f);
-            GameLog.Info($"OnBattleEnd 攻方胜利，城市粮食减少50% food={destCity.GetAttr("food")}");
+            GameLog.Info($"OnBattleEnd 攻方胜利，粮食减半50% food={destCity.GetAttr("food")}");
+        }
+        else
+        {
+            if (gateAvgHp >= 0)
+            {
+                float oldWall = destCity.GetAttr("wall");
+                float newWall = Math.Max(0, gateAvgHp);
+                destCity.AddAttr("wall", newWall - oldWall, "战斗结束后城门平均血量设为城墙值");
+                GameLog.Info($"OnBattleEnd 城门平均血量设为城墙值 gateAvgHp={gateAvgHp} wall={destCity.GetAttr("wall")}");
+            }
+            else
+            {
+                GameLog.Info($"OnBattleEnd 无城门，城墙值不变 wall={destCity.GetAttr("wall")}");
+            }
+
+            if (round > SystemConst.City.HAPPY_DECAY_START_ROUND)
+            {
+                float happyDecay = (round - SystemConst.City.HAPPY_DECAY_START_ROUND) * SystemConst.City.HAPPY_DECAY_PER_ROUND;
+                destCity.AddAttr("happy", -happyDecay, "战斗回合过多民心衰减");
+                GameLog.Info($"OnBattleEnd 战斗{round}回合，民心衰减 happyDecay={happyDecay} happy={destCity.GetAttr("happy")}");
+            }
+
+            if (round > SystemConst.City.DEFENCE_DISCOUNT_START_ROUND)
+            {
+                float discount = SysFormula.City.GetDefenceDevDiscount(round);
+                destCity.defenceDevDiscount = discount;
+                GameLog.Info($"OnBattleEnd 战斗{round}回合，防御方dev打折倍率={discount}");
+            }
         }
 
         foreach (var kvp in attackerSoldierCount)

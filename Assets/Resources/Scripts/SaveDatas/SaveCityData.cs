@@ -19,6 +19,11 @@ public class SaveCityData
     public int ownerHeroId;
     [NonSerialized]
     public Dictionary<int, int> actions = new Dictionary<int, int>();
+    /// <summary>
+    /// 战斗导致的防御方dev收入打折倍率（仅当回合有效，使用后重置）
+    /// </summary>
+    [NonSerialized]
+    public float defenceDevDiscount = 1f;
 
     public bool IsInWar
     {
@@ -348,9 +353,13 @@ public class SaveCityData
     public float GetProductionMultiplier()
     {
         float happyMult = SysFormula.City.GetHappyMultiplier((int)Math.Floor(happy));
+        float result;
         if (IsInWar)
-            return SystemConst.City.WAR_PRODUCTION_MULTIPLIER + happyMult - 1f;
-        return happyMult;
+            result = SystemConst.City.WAR_PRODUCTION_MULTIPLIER + happyMult - 1f;
+        else
+            result = happyMult;
+        result *= defenceDevDiscount;
+        return result;
     }
 
     public void MoveHeroTo(int[] heroIds, int destCityId)
