@@ -19,6 +19,8 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
     public TMP_Text cityWall;
     public TMP_Text cityHappy;
 
+    public TMP_Text cityOwner;
+
     public Button btnLevel;
     public Button btnFood;
     public Button btnSoldier;
@@ -39,6 +41,7 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
         citySoldier.raycastTarget = false;
         cityWall.raycastTarget = false;
         cityHappy.raycastTarget = false;
+        cityOwner.raycastTarget = false;
     }
 
     public void SetManager(RankPanelManager rankPanelManager)
@@ -109,7 +112,11 @@ public class RankCellInfoCity : MonoBehaviour, IRankDetailInfo, IRankDetailInfoH
         citySoldier.text = Mathf.Floor(cityData.soldier).ToString();
         cityWall.text = Mathf.Floor(cityData.wall).ToString();
         cityHappy.text = Mathf.Floor(cityData.happy).ToString();
-        
+
+        var forceCfg = ForceConfig.GetConfig(cityData.forceId);
+        Color forceColor = SysColor.GetForceColor(cityData.forceId);
+        string colorHex = ColorUtility.ToHtmlStringRGB(forceColor);
+        cityOwner.text = $"<color=#{colorHex}>{forceCfg.Cname}</color>";
     }
 
     // Update is called once per frame

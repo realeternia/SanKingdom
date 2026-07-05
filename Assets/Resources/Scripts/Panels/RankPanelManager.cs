@@ -76,7 +76,7 @@ public class RankPanelManager : MonoBehaviour
         
         if(rankRegionMode.transform.childCount == 0)
         {
-            string[] modeNames = {"势力武将", "势力战力", "势力城市"};
+            string[] modeNames = {"势力武将", "全武将", "势力战力", "势力城市", "全城市"};
             for(int i = 0; i < modeNames.Length; i++)
             {
                 GameObject cell = Instantiate(rankCellModePrefab, rankRegionMode.transform);
@@ -163,12 +163,13 @@ public class RankPanelManager : MonoBehaviour
         foreach (Transform child in rankRegionMain.transform)
             Destroy(child.gameObject);
 
+        string modeName = lastSelectedMode.modeName.text;
         var prefabName = "RankCellMain";
-        if(lastSelectedMode.modeName.text == "势力城市")
+        if(modeName == "势力城市" || modeName == "全城市")
             prefabName = "RankCellMainCity";
-        else if(lastSelectedMode.modeName.text == "势力战力")
+        else if(modeName == "势力战力")
             prefabName = "RankCellMainForce"; // 使用城市模板显示势力信息，但会用RankCellInfoForce组件
-        else if(lastSelectedMode.modeName.text == "势力武将")
+        else if(modeName == "势力武将" || modeName == "全武将")
             prefabName = "RankCellMain"; // 显示武将列表
 
         // 实例化RankCellInfoHeader
@@ -185,7 +186,9 @@ public class RankPanelManager : MonoBehaviour
         if (prefabName == "RankCellMain")
         {
             List<int> heroList = new List<int>();
-            var heroes = GameManager.Instance.SaveData.heros.Where(h => h.state == HeroState.Normal && h.forceId == lastSelectedForce.forceId).ToList();
+            var heroes = (modeName == "全武将")
+                ? GameManager.Instance.SaveData.heros
+                : GameManager.Instance.SaveData.heros.Where(h => h.forceId == lastSelectedForce.forceId);
             foreach (var heroData in heroes)
             {
                 GameObject cell = Instantiate(rankCellInfoPrefab, rankRegionMain.transform);
@@ -203,7 +206,10 @@ public class RankPanelManager : MonoBehaviour
         }
         else if (prefabName == "RankCellMainCity")
         {
-            foreach (var cityData in GameManager.Instance.GetCitiesByForce(lastSelectedForce.forceId))
+            var cities = (modeName == "全城市")
+                ? GameManager.Instance.SaveData.cities
+                : GameManager.Instance.GetCitiesByForce(lastSelectedForce.forceId);
+            foreach (var cityData in cities)
             {
                 var cityConfig = WorldConfig.GetConfig(cityData.cityId);
                 if (cityConfig == null)
@@ -289,10 +295,21 @@ public class RankPanelManager : MonoBehaviour
         
         // 更新缓存的上次选中模式
         lastSelectedMode = cellMode;
+
+        // "全武将" / "全城市" / "势力战力" 不需要按势力过滤，隐藏势力选择面板
+        UpdateForcePanelVisibility();
         
         // 重新加载英雄单元格
         if (!init)
             LoadHeroCells();
+    }
+
+    private void UpdateForcePanelVisibility()
+    {
+        if (lastSelectedMode == null) return;
+        string modeName = lastSelectedMode.modeName.text;
+        bool showForcePanel = (modeName == "势力武将" || modeName == "势力城市");
+        scrollRectForce.gameObject.SetActive(showForcePanel);
     }
 
     public void OnSelectForce(RankCellForce cellForce, bool init = false)

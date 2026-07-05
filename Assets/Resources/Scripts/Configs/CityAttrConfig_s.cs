@@ -142,7 +142,7 @@ namespace CommonConfig
             config[14] = new CityAttrConfig(14, "horse", "马", true, true, false, false, 0, 99, "cityhorse");
             config[15] = new CityAttrConfig(15, "wood", "木材", true, true, false, false, 0, 99, "citywood");
             config[16] = new CityAttrConfig(16, "stone", "石料", true, true, false, false, 0, 99, "citystone");
-            config[17] = new CityAttrConfig(17, "elephant", "战象", true, true, false, true, 0, 99, "cityelephant");
+            config[17] = new CityAttrConfig(17, "elephant", "战象", true, true, false, false, 0, 99, "cityelephant");
             config[18] = new CityAttrConfig(18, "salt", "盐", true, false, false, true, 0, 9, "citysalt");
             config[19] = new CityAttrConfig(19, "fish", "鱼", true, false, false, true, 0, 9, "cityfish");
             config[101] = new CityAttrConfig(101, "herostar", "名将", false, false, false, true, 0, 99, "citytroop1");

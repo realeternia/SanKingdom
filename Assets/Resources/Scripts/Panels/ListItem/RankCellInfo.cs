@@ -130,7 +130,9 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         charm = heroData.charm;
 
         var bg = GetComponent<Image>();
-        bg.color = SysColor.GetForceColor(heroData.forceId);
+        bg.color = (heroData.forceId == SystemConst.Hero.WILD_FORCE_ID)
+            ? new Color(0.3f, 0.3f, 0.3f, 1f)
+            : SysColor.GetForceColor(heroData.forceId);
 
         heroStr.text = SysColor.GetColoredText("str", heroData.str);
         heroInte.text = SysColor.GetColoredText("inte", heroData.inte);
@@ -139,11 +141,24 @@ public class RankCellInfo : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         heroCharm.text = SysColor.GetColoredText("charm", heroData.charm);      
         heroPic.gameObject.SetActive(false);
 
-        if (heroData.cityId > 0)
+ 
+        if (heroData.state == HeroState.Wild)
+        {
+            var cityCfg = WorldConfig.GetConfig(heroData.cityId);
+            ownerName.text = "<color=yellow>" + cityCfg.Cname + "</color>-<color=green>" + "<color=#888888>在野</color>";
+        }
+        else if (heroData.cityId > 0)
         {
             var cityData = GameManager.Instance.GetCity(heroData.cityId);
             var cityCfg = WorldConfig.GetConfig(heroData.cityId);
             ownerName.text = "<color=yellow>" + cityCfg.Cname + "</color>-<color=green>" + ForceConfig.GetConfig(cityData.forceId).Cname + "</color>";
+        }
+        else if (heroData.state == HeroState.Catched)
+        {
+            var forceCfg = ForceConfig.GetConfig(heroData.forceId);
+            Color forceColor = SysColor.GetForceColor(heroData.forceId);
+            string colorHex = ColorUtility.ToHtmlStringRGB(forceColor);
+            ownerName.text = $"<color=#{colorHex}>{forceCfg.Cname}</color>-<color=red>俘虏</color>";
         }
         else
         {

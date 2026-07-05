@@ -209,8 +209,8 @@ namespace CommonConfig
             config[21406] = new CityDevConfig(21406, "铁匠铺", "提升铁", "normal", false, false, "", "steel", 0, 0, "steel", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f, "");
             config[21407] = new CityDevConfig(21407, "象棚", "提升战象", "normal", true, false, "", "elephant", 0, 0, "elephant", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f, "");
             config[21408] = new CityDevConfig(21408, "金矿", "提升金钱", "normal", true, false, "", "gold", 0, 0, "gold", new float[]{8f,6f,5f,4f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 10f, 5f, 8f, "");
-            config[21409] = new CityDevConfig(21409, "盐矿", "提升盐", "normal", true, false, "", "salt", 0, 0, "salt", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Inte"}, "", 10f, 5f, 8f, "");
-            config[21410] = new CityDevConfig(21410, "渔场", "提升鱼", "normal", true, false, "", "fish", 0, 0, "fish", new float[]{5f,4f,3f,2f}, "exp", new float[]{2f,1.5f,1f,0.5f}, new string[]{"Fair","Str"}, "", 10f, 5f, 8f, "");
+            config[21409] = new CityDevConfig(21409, "盐矿", "提升盐", "normal", true, false, "", "salt", 0, 0, "gold", new float[]{3f,2f,2f,1f}, "soldier", new float[]{6f,5f,4f,3f}, new string[]{"Fair","Inte"}, "", 10f, 5f, 8f, "");
+            config[21410] = new CityDevConfig(21410, "渔场", "提升鱼", "normal", true, false, "", "fish", 0, 0, "gold", new float[]{3f,2f,2f,1f}, "food", new float[]{12f,10f,8f,5f}, new string[]{"Fair","Str"}, "", 10f, 5f, 8f, "");
             config[21999] = new CityDevConfig(21999, "赋闲", "免除工作", "normal", false, false, "", "ququ", 0, 0, "", new float[0], "", new float[0], null, "", 0f, 0f, 0f, "");
 
             RebuildIndex();
