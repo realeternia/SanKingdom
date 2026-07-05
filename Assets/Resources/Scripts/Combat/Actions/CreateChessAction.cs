@@ -93,6 +93,11 @@ public class CreateChessAction : ChessAction
                 chessObj.isGate = true;
             else if (battleUnitCfg.UnitType == 2)
                 chessObj.isWall = true;
+            else if (battleUnitCfg.UnitType == 3)
+            {
+                chessObj.isTower = true;
+                chessObj.noMoveCount = 99999;
+            }
             else
             {
                 chessObj.isFakeHero = IsFakeHero || battleUnitCfg.Model == "UnitHero";
@@ -103,7 +108,7 @@ public class CreateChessAction : ChessAction
         chessObj.hp = chessObj.maxHp;
         chessObj.noActionCount = NoActionCount;
         battleManager.chessList.Add(chessObj);
-        if (!chessObj.isGate)
+        if (!chessObj.isGate && !chessObj.isTower)
             battleManager.OccupyGrid(chessObj.id, chessObj.position);
         chessObj.Init(ForceId);
 

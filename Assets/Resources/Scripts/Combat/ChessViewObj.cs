@@ -32,7 +32,7 @@ public class ChessViewObj : MonoBehaviour
         this.chessUnit = chessUnit;
         this.outlineColor = c;
 
-        if (chessUnit.isGate || chessUnit.isWall)
+        if (chessUnit.isGate || chessUnit.isWall || chessUnit.isTower)
         {
             if (!BattleManager.Instance.quickMode)
                 CreateHUD();

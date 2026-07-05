@@ -239,7 +239,7 @@ public abstract class CityStrategyBase
 
         // 弓兵候选（按适配分排序）
         var bowCandidates = ArmsConfig.ConfigList
-            .Where(a => a.Type == ArmsType.SodBow && a.Id > SystemConst.Hero.DEFAULT_ARMS_ID)
+            .Where(a => a.CanAssign && a.Type == ArmsType.SodBow && a.Id > SystemConst.Hero.DEFAULT_ARMS_ID)
             .Select(a => new { Arms = a, Score = CalculateArmsFitScore(a, str, leadship, inte) })
             .OrderByDescending(x => x.Score)
             .ToList();
@@ -249,7 +249,7 @@ public abstract class CityStrategyBase
 
         // 近战最佳候选（骑兵/步兵），用于比较
         var meleeCandidates = ArmsConfig.ConfigList
-            .Where(a => a.Type != ArmsType.SodBow && a.Id > SystemConst.Hero.DEFAULT_ARMS_ID)
+            .Where(a => a.CanAssign && a.Type != ArmsType.SodBow && a.Id > SystemConst.Hero.DEFAULT_ARMS_ID)
             .Select(a => new { Arms = a, Score = CalculateArmsFitScore(a, str, leadship, inte) })
             .OrderByDescending(x => x.Score)
             .ToList();
@@ -285,7 +285,7 @@ public abstract class CityStrategyBase
 
         // 按主将属性适配度评分所有非动员兵兵种
         var candidates = ArmsConfig.ConfigList
-            .Where(a => a.Id > SystemConst.Hero.DEFAULT_ARMS_ID)
+            .Where(a => a.CanAssign && a.Id > SystemConst.Hero.DEFAULT_ARMS_ID)
             .Select(a => new
             {
                 Arms = a,

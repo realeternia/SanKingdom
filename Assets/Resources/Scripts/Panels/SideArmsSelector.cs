@@ -49,7 +49,7 @@ public class SideArmysSelector : MonoBehaviour
         int count = 0;
         foreach (var config in ArmsConfig.ConfigList)
         {
-            if (!HasResourceProduction(config, force))
+            if (!config.CanAssign || !HasResourceProduction(config, force))
                 continue;
 
             GameObject item = Instantiate(itemPrefab.gameObject, subRegionMain.transform);

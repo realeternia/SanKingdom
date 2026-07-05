@@ -214,6 +214,10 @@ public static class SystemConst
         /// </summary>
         public const float GATE_MIN_WALL = 100f;
         /// <summary>
+        /// 生成箭塔所需的最小城防值
+        /// </summary>
+        public const float TOWER_MIN_WALL = 300f;
+        /// <summary>
         /// 战斗导致dev打折的起始回合数
         /// </summary>
         public const int DEFENCE_DISCOUNT_START_ROUND = 10;
@@ -345,14 +349,7 @@ public static class SystemConst
         /// 防守方布阵区域起始格子Z
         /// </summary>
         public const int DEPLOY_SIDE2_BASE_GZ = 13;
-        /// <summary>
-        /// 城门血量
-        /// </summary>
-        public const int GATE_HP = 100;
-        /// <summary>
-        /// 城墙血量
-        /// </summary>
-        public const int WALL_HP = 999999;
+
         /// <summary>
         /// 城门BattleUnitId
         /// </summary>
@@ -361,6 +358,10 @@ public static class SystemConst
         /// 墙BattleUnitId
         /// </summary>
         public const int WALL_UNIT_ID = 502002;
+        /// <summary>
+        /// 箭塔BattleUnitId
+        /// </summary>
+        public const int TOWER_UNIT_ID = 502003;
         /// <summary>
         /// 默认暴击伤害倍率
         /// </summary>

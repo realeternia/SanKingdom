@@ -220,7 +220,7 @@ public class BattleManager : MonoBehaviour
         // 清除LoadFromFile恢复的城门/墙棋子视图（GameUpdate中会重建）
         foreach (var chess in chessList)
         {
-            if ((chess.isGate || chess.isWall) && chess.viewObj != null)
+            if ((chess.isGate || chess.isWall || chess.isTower) && chess.viewObj != null)
             {
                 chess.viewObj.DestroyHUD();
                 UnityEngine.Object.Destroy(chess.viewObj.gameObject);
@@ -1086,13 +1086,13 @@ public class BattleManager : MonoBehaviour
     {
         foreach (var chess in chessList)
         {
-            if (chess.hp <= 0 || (!chess.isGate && !chess.isWall)) continue;
+            if (chess.hp <= 0 || (!chess.isGate && !chess.isWall && !chess.isTower)) continue;
             var (cgx, cgz) = WorldToGridCoord(chess.position);
             if (cgx == gx && cgz == gz)
             {
                 if (chess.isWall) return true; // 墙阻挡所有人
-                if (chess.isGate && chess.forceId != moverForceId) return true; // 城门阻挡敌方
-                return false; // 友方城门放行
+                if ((chess.isGate || chess.isTower) && chess.forceId != moverForceId) return true; // 城门/箭塔阻挡敌方
+                return false; // 友方城门/箭塔放行
             }
         }
         return false;
@@ -1130,7 +1130,29 @@ public class BattleManager : MonoBehaviour
             SpawnUnitsForRegion(defForce, unitId, GridCoordToWorld(gx, gz), 0f, null, hp);
         }
 
-        GameLog.Info($"InitWallsAndGates cityId={cityId} wall={wallValue} gateHp={gateHp}");
+        // 在两个城门中间的后方一格生成箭塔（城防300以上才有）
+        int towerGx = SystemConst.Battle.DEPLOY_SIDE2_BASE_GX;
+        int towerGz = baseGz + 2;
+        if (wallValue >= SystemConst.City.TOWER_MIN_WALL)
+        {
+            int towerHp = Math.Max(1, gateHp / 2);
+            SpawnUnitsForRegion(defForce, SystemConst.Battle.TOWER_UNIT_ID, GridCoordToWorld(towerGx, towerGz), 0f, null, towerHp);
+            GameLog.Info($"InitWallsAndGates cityId={cityId} wall={wallValue} gateHp={gateHp} towerHp={towerHp}");
+        }
+        else
+        {
+            GameLog.Info($"InitWallsAndGates cityId={cityId} wall={wallValue} gateHp={gateHp} towerHp=0 (城防不足{SystemConst.City.TOWER_MIN_WALL})");
+        }
+    }
+
+    private bool HasFriendlyTowerChess(int forceId)
+    {
+        foreach (var chess in chessList)
+        {
+            if (chess.isTower && chess.hp > 0 && chess.forceId == forceId)
+                return true;
+        }
+        return false;
     }
 
     private bool HasFriendlyGateChess(int forceId)
@@ -1146,10 +1168,10 @@ public class BattleManager : MonoBehaviour
     private void FreezeDefenders()
     {
         int defForceId = playerInfoList[1].forceId;
-        if (!HasFriendlyGateChess(defForceId)) return;
+        if (!HasFriendlyTowerChess(defForceId)) return;
         foreach (var chess in chessList)
         {
-            if (chess.forceId == defForceId && !chess.isGate && !chess.isWall)
+            if (chess.forceId == defForceId && !chess.isGate && !chess.isWall && !chess.isTower)
                 chess.noActionCount = 99999;
         }
     }
@@ -1160,7 +1182,7 @@ public class BattleManager : MonoBehaviour
         if (HasFriendlyGateChess(defForceId)) return;
         foreach (var chess in chessList)
         {
-            if (chess.forceId == defForceId && !chess.isGate && !chess.isWall)
+            if (chess.forceId == defForceId && !chess.isGate && !chess.isWall && !chess.isTower)
                 chess.noActionCount = 0;
         }
         GameLog.Info("城门全灭，防御方开始行动");
@@ -1198,8 +1220,8 @@ public class BattleManager : MonoBehaviour
             BattleStatManager.SetHeroDead(dieUnit.forceId, dieUnit.heroId);
         }
 
-        // 城门死亡：检查是否解冻防御方
-        if (dieUnit.isGate)
+        // 城门/箭塔死亡：检查是否解冻防御方
+        if (dieUnit.isGate || dieUnit.isTower)
         {
             UnfreezeDefendersIfNoGates();
         }
@@ -1218,7 +1240,7 @@ public class BattleManager : MonoBehaviour
         var unit = GameManager.Instance.GetHero(dieUnit.heroId);
         foreach (var chessComponent in chessList)
         {
-            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow && !chessComponent.isGate && !chessComponent.isWall)
+            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow && !chessComponent.isGate && !chessComponent.isWall && !chessComponent.isTower)
             {
                 int sideIndex = -1;
                 for (int i = 0; i < playerInfoList.Count; i++)

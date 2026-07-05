@@ -22,6 +22,7 @@ public class Chess : SceneObj
     public bool isSodNull;
     public bool isGate;
     public bool isWall;
+    public bool isTower;
 
     public int heroId;
     public int heroId2;
@@ -154,6 +155,33 @@ public class Chess : SceneObj
                     model.transform.position = new Vector3(position.x - 4f, position.y, position.z);
                 }
             }
+            return;
+        }
+
+        if (isTower)
+        {
+            if (BattleManager.Instance.showUI && !BattleManager.Instance.quickMode)
+            {
+                var go = new GameObject($"Tower_{id}");
+                go.transform.SetParent(BattleManager.Instance.battleUIManager.NodeUnits.transform);
+                go.transform.position = position;
+                viewObj = go.AddComponent<ChessViewObj>();
+                viewObj.Init(this, Color.white);
+
+                var unitConfig = BattleUnitConfig.GetConfig(battleUnitId);
+                var prefab = ResourceCache.LoadPrefabBattle(ResPath.Prefab.UnitModel(unitConfig.Model));
+                if (prefab != null)
+                {
+                    var model = UnityEngine.Object.Instantiate(prefab, go.transform);
+                    model.transform.position = new Vector3(position.x - 4f, position.y, position.z);
+                }
+            }
+
+            var towerArmsCfg = ArmsConfig.GetConfig(armsId);
+            hitEffect = towerArmsCfg.HitEffect;
+            missileSpeed = towerArmsCfg.MissileSpeed;
+            missileHeight = towerArmsCfg.MissileHight;
+            attackRange = towerArmsCfg.Range;
             return;
         }
 
@@ -500,7 +528,7 @@ public class Chess : SceneObj
     // 计算目标分数
     private float CalculateTargetScore(Chess target, float distance)
     {
-        if (target.isGate)
+        if (target.isGate || target.isTower)
         {
             float score = SystemConst.Battle.TARGET_SCORE_GATE;
             if (distance < attackRange * 2)

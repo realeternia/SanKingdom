@@ -210,8 +210,14 @@ public class GameManager : MonoBehaviour
             foreach (var warPlan in force.warPlans)
             {
                 var citySrc = GetCity(warPlan.sourceCityId);
+                var destCity = GetCity(warPlan.targetCityId);
+                if (destCity.forceId == force.forceId)
+                {
+                    GameLog.Warn($"ForceTurnCoroutine 目标城市已归属己方，跳过战斗 targetCityId={warPlan.targetCityId} forceId={force.forceId}");
+                    continue;
+                }
                 var (attackTroops, attackSoldierMap) = TroopsBuilder.BuildAttackTroopsFromHeroList(citySrc, warPlan.heroIds, warPlan.heroSoldierDict, warPlan.heroArmsDict);
-                var destForce = GetForce(GetCity(warPlan.targetCityId).forceId);
+                var destForce = GetForce(destCity.forceId);
 
                 if (!force.isPlayer && destForce.isPlayer)
                 {

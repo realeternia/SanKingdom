@@ -4906,7 +4906,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -24.8, y: -66.2}
+  m_AnchoredPosition: {x: -24.800003, y: -66.2}
   m_SizeDelta: {x: 160, y: 10}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1696893887
@@ -5324,6 +5324,9 @@ MonoBehaviour:
     currentForceIndex: 0
     forceRelation:
       relations: []
+  GameEventLog:
+    events: []
+    nextEventId: 1
 --- !u!114 &1788356934
 MonoBehaviour:
   m_ObjectHideFlags: 0
