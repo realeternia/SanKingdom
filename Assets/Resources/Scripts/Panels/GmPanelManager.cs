@@ -1,8 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CommonConfig;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class GmPanelManager : MonoBehaviour
 {
@@ -11,6 +13,14 @@ public class GmPanelManager : MonoBehaviour
     public Button beAttackBtn;
     public Button fairBtn;
     public Button closeBtn;
+    public Button wallBtn;
+
+    private const float GM_WALL_FULL = 350f;
+    private const float GM_WALL_MINIMAL = 30f;
+
+    private bool hasWall = true;
+    private float savedWall = -1f;
+    private int savedCityId = 0;
 
     void Start()
     {
@@ -22,6 +32,40 @@ public class GmPanelManager : MonoBehaviour
         {
             PanelManager.Instance.HideGmPanel();
         });
+        if (wallBtn != null)
+        {
+            wallBtn.onClick.AddListener(OnWallToggle);
+            UpdateWallBtnLabel();
+        }
+    }
+
+    private void OnWallToggle()
+    {
+        hasWall = !hasWall;
+        UpdateWallBtnLabel();
+    }
+
+    private void UpdateWallBtnLabel()
+    {
+        if (wallBtn == null) return;
+        var label = wallBtn.GetComponentInChildren<TMP_Text>();
+        if (label != null)
+            label.text = hasWall ? "城墙: 开" : "城墙: 关";
+    }
+
+    private void TryApplyWall(int cityId)
+    {
+        var city = GameManager.Instance.GetCity(cityId);
+        if (city == null)
+        {
+            GameLog.Warn($"GmPanelManager.TryApplyWall 找不到城市 cityId={cityId}");
+            return;
+        }
+        savedWall = city.wall;
+        savedCityId = cityId;
+        float targetWall = hasWall ? GM_WALL_FULL : GM_WALL_MINIMAL;
+        city.wall = targetWall;
+        GameLog.Info($"GmPanelManager wall cityId={cityId} saved={savedWall} → {targetWall} (hasWall={hasWall})");
     }
 
     private void StartTestBattle(bool quickMode, bool showUI)
@@ -68,6 +112,8 @@ public class GmPanelManager : MonoBehaviour
 
         var firstCity = GameManager.Instance.SaveData.cities.FirstOrDefault();
         int battleCityId = firstCity != null ? firstCity.cityId : 0;
+
+        TryApplyWall(battleCityId);
 
         BattleManager.Instance.BattleBegin(force1, force2, attackTroops, defenderTroops, attackSoldierMap, defenderSoldierMap, battleCityId);
 
@@ -154,8 +200,9 @@ public class GmPanelManager : MonoBehaviour
 
         PanelManager.Instance.HideGmPanel();
 
-        GameManager.Instance.StartTestDefense(attackerForce, targetCity.cityId,
-            new List<int> { srcCity.cityId }, attackTroops, attackSoldierMap);
+        TryApplyWall(targetCity.cityId);
+
+        GameManager.Instance.StartTestDefense(attackerForce, targetCity.cityId, new List<int> { srcCity.cityId }, attackTroops, attackSoldierMap);
     }
 
     private void OnFair()

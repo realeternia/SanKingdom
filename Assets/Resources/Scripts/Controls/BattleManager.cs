@@ -1145,24 +1145,19 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private bool HasFriendlyGateChess(int forceId)
-    {
-        foreach (var chess in chessList)
-        {
-            if (chess.isGate && chess.hp > 0 && chess.forceId == forceId)
-                return true;
-        }
-        return false;
-    }
-
     private void FreezeDefenders()
     {
         int defForceId = playerInfoList[1].forceId;
-        if (!HasFriendlyGateChess(defForceId)) return;
+        var hasGate = false;
+        foreach (var chess in chessList)
+        {
+            if (chess.isGate && chess.hp > 0 && chess.forceId == defForceId)
+                hasGate = true;
+        }
         foreach (var chess in chessList)
         {
             if (chess.forceId == defForceId && !chess.isGate && !chess.isWall && !chess.isTower)
-                chess.noActionCount = 99999;
+                chess.noActionCount = hasGate ? 99999 : 0;
         }
     }
 
