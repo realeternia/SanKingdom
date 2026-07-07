@@ -29,7 +29,15 @@ public class AttackAction : ChessAction
         GameLog.Info($"AttackAction[{ActionId}] src={SourceId} tgt={TargetId}");
 
         sourceChess?.viewObj?.FaceTo(targetChess.position);
-        sourceChess?.viewObj?.PlaySodAnim("sodattack");
+
+        var armsConfig = ArmsConfig.GetConfig(sourceChess.armsId);
+        var animName = "sodattack";
+        if (armsConfig.AttackAnimCount > 1)
+        {
+            var randIdx = BattleRandom.Range(0, armsConfig.AttackAnimCount);
+            animName = randIdx == 0 ? "sodattack" : $"sodattack{randIdx}";
+        }
+        sourceChess?.viewObj?.PlaySodAnim(animName);
 
         // 伤害计算（从Chess.Attack移入）
         var (damage, isCrit, isDodge, effect) = Chess.CalculateAttackDamage(sourceChess, targetChess, DamType, HitEffect);
@@ -38,7 +46,6 @@ public class AttackAction : ChessAction
             return;
 
         // 根据ArmsConfig.HitDelay延迟伤害结算
-        var armsConfig = ArmsConfig.GetConfig(sourceChess.armsId);
         var hitDelayTicks = BattleManager.Instance.GetTickFromTime(armsConfig.HitDelay);
 
         if (hitDelayTicks <= 0)
