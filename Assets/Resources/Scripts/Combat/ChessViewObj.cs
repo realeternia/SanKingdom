@@ -199,9 +199,22 @@ public class ChessViewObj : MonoBehaviour
             }
             positions.Sort((a, b) => a.distance.CompareTo(b.distance));
 
-            for (int i = currentCount; i < targetCount && i < 25; i++)
+            int fillCount = targetCount - currentCount;
+            for (int i = 0; i < fillCount && (currentCount + i) < 25; i++)
             {
-                int index = positions[i].index;
+                int listIndex;
+                // modelCountFactor=4为标准，更大时均匀分散站位，避免集中在中心
+                if (modelCountFactor <= 4 || fillCount <= 1)
+                {
+                    listIndex = currentCount + i;
+                }
+                else
+                {
+                    float t = (float)i / (fillCount - 1);
+                    listIndex = Mathf.RoundToInt(t * (positions.Count - 1));
+                }
+
+                int index = positions[listIndex].index;
                 int row = index / gridSize;
                 int col = index % gridSize;
 
@@ -211,10 +224,11 @@ public class ChessViewObj : MonoBehaviour
                     offsetZ + row * spacing
                 );
 
+                int soldierIndex = currentCount + i;
                 GameObject soldier = UnityEngine.Object.Instantiate(soldierPrefab, transform);
                 soldier.transform.localPosition = localPos;
                 soldier.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-                soldier.name = $"Soldier_{i}";
+                soldier.name = $"Soldier_{soldierIndex}";
                 
                 // 不对士兵模型进行渲染设置
                 // var meshMgr = soldier.transform.Find("body")?.GetComponent<UnityMeshMgr>();
