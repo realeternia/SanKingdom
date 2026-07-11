@@ -243,10 +243,11 @@ public static class SysFormula
                     baseSuccessRate += GetAdditiveBonus(targetConfig, executorConfig);
 
                     int charm = executorHero.GetAttr("charm");
-                    int kingHeroId = ForceConfig.GetConfig(executorHero.forceId).HeroId;
+                    int executorForceId = executorHero.forceId;
+                    int kingHeroId = ForceConfig.GetConfig(executorForceId).HeroId;
                     bool isKing = myHeroId == kingHeroId;
 
-                    // 乘算加成：魅力、君主、关系（Likes/Hates），彼此加法叠加
+                    // 乘算加成：魅力、君主、关系（LikeForces/HateForces），彼此加法叠加
                     int bonusPercent = 0;
                     if (charm > SystemConst.Hero.CHARM_BONUS_THRESHOLD)
                     {
@@ -256,7 +257,7 @@ public static class SysFormula
                     {
                         bonusPercent += SystemConst.Hero.KING_RECRUIT_MULTIPLIER - 100;
                     }
-                    bonusPercent += GetRelationBonusPercent(targetConfig, executorConfig, kingHeroId, isKing);
+                    bonusPercent += GetRelationBonusPercent(targetConfig, executorForceId);
 
                     baseSuccessRate = baseSuccessRate * (100 + bonusPercent) / 100;
                     if (baseSuccessRate < 0) baseSuccessRate = 0;
@@ -296,43 +297,37 @@ public static class SysFormula
         }
 
         /// <summary>
-        /// 乘算关系加成百分比：Likes/Hates（彼此加法叠加）
+        /// 乘算关系加成百分比：LikeForces/HateForces（按程度分级计算）
         /// </summary>
-        private static int GetRelationBonusPercent(HeroConfig targetConfig, HeroConfig executorConfig, int kingHeroId, bool isKing)
+        private static int GetRelationBonusPercent(HeroConfig targetConfig, int executorForceId)
         {
-            var kingConfig = HeroConfig.GetConfig(kingHeroId);
-
             int bonus = 0;
-            string executorName = executorConfig.Name;
-            string kingName = kingConfig.Name;
 
-            // 目标喜欢执行人 +10%
-            if (ContainsName(targetConfig.Likes, executorName))
-            {
-                bonus += SystemConst.Hero.RECRUIT_LIKE_EXECUTOR_BONUS;
-            }
-            // 目标喜欢君主 +10%（执行人即君主时不重复计算）
-            if (!isKing && ContainsName(targetConfig.Likes, kingName))
-            {
-                bonus += SystemConst.Hero.RECRUIT_LIKE_KING_BONUS;
-            }
-            // 目标厌恶执行人 -30%
-            if (ContainsName(targetConfig.Hates, executorName))
-            {
-                bonus += SystemConst.Hero.RECRUIT_HATE_EXECUTOR_PENALTY;
-            }
-            // 目标厌恶君主 -50%
-            if (ContainsName(targetConfig.Hates, kingName))
-            {
-                bonus += SystemConst.Hero.RECRUIT_HATE_KING_PENALTY;
-            }
+            int likeDegree = GetForceDegree(targetConfig.LikeForces, executorForceId);
+            if (likeDegree > 0)
+                bonus += likeDegree * SystemConst.Hero.RECRUIT_LIKE_BONUS_PER_DEGREE;
+
+            int hateDegree = GetForceDegree(targetConfig.HateForces, executorForceId);
+            if (hateDegree > 0)
+                bonus += hateDegree * SystemConst.Hero.RECRUIT_HATE_PENALTY_PER_DEGREE;
 
             return bonus;
         }
 
-        private static bool ContainsName(string[] names, string name)
+        private static int GetForceDegree(string[] forceEntries, int forceId)
         {
-            return names != null && Array.IndexOf(names, name) >= 0;
+            if (forceEntries == null) return 0;
+            string prefix = forceId + ";";
+            for (int i = 0; i < forceEntries.Length; i++)
+            {
+                if (forceEntries[i] != null && forceEntries[i].StartsWith(prefix))
+                {
+                    string degreeStr = forceEntries[i].Substring(prefix.Length);
+                    if (int.TryParse(degreeStr, out int degree))
+                        return degree;
+                }
+            }
+            return 0;
         }
 
         /// <summary>

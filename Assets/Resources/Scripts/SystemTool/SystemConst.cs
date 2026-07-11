@@ -110,21 +110,13 @@ public static class SystemConst
         /// </summary>
         public const int RECRUIT_RATE_MAX = 100;
         /// <summary>
-        /// 目标喜欢执行人时的加成
+        /// 好感度每级加成百分比
         /// </summary>
-        public const int RECRUIT_LIKE_EXECUTOR_BONUS = 10;
+        public const int RECRUIT_LIKE_BONUS_PER_DEGREE = 5;
         /// <summary>
-        /// 目标喜欢君主时的加成（执行人非君主才计算）
+        /// 厌恶度每级惩罚百分比
         /// </summary>
-        public const int RECRUIT_LIKE_KING_BONUS = 10;
-        /// <summary>
-        /// 目标厌恶执行人时的惩罚
-        /// </summary>
-        public const int RECRUIT_HATE_EXECUTOR_PENALTY = -30;
-        /// <summary>
-        /// 目标厌恶君主时的惩罚
-        /// </summary>
-        public const int RECRUIT_HATE_KING_PENALTY = -50;
+        public const int RECRUIT_HATE_PENALTY_PER_DEGREE = -8;
         /// <summary>
         /// 执行人与目标派系相同时的加成（加法，直接加到基础率）
         /// </summary>

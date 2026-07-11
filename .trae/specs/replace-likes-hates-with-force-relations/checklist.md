@@ -1,0 +1,9 @@
+- [x] HeroConfig_s.cs 中 Likes/Hates 字段已替换为 LikeForces/HateForces
+- [x] HeroConfig_s.cs fieldMeta 中 key 和标签已更新
+- [x] HeroConfig_s.cs 构造函数参数和赋值已更新
+- [x] HeroConfig_s.cs Load() 中所有英雄数据已转换为 forceId;degree 格式
+- [x] SystemConst.cs 旧常量已删除，新常量 RECRUIT_LIKE_BONUS_PER_DEGREE 和 RECRUIT_HATE_PENALTY_PER_DEGREE 已添加
+- [x] SysFormula.cs ContainsName 已删除，GetForceDegree 已添加（解析 forceId;degree 返回 degree）
+- [x] SysFormula.cs GetRelationBonusPercent 已重写为按 forceId 匹配 + degree * PER_DEGREE 计算
+- [x] HeroInfoPanelManager.cs UI 展示已改为显示势力名+程度
+- [x] 无编译错误：代码中无残留的 Likes/Hates 引用

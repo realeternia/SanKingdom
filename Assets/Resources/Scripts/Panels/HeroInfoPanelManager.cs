@@ -455,14 +455,31 @@ public class HeroInfoPanelManager : MonoBehaviour
         aihaoText.text = heroConfig.Aihao != null && heroConfig.Aihao.Length > 0 
             ? string.Join(" ", heroConfig.Aihao) : "无";
         paixiText.text = string.IsNullOrEmpty(heroConfig.Paixi) ? "无" : heroConfig.Paixi;
-        likesText.text = heroConfig.Likes != null && heroConfig.Likes.Length > 0 
-            ? string.Join(" ", heroConfig.Likes) : "无";
-        hatesText.text = heroConfig.Hates != null && heroConfig.Hates.Length > 0 
-            ? string.Join(" ", heroConfig.Hates) : "无";
+        likesText.text = heroConfig.LikeForces != null && heroConfig.LikeForces.Length > 0 
+            ? FormatForceEntries(heroConfig.LikeForces) : "无";
+        hatesText.text = heroConfig.HateForces != null && heroConfig.HateForces.Length > 0 
+            ? FormatForceEntries(heroConfig.HateForces) : "无";
         storyText.text = heroConfig.Story != null && heroConfig.Story.Length > 0 
             ? string.Join(" ", heroConfig.Story) : "无";
 
         UpdateArmsPanel(heroConfig);
+    }
+
+    private string FormatForceEntries(string[] forceEntries)
+    {
+        var parts = new List<string>();
+        foreach (var entry in forceEntries)
+        {
+            if (string.IsNullOrEmpty(entry)) continue;
+            var segments = entry.Split(';');
+            if (segments.Length != 2) continue;
+            if (!int.TryParse(segments[0], out int forceId)) continue;
+            if (!int.TryParse(segments[1], out int degree)) continue;
+            var forceConfig = ForceConfig.GetConfig(forceId);
+            string forceName = forceConfig != null ? forceConfig.Cname : forceId.ToString();
+            parts.Add($"{forceName}({degree})");
+        }
+        return string.Join(" ", parts);
     }
 
     private void UpdateArmsPanel(HeroConfig heroConfig)
