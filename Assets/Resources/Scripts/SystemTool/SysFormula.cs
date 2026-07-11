@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CommonConfig;
 
 public enum HeroType
@@ -63,6 +64,27 @@ public static class SysFormula
             int atk = (int)(hero1.str * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Atk * (1f + sodBonus));
             int def = (int)(hero1.leadShip * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Def * (1f + sodBonus));
             return (atk, def);
+        }
+
+        /// <summary>
+        /// 估算部队列表总战力 = 各部队 士兵数 * (atk + def) / 2 累加。
+        /// 仅计算实际参战的前 MAX_BATTLE_HEROES_PER_SIDE 个部队，与 InitSummon 一致。
+        /// </summary>
+        public static long CalculateForcePower(List<SaveTroopsData> troops, Dictionary<int, int> soldierMap)
+        {
+            if (troops == null) return 0;
+            long power = 0;
+            int count = Math.Min(troops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
+            for (int i = 0; i < count; i++)
+            {
+                var troop = troops[i];
+                if (troop.heroId1 <= 0) continue;
+                int soldiers = (soldierMap != null && soldierMap.ContainsKey(troop.heroId1)) ? soldierMap[troop.heroId1] : 0;
+                if (soldiers <= 0) continue;
+                var (atk, def) = CalculateCombatAttrForTroop(troop);
+                power += (long)soldiers * (atk + def) / 2;
+            }
+            return power;
         }
 
         public static (int minDamage, int maxDamage) GetDamageRange(int levelDiff, bool isCrit, float critDamageMulti)

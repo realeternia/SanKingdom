@@ -387,6 +387,14 @@ public static class SystemConst
         /// </summary>
         public const int RANGE_ATTACK_THRESHOLD = 20;
         /// <summary>
+        /// 防御方主动出击的战力倍率阈值（防御方战力 > 攻击方战力 * 此值时出击）
+        /// </summary>
+        public const float DEFENDER_SALLY_POWER_RATIO = 1.5f;
+        /// <summary>
+        /// 无限行动/移动计数（冻结或锁定移动时使用）
+        /// </summary>
+        public const int INFINITE_COUNT = 99999;
+        /// <summary>
         /// 移动点阈值
         /// </summary>
         public const int MOVE_POINT_THRESHOLD = 10;

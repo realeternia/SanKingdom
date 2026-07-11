@@ -80,6 +80,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellInfoForce.cs" />
     <Compile Include="Assets\Resources\Scripts\BattleHeroInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffNoMove.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\ChessAI.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\SideArmsSelector.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillManager.cs" />

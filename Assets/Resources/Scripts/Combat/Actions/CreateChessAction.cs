@@ -96,7 +96,6 @@ public class CreateChessAction : ChessAction
             else if (battleUnitCfg.UnitType == 3)
             {
                 chessObj.isTower = true;
-                chessObj.noMoveCount = 99999;
             }
             else
             {

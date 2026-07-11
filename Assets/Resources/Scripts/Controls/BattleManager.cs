@@ -154,6 +154,7 @@ public class BattleManager : MonoBehaviour
         round = 0;
         turnPhase = BattleTurnPhase.RoundStart;
         playerDeployPositions.Clear();
+        ChessAI.Reset();
 
         InitUI(force1, force2);
 
@@ -255,13 +256,29 @@ public class BattleManager : MonoBehaviour
         var playerTroops = playerSideIndex == 0 ? attackTroops : defenderTroops;
 
         int count = Math.Min(playerTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
-        for (int i = 0; i < count; i++)
+        int placed = 0;
+        for (int row = 0; row < SystemConst.Battle.DEPLOY_GRID_ROWS && placed < count; row++)
         {
-            var troop = playerTroops[i];
-            var row = i / SystemConst.Battle.DEPLOY_GRID_COLS;
-            var col = i % SystemConst.Battle.DEPLOY_GRID_COLS;
-            var spawnPos = GetSpawnPosition(playerSideIndex + 1, row, col);
-            CreateDeployChess(playerForce, troop, spawnPos);
+            for (int col = 0; col < SystemConst.Battle.DEPLOY_GRID_COLS && placed < count; col++)
+            {
+                // 玩家防御方跳过箭塔预定格
+                if (playerSideIndex == 1 && DefenderTowerExists() && row == 0 && col == 1)
+                    continue;
+                var spawnPos = GetSpawnPosition(playerSideIndex + 1, row, col);
+                CreateDeployChess(playerForce, playerTroops[placed], spawnPos);
+                placed++;
+            }
+        }
+        // 溢出兜底：满编15英雄+箭塔时仅14格，剩余单位回退到箭塔格（箭塔将无法生成）
+        if (placed < count)
+        {
+            GameLog.Warn($"玩家布阵溢出 placed={placed} count={count}，剩余单位回退到箭塔格");
+            var fallbackPos = GetSpawnPosition(playerSideIndex + 1, 0, 1);
+            while (placed < count)
+            {
+                CreateDeployChess(playerForce, playerTroops[placed], fallbackPos);
+                placed++;
+            }
         }
 
         FillEmptyGridsWithSodNull();
@@ -323,6 +340,8 @@ public class BattleManager : MonoBehaviour
             {
                 int gx = baseGx + row;
                 int gz = baseGz + col;
+                if (IsTowerSpawnGrid(gx, gz))
+                    continue;
                 bool occupied = chessList.Any(c =>
                 {
                     var (cx, cz) = WorldToGridCoord(c.position);
@@ -445,7 +464,7 @@ public class BattleManager : MonoBehaviour
                     Vector3 worldPos = r.GetPoint(d);
                     var (gx, gz) = WorldToGridCoord(worldPos);
 
-                    if (IsInPlayerDeployArea(gx, gz))
+                    if (IsInPlayerDeployArea(gx, gz) && !IsTowerSpawnGrid(gx, gz))
                     {
                         // 在 chessList 中查找目标位置的棋子
                         Chess targetChess = null;
@@ -733,7 +752,7 @@ public class BattleManager : MonoBehaviour
                                 SkillManager.BattleBegin(chess);
                             battleBeginTick = 0;
                             battleInitialized = true;
-                            FreezeDefenders();
+                            ChessAI.SetBattleStarted();
                             turnPhase = BattleTurnPhase.RoundStart;
                         }
                     }
@@ -852,9 +871,11 @@ public class BattleManager : MonoBehaviour
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var player2 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
 
-        // 防守方出生点：退到城墙后第二排(row=2)待机
-        int defCol = 0;
-        int cols = SystemConst.Battle.DEPLOY_GRID_COLS;
+        ChessAI.Init(player2.forceId);
+        ChessAI.DecideDefenderStrategy(attackTroops, defenderTroops, attackSoldierMap, defenderSoldierMap);
+
+        // 防守方出生点：玩家防御方使用布阵位置，AI防御方统一防御站位（与出击/龟缩策略无关）
+        int[] defRowCounts = new int[SystemConst.Battle.DEPLOY_GRID_ROWS];
         int count = Math.Min(defenderTroops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
         for (int i = 0; i < count; i++)
         {
@@ -866,13 +887,12 @@ public class BattleManager : MonoBehaviour
             }
             else
             {
-                spawnPos = GetSpawnPosition(2, 2, defCol % cols);
-                defCol++;
+                spawnPos = GetDefenderSpawnPosition(defenderTroops, i, defRowCounts);
             }
             var tick = tickIndex + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
             var eff = new CreateEffectAction(magicHelperUnitId, tick, spawnPos, "SoftFireBigRed", 0.7f);
             AddChessAction(eff);
-            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, spawnPos, defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0, noActionCount: 99999);
+            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, spawnPos, defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0);
         }
 
         // 攻击方出生点：远程兵种固定放第二排(row=1)，近战先放第一排(row=0)再放第三排(row=2)
@@ -1145,31 +1165,67 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private void FreezeDefenders()
+    /// <summary>
+    /// 判断防御方是否拥有箭塔（城防 >= TOWER_MIN_WALL）
+    /// </summary>
+    private bool DefenderTowerExists()
     {
-        int defForceId = playerInfoList[1].forceId;
-        var hasGate = false;
-        foreach (var chess in chessList)
-        {
-            if (chess.isGate && chess.hp > 0 && chess.forceId == defForceId)
-                hasGate = true;
-        }
-        foreach (var chess in chessList)
-        {
-            if (chess.forceId == defForceId && !chess.isGate && !chess.isWall && !chess.isTower)
-                chess.noActionCount = hasGate ? 99999 : 0;
-        }
+        var cityData = GameManager.Instance.GetCity(cityId);
+        if (cityData == null) return false;
+        return cityData.GetAttr("wall") >= SystemConst.City.TOWER_MIN_WALL;
     }
 
-    private void UnfreezeDefendersIfNoGates()
+    /// <summary>
+    /// 判断格子是否为防御方箭塔预定格（玩家防御方布阵时需跳过）
+    /// </summary>
+    private bool IsTowerSpawnGrid(int gx, int gz)
     {
-        int defForceId = playerInfoList[1].forceId;
-        foreach (var chess in chessList)
+        if (playerSideIndex != 1) return false;
+        if (!DefenderTowerExists()) return false;
+        return gx == SystemConst.Battle.DEPLOY_SIDE2_BASE_GX
+            && gz == SystemConst.Battle.DEPLOY_SIDE2_BASE_GZ + 2;
+    }
+
+    /// <summary>
+    /// AI防御方布阵位置计算（与出击/龟缩策略无关，统一防御站位）
+    /// 远程兵种row0贴墙（可隔墙射击），近战兵种row1/row2/row0
+    /// 有箭塔时row=0跳过col=1（箭塔格）
+    /// </summary>
+    private Vector3 GetDefenderSpawnPosition(List<SaveTroopsData> troops, int index, int[] rowCounts)
+    {
+        var armsCfg = ArmsConfig.GetConfig(troops[index].armsId);
+        bool isRanged = armsCfg.Range >= SystemConst.Battle.RANGE_ATTACK_THRESHOLD;
+        int cols = SystemConst.Battle.DEPLOY_GRID_COLS;
+        bool towerExists = DefenderTowerExists();
+
+        int[] rowPriority = isRanged ? new[] { 0, 1, 2 } : new[] { 1, 2, 0 };
+
+        foreach (int row in rowPriority)
         {
-            if (chess.forceId == defForceId && !chess.isGate && !chess.isWall && !chess.isTower)
-                chess.noActionCount = 0;
+            int maxCols = (towerExists && row == 0) ? cols - 1 : cols;
+            if (rowCounts[row] < maxCols)
+            {
+                int col = GetDefenderCol(row, rowCounts[row], towerExists);
+                rowCounts[row]++;
+                return GetSpawnPosition(2, row, col);
+            }
         }
-        GameLog.Info("城门被破，防御方开始行动");
+
+        GameLog.Warn($"防御方布阵溢出，回退到箭塔格 index={index}");
+        return GetSpawnPosition(2, 0, 1);
+    }
+
+    /// <summary>
+    /// 防御方列号映射：row=0且有箭塔时跳过col=1
+    /// </summary>
+    private int GetDefenderCol(int row, int counter, bool towerExists)
+    {
+        if (towerExists && row == 0)
+        {
+            int[] availableCols = { 0, 2, 3, 4 };
+            return availableCols[counter];
+        }
+        return counter;
     }
 
     private bool IsGridOccupiedByOtherOrObstacle(int gx, int gz, int unitId)
@@ -1202,12 +1258,6 @@ public class BattleManager : MonoBehaviour
         if (dieUnit.isHero)
         {
             BattleStatManager.SetHeroDead(dieUnit.forceId, dieUnit.heroId);
-        }
-
-        // 城门死亡：解冻防御方
-        if (dieUnit.isGate)
-        {
-            UnfreezeDefendersIfNoGates();
         }
 
         chessList.Remove(dieUnit);
