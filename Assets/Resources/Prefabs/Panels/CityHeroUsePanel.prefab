@@ -33,9 +33,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 8979253227530205280}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -712.7, y: 457}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 150, y: -43}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3750361598036575114
@@ -92,6 +92,7 @@ MonoBehaviour:
   iconPath: 
   configId: 4
   image: {fileID: 0}
+  tipExtra: 
 --- !u!1 &598871118034348606
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,7 +128,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 221.4, y: -44}
+  m_AnchoredPosition: {x: 300, y: -44}
   m_SizeDelta: {x: 200, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7242451699874656646
@@ -820,8 +821,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6589778312187355093}
-  - {fileID: 5526863488678937289}
   - {fileID: 8270685668112969782}
+  - {fileID: 5526863488678937289}
   - {fileID: 8598793917395126238}
   - {fileID: 588784535974232879}
   m_Father: {fileID: 3478796030764839235}
