@@ -85,7 +85,7 @@ public static class AIToolRecruit
 
             var heroCfg = HeroConfig.GetConfig(hero.heroId);
             int dayDistance = kingCityId > 0
-                ? SysFormula.City.CalculateCityDayDistance(kingCityId, hero.cityId)
+                ? SysFormula.City.CalculateHeroDayDistance(kingCityId, hero.cityId, false)
                 : SystemConst.CityDev.CITY_DAY_MAX;
 
             targets.Add(new RecruitTarget

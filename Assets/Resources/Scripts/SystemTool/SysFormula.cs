@@ -16,9 +16,9 @@ public static class SysFormula
     {
         public static int CalculateDamage(int atk, int hp, int def)
         {
-            int attackPower = atk + hp / SystemConst.Battle.HP_TO_ATK_DIVISOR;
+            int attackPower = atk + hp / 5;
             int powerDiff = attackPower - def;
-            return SystemConst.Battle.BASE_DAMAGE + powerDiff / SystemConst.Battle.DAMAGE_POWER_DIFF_DIVISOR;
+            return 8 + powerDiff / 5;
         }
 
         private static int GetSodValueFromHero(SaveHeroData heroData, ArmsType armsType)
@@ -59,10 +59,10 @@ public static class SysFormula
             var hero1 = GameManager.Instance.GetHero(troop.heroId1);
             var armsConfig = ArmsConfig.GetConfig(troop.armsId);
             int maxSod = GetTroopMaxSod(troop, armsConfig.Type);
-            float sodBonus = Math.Clamp(maxSod * SystemConst.Battle.SOD_BONUS_RATE_PER_POINT, SystemConst.Battle.SOD_BONUS_MIN, SystemConst.Battle.SOD_BONUS_MAX);
+            float sodBonus = Math.Clamp(maxSod * 0.03f, 0.01f, 0.30f);
 
-            int atk = (int)(hero1.str * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Atk * (1f + sodBonus));
-            int def = (int)(hero1.leadShip * SystemConst.Battle.HERO_ATTR_TO_COMBAT_RATE + armsConfig.Def * (1f + sodBonus));
+            int atk = (int)(hero1.str * 0.7f + armsConfig.Atk * (1f + sodBonus));
+            int def = (int)(hero1.leadShip * 0.7f + armsConfig.Def * (1f + sodBonus));
             return (atk, def);
         }
 
@@ -74,7 +74,7 @@ public static class SysFormula
         {
             if (troops == null) return 0;
             long power = 0;
-            int count = Math.Min(troops.Count, SystemConst.Battle.MAX_BATTLE_HEROES_PER_SIDE);
+            int count = Math.Min(troops.Count, 15);
             for (int i = 0; i < count; i++)
             {
                 var troop = troops[i];
@@ -89,13 +89,13 @@ public static class SysFormula
 
         public static (int minDamage, int maxDamage) GetDamageRange(int levelDiff, bool isCrit, float critDamageMulti)
         {
-            int minDamage = SystemConst.Battle.MIN_ATTACK_DAMAGE;
-            int maxDamage = SystemConst.Battle.MAX_ATTACK_DAMAGE;
+            int minDamage = 3;
+            int maxDamage = 30;
 
             if (levelDiff != 0)
             {
-                minDamage = Math.Clamp(minDamage + levelDiff, SystemConst.Battle.LEVEL_DIFF_MIN_DAMAGE_MIN, SystemConst.Battle.LEVEL_DIFF_MIN_DAMAGE_MAX);
-                maxDamage = Math.Clamp(maxDamage + levelDiff * SystemConst.Battle.LEVEL_DIFF_MAX_DAMAGE_FACTOR, SystemConst.Battle.LEVEL_DIFF_MAX_DAMAGE_MIN, SystemConst.Battle.LEVEL_DIFF_MAX_DAMAGE_MAX);
+                minDamage = Math.Clamp(minDamage + levelDiff, 2, 8);
+                maxDamage = Math.Clamp(maxDamage + levelDiff * 2, 15, 35);
             }
 
             if (isCrit)
@@ -110,15 +110,15 @@ public static class SysFormula
         public static float CalculateTargetScore(bool targetIsHero, float distance, float attackRange,
             int damageEstimate, int myLevel, int targetLevel, float targetHpRate)
         {
-            float score = targetIsHero ? SystemConst.Battle.TARGET_SCORE_HERO : SystemConst.Battle.TARGET_SCORE_NONHERO;
+            float score = targetIsHero ? 10 : 30;
 
             if (distance < attackRange * 2)
             {
                 score += damageEstimate / 2f;
-                score += (myLevel - targetLevel) * SystemConst.Battle.LEVEL_DIFF_SCORE_WEIGHT;
+                score += (myLevel - targetLevel) * 7f;
 
-                if (targetHpRate < SystemConst.Battle.LOW_HP_THRESHOLD)
-                    score += (SystemConst.Battle.LOW_HP_THRESHOLD - targetHpRate) * SystemConst.Battle.LOW_HP_SCORE_WEIGHT + SystemConst.Battle.LOW_HP_BONUS;
+                if (targetHpRate < 0.5f)
+                    score += (0.5f - targetHpRate) * 100f + 10f;
             }
             else
             {
@@ -133,16 +133,16 @@ public static class SysFormula
             if (!isEnemy) return baseRate;
 
             if (myAttr > defAttr)
-                return baseRate * Math.Min(SystemConst.Battle.BURST_RATE_ATTR_CAP, 1 + (myAttr - defAttr) * SystemConst.Battle.BURST_RATE_ATTR_FACTOR);
+                return baseRate * Math.Min(2f, 1 + (myAttr - defAttr) * 0.02f);
             else if (myAttr < defAttr)
-                return baseRate / Math.Min(SystemConst.Battle.BURST_RATE_ATTR_CAP, 1 + (defAttr - myAttr) * SystemConst.Battle.BURST_RATE_ATTR_FACTOR);
+                return baseRate / Math.Min(2f, 1 + (defAttr - myAttr) * 0.02f);
 
             return baseRate;
         }
 
         public static int CalculateFoodCost(int totalHeroHp)
         {
-            return totalHeroHp / SystemConst.Battle.FOOD_COST_DIVISOR;
+            return totalHeroHp / 20;
         }
     }
 
@@ -217,17 +217,17 @@ public static class SysFormula
 
             if (hero.state == HeroState.Wild)
             {
-                baseSuccessRate = SystemConst.Hero.RECRUIT_WILD_BASE_RATE;
+                baseSuccessRate = 30;
                 var heroCity = GameManager.Instance.GetCity(hero.cityId);
                 if (heroCity == null || heroCity.forceId != cityData.forceId)
                 {
-                    baseSuccessRate = (int)Math.Round(baseSuccessRate * SystemConst.Hero.RECRUIT_WILD_NON_FRIENDLY_PENALTY);
+                    baseSuccessRate = (int)Math.Round(baseSuccessRate * 0.5f);
                 }
             }
             else if (hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
             {
                 int diff = 100 - hero.loyalty;
-                baseSuccessRate = diff * SystemConst.Hero.RECRUIT_CAPTURED_RATE_SLOPE / SystemConst.Hero.RECRUIT_CAPTURED_RATE_DIVISOR - SystemConst.Hero.RECRUIT_CAPTURED_RATE_OFFSET;
+                baseSuccessRate = diff * 3 / 4 - 5;
                 if (baseSuccessRate < 0) baseSuccessRate = 0;
             }
 
@@ -249,13 +249,13 @@ public static class SysFormula
 
                     // 乘算加成：魅力、君主、关系（LikeForces/HateForces），彼此加法叠加
                     int bonusPercent = 0;
-                    if (charm > SystemConst.Hero.CHARM_BONUS_THRESHOLD)
+                    if (charm > 75)
                     {
-                        bonusPercent += (charm - SystemConst.Hero.CHARM_BONUS_THRESHOLD) * SystemConst.Hero.CHARM_BONUS_PER_POINT;
+                        bonusPercent += (charm - 75) * 1;
                     }
                     if (isKing)
                     {
-                        bonusPercent += SystemConst.Hero.KING_RECRUIT_MULTIPLIER - 100;
+                        bonusPercent += 110 - 100;
                     }
                     bonusPercent += GetRelationBonusPercent(targetConfig, executorForceId);
 
@@ -264,7 +264,7 @@ public static class SysFormula
                 }
             }
 
-            if (baseSuccessRate > SystemConst.Hero.RECRUIT_RATE_MAX) baseSuccessRate = SystemConst.Hero.RECRUIT_RATE_MAX;
+            if (baseSuccessRate > 100) baseSuccessRate = 100;
             return baseSuccessRate;
         }
 
@@ -279,7 +279,7 @@ public static class SysFormula
             if (!string.IsNullOrEmpty(targetConfig.Paixi) && targetConfig.Paixi != "无"
                 && targetConfig.Paixi == executorConfig.Paixi)
             {
-                bonus += SystemConst.Hero.RECRUIT_SAME_FACTION_BONUS;
+                bonus += 5;
             }
             // 每个相同爱好 +1
             if (targetConfig.Aihao != null && executorConfig.Aihao != null)
@@ -288,7 +288,7 @@ public static class SysFormula
                 {
                     if (Array.IndexOf(executorConfig.Aihao, hobby) >= 0)
                     {
-                        bonus += SystemConst.Hero.RECRUIT_SHARED_HOBBY_BONUS_PER;
+                        bonus += 1;
                     }
                 }
             }
@@ -305,11 +305,11 @@ public static class SysFormula
 
             int likeDegree = GetForceDegree(targetConfig.LikeForces, executorForceId);
             if (likeDegree > 0)
-                bonus += likeDegree * SystemConst.Hero.RECRUIT_LIKE_BONUS_PER_DEGREE;
+                bonus += likeDegree * 5;
 
             int hateDegree = GetForceDegree(targetConfig.HateForces, executorForceId);
             if (hateDegree > 0)
-                bonus += hateDegree * SystemConst.Hero.RECRUIT_HATE_PENALTY_PER_DEGREE;
+                bonus += hateDegree * -8;
 
             return bonus;
         }
@@ -337,47 +337,47 @@ public static class SysFormula
         {
             switch (dayFilter)
             {
-                case 2: return SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD_2DAY;
-                case 3: return SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD_3DAY;
-                default: return SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD;
+                case 2: return 85;
+                case 3: return 80;
+                default: return 90;
             }
         }
 
         public static int CalculateCaptureChance(int str)
         {
             int effectiveStr = str > 0 ? str : 50;
-            return SystemConst.Expedition.CATCH_BASE_CHANCE + (100 - effectiveStr) * SystemConst.Expedition.CATCH_STR_FACTOR / 100;
+            return 7 + (100 - effectiveStr) * 8 / 100;
         }
 
         public static int CalculateAttrGrowth(int baseAttr, int level)
         {
             if (level <= 1) return 0;
-            return Math.Max(SystemConst.Hero.MIN_ATTR_PER_LEVEL * (level - 1), baseAttr * (level - 1) / SystemConst.Hero.ATTR_GROWTH_DIVISOR);
+            return Math.Max(8 * (level - 1), baseAttr * (level - 1) / 10);
         }
 
         public static int CalculatePraiseLoyaltyAdd()
         {
-            return _random.Next(SystemConst.Hero.PRAISE_LOYALTY_ADD_MIN, SystemConst.Hero.PRAISE_LOYALTY_ADD_MAX);
+            return _random.Next(1, 4);
         }
 
         public static int CalculateRewardLoyaltyAdd()
         {
-            return _random.Next(SystemConst.Hero.REWARD_LOYALTY_ADD_MIN, SystemConst.Hero.REWARD_LOYALTY_ADD_MAX);
+            return _random.Next(3, 6);
         }
 
         public static int CalculateCapturedLoyaltyDecay()
         {
-            return _random.Next(SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MIN, SystemConst.Hero.CAPTURED_LOYALTY_DECAY_MAX);
+            return _random.Next(1, 4);
         }
 
         public static bool CheckEscape()
         {
-            return _random.Next(0, 100) < SystemConst.Hero.CAPTURED_ESCAPE_CHANCE;
+            return _random.Next(0, 100) < 20;
         }
 
         public static bool CheckWildHeroMove()
         {
-            return _random.Next(0, 100) < SystemConst.Hero.WILD_HERO_MOVE_CHANCE;
+            return _random.Next(0, 100) < 20;
         }
 
         public static HeroType ClassifyHero(int str, int leadship, int inte, int fair, int charm)
@@ -385,9 +385,9 @@ public static class SysFormula
             int combatScore = str + leadship + inte;
             int domesticScore = inte + fair + charm;
 
-            if (combatScore >= AIConst.AIHero.COMBAT_THRESHOLD && combatScore > domesticScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
+            if (combatScore >= AIConst.AIHero.COMBAT_THRESHOLD && combatScore > domesticScore * 1.3f)
                 return HeroType.Combat;
-            else if (domesticScore >= AIConst.AIHero.DOMESTIC_THRESHOLD && domesticScore > combatScore * SystemConst.Hero.HERO_CLASSIFY_ADVANTAGE_RATIO)
+            else if (domesticScore >= AIConst.AIHero.DOMESTIC_THRESHOLD && domesticScore > combatScore * 1.3f)
                 return HeroType.Domestic;
 
             return HeroType.Balanced;
@@ -433,13 +433,13 @@ public static class SysFormula
 
         public static float CalculateOwnerScore(int str, int inte, int fair, int leadship, int charm, bool isKing)
         {
-            float totalScore = str * SystemConst.City.OWNER_SCORE_WEIGHT_STR
+            float totalScore = str * 0.75f
                 + inte + fair
-                + leadship * SystemConst.City.OWNER_SCORE_WEIGHT_LEADSHIP
-                + charm * SystemConst.City.OWNER_SCORE_WEIGHT_CHARM;
+                + leadship * 1.5f
+                + charm * 1.2f;
 
             if (isKing)
-                totalScore += SystemConst.City.KING_OWNER_BONUS_SCORE;
+                totalScore += 9999;
 
             return totalScore;
         }
@@ -453,7 +453,7 @@ public static class SysFormula
         public static int CalculateSecondaryAttrContribution(int primaryAttr, int secondaryAttr)
         {
             if (secondaryAttr > primaryAttr)
-                return (secondaryAttr - primaryAttr) / SystemConst.Hero.SECONDARY_ATTR_CONTRIBUTION_DIVISOR;
+                return (secondaryAttr - primaryAttr) / 3;
             return 0;
         }
 
@@ -468,19 +468,42 @@ public static class SysFormula
         public static int CalculateCityDayDistance(int cityId1, int cityId2)
         {
             if (cityId1 == cityId2)
-                return SystemConst.CityDev.CITY_DAY_MIN;
+                return 0;
 
             var cfg1 = WorldConfig.GetConfig(cityId1);
             var cfg2 = WorldConfig.GetConfig(cityId2);
 
-            if (cfg1.WorldNearIds != null && Array.IndexOf(cfg1.WorldNearIds, cityId2) >= 0)
-                return SystemConst.CityDev.CITY_DAY_MIN;
-
             int manhattan = Math.Abs(cfg1.X - cfg2.X) + Math.Abs(cfg1.Y - cfg2.Y);
-            if (manhattan <= SystemConst.CityDev.DAY_DISTANCE_THRESHOLD_2)
-                return SystemConst.CityDev.CITY_DAY_MIN + 1;
+            if (manhattan <= 800)
+                return 1;
+            if (manhattan <= 2000)
+                return 2;
 
-            return SystemConst.CityDev.CITY_DAY_MAX;
+            return 3;
+        }
+
+        /// <summary>
+        /// 武将移动/登庸消耗的统一日程折算。
+        /// 本国内：基础城市间日程（1~3日）。
+        /// 他国家：基础日程 + 1（2~4日）。
+        /// 所有"距离→天数"场景必须走此方法，禁止各处自行折算。
+        /// </summary>
+        public static int CalculateHeroDayDistance(int srcCityId, int destCityId, bool isCrossCountry)
+        {
+            int baseDays = CalculateCityDayDistance(srcCityId, destCityId);
+            return isCrossCountry
+                ? baseDays + 1
+                : baseDays;
+        }
+
+        /// <summary>
+        /// 按目标城市归属判断是否跨国（目标城市 forceId != 当前势力 forceId）。
+        /// 目标城市不存在视为跨国（在野无主城市按他国家处理）。
+        /// </summary>
+        public static bool IsCrossCountry(int destCityId, int currentForceId)
+        {
+            var destCity = GameManager.Instance.GetCity(destCityId);
+            return destCity == null || destCity.forceId != currentForceId;
         }
 
         public static bool CityHasResAddon(int cityId, string attrName)
@@ -505,14 +528,14 @@ public static class SysFormula
         /// </summary>
         public static float GetDefenceDevDiscount(int battleRounds)
         {
-            if (battleRounds <= SystemConst.City.DEFENCE_DISCOUNT_START_ROUND)
+            if (battleRounds <= 10)
                 return 1f;
-            int maxRound = SystemConst.Battle.MAX_ROUND;
+            int maxRound = 30;
             if (battleRounds >= maxRound)
                 return 0f;
-            float t = (float)(battleRounds - SystemConst.City.DEFENCE_DISCOUNT_START_ROUND)
-                / (maxRound - SystemConst.City.DEFENCE_DISCOUNT_START_ROUND);
-            return 1f - (SystemConst.City.DEFENCE_DISCOUNT_AT_START + t * (1f - SystemConst.City.DEFENCE_DISCOUNT_AT_START));
+            float t = (float)(battleRounds - 10)
+                / (maxRound - 10);
+            return 1f - (0.05f + t * (1f - 0.05f));
         }
     }
 
@@ -520,17 +543,17 @@ public static class SysFormula
     {
         public static int CalculateTradeAmount(int goldCost)
         {
-            return (int)(goldCost * SystemConst.Economy.TRADE_EXCHANGE_RATIO);
+            return (int)(goldCost * 2f);
         }
 
         /// <summary>
-        /// 计算单个武将的交易量：基数为 goldCost × TRADE_EXCHANGE_RATIO，智力＞阈值时每点加 2%
+        /// 计算单个武将的交易量：基数为 goldCost × 2，智力＞70时每点加 2%
         /// </summary>
         public static int CalculateHeroTradeAmount(int goldCost, int intelligence)
         {
             int baseAmount = CalculateTradeAmount(goldCost);
-            int overThreshold = Math.Max(0, intelligence - SystemConst.Economy.TRADE_INT_THRESHOLD);
-            float bonus = overThreshold * SystemConst.Economy.TRADE_INT_BONUS_PER_POINT;
+            int overThreshold = Math.Max(0, intelligence - 70);
+            float bonus = overThreshold * 0.02f;
             return (int)(baseAmount * (1f + bonus));
         }
 
@@ -619,7 +642,7 @@ public static class SysFormula
                 groupBase = 10000;
 
             // 忠诚越低系数越高（0~100）
-            int loyaltyBonus = (SystemConst.Hero.MAX_LOYALTY - loyalty) * 10;
+            int loyaltyBonus = (100 - loyalty) * 10;
 
             return groupBase + loyaltyBonus;
         }
@@ -629,14 +652,14 @@ public static class SysFormula
     {
         public static float CalculateCurrentYear(int totalSeasons)
         {
-            int years = totalSeasons / SystemConst.Game.SEASONS_PER_YEAR;
-            int seasons = totalSeasons % SystemConst.Game.SEASONS_PER_YEAR;
-            return SystemConst.Game.BASE_YEAR + years + (seasons / (float)SystemConst.Game.SEASONS_PER_YEAR);
+            int years = totalSeasons / 36;
+            int seasons = totalSeasons % 36;
+            return 194 + years + (seasons / (float)36);
         }
 
         public static int CalculateSeasonId(int round)
         {
-            return (round % SystemConst.Game.SEASONS_PER_YEAR) + 1;
+            return (round % 36) + 1;
         }
     }
 
@@ -644,7 +667,7 @@ public static class SysFormula
     {
         public static int CalculateBattleRise()
         {
-            return SysRandom.Range(SystemConst.Diplomacy.BATTLE_RISE_MIN, SystemConst.Diplomacy.BATTLE_RISE_MAX + 1);
+            return SysRandom.Range(3, 8 + 1);
         }
     }
 }

@@ -699,7 +699,7 @@ public class SaveForceData
         destCity.RecalculateHeros();
     }
 
-    public void MoveHeroToCity(int srcCityId, int destCityId, int[] heroIds)
+    public void MoveHeroToCity(int srcCityId, int destCityId, int[] heroIds, bool useDayDistance = false)
     {
         if (destCityId <= 0)
         {
@@ -723,7 +723,16 @@ public class SaveForceData
             cityDest.RecalculateHeros();
         }
 
-        MarkHeroesActed(heroIds);
+        if (useDayDistance)
+        {
+            bool crossCountry = SysFormula.City.IsCrossCountry(destCityId, forceId);
+            int distance = SysFormula.City.CalculateHeroDayDistance(srcCityId, destCityId, crossCountry);
+            MarkHeroesActed(heroIds, distance - 1);
+        }
+        else
+        {
+            MarkHeroesActed(heroIds);
+        }
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionMove(
             GameManager.Instance.SaveData.round, forceId, srcCityId, destCityId, heroIds));
@@ -1181,10 +1190,15 @@ public class SaveForceData
         AddKingActionCount(devId, myHeroIds.Length);
 
         // 仅标记执行方（去登庸的武将），被登庸武将不标记。
-        // dayDiff 按主公所在城市到目标城市的日程计算：distance - 1
+        // dayDiff 按主公所在城市到目标武将所在城市的日程计算：distance - 1
+        // 单目标，按目标武将所在城市归属判断本/他国家
         var kingCity = GetKingCity();
         int sourceCityId = kingCity != null ? kingCity.cityId : cityId;
-        int distance = SysFormula.City.CalculateCityDayDistance(sourceCityId, cityId);
+        int targetHeroId = targetHeroIds.Length > 0 ? targetHeroIds[0] : 0;
+        var targetHero = GameManager.Instance.GetHero(targetHeroId);
+        int targetCityId = targetHero != null ? targetHero.cityId : cityId;
+        bool crossCountry = SysFormula.City.IsCrossCountry(targetCityId, forceId);
+        int distance = SysFormula.City.CalculateHeroDayDistance(sourceCityId, targetCityId, crossCountry);
         MarkHeroesActed(myHeroIds, distance - 1);
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionRecruit(

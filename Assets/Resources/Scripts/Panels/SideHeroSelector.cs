@@ -16,19 +16,19 @@ public class SideHeroSelector : MonoBehaviour
     private List<SideHeroItem> allItems = new List<SideHeroItem>();
     public Button confirmButton;
 
-    private const int MAX_SELECT_COUNT = 3;
+    private const int MAX_SELECT_COUNT = 1;
 
     private static SideHeroSelector instance;
 
     private static int currentCityId;
     private static int currentForceId;
-    private static int currentDayFilter = SystemConst.CityDev.CITY_DAY_MIN;
+    private static bool currentIsCrossCountry = false;
     private static System.Action<List<int>> onHeroIdsSelected;
 
-    public static void SetContext(int cityId, int forceId, int dayFilter, System.Action<List<int>> callback)
+    public static void SetContext(int cityId, int forceId, bool isCrossCountry, System.Action<List<int>> callback)
     {
         currentForceId = forceId;
-        currentDayFilter = dayFilter;
+        currentIsCrossCountry = isCrossCountry;
         onHeroIdsSelected = callback;
 
         // 用主公所在城市作为日程计算基准
@@ -36,15 +36,15 @@ public class SideHeroSelector : MonoBehaviour
         var kingCity = force != null ? force.GetKingCity() : null;
         currentCityId = kingCity != null ? kingCity.cityId : cityId;
 
-        GameLog.Info($"SideHeroSelector.SetContext: cityId={cityId}, kingCityId={currentCityId}, forceId={forceId}, dayFilter={dayFilter}");
+        GameLog.Info($"SideHeroSelector.SetContext: cityId={cityId}, kingCityId={currentCityId}, forceId={forceId}, isCrossCountry={isCrossCountry}");
     }
 
     /// <summary>
-    /// 更新日程过滤并刷新列表（供 dayButton 点击时调用）
+    /// 切换本国内/他国家模式并刷新列表（供 dayButton 点击时调用）
     /// </summary>
-    public static void UpdateDayFilter(int dayFilter)
+    public static void UpdateCrossCountry(bool isCrossCountry)
     {
-        currentDayFilter = dayFilter;
+        currentIsCrossCountry = isCrossCountry;
         if (instance != null)
             instance.LoadHeroList();
     }
@@ -107,26 +107,30 @@ public class SideHeroSelector : MonoBehaviour
             return result;
         }
 
-        // 排他性日程带：只显示精确匹配 currentDayFilter 距离的武将
-        // 2日剔除1日，3日剔除1日和2日
-        int loyaltyThreshold = SysFormula.Hero.GetRecruitLoyaltyThreshold(currentDayFilter);
+        // 按目标武将所在城市归属筛选：本国内=己方城市，他国家=敌方城市
+        // 他国家模式下敌方在职武将需 loyalty < threshold 才显示
+        int loyaltyThreshold = SystemConst.Hero.RECRUIT_ENEMY_LOYALTY_THRESHOLD;
 
         foreach (var hero in saveData.heros)
         {
-            int distance = SysFormula.City.CalculateCityDayDistance(currentCityId, hero.cityId);
-            if (distance != currentDayFilter)
+            var heroCity = GameManager.Instance.GetCity(hero.cityId);
+            bool heroInOwnCountry = heroCity != null && heroCity.forceId == currentForceId;
+            // 目标城市归属需与当前模式一致
+            if (currentIsCrossCountry == heroInOwnCountry)
                 continue;
 
             if (hero.state == HeroState.Wild)
             {
                 result.Add(hero.heroId);
             }
-            else if (hero.state == HeroState.Catched && hero.cityId == currentCityId)
+            else if (!currentIsCrossCountry && hero.state == HeroState.Catched && hero.cityId == currentCityId)
             {
+                // 俘虏仅在本国内模式显示，且必须在主公城市
                 result.Add(hero.heroId);
             }
-            else if (hero.state == HeroState.Normal && hero.forceId != currentForceId && hero.loyalty < loyaltyThreshold)
+            else if (currentIsCrossCountry && hero.state == HeroState.Normal && hero.forceId != currentForceId && hero.loyalty < loyaltyThreshold)
             {
+                // 敌方在职武将仅在他国家模式显示
                 result.Add(hero.heroId);
             }
         }

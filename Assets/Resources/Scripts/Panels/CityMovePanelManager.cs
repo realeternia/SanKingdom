@@ -52,6 +52,7 @@ public class CityMovePanelManager : MonoBehaviour
                         attrVal1Text.text = cityCfg.Cname;
                     }
                     //ClearAllSelections();
+                    CreateHeroHeadItems();
                 });
             });
         });
@@ -195,7 +196,7 @@ public class CityMovePanelManager : MonoBehaviour
             {
                 int srcCityId = group.Key;
                 int[] heroesToMove = group.Select(h => h.heroId).ToArray();
-                force.MoveHeroToCity(srcCityId, selectedDestCityId, heroesToMove);
+                force.MoveHeroToCity(srcCityId, selectedDestCityId, heroesToMove, useDayDistance: true);
             }
 
             force.AddKingActionCount(devId, heroIds.Count);
@@ -225,6 +226,8 @@ public class CityMovePanelManager : MonoBehaviour
         List<int> heroList = new List<int>();
         foreach (var city in cities)
         {
+            // 选定目标城市后，跳过已在该城市的武将
+            if (selectedDestCityId > 0 && city.cityId == selectedDestCityId) continue;
             var cityHeroes = city.GetNormalHeroList();
             heroList.AddRange(cityHeroes);
         }
@@ -283,6 +286,14 @@ public class CityMovePanelManager : MonoBehaviour
                 bool hasActed = heroData != null && heroData.round >= GameManager.Instance.SaveData.round;
                 itemScript.Init(heroList[i], attText, forceId, hasActed);
                 itemScript.SetCallbacks(CanSelectHero, OnHeroSelectionChanged);
+
+                // 选定目标城市后显示每个武将的移动日程（本国内移动，isCrossCountry=false）
+                int moveDay = 0;
+                if (selectedDestCityId > 0 && heroData != null)
+                {
+                    moveDay = SysFormula.City.CalculateHeroDayDistance(heroData.cityId, selectedDestCityId, false);
+                }
+                itemScript.SetDayText(moveDay);
             }
 
             heroHeadItems.Add(itemObj);

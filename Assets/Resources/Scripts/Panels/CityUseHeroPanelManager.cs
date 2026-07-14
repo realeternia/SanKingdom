@@ -15,7 +15,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
     private int cityId;
     private int devId;
     private List<int> selectedHeroIds = new List<int>();
-    private int currentDayFilter = SystemConst.CityDev.CITY_DAY_MIN;
+    private bool isCrossCountry = false;
     private int useHeroCount;
 
     public Button heroButton;
@@ -38,7 +38,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
         });
         heroButton.onClick.AddListener(() =>
         {
-            SideHeroSelector.SetContext(cityId, forceId, currentDayFilter, (newHeroIds) =>
+            SideHeroSelector.SetContext(cityId, forceId, isCrossCountry, (newHeroIds) =>
             {
                 selectedHeroIds = newHeroIds ?? new List<int>();
                 if (selectedHeroIds.Count == 0)
@@ -47,12 +47,8 @@ public class CityUseHeroPanelManager : MonoBehaviour
                 }
                 else
                 {
-                    var names = selectedHeroIds.Select(id =>
-                    {
-                        var cfg = HeroConfig.GetConfig(id);
-                        return cfg != null ? cfg.Name : id.ToString();
-                    });
-                    attrVal1Text.text = string.Join(",", names);
+                    var cfg = HeroConfig.GetConfig(selectedHeroIds[0]);
+                    attrVal1Text.text = cfg != null ? cfg.Name : selectedHeroIds[0].ToString();
                 }
                 RefreshHeroHeadItemsForRecruit();
             });
@@ -74,17 +70,19 @@ public class CityUseHeroPanelManager : MonoBehaviour
 
     private void OnDayButtonClick()
     {
-        currentDayFilter = currentDayFilter >= SystemConst.CityDev.CITY_DAY_MAX
-            ? SystemConst.CityDev.CITY_DAY_MIN
-            : currentDayFilter + 1;
+        isCrossCountry = !isCrossCountry;
         UpdateDayButtonText();
-        SideHeroSelector.UpdateDayFilter(currentDayFilter);
+        SideHeroSelector.UpdateCrossCountry(isCrossCountry);
+        // 已选目标在切换模式后失效（归属不符），清空并刷新
+        selectedHeroIds.Clear();
+        attrVal1Text.text = "-";
+        RefreshHeroHeadItemsForRecruit();
     }
 
     private void UpdateDayButtonText()
     {
         if (dayButtonText != null)
-            dayButtonText.text = currentDayFilter + "日";
+            dayButtonText.text = isCrossCountry ? "他国家" : "本国内";
     }
 
     void Update()
@@ -98,7 +96,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
         this.cityId = cityId;
         this.devId = devId;
         this.selectedHeroIds.Clear();
-        currentDayFilter = SystemConst.CityDev.CITY_DAY_MIN;
+        isCrossCountry = false;
 
         var devCfg = CityDevConfig.GetConfig(devId);
         useHeroCount = devCfg != null ? devCfg.HeroCount : 0;
@@ -229,6 +227,17 @@ public class CityUseHeroPanelManager : MonoBehaviour
         int kingHeroId = ForceConfig.GetConfig(forceId).HeroId;
         bool hasTargets = selectedHeroIds.Count > 0;
 
+        // 选定目标后，计算执行武将消耗日程（主公城市 → 目标武将所在城市）
+        int recruitDay = 0;
+        if (hasTargets)
+        {
+            var kingCity = force.GetKingCity();
+            int kingCityId = kingCity != null ? kingCity.cityId : cityId;
+            var targetHero = GameManager.Instance.GetHero(selectedHeroIds[0]);
+            int targetCityId = targetHero != null ? targetHero.cityId : cityId;
+            recruitDay = SysFormula.City.CalculateHeroDayDistance(kingCityId, targetCityId, isCrossCountry);
+        }
+
         List<int> heroList = new List<int>();
         foreach (var city in cities)
         {
@@ -292,6 +301,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
                 bool hasActed = heroData != null && heroData.round >= currentRound;
                 itemScript.Init(heroId, attText, forceId, hasActed);
                 itemScript.SetCallbacks(CanSelectHero, OnHeroSelectionChanged);
+                itemScript.SetDayText(recruitDay);
 
                 if (selectedExecutorIds.Contains(heroId))
                 {

@@ -153,7 +153,7 @@ public static class ChessAI
         if (self.isGate || self.isWall)
             return;
 
-        // 战斗尚未开始时，防御方棋子不行动（替代原 InitSummon 的 noActionCount=INFINITE_COUNT 临时冻结）
+        // 战斗尚未开始时，防御方棋子不行动（原 InitSummon 临时冻结逻辑已由 ChessAI 动态判断替代）
         if (!battleStarted && IsDefender(self))
             return;
 

@@ -14,6 +14,9 @@ public class HeroHeadItem : MonoBehaviour
     public Image BG;
     public Button itemButton;
 
+    public Image dayBG;
+    public TMP_Text dayText;
+
     public delegate bool CanSelectHandler();
     public delegate void SelectionChangedHandler();
 
@@ -35,6 +38,19 @@ public class HeroHeadItem : MonoBehaviour
 
         itemButton.onClick.RemoveAllListeners();
         itemButton.onClick.AddListener(OnItemClick);
+
+        dayBG.gameObject.SetActive(false);
+    }
+
+    public void SetDayText(int day)
+    {
+        if (day <= 0)
+        {
+            dayBG.gameObject.SetActive(false);
+            return;
+        }
+        dayText.text = day.ToString() + "天";
+        dayBG.gameObject.SetActive(true);
     }
 
     public int GetHeroId()
