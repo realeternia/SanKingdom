@@ -11,6 +11,8 @@ public enum GameEventType
     KingActionSearch,  // 搜索
     KingActionRecruit, // 登庸（intParam: 1=成功 0=失败）
     KingActionPraise,  // 赏赐（intParam=methodId）
+    KingActionDestroy, // 破坏敌方城防（intParam=目标城市ID, effectValue=城防降低总量）
+    KingActionDisturb, // 扰乱敌方民心/忠心（intParam=目标城市ID, effectValue=民心降低总量, effectValue2=忠心降低总量）
     Capture,           // 被俘虏
     Wild,              // 下野（新发现英雄初始状态）
     Escape,            // 逃脱（intParam=目标城市 ID）
@@ -46,6 +48,8 @@ public class GameEventData
     // KingActionSearch= searchResultType(0=无 1=cityattr 2=forceattr 3=findhero 4=findherostar) / 资源总量
     // KingActionRecruit= 0 / 0
     // KingActionPraise= totalLoyaltyAdd / 0
+    // KingActionDestroy= wallReduceTotal / 0（intParam=目标城市ID）
+    // KingActionDisturb= happyReduceTotal / loyaltyReduceTotal（intParam=目标城市ID）
     // Capture        = 0 / 0
     // Wild           = 0 / 0
     // Escape         = 0 / 0
@@ -191,6 +195,39 @@ public class GameEventData
             devId = devId,
             intParam = methodId,
             effectValue = totalLoyaltyAdd
+        };
+    }
+
+    public static GameEventData CreateKingActionDestroy(int round, int forceId, int cityId, int targetCityId, int devId, int[] heroIds, int totalWallReduce)
+    {
+        return new GameEventData
+        {
+            eventType = GameEventType.KingActionDestroy,
+            year = CalcYear(round),
+            round = round,
+            forceId = forceId,
+            cityId = cityId,
+            heroIds = heroIds != null ? new List<int>(heroIds) : new List<int>(),
+            devId = devId,
+            intParam = targetCityId,
+            effectValue = totalWallReduce
+        };
+    }
+
+    public static GameEventData CreateKingActionDisturb(int round, int forceId, int cityId, int targetCityId, int devId, int[] heroIds, int totalHappyReduce, int totalLoyaltyReduce)
+    {
+        return new GameEventData
+        {
+            eventType = GameEventType.KingActionDisturb,
+            year = CalcYear(round),
+            round = round,
+            forceId = forceId,
+            cityId = cityId,
+            heroIds = heroIds != null ? new List<int>(heroIds) : new List<int>(),
+            devId = devId,
+            intParam = targetCityId,
+            effectValue = totalHappyReduce,
+            effectValue2 = totalLoyaltyReduce
         };
     }
 

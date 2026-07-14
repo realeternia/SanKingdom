@@ -104,6 +104,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\HeroInfoCell.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\ForceRelation.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\NLMutiCheckButton.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\CityEnemyCityPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefPlantSkin.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuffArea.cs" />

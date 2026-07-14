@@ -365,6 +365,30 @@ public static class SysFormula
             return _random.Next(3, 6);
         }
 
+        /// <summary>
+        /// 破坏行动降低城防量（5-10）
+        /// </summary>
+        public static int CalculateDestroyWallReduction()
+        {
+            return _random.Next(5, 11);
+        }
+
+        /// <summary>
+        /// 扰乱行动降低民心病量（3-5）
+        /// </summary>
+        public static int CalculateDisturbHappyReduction()
+        {
+            return _random.Next(3, 6);
+        }
+
+        /// <summary>
+        /// 扰乱行动降低武将忠心量（3-5）
+        /// </summary>
+        public static int CalculateDisturbLoyaltyReduction()
+        {
+            return _random.Next(3, 6);
+        }
+
         public static int CalculateCapturedLoyaltyDecay()
         {
             return _random.Next(1, 4);

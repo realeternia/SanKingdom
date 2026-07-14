@@ -1298,6 +1298,234 @@ public class SaveForceData
         return true;
     }
 
+    /// <summary>
+    /// 破坏行动：派遣 heroIds 武将各执行一次破坏，每人降低目标城市 5-10 城防
+    /// </summary>
+    public bool ExecuteCityDestroy(int cityId, int devId, int[] heroIds, int targetCityId, out List<PopResultPanelManager.AttrData> attrDatas)
+    {
+        attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        if (heroIds == null || heroIds.Length == 0)
+        {
+            GameLog.Warn("ExecuteCityDestroy heroIds 为空");
+            return false;
+        }
+
+        var availableHeroes = FilterAvailableHeroes(heroIds);
+        if (availableHeroes.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("所选武将本回合已行动");
+            return false;
+        }
+        heroIds = availableHeroes.ToArray();
+
+        if (targetCityId <= 0)
+        {
+            GameLog.Warn("ExecuteCityDestroy targetCityId 无效");
+            return false;
+        }
+
+        var targetCity = GameManager.Instance.GetCity(targetCityId);
+        if (targetCity == null)
+        {
+            GameLog.Error($"ExecuteCityDestroy 目标城市不存在 targetCityId={targetCityId}");
+            return false;
+        }
+        if (targetCity.forceId == forceId)
+        {
+            SystemTip.Instance.ShowTip("不能破坏己方城市");
+            return false;
+        }
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+        int goldCost = devCfg.GoldCost;
+        int heroCount = heroIds.Length;
+        int totalCost = heroCount * goldCost;
+        if (gold < totalCost)
+        {
+            SystemTip.Instance.ShowTip("黄金不足");
+            return false;
+        }
+
+        int goldOld = (int)gold;
+        AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = "Gold",
+            valOld = goldOld,
+            valAddon = -totalCost,
+        });
+
+        int wallOld = (int)targetCity.GetAttr("wall");
+        int totalWallReduce = 0;
+        foreach (var heroId in heroIds)
+        {
+            int wallReduce = SysFormula.Hero.CalculateDestroyWallReduction();
+            targetCity.AddAttr("wall", -wallReduce, devCfg.Cname + "破坏城防");
+            totalWallReduce += wallReduce;
+        }
+
+        string targetCityName = WorldConfig.GetConfig(targetCityId)?.Cname ?? "";
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attrStr = targetCityName + "城防",
+            valOld = wallOld,
+            valAddon = -totalWallReduce,
+        });
+
+        AddKingActionCount(devId, heroCount);
+        // dayDiff 按主公所在城市到目标城市的日程计算：distance - 1（目标必为敌方，crossCountry=true）
+        var kingCity = GetKingCity();
+        int sourceCityId = kingCity != null ? kingCity.cityId : cityId;
+        int distance = SysFormula.City.CalculateHeroDayDistance(sourceCityId, targetCityId, true);
+        MarkHeroesActed(heroIds, distance - 1);
+
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionDestroy(
+            GameManager.Instance.SaveData.round, forceId, cityId, targetCityId, devId, heroIds, totalWallReduce));
+
+        PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = targetCityId });
+        GameLog.Info($"ExecuteCityDestroy forceId={forceId} targetCityId={targetCityId} heroCount={heroCount} totalWallReduce={totalWallReduce}");
+        return true;
+    }
+
+    /// <summary>
+    /// 扰乱行动：派遣 heroIds 武将各执行一次扰乱，每人降低目标城市 3-5 民心，
+    /// 并独立随机选择最多 DISTURB_LOYALTY_TARGET_MAX 个敌方武将降低 3-5 忠心
+    /// </summary>
+    public bool ExecuteCityDisturb(int cityId, int devId, int[] heroIds, int targetCityId, out List<PopResultPanelManager.AttrData> attrDatas)
+    {
+        attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        if (heroIds == null || heroIds.Length == 0)
+        {
+            GameLog.Warn("ExecuteCityDisturb heroIds 为空");
+            return false;
+        }
+
+        var availableHeroes = FilterAvailableHeroes(heroIds);
+        if (availableHeroes.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("所选武将本回合已行动");
+            return false;
+        }
+        heroIds = availableHeroes.ToArray();
+
+        if (targetCityId <= 0)
+        {
+            GameLog.Warn("ExecuteCityDisturb targetCityId 无效");
+            return false;
+        }
+
+        var targetCity = GameManager.Instance.GetCity(targetCityId);
+        if (targetCity == null)
+        {
+            GameLog.Error($"ExecuteCityDisturb 目标城市不存在 targetCityId={targetCityId}");
+            return false;
+        }
+        if (targetCity.forceId == forceId)
+        {
+            SystemTip.Instance.ShowTip("不能扰乱己方城市");
+            return false;
+        }
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+        int goldCost = devCfg.GoldCost;
+        int heroCount = heroIds.Length;
+        int totalCost = heroCount * goldCost;
+        if (gold < totalCost)
+        {
+            SystemTip.Instance.ShowTip("黄金不足");
+            return false;
+        }
+
+        int goldOld = (int)gold;
+        AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = "Gold",
+            valOld = goldOld,
+            valAddon = -totalCost,
+        });
+
+        int happyOld = (int)targetCity.GetAttr("happy");
+        int totalHappyReduce = 0;
+        foreach (var heroId in heroIds)
+        {
+            int happyReduce = SysFormula.Hero.CalculateDisturbHappyReduction();
+            targetCity.AddAttr("happy", -happyReduce, devCfg.Cname + "扰乱民心");
+            totalHappyReduce += happyReduce;
+        }
+
+        string targetCityName = WorldConfig.GetConfig(targetCityId)?.Cname ?? "";
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attrStr = targetCityName + "民心",
+            valOld = happyOld,
+            valAddon = -totalHappyReduce,
+        });
+
+        // 扰乱目标城市武将忠心：每个执行人独立随机选择最多 DISTURB_LOYALTY_TARGET_MAX 个武将
+        var targetHeroIds = targetCity.GetNormalHeroList();
+        int totalLoyaltyReduce = 0;
+        if (targetHeroIds.Count > 0)
+        {
+            // 记录每个目标武将累计被降低的忠心
+            var heroLoyaltyReduceMap = new Dictionary<int, int>();
+            foreach (var heroId in heroIds)
+            {
+                // 当前执行人的目标列表：人数超上限则随机选取
+                List<int> executorTargets = targetHeroIds;
+                if (targetHeroIds.Count > SystemConst.CityDev.DISTURB_LOYALTY_TARGET_MAX)
+                {
+                    executorTargets = targetHeroIds
+                        .OrderBy(x => SysRandom.Value)
+                        .Take(SystemConst.CityDev.DISTURB_LOYALTY_TARGET_MAX)
+                        .ToList();
+                }
+
+                foreach (var targetHeroId in executorTargets)
+                {
+                    int reduce = SysFormula.Hero.CalculateDisturbLoyaltyReduction();
+                    if (!heroLoyaltyReduceMap.ContainsKey(targetHeroId))
+                        heroLoyaltyReduceMap[targetHeroId] = 0;
+                    heroLoyaltyReduceMap[targetHeroId] += reduce;
+                    totalLoyaltyReduce += reduce;
+                }
+            }
+
+            // 应用忠心变化并在结果中显示每个受影响武将
+            foreach (var pair in heroLoyaltyReduceMap)
+            {
+                var targetHero = GameManager.Instance.GetHero(pair.Key);
+                if (targetHero == null) continue;
+                int loyaltyOld = targetHero.loyalty;
+                targetHero.loyalty = System.Math.Max(0, targetHero.loyalty - pair.Value);
+                int actualReduce = loyaltyOld - targetHero.loyalty;
+
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = targetCityName + HeroConfig.GetConfig(pair.Key).Name + "忠心",
+                    valOld = loyaltyOld,
+                    valAddon = -actualReduce,
+                });
+            }
+        }
+
+        AddKingActionCount(devId, heroCount);
+        // dayDiff 按主公所在城市到目标城市的日程计算：distance - 1（目标必为敌方，crossCountry=true）
+        var kingCity = GetKingCity();
+        int sourceCityId = kingCity != null ? kingCity.cityId : cityId;
+        int distance = SysFormula.City.CalculateHeroDayDistance(sourceCityId, targetCityId, true);
+        MarkHeroesActed(heroIds, distance - 1);
+
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionDisturb(
+            GameManager.Instance.SaveData.round, forceId, cityId, targetCityId, devId, heroIds, totalHappyReduce, totalLoyaltyReduce));
+
+        PanelManager.Instance.SendSignal(new CityAttrChangeSignal { CityId = targetCityId });
+        GameLog.Info($"ExecuteCityDisturb forceId={forceId} targetCityId={targetCityId} heroCount={heroCount} totalHappyReduce={totalHappyReduce} totalLoyaltyReduce={totalLoyaltyReduce}");
+        return true;
+    }
+
     public Dictionary<string, float> CalculateForceAttrAddons()
     {
         Dictionary<string, float> attrAddons = new Dictionary<string, float>();

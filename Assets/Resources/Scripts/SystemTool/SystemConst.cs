@@ -294,6 +294,12 @@ public static class SystemConst
         public const int PRAISE_PAID_DEV_ID = 21206;
         public const int TRADE_DEV_ID = 21203;
         public const int SEARCH_DEV_ID = 21202;
+        public const int DESTROY_DEV_ID = 21207;
+        public const int DISTURB_DEV_ID = 21208;
+        /// <summary>
+        /// 扰乱行动每个执行人最多影响的敌方武将数
+        /// </summary>
+        public const int DISTURB_LOYALTY_TARGET_MAX = 5;
         /// <summary>
         /// 城市日程最大日数
         /// </summary>

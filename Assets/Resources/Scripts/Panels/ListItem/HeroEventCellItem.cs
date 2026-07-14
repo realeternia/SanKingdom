@@ -94,6 +94,19 @@ public class HeroEventCellItem : MonoBehaviour, ILoopScrollItem
                     string loyalty = ev.effectValue != 0 ? $" <color=#7CFC00>忠心+{ev.effectValue}</color>" : "";
                     return $"<color=#FFD700>{timeLabel}</color>  受{method}{loyalty}";
                 }
+            case GameEventType.KingActionDestroy:
+                {
+                    string target = GetCityName(ev.intParam);
+                    string wall = ev.effectValue != 0 ? $" <color=#FF6B6B>城防-{ev.effectValue}</color>" : "";
+                    return $"<color=#FFD700>{timeLabel}</color>  破坏 <color=#87CEEB>{target}</color>{wall}";
+                }
+            case GameEventType.KingActionDisturb:
+                {
+                    string target = GetCityName(ev.intParam);
+                    string happy = ev.effectValue != 0 ? $" <color=#FF6B6B>民心-{ev.effectValue}</color>" : "";
+                    string loyalty = ev.effectValue2 != 0 ? $" <color=#FF6B6B>忠心-{ev.effectValue2}</color>" : "";
+                    return $"<color=#FFD700>{timeLabel}</color>  扰乱 <color=#87CEEB>{target}</color>{happy}{loyalty}";
+                }
             case GameEventType.Capture:
                 {
                     string captor = GetForceName(ev.forceId);

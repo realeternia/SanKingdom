@@ -50,6 +50,7 @@ Unity (C#) | JsonUtility | UGUI | TextMeshPro
 - 禁止魔法数字和内联计算公式
 - `SysFormula` 仅收录含实质计算逻辑（含参数运算、随机数、阈值判断等）的公式，禁止封装「直接返回常量」的方法：调用方直接使用 `SystemConst` 中的常量即可
 - `SysFormula` 仅收录游戏数值公式，禁止放入 UI 布局/尺寸计算等无跨模块复用性的方法：UI 相关计算应放在对应 UI 组件（如 `ResItem`）的 static 方法中
+- `SysFormula` 内部禁止引用 `SystemConst`：公式自身的数值边界（如随机区间上下限、阈值）直接内联字面量，`SystemConst` 仅服务于外部调用方/跨模块共享常量
 
 ### 资源路径 - ResPath
 
@@ -112,6 +113,7 @@ Unity (C#) | JsonUtility | UGUI | TextMeshPro
 - 禁止内联计算公式，提取到 `SysFormula`
 - 禁止在 `SysFormula` 中封装「直接返回常量」的方法，调用方直接使用 `SystemConst` 常量
 - 禁止在 `SysFormula` 中放入 UI 布局/尺寸计算方法，应放在对应 UI 组件的 static 方法中
+- 禁止 `SysFormula` 内部引用 `SystemConst`，公式数值边界直接内联字面量
 - 禁止 `UnityEngine.Debug.Log`，用 `GameLog`
 - 禁止硬编码资源路径，用 `ResPath`
 - 禁止直接 `Resources.Load`，用 `ResourceCache`
