@@ -99,6 +99,9 @@ namespace CommonConfig
             config[2] = new SystemAttrConfig(2, "Move", "移动", "syswheel");
             config[3] = new SystemAttrConfig(3, "Praise", "褒奖", "sysscroll");
             config[4] = new SystemAttrConfig(4, "Recruit", "登庸", "syshat");
+            config[5] = new SystemAttrConfig(5, "Destroy", "破坏", "syshammer");
+            config[6] = new SystemAttrConfig(6, "Search", "搜寻", "syscompass");
+            config[7] = new SystemAttrConfig(7, "Trade", "交易", "sysbalance");
 
             RebuildIndex();
 

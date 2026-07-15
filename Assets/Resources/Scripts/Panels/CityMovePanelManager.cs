@@ -82,7 +82,8 @@ public class CityMovePanelManager : MonoBehaviour
 
         if (resCheckItem != null && moveDevCfg != null)
         {
-            resCheckItem.Init(ResPath.Texture.AttrIcon(moveDevCfg.Icon), $"{movedHeroCount}/{moveHeroCount}");
+            resCheckItem.Init("hero");
+            resCheckItem.UpdateDisplay($"{movedHeroCount}/{moveHeroCount}");
         }
 
         attrVal1Text.text = "-";

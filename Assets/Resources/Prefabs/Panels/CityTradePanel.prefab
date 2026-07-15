@@ -90,7 +90,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sourceType: 3
   iconPath: 
-  configId: 2
+  configId: 7
   image: {fileID: 0}
   tipExtra: 
 --- !u!1 &598871118034348606

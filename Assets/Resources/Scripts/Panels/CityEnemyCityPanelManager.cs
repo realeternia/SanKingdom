@@ -25,6 +25,7 @@ public class CityEnemyCityPanelManager : MonoBehaviour
     private int currentDevId;
     private int selectedTargetCityId = 0;
     private int kingCityId = 0;
+    private bool resCheckItemInited = false;
 
     private List<GameObject> heroHeadItems = new List<GameObject>();
 
@@ -59,6 +60,7 @@ public class CityEnemyCityPanelManager : MonoBehaviour
         this.cityId = cityId;
         this.currentDevId = SystemConst.CityDev.DISTURB_DEV_ID;
         this.selectedTargetCityId = 0;
+        this.resCheckItemInited = false;
 
         var force = GameManager.Instance.GetForce(forceId);
         var kingCity = force != null ? force.GetKingCity() : null;
@@ -128,12 +130,13 @@ public class CityEnemyCityPanelManager : MonoBehaviour
     {
         if (resCheckItem == null) return;
 
-        var devCfg = CityDevConfig.GetConfig(currentDevId);
-        if (devCfg == null) return;
-
-        var force = GameManager.Instance.GetForce(forceId);
-        int gold = force != null ? (int)force.gold : 0;
-        resCheckItem.Init(ResPath.Texture.AttrIcon("citygold"), gold.ToString());
+        // 破坏/扰乱均消耗金钱，类型固定为 citygold，只在首次初始化时 Init
+        if (!resCheckItemInited)
+        {
+            resCheckItem.Init("gold");
+            resCheckItemInited = true;
+        }
+        UpdateResCheckDisplay();
     }
 
     private bool CanSelectHero()

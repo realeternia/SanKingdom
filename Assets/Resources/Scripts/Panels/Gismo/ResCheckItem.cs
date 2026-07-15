@@ -15,26 +15,27 @@ public class ResCheckItem : MonoBehaviour
 
     public void Init(string attrName)
     {
+        // 先按 name 查找，找不到再按 icon 查找
         var item = CityAttrConfig.GetConfigByname(attrName);
-        if (item == null)
-            return;
-        this.config = item;
-        this.isSpecial = false;
+        if (item == null) item = CityAttrConfig.GetConfigByname(attrName);
 
-        GetComponent<IconLoader>().SetId(item.Id);
-        if (!string.IsNullOrEmpty(item.Icon))
+        if (item != null)
         {
-            icon.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(item.Icon));
+            this.config = item;
+            this.isSpecial = false;
+            GetComponent<IconLoader>().SetId(item.Id);
+            if (!string.IsNullOrEmpty(item.Icon))
+            {
+                icon.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(item.Icon));
+            }
         }
-    }
-
-    public void Init(string iconPath, string displayText)
-    {
-        this.isSpecial = true;
-        this.config = null;
-
-        icon.sprite = ResourceCache.LoadSpriteUI(iconPath);
-        itemNum.text = displayText;
+        else
+        {
+            // 非城市属性 icon（如 devId 专用图标），无 tooltip
+            this.config = null;
+            this.isSpecial = true;
+            icon.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.AttrIcon(attrName));
+        }
     }
 
     public void UpdateNum(float num)

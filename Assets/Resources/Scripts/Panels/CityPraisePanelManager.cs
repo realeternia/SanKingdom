@@ -96,11 +96,13 @@ public class CityPraisePanelManager : MonoBehaviour
         {
             var force = GameManager.Instance.GetForce(forceId);
             int praisedCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.PRAISE_DEV_ID) : 0;
-            resCheckItem.Init(ResPath.Texture.AttrIcon("armscount"), $"{praisedCount}/{praiseHeroCount}");
+            resCheckItem.Init("hero");
+            resCheckItem.UpdateDisplay($"{praisedCount}/{praiseHeroCount}");
         }
         else
         {
-            resCheckItem.Init(ResPath.Texture.AttrIcon("citygold"), ((int)(GameManager.Instance.GetForce(forceId)?.gold ?? 0)).ToString());
+            resCheckItem.Init("gold");
+            resCheckItem.UpdateDisplay(((int)(GameManager.Instance.GetForce(forceId)?.gold ?? 0)).ToString());
         }
     }
 

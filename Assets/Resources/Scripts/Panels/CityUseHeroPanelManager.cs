@@ -137,7 +137,8 @@ public class CityUseHeroPanelManager : MonoBehaviour
 
         var force = GameManager.Instance.GetForce(forceId);
         int usedCount = force != null ? force.GetKingActionCount(devId) : 0;
-        resCheckItem.Init(ResPath.Texture.AttrIcon(devCfg.Icon), $"{usedCount}/{useHeroCount}");
+        resCheckItem.Init("hero");
+        resCheckItem.UpdateDisplay($"{usedCount}/{useHeroCount}");
     }
 
     private bool CanSelectHero()
