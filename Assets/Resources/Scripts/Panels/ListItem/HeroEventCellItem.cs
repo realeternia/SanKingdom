@@ -107,6 +107,14 @@ public class HeroEventCellItem : MonoBehaviour, ILoopScrollItem
                     string loyalty = ev.effectValue2 != 0 ? $" <color=#FF6B6B>忠心-{ev.effectValue2}</color>" : "";
                     return $"<color=#FFD700>{timeLabel}</color>  扰乱 <color=#87CEEB>{target}</color>{happy}{loyalty}";
                 }
+            case GameEventType.LoyaltyChange:
+                {
+                    string reason = ev.intParam == 0 ? "被扰乱" : "被俘虏";
+                    string loyalty = ev.effectValue < 0
+                        ? $" <color=#FF6B6B>忠心{ev.effectValue}</color>"
+                        : $" <color=#7CFC00>忠心+{ev.effectValue}</color>";
+                    return $"<color=#FFD700>{timeLabel}</color>  {reason}{loyalty}";
+                }
             case GameEventType.Capture:
                 {
                     string captor = GetForceName(ev.forceId);

@@ -13,6 +13,7 @@ public enum GameEventType
     KingActionPraise,  // 赏赐（intParam=methodId）
     KingActionDestroy, // 破坏敌方城防（intParam=目标城市ID, effectValue=城防降低总量）
     KingActionDisturb, // 扰乱敌方民心/忠心（intParam=目标城市ID, effectValue=民心降低总量, effectValue2=忠心降低总量）
+    LoyaltyChange,     // 忠心变化（effectValue=变化量，intParam=原因 0=被扰乱 1=被俘虏下降）
     Capture,           // 被俘虏
     Wild,              // 下野（新发现英雄初始状态）
     Escape,            // 逃脱（intParam=目标城市 ID）
@@ -50,6 +51,7 @@ public class GameEventData
     // KingActionPraise= totalLoyaltyAdd / 0
     // KingActionDestroy= wallReduceTotal / 0（intParam=目标城市ID）
     // KingActionDisturb= happyReduceTotal / loyaltyReduceTotal（intParam=目标城市ID）
+    // LoyaltyChange  = loyaltyChange / 0（intParam=原因 0=被扰乱 1=被俘虏下降）
     // Capture        = 0 / 0
     // Wild           = 0 / 0
     // Escape         = 0 / 0
@@ -228,6 +230,21 @@ public class GameEventData
             intParam = targetCityId,
             effectValue = totalHappyReduce,
             effectValue2 = totalLoyaltyReduce
+        };
+    }
+
+    public static GameEventData CreateLoyaltyChange(int round, int forceId, int cityId, int heroId, int loyaltyChange, int reason)
+    {
+        return new GameEventData
+        {
+            eventType = GameEventType.LoyaltyChange,
+            year = CalcYear(round),
+            round = round,
+            forceId = forceId,
+            cityId = cityId,
+            heroIds = new List<int> { heroId },
+            effectValue = loyaltyChange,
+            intParam = reason
         };
     }
 

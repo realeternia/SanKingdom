@@ -98,13 +98,14 @@ public class GameEventLog
             }
         }
 
+        // 记录卸任事件：用上一次的 devId，避免显示"卸任未知职务"
         foreach (var kvp in lastDevSnapshot)
         {
             int heroId = kvp.Key;
             if (!current.ContainsKey(heroId))
             {
                 int forceId = ResolveForceId(saveData, heroId);
-                RecordEvent(GameEventData.CreateDev(finishedRound, forceId, kvp.Value.cityId, heroId, 0, 1));
+                RecordEvent(GameEventData.CreateDev(finishedRound, forceId, kvp.Value.cityId, heroId, kvp.Value.devId, 1));
             }
         }
 

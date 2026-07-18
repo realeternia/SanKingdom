@@ -118,9 +118,21 @@ public class SaveData
         {
             if (hero.state == HeroState.Catched)
             {
-                hero.loyalty -= SysFormula.Hero.CalculateCapturedLoyaltyDecay();
-                if (hero.loyalty < 0)
-                    hero.loyalty = 0;
+                // 主公忠心不会下降
+                if (!IsKingHero(hero))
+                {
+                    int loyaltyOld = hero.loyalty;
+                    hero.loyalty -= SysFormula.Hero.CalculateCapturedLoyaltyDecay();
+                    if (hero.loyalty < 0)
+                        hero.loyalty = 0;
+                    int actualReduce = loyaltyOld - hero.loyalty;
+
+                    if (actualReduce > 0)
+                    {
+                        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateLoyaltyChange(
+                            round, hero.forceId, hero.cityId, hero.heroId, -actualReduce, 1));
+                    }
+                }
 
                 hero.TryEscape(round);
             }
@@ -129,6 +141,16 @@ public class SaveData
                 hero.TryWildMove();
             }
         }
+    }
+
+    /// <summary>
+    /// 判断武将是否是主公
+    /// </summary>
+    private static bool IsKingHero(SaveHeroData hero)
+    {
+        if (hero.forceId <= 0) return false;
+        var forceCfg = ForceConfig.GetConfig(hero.forceId);
+        return forceCfg != null && forceCfg.HeroId == hero.heroId;
     }
 
     private void CleanupTroopsWithoutCommander()

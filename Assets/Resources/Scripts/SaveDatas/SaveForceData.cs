@@ -1465,7 +1465,10 @@ public class SaveForceData
         });
 
         // 扰乱目标城市武将忠心：每个执行人独立随机选择最多 DISTURB_LOYALTY_TARGET_MAX 个武将
+        // 主公忠心不会下降，排除主公
         var targetHeroIds = targetCity.GetNormalHeroList();
+        int targetKingHeroId = ForceConfig.GetConfig(targetCity.forceId).HeroId;
+        targetHeroIds = targetHeroIds.Where(id => id != targetKingHeroId).ToList();
         int totalLoyaltyReduce = 0;
         if (targetHeroIds.Count > 0)
         {
@@ -1504,10 +1507,14 @@ public class SaveForceData
 
                 attrDatas.Add(new PopResultPanelManager.AttrData()
                 {
-                    attrStr = targetCityName + HeroConfig.GetConfig(pair.Key).Name + "忠心",
+                    attrStr = $"<color=yellow>{HeroConfig.GetConfig(pair.Key).Name}</color>忠心",
                     valOld = loyaltyOld,
                     valAddon = -actualReduce,
                 });
+
+                // 记录被扰乱武将的忠心变化事件
+                GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateLoyaltyChange(
+                    GameManager.Instance.SaveData.round, targetHero.forceId, targetCityId, pair.Key, -actualReduce, 0));
             }
         }
 
