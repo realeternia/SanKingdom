@@ -194,20 +194,11 @@ public class CityEnemyCityPanelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 选择/切换目标城市后，刷新所有 HeroHeadItem 的天数显示
+    /// 选择/切换目标城市后，重建 HeroHeadItem（显示成功率、按成功率排序、更新天数）
     /// </summary>
     private void UpdateAllHeroDayText()
     {
-        int day = CalculateDayDistance();
-        foreach (var itemObj in heroHeadItems)
-        {
-            if (itemObj == null) continue;
-            var itemScript = itemObj.GetComponent<HeroHeadItem>();
-            if (itemScript != null)
-            {
-                itemScript.SetDayText(day);
-            }
-        }
+        CreateHeroHeadItems();
     }
 
     private void OnExecute()
@@ -276,11 +267,13 @@ public class CityEnemyCityPanelManager : MonoBehaviour
 
         int currentRound = GameManager.Instance.SaveData.round;
         int kingHeroId = ForceConfig.GetConfig(forceId).HeroId;
+        bool hasTarget = selectedTargetCityId > 0;
         heroList = heroList.OrderBy(h =>
             {
                 var hero = GameManager.Instance.GetHero(h);
                 return hero != null && hero.round >= currentRound ? 1 : 0;
             })
+            .ThenByDescending(h => hasTarget ? CalculateKingActionRate(h) : 0)
             .ThenByDescending(h => h == kingHeroId ? 1 : 0)
             .ThenByDescending(h => GameManager.Instance.GetHero(h).GetAttr("charm"))
             .ToList();
@@ -324,7 +317,7 @@ public class CityEnemyCityPanelManager : MonoBehaviour
             HeroHeadItem itemScript = itemObj.GetComponent<HeroHeadItem>();
             if (itemScript != null)
             {
-                string attText = GetHeroAttText(heroList[i]);
+                string attText = hasTarget ? CalculateKingActionRate(heroList[i]) + "%" : GetHeroAttText(heroList[i]);
                 var heroData = GameManager.Instance.GetHero(heroList[i]);
                 bool hasActed = heroData != null && heroData.round >= GameManager.Instance.SaveData.round;
                 itemScript.Init(heroList[i], attText, forceId, hasActed);
@@ -358,5 +351,15 @@ public class CityEnemyCityPanelManager : MonoBehaviour
             return $"武{SysColor.GetColoredText("str", heroData.str)}";
         }
         return $"智{SysColor.GetColoredText("inte", heroData.inte)}";
+    }
+
+    private int CalculateKingActionRate(int executorHeroId)
+    {
+        if (selectedTargetCityId <= 0) return 0;
+        var targetCity = GameManager.Instance.GetCity(selectedTargetCityId);
+        if (targetCity == null) return 0;
+        int targetForceId = targetCity.forceId;
+        var devCfg = CityDevConfig.GetConfig(currentDevId);
+        return SysFormula.Hero.CalcKingActionBonus(executorHeroId, targetForceId, devCfg, null);
     }
 }

@@ -42,6 +42,20 @@ public static class SystemConst
         /// </summary>
         public const int RECRUIT_ENEMY_LOYALTY_THRESHOLD = 90;
         /// <summary>
+        /// 登用在野英雄基础成功率(%)
+        /// </summary>
+        public const int RECRUIT_WILD_BASE_RATE = 30;
+        /// <summary>
+        /// 登用在野英雄非己方城市成功率倍率
+        /// </summary>
+        public const float RECRUIT_WILD_NON_OWN_CITY_MULTIPLIER = 0.5f;
+        /// <summary>
+        /// 登用俘虏/敌方英雄基础率 = (100-忠诚)*3/4 - RECRUIT_ENEMY_BASE_OFFSET
+        /// </summary>
+        public const int RECRUIT_ENEMY_LOYALTY_MULTIPLIER_NUM = 3;
+        public const int RECRUIT_ENEMY_LOYALTY_MULTIPLIER_DEN = 4;
+        public const int RECRUIT_ENEMY_BASE_OFFSET = 5;
+        /// <summary>
         /// 默认兵种ID
         /// </summary>
         public const int DEFAULT_ARMS_ID = 1;

@@ -147,11 +147,13 @@ public class CityRelationPanelManager : MonoBehaviour
         {
             textForce2Name.text = IsBefriendMode() ? "" : "点击选择";
         }
+
+        CreateHeroHeadItems();
     }
 
     private void RefreshGoldDisplay()
     {
-        var force = GameManager.Instance.GetForce(forceId);
+        var force = GameManager.Instance.GetForce(forceId); 
         int gold = force != null ? (int)force.gold : 0;
         int selectedCount = GetSelectedCount();
 
@@ -292,11 +294,13 @@ public class CityRelationPanelManager : MonoBehaviour
         if (heroList.Count == 0) return;
 
         int currentRound = GameManager.Instance.SaveData.round;
+        bool hasTarget = selectedForceId1 > 0;
         heroList = heroList.OrderBy(h =>
             {
                 var hero = GameManager.Instance.GetHero(h);
                 return hero != null && hero.round >= currentRound ? 1 : 0;
             })
+            .ThenByDescending(h => hasTarget ? CalculateKingActionRate(h) : 0)
             .ThenByDescending(h =>
             {
                 var hero = GameManager.Instance.GetHero(h);
@@ -341,7 +345,7 @@ public class CityRelationPanelManager : MonoBehaviour
             HeroHeadItem itemScript = itemObj.GetComponent<HeroHeadItem>();
             if (itemScript != null)
             {
-                string attText = GetHeroAttText(heroList[i]);
+                string attText = hasTarget ? CalculateKingActionRate(heroList[i]) + "%" : GetHeroAttText(heroList[i]);
                 var heroData = GameManager.Instance.GetHero(heroList[i]);
                 bool hasActed = heroData != null && heroData.round >= GameManager.Instance.SaveData.round;
                 itemScript.Init(heroList[i], attText, forceId, hasActed);
@@ -369,5 +373,12 @@ public class CityRelationPanelManager : MonoBehaviour
         var hero = GameManager.Instance.GetHero(heroId);
         if (hero == null) return "";
         return $"智{SysColor.GetColoredText("inte", hero.inte)} 魅{SysColor.GetColoredText("charm", hero.charm)}";
+    }
+
+    private int CalculateKingActionRate(int executorHeroId)
+    {
+        if (selectedForceId1 <= 0) return 0;
+        var devCfg = CityDevConfig.GetConfig(GetCurrentDevId());
+        return SysFormula.Hero.CalcKingActionBonus(executorHeroId, selectedForceId1, devCfg, null);
     }
 }

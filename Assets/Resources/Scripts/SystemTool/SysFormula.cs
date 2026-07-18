@@ -199,11 +199,9 @@ public static class SysFormula
 
         /// <summary>
         /// 计算登庸成功率
-        /// 在野：基础30%，非己方城市×0.5
-        /// 俘虏/敌方在职：rate = diff*3/4 - 5（diff=100-忠诚），loyalty=80→10%，loyalty=60→25%
-        /// 加法加成（直接加到基础率）：派系相同+5、每个相同爱好+1
-        /// 乘算加成（彼此加法叠加）：魅力超过75每点+1%，君主+10%，
-        ///   目标喜欢执行人+10%、目标喜欢君主+10%（执行人非君主）、目标厌恶执行人-30%、目标厌恶君主-50%
+        /// 在野：基础RECRUIT_WILD_BASE_RATE，非己方城市×RECRUIT_WILD_NON_OWN_CITY_MULTIPLIER
+        /// 俘虏/敌方在职：rate = diff*3/4 - RECRUIT_ENEMY_BASE_OFFSET（diff=100-忠诚）
+        /// 额外加成（由 USE_HERO_DEV_ID 配置驱动）
         /// </summary>
         public static int CalculateRecruitRate(int cityId, int myHeroId, int targetHeroId)
         {
@@ -237,35 +235,59 @@ public static class SysFormula
                 if (executorHero != null)
                 {
                     var targetConfig = HeroConfig.GetConfig(targetHeroId);
-                    var executorConfig = HeroConfig.GetConfig(myHeroId);
-
-                    // 加法加成：派系相同、爱好相同，直接加到基础率
-                    baseSuccessRate += GetAdditiveBonus(targetConfig, executorConfig);
-
-                    int charm = executorHero.GetAttr("charm");
-                    int executorForceId = executorHero.forceId;
-                    int kingHeroId = ForceConfig.GetConfig(executorForceId).HeroId;
-                    bool isKing = myHeroId == kingHeroId;
-
-                    // 乘算加成：魅力、君主、关系（LikeForces/HateForces），彼此加法叠加
-                    int bonusPercent = 0;
-                    if (charm > 75)
-                    {
-                        bonusPercent += (charm - 75) * 1;
-                    }
-                    if (isKing)
-                    {
-                        bonusPercent += 110 - 100;
-                    }
-                    bonusPercent += GetRelationBonusPercent(targetConfig, executorForceId);
-
-                    baseSuccessRate = baseSuccessRate * (100 + bonusPercent) / 100;
-                    if (baseSuccessRate < 0) baseSuccessRate = 0;
+                    var devCfg = CityDevConfig.GetConfig(SystemConst.CityDev.USE_HERO_DEV_ID);
+                    int targetForceId = hero.forceId;
+                    baseSuccessRate += CalcKingActionBonus(myHeroId, targetForceId, devCfg, targetConfig);
                 }
             }
 
             if (baseSuccessRate > 100) baseSuccessRate = 100;
             return baseSuccessRate;
+        }
+
+        /// <summary>
+        /// 基于 CityDevConfig 计算 KingAction 成功率（全加法公式）
+        /// recruitTargetConfig：登庸时为被登庸英雄配置（用于派系/爱好匹配），其他行动传 null（用目标势力主公）
+        /// </summary>
+        public static int CalcKingActionBonus(int executorHeroId, int targetForceId, CityDevConfig devCfg, HeroConfig recruitTargetConfig)
+        {
+            var executorHero = GameManager.Instance.GetHero(executorHeroId);
+            if (executorHero == null) return 0;
+
+            int rate = (int)(devCfg.BaseRate * 100);
+
+            var executorConfig = HeroConfig.GetConfig(executorHeroId);
+            int executorForceId = executorHero.forceId;
+            int kingHeroId = ForceConfig.GetConfig(executorForceId).HeroId;
+            bool isKing = executorHero.heroId == kingHeroId;
+
+            // 加法加成：派系/爱好匹配
+            if (devCfg.NeedAdditiveBonus)
+            {
+                HeroConfig matchConfig = recruitTargetConfig;
+                if (matchConfig == null)
+                {
+                    var targetForceCfg = ForceConfig.GetConfig(targetForceId);
+                    if (targetForceCfg != null)
+                        matchConfig = HeroConfig.GetConfig(targetForceCfg.HeroId);
+                }
+                if (matchConfig != null)
+                    rate += GetAdditiveBonus(matchConfig, executorConfig);
+            }
+
+            // 属性溢出收益：取 Attrs[0] 作为主属性
+            string attrName = devCfg.Attrs != null && devCfg.Attrs.Length > 0 ? devCfg.Attrs[0] : "charm";
+            int attr = executorHero.GetAttr(attrName);
+            if (attr > devCfg.AttrHighBound)
+                rate += (int)((attr - devCfg.AttrHighBound) * devCfg.BonusPerPoint * 100);
+
+            // 君主收益
+            if (isKing)
+                rate += (int)(devCfg.KingBonus * 100);
+
+            if (rate < 0) rate = 0;
+            if (rate > 100) rate = 100;
+            return rate;
         }
 
         /// <summary>

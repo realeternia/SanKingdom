@@ -1358,20 +1358,45 @@ public class SaveForceData
 
         int wallOld = (int)targetCity.GetAttr("wall");
         int totalWallReduce = 0;
+        int targetForceId = targetCity.forceId;
         foreach (var heroId in heroIds)
         {
-            int wallReduce = SysFormula.Hero.CalculateDestroyWallReduction();
-            targetCity.AddAttr("wall", -wallReduce, devCfg.Cname + "破坏城防");
-            totalWallReduce += wallReduce;
+            string executorName = HeroConfig.GetConfig(heroId).Name;
+            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId, devCfg, null);
+            int randomVal = SysRandom.Range(0, 100);
+            bool success = randomVal < rate;
+
+            if (success)
+            {
+                int wallReduce = SysFormula.Hero.CalculateDestroyWallReduction();
+                targetCity.AddAttr("wall", -wallReduce, devCfg.Cname + "破坏城防");
+                totalWallReduce += wallReduce;
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = executorName + "破坏",
+                    valStr = $"<color=green>成功</color>{rate}%",
+                });
+            }
+            else
+            {
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = executorName + "破坏",
+                    valStr = $"<color=red>失败</color>{rate}%",
+                });
+            }
         }
 
         string targetCityName = WorldConfig.GetConfig(targetCityId)?.Cname ?? "";
-        attrDatas.Add(new PopResultPanelManager.AttrData()
+        if (totalWallReduce > 0)
         {
-            attrStr = targetCityName + "城防",
-            valOld = wallOld,
-            valAddon = -totalWallReduce,
-        });
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attrStr = targetCityName + "城防",
+                valOld = wallOld,
+                valAddon = -totalWallReduce,
+            });
+        }
 
         AddKingActionCount(devId, heroCount);
         // dayDiff 按主公所在城市到目标城市的日程计算：distance - 1（目标必为敌方，crossCountry=true）
@@ -1449,54 +1474,77 @@ public class SaveForceData
 
         int happyOld = (int)targetCity.GetAttr("happy");
         int totalHappyReduce = 0;
+        int targetForceId = targetCity.forceId;
+        // 记录每个目标武将累计被降低的忠心
+        var heroLoyaltyReduceMap = new Dictionary<int, int>();
+        int totalLoyaltyReduce = 0;
         foreach (var heroId in heroIds)
         {
-            int happyReduce = SysFormula.Hero.CalculateDisturbHappyReduction();
-            targetCity.AddAttr("happy", -happyReduce, devCfg.Cname + "扰乱民心");
-            totalHappyReduce += happyReduce;
+            string executorName = HeroConfig.GetConfig(heroId).Name;
+            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId, devCfg, null);
+            int randomVal = SysRandom.Range(0, 100);
+            bool success = randomVal < rate;
+
+            if (success)
+            {
+                int happyReduce = SysFormula.Hero.CalculateDisturbHappyReduction();
+                targetCity.AddAttr("happy", -happyReduce, devCfg.Cname + "扰乱民心");
+                totalHappyReduce += happyReduce;
+
+                // 扰乱目标城市武将忠心：成功时随机选择最多 DISTURB_LOYALTY_TARGET_MAX 个武将
+                var targetHeroIds = targetCity.GetNormalHeroList();
+                int targetKingHeroId = ForceConfig.GetConfig(targetCity.forceId).HeroId;
+                targetHeroIds = targetHeroIds.Where(id => id != targetKingHeroId).ToList();
+                if (targetHeroIds.Count > 0)
+                {
+                    List<int> executorTargets = targetHeroIds;
+                    if (targetHeroIds.Count > SystemConst.CityDev.DISTURB_LOYALTY_TARGET_MAX)
+                    {
+                        executorTargets = targetHeroIds
+                            .OrderBy(x => SysRandom.Value)
+                            .Take(SystemConst.CityDev.DISTURB_LOYALTY_TARGET_MAX)
+                            .ToList();
+                    }
+                    foreach (var targetHeroId in executorTargets)
+                    {
+                        int reduce = SysFormula.Hero.CalculateDisturbLoyaltyReduction();
+                        if (!heroLoyaltyReduceMap.ContainsKey(targetHeroId))
+                            heroLoyaltyReduceMap[targetHeroId] = 0;
+                        heroLoyaltyReduceMap[targetHeroId] += reduce;
+                        totalLoyaltyReduce += reduce;
+                    }
+                }
+
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = executorName + "扰乱",
+                    valStr = $"<color=green>成功</color>{rate}%",
+                });
+            }
+            else
+            {
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = executorName + "扰乱",
+                    valStr = $"<color=red>失败</color>{rate}%",
+                });
+            }
         }
 
         string targetCityName = WorldConfig.GetConfig(targetCityId)?.Cname ?? "";
-        attrDatas.Add(new PopResultPanelManager.AttrData()
+        if (totalHappyReduce > 0)
         {
-            attrStr = targetCityName + "民心",
-            valOld = happyOld,
-            valAddon = -totalHappyReduce,
-        });
-
-        // 扰乱目标城市武将忠心：每个执行人独立随机选择最多 DISTURB_LOYALTY_TARGET_MAX 个武将
-        // 主公忠心不会下降，排除主公
-        var targetHeroIds = targetCity.GetNormalHeroList();
-        int targetKingHeroId = ForceConfig.GetConfig(targetCity.forceId).HeroId;
-        targetHeroIds = targetHeroIds.Where(id => id != targetKingHeroId).ToList();
-        int totalLoyaltyReduce = 0;
-        if (targetHeroIds.Count > 0)
-        {
-            // 记录每个目标武将累计被降低的忠心
-            var heroLoyaltyReduceMap = new Dictionary<int, int>();
-            foreach (var heroId in heroIds)
+            attrDatas.Add(new PopResultPanelManager.AttrData()
             {
-                // 当前执行人的目标列表：人数超上限则随机选取
-                List<int> executorTargets = targetHeroIds;
-                if (targetHeroIds.Count > SystemConst.CityDev.DISTURB_LOYALTY_TARGET_MAX)
-                {
-                    executorTargets = targetHeroIds
-                        .OrderBy(x => SysRandom.Value)
-                        .Take(SystemConst.CityDev.DISTURB_LOYALTY_TARGET_MAX)
-                        .ToList();
-                }
+                attrStr = targetCityName + "民心",
+                valOld = happyOld,
+                valAddon = -totalHappyReduce,
+            });
+        }
 
-                foreach (var targetHeroId in executorTargets)
-                {
-                    int reduce = SysFormula.Hero.CalculateDisturbLoyaltyReduction();
-                    if (!heroLoyaltyReduceMap.ContainsKey(targetHeroId))
-                        heroLoyaltyReduceMap[targetHeroId] = 0;
-                    heroLoyaltyReduceMap[targetHeroId] += reduce;
-                    totalLoyaltyReduce += reduce;
-                }
-            }
-
-            // 应用忠心变化并在结果中显示每个受影响武将
+        // 应用忠心变化并在结果中显示每个受影响武将
+        if (heroLoyaltyReduceMap.Count > 0)
+        {
             foreach (var pair in heroLoyaltyReduceMap)
             {
                 var targetHero = GameManager.Instance.GetHero(pair.Key);
@@ -1574,8 +1622,38 @@ public class SaveForceData
         AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
 
         int relationOld = GameManager.Instance.SaveData.forceRelation.GetRelation(forceId, targetForceId);
-        int relationChange = SystemConst.Diplomacy.BEFRIEND_RELATION_CHANGE * heroCount;
-        GameManager.Instance.SaveData.forceRelation.AddRelation(forceId, targetForceId, relationChange);
+        int totalRelationChange = 0;
+        foreach (var heroId in heroIds)
+        {
+            string executorName = HeroConfig.GetConfig(heroId).Name;
+            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId, devCfg, null);
+            int randomVal = SysRandom.Range(0, 100);
+            bool success = randomVal < rate;
+
+            if (success)
+            {
+                int change = SystemConst.Diplomacy.BEFRIEND_RELATION_CHANGE;
+                totalRelationChange += change;
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = executorName + "亲善",
+                    valStr = $"<color=green>成功</color>{rate}%",
+                });
+            }
+            else
+            {
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = executorName + "亲善",
+                    valStr = $"<color=red>失败</color>{rate}%",
+                });
+            }
+        }
+
+        if (totalRelationChange > 0)
+        {
+            GameManager.Instance.SaveData.forceRelation.AddRelation(forceId, targetForceId, totalRelationChange);
+        }
         int relationNew = GameManager.Instance.SaveData.forceRelation.GetRelation(forceId, targetForceId);
 
         string targetForceName = ForceConfig.GetConfig(targetForceId).Cname;
@@ -1585,12 +1663,15 @@ public class SaveForceData
             valOld = goldOld,
             valAddon = -totalCost,
         });
-        attrDatas.Add(new PopResultPanelManager.AttrData()
+        if (totalRelationChange > 0)
         {
-            attrStr = $"与{targetForceName}友好度",
-            valOld = relationOld,
-            valAddon = relationNew - relationOld,
-        });
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attrStr = $"与{targetForceName}友好度",
+                valOld = relationOld,
+                valAddon = relationNew - relationOld,
+            });
+        }
 
         var cityData = GameManager.Instance.GetCity(cityId);
         cityData.AddAction(devId, heroCount);
@@ -1642,8 +1723,37 @@ public class SaveForceData
         AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
 
         int relationOld = GameManager.Instance.SaveData.forceRelation.GetRelation(targetForceId1, targetForceId2);
-        int relationChange = -SystemConst.Diplomacy.SOW_DISCORD_RELATION_CHANGE * heroCount;
-        GameManager.Instance.SaveData.forceRelation.AddRelation(targetForceId1, targetForceId2, relationChange);
+        int totalRelationChange = 0;
+        foreach (var heroId in heroIds)
+        {
+            string executorName = HeroConfig.GetConfig(heroId).Name;
+            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId1, devCfg, null);
+            int randomVal = SysRandom.Range(0, 100);
+            bool success = randomVal < rate;
+
+            if (success)
+            {
+                totalRelationChange += SystemConst.Diplomacy.SOW_DISCORD_RELATION_CHANGE;
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = executorName + "挑拨",
+                    valStr = $"<color=green>成功</color>{rate}%",
+                });
+            }
+            else
+            {
+                attrDatas.Add(new PopResultPanelManager.AttrData()
+                {
+                    attrStr = executorName + "挑拨",
+                    valStr = $"<color=red>失败</color>{rate}%",
+                });
+            }
+        }
+
+        if (totalRelationChange > 0)
+        {
+            GameManager.Instance.SaveData.forceRelation.AddRelation(targetForceId1, targetForceId2, -totalRelationChange);
+        }
         int relationNew = GameManager.Instance.SaveData.forceRelation.GetRelation(targetForceId1, targetForceId2);
 
         string targetForce1Name = ForceConfig.GetConfig(targetForceId1).Cname;
@@ -1654,12 +1764,15 @@ public class SaveForceData
             valOld = goldOld,
             valAddon = -totalCost,
         });
-        attrDatas.Add(new PopResultPanelManager.AttrData()
+        if (totalRelationChange > 0)
         {
-            attrStr = $"{targetForce1Name}与{targetForce2Name}友好度",
-            valOld = relationOld,
-            valAddon = relationNew - relationOld,
-        });
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attrStr = $"{targetForce1Name}与{targetForce2Name}友好度",
+                valOld = relationOld,
+                valAddon = relationNew - relationOld,
+            });
+        }
 
         var cityData = GameManager.Instance.GetCity(cityId);
         cityData.AddAction(devId, heroCount);
