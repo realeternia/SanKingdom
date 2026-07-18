@@ -115,6 +115,7 @@ public class CityEnemyCityPanelManager : MonoBehaviour
             : SystemConst.CityDev.DISTURB_DEV_ID;
         UpdateTypeButtonText();
         InitResCheckItem();
+        CreateHeroHeadItems();
     }
 
     private void UpdateTypeButtonText()
@@ -352,7 +353,10 @@ public class CityEnemyCityPanelManager : MonoBehaviour
     {
         var heroData = GameManager.Instance.GetHero(heroId);
         if (heroData == null) return "";
-        var cityCfg = WorldConfig.GetConfig(heroData.cityId);
-        return cityCfg != null ? cityCfg.Cname : "";
+        if (currentDevId == SystemConst.CityDev.DESTROY_DEV_ID)
+        {
+            return $"武{SysColor.GetColoredText("str", heroData.str)}";
+        }
+        return $"智{SysColor.GetColoredText("inte", heroData.inte)}";
     }
 }

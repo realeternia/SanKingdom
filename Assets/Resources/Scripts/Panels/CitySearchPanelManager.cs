@@ -232,6 +232,6 @@ public class CitySearchPanelManager : MonoBehaviour
     {
         var hero = GameManager.Instance.GetHero(heroId);
         if (hero == null) return "";
-        return $"智{hero.inte} 魅{hero.charm}";
+        return $"智{SysColor.GetColoredText("inte", hero.inte)} 魅{SysColor.GetColoredText("charm", hero.charm)}";
     }
 }

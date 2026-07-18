@@ -355,7 +355,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
     private string GetHeroAttText(int heroId)
     {
         var heroData = GameManager.Instance.GetHero(heroId);
-        var cityCfg = WorldConfig.GetConfig(heroData.cityId);
-        return cityCfg != null ? cityCfg.Cname : "";
+        if (heroData == null) return "";
+        return $"魅{SysColor.GetColoredText("charm", heroData.charm)}";
     }
 }

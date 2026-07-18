@@ -317,8 +317,10 @@ public class CityMovePanelManager : MonoBehaviour
     private string GetHeroAttText(int heroId)
     {
         var heroData = GameManager.Instance.GetHero(heroId);
-
-        var cityCfg = WorldConfig.GetConfig(heroData.cityId);
-        return cityCfg != null ? cityCfg.Cname : "";
+        if (heroData == null) return "";
+        int total = heroData.str + heroData.inte + heroData.fair + heroData.charm + heroData.leadShip;
+        Color color = SysColor.GetColorByValue("weightedAttr", total / 5);
+        string colorHex = ColorUtility.ToHtmlStringRGB(color);
+        return $"总<color=#{colorHex}>{total}</color>";
     }
 }
