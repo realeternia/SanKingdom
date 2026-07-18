@@ -296,6 +296,8 @@ public static class SystemConst
         public const int SEARCH_DEV_ID = 21202;
         public const int DESTROY_DEV_ID = 21207;
         public const int DISTURB_DEV_ID = 21208;
+        public const int DIPLOMACY_DEV_ID = 21209;
+        public const int SOW_DISCORD_DEV_ID = 21210;
         /// <summary>
         /// 扰乱行动每个执行人最多影响的敌方武将数
         /// </summary>
@@ -315,6 +317,8 @@ public static class SystemConst
         public const int RELATION_HOSTILE_THRESHOLD = 35;
         public const int PEACE_DECAY_ADJACENT = 1;
         public const int PEACE_IMPROVE_NON_ADJACENT = 1;
+        public const int BEFRIEND_RELATION_CHANGE = 10;
+        public const int SOW_DISCORD_RELATION_CHANGE = 10;
     }
 
     public static class Fair

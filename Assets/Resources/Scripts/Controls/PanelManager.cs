@@ -26,6 +26,7 @@ public class PanelManager : MonoBehaviour
     private GameObject cityTradePanel;
     private GameObject citySearchPanel;
     private GameObject cityEnemyCityPanel;
+    private GameObject cityRelationPanel;
 
     private GameObject popResultPanel;
     private GameObject popFairPanel;
@@ -550,6 +551,33 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(cityEnemyCityPanel, false);
         Destroy(cityEnemyCityPanel);
         cityEnemyCityPanel = null;
+    }
+
+    public void ShowCityRelation(int forceId, int cityId, int devId)
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        if (cityRelationPanel == null)
+        {
+            var cityRelationPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityRelationPanel"));
+            cityRelationPanel = Instantiate(cityRelationPanelPrefab, transform);
+        }
+        cityRelationPanel.SetActive(true);
+        var cityRelationPanelManager = cityRelationPanel.GetComponent<CityRelationPanelManager>();
+        cityRelationPanelManager.Init(forceId, cityId, devId);
+        cityRelationPanelManager.OnShow();
+
+        ChangePanelCount(cityRelationPanel, true);
+    }
+
+    public void HideCityRelation()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        cityRelationPanel.SetActive(false);
+        cityRelationPanel.GetComponent<CityRelationPanelManager>().OnHide();
+
+        ChangePanelCount(cityRelationPanel, false);
+        Destroy(cityRelationPanel);
+        cityRelationPanel = null;
     }
 
 

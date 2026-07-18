@@ -134,6 +134,7 @@
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUnityVersion.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\VideoPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\CityRelationPanelManager.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModulePhysics.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PopResultCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />
@@ -270,6 +271,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddBuffAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\SkillConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackReboundArrow.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\SideForceSelector.cs" />
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSuck.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityPraisePanelManager.cs" />
@@ -281,6 +283,7 @@
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUtils.cs" />
     <Compile Include="Assets\Resources\Scripts\OOs\IRankDetailInfoHeader.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRepeat.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideForceItem.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\AttrInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysColor.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolPraise.cs" />

@@ -57,7 +57,7 @@ public class NLMutiCheckButton : MonoBehaviour
     {
         for (int i = 0; i < buttons.Count; i++)
         {
-            buttons[i].transform.localPosition = new Vector3(baseLocalPos.x + i * 150, baseLocalPos.y, baseLocalPos.z);
+            buttons[i].transform.localPosition = new Vector3(baseLocalPos.x + i * 120, baseLocalPos.y, baseLocalPos.z);
         }
     }
 

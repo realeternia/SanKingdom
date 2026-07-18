@@ -445,6 +445,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             if (cfg.Id == SystemConst.CityDev.PRAISE_PAID_DEV_ID) continue;
             // 21207(破坏)集成在21208(扰乱)面板中，不在城市开发列表单独显示
             if (cfg.Id == SystemConst.CityDev.DESTROY_DEV_ID) continue;
+            // 21210(调拨)集成在21209(外交)面板中，不在城市开发列表单独显示
+            if (cfg.Id == SystemConst.CityDev.SOW_DISCORD_DEV_ID) continue;
             int row = devIndex / itemsPerRow;
             int col = devIndex % itemsPerRow;
 

@@ -286,6 +286,11 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
                 var cityData = GameManager.Instance.GetCity(cityId);
                 PanelManager.Instance.ShowCityEnemyCity(cityData.forceId, cityId, devId);
             }
+            else if (prefabName == "Relation")
+            {
+                var cityData = GameManager.Instance.GetCity(cityId);
+                PanelManager.Instance.ShowCityRelation(cityData.forceId, cityId, devId);
+            }
         });
     }
 

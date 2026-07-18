@@ -1533,6 +1533,143 @@ public class SaveForceData
         return true;
     }
 
+    /// <summary>
+    /// 亲善行动：提升当前势力与目标势力的友好度
+    /// </summary>
+    public bool ExecuteCityBefriend(int cityId, int devId, int[] heroIds, int targetForceId, out List<PopResultPanelManager.AttrData> attrDatas)
+    {
+        attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        if (heroIds == null || heroIds.Length == 0)
+        {
+            GameLog.Warn("ExecuteCityBefriend heroIds 为空");
+            return false;
+        }
+
+        var availableHeroes = FilterAvailableHeroes(heroIds);
+        if (availableHeroes.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("所选武将本回合已行动");
+            return false;
+        }
+        heroIds = availableHeroes.ToArray();
+
+        if (targetForceId <= 0 || targetForceId == forceId)
+        {
+            SystemTip.Instance.ShowTip("目标势力无效");
+            return false;
+        }
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+        int goldCost = devCfg.GoldCost;
+        int heroCount = heroIds.Length;
+        int totalCost = heroCount * goldCost;
+        if (gold < totalCost)
+        {
+            SystemTip.Instance.ShowTip("黄金不足");
+            return false;
+        }
+
+        int goldOld = (int)gold;
+        AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+
+        int relationOld = GameManager.Instance.SaveData.forceRelation.GetRelation(forceId, targetForceId);
+        int relationChange = SystemConst.Diplomacy.BEFRIEND_RELATION_CHANGE * heroCount;
+        GameManager.Instance.SaveData.forceRelation.AddRelation(forceId, targetForceId, relationChange);
+        int relationNew = GameManager.Instance.SaveData.forceRelation.GetRelation(forceId, targetForceId);
+
+        string targetForceName = ForceConfig.GetConfig(targetForceId).Cname;
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = "Gold",
+            valOld = goldOld,
+            valAddon = -totalCost,
+        });
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attrStr = $"与{targetForceName}友好度",
+            valOld = relationOld,
+            valAddon = relationNew - relationOld,
+        });
+
+        var cityData = GameManager.Instance.GetCity(cityId);
+        cityData.AddAction(devId, heroCount);
+        AddKingActionCount(devId, heroCount);
+        MarkHeroesActed(heroIds);
+
+        GameLog.Info($"ExecuteCityBefriend forceId={forceId} targetForceId={targetForceId} heroCount={heroCount} relationChange={relationNew - relationOld}");
+        return true;
+    }
+
+    /// <summary>
+    /// 调拨行动：降低两个目标势力间的友好度
+    /// </summary>
+    public bool ExecuteCitySowDiscord(int cityId, int devId, int[] heroIds, int targetForceId1, int targetForceId2, out List<PopResultPanelManager.AttrData> attrDatas)
+    {
+        attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        if (heroIds == null || heroIds.Length == 0)
+        {
+            GameLog.Warn("ExecuteCitySowDiscord heroIds 为空");
+            return false;
+        }
+
+        var availableHeroes = FilterAvailableHeroes(heroIds);
+        if (availableHeroes.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("所选武将本回合已行动");
+            return false;
+        }
+        heroIds = availableHeroes.ToArray();
+
+        if (targetForceId1 <= 0 || targetForceId2 <= 0 || targetForceId1 == targetForceId2)
+        {
+            SystemTip.Instance.ShowTip("目标势力无效");
+            return false;
+        }
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+        int goldCost = devCfg.GoldCost;
+        int heroCount = heroIds.Length;
+        int totalCost = heroCount * goldCost;
+        if (gold < totalCost)
+        {
+            SystemTip.Instance.ShowTip("黄金不足");
+            return false;
+        }
+
+        int goldOld = (int)gold;
+        AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+
+        int relationOld = GameManager.Instance.SaveData.forceRelation.GetRelation(targetForceId1, targetForceId2);
+        int relationChange = -SystemConst.Diplomacy.SOW_DISCORD_RELATION_CHANGE * heroCount;
+        GameManager.Instance.SaveData.forceRelation.AddRelation(targetForceId1, targetForceId2, relationChange);
+        int relationNew = GameManager.Instance.SaveData.forceRelation.GetRelation(targetForceId1, targetForceId2);
+
+        string targetForce1Name = ForceConfig.GetConfig(targetForceId1).Cname;
+        string targetForce2Name = ForceConfig.GetConfig(targetForceId2).Cname;
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = "Gold",
+            valOld = goldOld,
+            valAddon = -totalCost,
+        });
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attrStr = $"{targetForce1Name}与{targetForce2Name}友好度",
+            valOld = relationOld,
+            valAddon = relationNew - relationOld,
+        });
+
+        var cityData = GameManager.Instance.GetCity(cityId);
+        cityData.AddAction(devId, heroCount);
+        AddKingActionCount(devId, heroCount);
+        MarkHeroesActed(heroIds);
+
+        GameLog.Info($"ExecuteCitySowDiscord forceId={forceId} target1={targetForceId1} target2={targetForceId2} heroCount={heroCount} relationChange={relationNew - relationOld}");
+        return true;
+    }
+
     public Dictionary<string, float> CalculateForceAttrAddons()
     {
         Dictionary<string, float> attrAddons = new Dictionary<string, float>();
