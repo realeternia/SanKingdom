@@ -133,7 +133,7 @@ public class CitySearchPanelManager : MonoBehaviour
         {
             RefreshGoldDisplay();
             CreateHeroHeadItems();
-        }, devCfg.Mp4, false);
+        }, CityDevKingActionConfig.GetConfig(SystemConst.CityDev.SEARCH_DEV_ID).Mp4, false);
     }
 
     private void CreateHeroHeadItems()

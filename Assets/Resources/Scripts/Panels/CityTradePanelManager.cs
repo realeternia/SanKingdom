@@ -247,7 +247,7 @@ public class CityTradePanelManager : MonoBehaviour
             RefreshGoldDisplay();
             RefreshBuyDisplay();
             CreateHeroHeadItems();
-        }, devCfg.Mp4, false);
+        }, CityDevKingActionConfig.GetConfig(SystemConst.CityDev.TRADE_DEV_ID).Mp4, false);
     }
 
     private void CreateHeroHeadItems()

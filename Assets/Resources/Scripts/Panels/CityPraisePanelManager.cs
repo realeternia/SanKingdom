@@ -209,7 +209,7 @@ public class CityPraisePanelManager : MonoBehaviour
             PanelManager.Instance.ShowPopResultPanel(devCfg.Cname, attrDatas, () =>
             {
                 PanelManager.Instance.HideCityPraise();
-            }, devCfg.Mp4, false);
+            }, CityDevKingActionConfig.GetConfig(actualDevId).Mp4, false);
         }
     }
 

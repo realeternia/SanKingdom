@@ -235,9 +235,8 @@ public static class SysFormula
                 if (executorHero != null)
                 {
                     var targetConfig = HeroConfig.GetConfig(targetHeroId);
-                    var devCfg = CityDevConfig.GetConfig(SystemConst.CityDev.USE_HERO_DEV_ID);
                     int targetForceId = hero.forceId;
-                    baseSuccessRate += CalcKingActionBonus(myHeroId, targetForceId, devCfg, targetConfig);
+                    baseSuccessRate += CalcKingActionBonus(myHeroId, targetForceId, SystemConst.CityDev.USE_HERO_DEV_ID, targetConfig);
                 }
             }
 
@@ -246,15 +245,19 @@ public static class SysFormula
         }
 
         /// <summary>
-        /// 基于 CityDevConfig 计算 KingAction 成功率（全加法公式）
+        /// 基于 CityDevKingActionConfig 计算 KingAction 成功率（全加法公式）
+        /// devId：KingAction 配置 ID（对应 CityDevConfig 中的 devId）
         /// recruitTargetConfig：登庸时为被登庸英雄配置（用于派系/爱好匹配），其他行动传 null（用目标势力主公）
         /// </summary>
-        public static int CalcKingActionBonus(int executorHeroId, int targetForceId, CityDevConfig devCfg, HeroConfig recruitTargetConfig)
+        public static int CalcKingActionBonus(int executorHeroId, int targetForceId, int devId, HeroConfig recruitTargetConfig)
         {
             var executorHero = GameManager.Instance.GetHero(executorHeroId);
             if (executorHero == null) return 0;
 
-            int rate = (int)(devCfg.BaseRate * 100);
+            var devCfg = CityDevConfig.GetConfig(devId);
+            var kingCfg = CityDevKingActionConfig.GetConfig(devId);
+
+            int rate = (int)(kingCfg.BaseRate * 100);
 
             var executorConfig = HeroConfig.GetConfig(executorHeroId);
             int executorForceId = executorHero.forceId;
@@ -262,7 +265,7 @@ public static class SysFormula
             bool isKing = executorHero.heroId == kingHeroId;
 
             // 加法加成：派系/爱好匹配
-            if (devCfg.NeedAdditiveBonus)
+            if (kingCfg.NeedAdditiveBonus)
             {
                 HeroConfig matchConfig = recruitTargetConfig;
                 if (matchConfig == null)
@@ -278,12 +281,12 @@ public static class SysFormula
             // 属性溢出收益：取 Attrs[0] 作为主属性
             string attrName = devCfg.Attrs != null && devCfg.Attrs.Length > 0 ? devCfg.Attrs[0] : "charm";
             int attr = executorHero.GetAttr(attrName);
-            if (attr > devCfg.AttrHighBound)
-                rate += (int)((attr - devCfg.AttrHighBound) * devCfg.BonusPerPoint * 100);
+            if (attr > kingCfg.AttrHighBound)
+                rate += (int)((attr - kingCfg.AttrHighBound) * kingCfg.BonusPerPoint * 100);
 
             // 君主收益
             if (isKing)
-                rate += (int)(devCfg.KingBonus * 100);
+                rate += (int)(kingCfg.KingBonus * 100);
 
             if (rate < 0) rate = 0;
             if (rate > 100) rate = 100;
@@ -375,40 +378,6 @@ public static class SysFormula
         {
             if (level <= 1) return 0;
             return Math.Max(8 * (level - 1), baseAttr * (level - 1) / 10);
-        }
-
-        public static int CalculatePraiseLoyaltyAdd()
-        {
-            return _random.Next(1, 4);
-        }
-
-        public static int CalculateRewardLoyaltyAdd()
-        {
-            return _random.Next(3, 6);
-        }
-
-        /// <summary>
-        /// 破坏行动降低城防量（5-10）
-        /// </summary>
-        public static int CalculateDestroyWallReduction()
-        {
-            return _random.Next(5, 11);
-        }
-
-        /// <summary>
-        /// 扰乱行动降低民心病量（3-5）
-        /// </summary>
-        public static int CalculateDisturbHappyReduction()
-        {
-            return _random.Next(3, 6);
-        }
-
-        /// <summary>
-        /// 扰乱行动降低武将忠心量（3-5）
-        /// </summary>
-        public static int CalculateDisturbLoyaltyReduction()
-        {
-            return _random.Next(3, 6);
         }
 
         public static int CalculateCapturedLoyaltyDecay()

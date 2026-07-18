@@ -237,7 +237,7 @@ public class CityEnemyCityPanelManager : MonoBehaviour
             PanelManager.Instance.ShowPopResultPanel(devCfg.Cname, attrDatas, () =>
             {
                 PanelManager.Instance.HideCityEnemyCity();
-            }, devCfg != null ? devCfg.Mp4 : "", false);
+            }, devCfg != null ? CityDevKingActionConfig.GetConfig(currentDevId).Mp4 : "", false);
         }
     }
 
@@ -359,7 +359,6 @@ public class CityEnemyCityPanelManager : MonoBehaviour
         var targetCity = GameManager.Instance.GetCity(selectedTargetCityId);
         if (targetCity == null) return 0;
         int targetForceId = targetCity.forceId;
-        var devCfg = CityDevConfig.GetConfig(currentDevId);
-        return SysFormula.Hero.CalcKingActionBonus(executorHeroId, targetForceId, devCfg, null);
+        return SysFormula.Hero.CalcKingActionBonus(executorHeroId, targetForceId, currentDevId, null);
     }
 }

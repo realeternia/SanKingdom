@@ -1259,22 +1259,14 @@ public class SaveForceData
 
         // 根据 devId 推导 methodId：21206=奖赏(methodId=2)，其余=褒奖(methodId=1)
         int methodId = (devId == SystemConst.CityDev.PRAISE_PAID_DEV_ID) ? 2 : 1;
+        var kingCfg = CityDevKingActionConfig.GetConfig(devId);
         int totalLoyaltyAdd = 0;
 
         foreach(var heroId in heroList)
         {
             var hero = GameManager.Instance.GetHero(heroId);
             int loyaltyOld = hero.loyalty;
-            int loyaltyAdd = 0;
-
-            if(methodId == 1)
-            {
-                loyaltyAdd = SysFormula.Hero.CalculatePraiseLoyaltyAdd();
-            }
-            else if(methodId == 2)
-            {
-                loyaltyAdd = SysFormula.Hero.CalculateRewardLoyaltyAdd();
-            }
+            int loyaltyAdd = SysRandom.Range(kingCfg.EffectMin, kingCfg.EffectMax + 1);
 
             hero.loyalty = System.Math.Min(SystemConst.Hero.MAX_LOYALTY, hero.loyalty + loyaltyAdd);
             int actualAdd = hero.loyalty - loyaltyOld;
@@ -1359,16 +1351,17 @@ public class SaveForceData
         int wallOld = (int)targetCity.GetAttr("wall");
         int totalWallReduce = 0;
         int targetForceId = targetCity.forceId;
+        var kingCfg = CityDevKingActionConfig.GetConfig(devId);
         foreach (var heroId in heroIds)
         {
             string executorName = HeroConfig.GetConfig(heroId).Name;
-            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId, devCfg, null);
+            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId, devId, null);
             int randomVal = SysRandom.Range(0, 100);
             bool success = randomVal < rate;
 
             if (success)
             {
-                int wallReduce = SysFormula.Hero.CalculateDestroyWallReduction();
+                int wallReduce = SysRandom.Range(kingCfg.EffectMin, kingCfg.EffectMax + 1);
                 targetCity.AddAttr("wall", -wallReduce, devCfg.Cname + "破坏城防");
                 totalWallReduce += wallReduce;
                 attrDatas.Add(new PopResultPanelManager.AttrData()
@@ -1478,16 +1471,17 @@ public class SaveForceData
         // 记录每个目标武将累计被降低的忠心
         var heroLoyaltyReduceMap = new Dictionary<int, int>();
         int totalLoyaltyReduce = 0;
+        var kingCfg = CityDevKingActionConfig.GetConfig(devId);
         foreach (var heroId in heroIds)
         {
             string executorName = HeroConfig.GetConfig(heroId).Name;
-            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId, devCfg, null);
+            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId, devId, null);
             int randomVal = SysRandom.Range(0, 100);
             bool success = randomVal < rate;
 
             if (success)
             {
-                int happyReduce = SysFormula.Hero.CalculateDisturbHappyReduction();
+                int happyReduce = SysRandom.Range(kingCfg.EffectMin, kingCfg.EffectMax + 1);
                 targetCity.AddAttr("happy", -happyReduce, devCfg.Cname + "扰乱民心");
                 totalHappyReduce += happyReduce;
 
@@ -1507,7 +1501,7 @@ public class SaveForceData
                     }
                     foreach (var targetHeroId in executorTargets)
                     {
-                        int reduce = SysFormula.Hero.CalculateDisturbLoyaltyReduction();
+                        int reduce = SysRandom.Range(kingCfg.Effect2Min, kingCfg.Effect2Max + 1);
                         if (!heroLoyaltyReduceMap.ContainsKey(targetHeroId))
                             heroLoyaltyReduceMap[targetHeroId] = 0;
                         heroLoyaltyReduceMap[targetHeroId] += reduce;
@@ -1623,16 +1617,17 @@ public class SaveForceData
 
         int relationOld = GameManager.Instance.SaveData.forceRelation.GetRelation(forceId, targetForceId);
         int totalRelationChange = 0;
+        var kingCfg = CityDevKingActionConfig.GetConfig(devId);
         foreach (var heroId in heroIds)
         {
             string executorName = HeroConfig.GetConfig(heroId).Name;
-            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId, devCfg, null);
+            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId, devId, null);
             int randomVal = SysRandom.Range(0, 100);
             bool success = randomVal < rate;
 
             if (success)
             {
-                int change = SystemConst.Diplomacy.BEFRIEND_RELATION_CHANGE;
+                int change = SysRandom.Range(kingCfg.EffectMin, kingCfg.EffectMax + 1);
                 totalRelationChange += change;
                 attrDatas.Add(new PopResultPanelManager.AttrData()
                 {
@@ -1724,16 +1719,17 @@ public class SaveForceData
 
         int relationOld = GameManager.Instance.SaveData.forceRelation.GetRelation(targetForceId1, targetForceId2);
         int totalRelationChange = 0;
+        var kingCfg = CityDevKingActionConfig.GetConfig(devId);
         foreach (var heroId in heroIds)
         {
             string executorName = HeroConfig.GetConfig(heroId).Name;
-            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId1, devCfg, null);
+            int rate = SysFormula.Hero.CalcKingActionBonus(heroId, targetForceId1, devId, null);
             int randomVal = SysRandom.Range(0, 100);
             bool success = randomVal < rate;
 
             if (success)
             {
-                totalRelationChange += SystemConst.Diplomacy.SOW_DISCORD_RELATION_CHANGE;
+                totalRelationChange += SysRandom.Range(kingCfg.EffectMin, kingCfg.EffectMax + 1);
                 attrDatas.Add(new PopResultPanelManager.AttrData()
                 {
                     attrStr = executorName + "挑拨",

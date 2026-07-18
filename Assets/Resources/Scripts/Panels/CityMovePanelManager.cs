@@ -203,7 +203,7 @@ public class CityMovePanelManager : MonoBehaviour
             force.AddKingActionCount(devId, heroIds.Count);
 
             PanelManager.Instance.HideCityMove();
-        }, moveDevCfg != null ? moveDevCfg.Mp4 : "");
+        }, moveDevCfg != null ? CityDevKingActionConfig.GetConfig(SystemConst.CityDev.MOVE_DEV_ID).Mp4 : "");
     }
 
     private void CreateHeroHeadItems()

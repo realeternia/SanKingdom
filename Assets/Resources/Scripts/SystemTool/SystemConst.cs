@@ -331,8 +331,6 @@ public static class SystemConst
         public const int RELATION_HOSTILE_THRESHOLD = 35;
         public const int PEACE_DECAY_ADJACENT = 1;
         public const int PEACE_IMPROVE_NON_ADJACENT = 1;
-        public const int BEFRIEND_RELATION_CHANGE = 10;
-        public const int SOW_DISCORD_RELATION_CHANGE = 10;
     }
 
     public static class Fair

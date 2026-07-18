@@ -28,6 +28,7 @@ public static class ConfigManager
         ForceConfig.Load();
         CityLevelConfig.Load();
         CityDevConfig.Load();
+        CityDevKingActionConfig.Load();
         CityAttrConfig.Load();
         HeroAttrConfig.Load();
         SystemAttrConfig.Load();

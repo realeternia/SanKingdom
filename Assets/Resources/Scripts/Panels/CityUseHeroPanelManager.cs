@@ -195,7 +195,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
         PanelManager.Instance.ShowPopResultPanel(devCfg.Cname, allAttrDatas, () =>
         {
             PanelManager.Instance.HideCityUseHero();
-        }, devCfg != null ? devCfg.Mp4 : "", false);
+        }, devCfg != null ? CityDevKingActionConfig.GetConfig(devId).Mp4 : "", false);
     }
 
     private void CreateHeroHeadItems()

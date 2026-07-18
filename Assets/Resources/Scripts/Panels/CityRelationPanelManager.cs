@@ -252,7 +252,7 @@ public class CityRelationPanelManager : MonoBehaviour
             {
                 RefreshGoldDisplay();
                 CreateHeroHeadItems();
-            }, devCfg.Mp4, false);
+            }, CityDevKingActionConfig.GetConfig(currentDevId).Mp4, false);
         }
         else
         {
@@ -270,7 +270,7 @@ public class CityRelationPanelManager : MonoBehaviour
             {
                 RefreshGoldDisplay();
                 CreateHeroHeadItems();
-            }, devCfg.Mp4, false);
+            }, CityDevKingActionConfig.GetConfig(currentDevId).Mp4, false);
         }
     }
 
@@ -378,7 +378,6 @@ public class CityRelationPanelManager : MonoBehaviour
     private int CalculateKingActionRate(int executorHeroId)
     {
         if (selectedForceId1 <= 0) return 0;
-        var devCfg = CityDevConfig.GetConfig(GetCurrentDevId());
-        return SysFormula.Hero.CalcKingActionBonus(executorHeroId, selectedForceId1, devCfg, null);
+        return SysFormula.Hero.CalcKingActionBonus(executorHeroId, selectedForceId1, GetCurrentDevId(), null);
     }
 }
