@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Generated file, do not modify, your changes will be overwritten (use AssetPostprocessor.OnGeneratedCSProject) -->
   <PropertyGroup>
@@ -120,7 +120,6 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellInfoCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />
-    <Compile Include="Assets\Resources\Scripts\Configs\CityDevKingActionConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyDevelopment.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateEffectAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevSearchConfig_s.cs" />
@@ -204,6 +203,7 @@
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessChangeHpAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\CityDevKingActionConfig_s.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUI.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\ArmsType.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\PanelManager.cs" />
@@ -223,6 +223,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\HeroAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolHeroDev.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\ResourceCache.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\ForceTech.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PickPanelCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifyShootSpeed.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\IconLoader.cs" />
@@ -241,6 +242,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\Gismo\ArmsItemControl.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ForceConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\TechSkillConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\BattleStatManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideCityItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\WorldConfig_s.cs" />
@@ -288,6 +290,7 @@
     <Compile Include="Assets\Resources\Scripts\PO\AttrInfo.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysColor.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolPraise.cs" />
+    <Compile Include="Assets\Resources\Scripts\Configs\TechConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\KingActionCountData.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CitySearchPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SideBar.cs" />

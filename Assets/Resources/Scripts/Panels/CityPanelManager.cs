@@ -575,7 +575,8 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
 
         bool isHeroAlreadyAssigned = heroToDevNodeMap.ContainsKey(heroId);
         var nodeHeroIds = targetNode.GetHeroIds();
-        bool isTargetNodeFull = nodeHeroIds.Count >= devCfg.HeroCount;
+        int effectiveSlotCount = targetNode.GetMaxSlotCount();
+        bool isTargetNodeFull = nodeHeroIds.Count >= effectiveSlotCount;
 
         if (!isHeroAlreadyAssigned && !isTargetNodeFull)
         {
@@ -596,12 +597,35 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             oldNode.RemoveHero(heroId);
         }
 
+        // 下推逻辑：满槽时新英雄顶第一个位置，第一个推到第二个，第二个被挤出
         if (isTargetNodeFull && !nodeHeroIds.Contains(heroId) && nodeHeroIds.Count > 0)
         {
+            // 第二个被挤出
+            if (nodeHeroIds.Count >= 2)
+            {
+                int secondHeroId = nodeHeroIds[1];
+                targetNode.RemoveHero(secondHeroId);
+                heroToDevNodeMap.Remove(secondHeroId);
+                cityData.RemoveDevAssignment(secondHeroId);
+            }
+            // 第一个推到第二个位置
             int firstHeroId = nodeHeroIds[0];
             targetNode.RemoveHero(firstHeroId);
-            heroToDevNodeMap.Remove(firstHeroId);
-            cityData.RemoveDevAssignment(firstHeroId);
+            // 不清除第一个的dev映射，先重新添加到第二位
+            // 重建heroIds：firstHeroId在第二位，heroId在第一位
+            targetNode.ClearHero();
+            targetNode.SetHero(heroId);
+            targetNode.SetHero(firstHeroId);
+            heroToDevNodeMap[heroId] = targetNode;
+            cityData.SetDevAssignment(heroId, targetNode.GetDevId());
+            // firstHeroId 仍在同一dev节点
+            heroToDevNodeMap[firstHeroId] = targetNode;
+            cityData.SetDevAssignment(firstHeroId, targetNode.GetDevId());
+
+            UpdateAllHeroWorkState();
+            UpdateAllResItemAddons();
+            GameLog.Info($"Hero {heroId} pushed into dev node {targetNode.GetDevId()}, hero {firstHeroId} moved to slot 2");
+            return true;
         }
 
         targetNode.SetHero(heroId);

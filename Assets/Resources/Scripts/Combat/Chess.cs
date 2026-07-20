@@ -196,7 +196,12 @@ public class Chess : SceneObj
         missileSpeed = armsConfig.MissileSpeed;
         missileHeight = armsConfig.MissileHight;
         moveSpeed = armsConfig.MoveSpeed;
-        attackRange = armsConfig.Range;        
+        attackRange = armsConfig.Range;
+
+        // 科技加成：兵种移速加算
+        int techMoveSpeed = ForceTech.GetArmsAttrAdd(forceId, armsId, "MoveSpeed");
+        if (techMoveSpeed > 0)
+            moveSpeed += techMoveSpeed;
 
         if (BattleManager.Instance.showUI)
         {

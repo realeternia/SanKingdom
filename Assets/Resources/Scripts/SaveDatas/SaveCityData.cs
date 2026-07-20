@@ -624,6 +624,10 @@ public class SaveCityData
                     if (CityHasResAddon(cityId, devCfg.DevAttr1))
                         addon += SystemConst.City.RES_ADDON_BONUS;
                     addon = ApplyProductionMultiplierToAddon(devCfg.DevAttr1.ToLower(), addon, multiplier);
+                    // 科技加成：AmountMul 乘算 + AmountAdd 加算
+                    float amountMul = ForceTech.GetDevAmountMul(forceId, devCfg.Id, devCfg.DevAttr1.ToLower());
+                    float amountAdd = ForceTech.GetDevAmountAdd(forceId, devCfg.Id, devCfg.DevAttr1.ToLower());
+                    addon = ForceTech.ApplyAmountMul(addon, amountMul) + amountAdd;
                     string attrName = devCfg.DevAttr1.ToLower();
                     if (!attrAddons.ContainsKey(attrName))
                         attrAddons[attrName] = 0;
@@ -644,6 +648,10 @@ public class SaveCityData
                     if (CityHasResAddon(cityId, devCfg.DevAttr2))
                         addon += SystemConst.City.RES_ADDON_BONUS;
                     addon = ApplyProductionMultiplierToAddon(devCfg.DevAttr2.ToLower(), addon, multiplier);
+                    // 科技加成：AmountMul 乘算 + AmountAdd 加算
+                    float amountMul = ForceTech.GetDevAmountMul(forceId, devCfg.Id, devCfg.DevAttr2.ToLower());
+                    float amountAdd = ForceTech.GetDevAmountAdd(forceId, devCfg.Id, devCfg.DevAttr2.ToLower());
+                    addon = ForceTech.ApplyAmountMul(addon, amountMul) + amountAdd;
                     string attrName = devCfg.DevAttr2.ToLower();
                     if (!attrAddons.ContainsKey(attrName))
                         attrAddons[attrName] = 0;

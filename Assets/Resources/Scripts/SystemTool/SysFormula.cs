@@ -61,9 +61,15 @@ public static class SysFormula
             int maxSod = GetTroopMaxSod(troop, armsConfig.Type);
             float sodBonus = Math.Clamp(maxSod * 0.03f, 0.01f, 0.30f);
 
-            int atk = (int)(hero1.str * 0.7f + armsConfig.Atk * (1f + sodBonus));
-            int def = (int)(hero1.leadShip * 0.7f + armsConfig.Def * (1f + sodBonus));
-            return (atk, def);
+            int baseAtk = (int)(hero1.str * 0.7f + armsConfig.Atk * (1f + sodBonus));
+            int baseDef = (int)(hero1.leadShip * 0.7f + armsConfig.Def * (1f + sodBonus));
+
+            // 科技加成：兵种属性加算
+            int techAtk = ForceTech.GetArmsAttrAdd(hero1.forceId, troop.armsId, "Atk");
+            int techDef = ForceTech.GetArmsAttrAdd(hero1.forceId, troop.armsId, "Def");
+            int techMoveSpeed = ForceTech.GetArmsAttrAdd(hero1.forceId, troop.armsId, "MoveSpeed");
+
+            return (baseAtk + techAtk, baseDef + techDef);
         }
 
         /// <summary>
@@ -241,6 +247,11 @@ public static class SysFormula
             }
 
             if (baseSuccessRate > 100) baseSuccessRate = 100;
+
+            // 科技加成：登用成功率提升
+            float techSuccessMul = ForceTech.GetKingActionSuccessMul(cityData.forceId, SystemConst.CityDev.USE_HERO_DEV_ID);
+            baseSuccessRate = ForceTech.ApplySuccessMul(baseSuccessRate, techSuccessMul);
+
             return baseSuccessRate;
         }
 
@@ -290,6 +301,11 @@ public static class SysFormula
 
             if (rate < 0) rate = 0;
             if (rate > 100) rate = 100;
+
+            // 科技加成：KingAction 成功率提升
+            float techSuccessMul = ForceTech.GetKingActionSuccessMul(executorHero.forceId, devId);
+            rate = ForceTech.ApplySuccessMul(rate, techSuccessMul);
+
             return rate;
         }
 

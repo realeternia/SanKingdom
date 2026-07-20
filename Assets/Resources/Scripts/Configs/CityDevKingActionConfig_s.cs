@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -42,12 +42,12 @@ namespace CommonConfig
         {
             {"Id", new FieldMetaInfo("序列", "int", 60)},
             {"Cname", new FieldMetaInfo("中文名", "string", 0)},
-            {"Des", new FieldMetaInfo("描述", "string", 0)},
+            {"Des", new FieldMetaInfo("描述", "string", 436)},
             {"Mp4", new FieldMetaInfo("动画文件", "string", 0)},
-            {"BaseRate", new FieldMetaInfo("基础成功率", "float", 0)},
+            {"BaseRate", new FieldMetaInfo("基础成功率", "float", 60)},
             {"AttrHighBound", new FieldMetaInfo("属性阈值", "int", 60)},
-            {"BonusPerPoint", new FieldMetaInfo("每点溢出收益", "float", 0)},
-            {"KingBonus", new FieldMetaInfo("君主收益", "float", 0)},
+            {"BonusPerPoint", new FieldMetaInfo("每点溢出收益", "float", 60)},
+            {"KingBonus", new FieldMetaInfo("君主收益", "float", 60)},
             {"NeedAdditiveBonus", new FieldMetaInfo("启用派系爱好加成", "bool", 0)},
             {"EffectMin", new FieldMetaInfo("效果最小值", "int", 60)},
             {"EffectMax", new FieldMetaInfo("效果最大值", "int", 60)},
@@ -149,7 +149,6 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            // Id, Cname, Des, Mp4, BaseRate, AttrHighBound, BonusPerPoint, KingBonus, NeedAdditiveBonus, EffectMin, EffectMax, Effect2Min, Effect2Max
             config[21102] = new CityDevKingActionConfig(21102, "移动", "派遣武将移动到其他城市", "move2.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
             config[21103] = new CityDevKingActionConfig(21103, "出战", "派遣武将出兵攻打敌人", "atk2.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
             config[21202] = new CityDevKingActionConfig(21202, "走访", "派遣武将走访搜集人才和宝物", "search2.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
@@ -195,7 +194,7 @@ namespace CommonConfig
 
         public static void Assign(int id, CityDevKingActionConfig configData)
         {
-            config[id] = configData;
+            config[id] = configData; 
         }
 
         public static void Add(int id, CityDevKingActionConfig configData)

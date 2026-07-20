@@ -58,7 +58,7 @@ public class CityPraisePanelManager : MonoBehaviour
         this.methodId = (devId == SystemConst.CityDev.PRAISE_PAID_DEV_ID) ? 2 : 1;
 
         var praiseDevCfg = CityDevConfig.GetConfig(SystemConst.CityDev.PRAISE_DEV_ID);
-        praiseHeroCount = praiseDevCfg != null ? praiseDevCfg.HeroCount : 0;
+        praiseHeroCount = ForceTech.GetEffectiveSlotCount(forceId, SystemConst.CityDev.PRAISE_DEV_ID);
 
         if (checkBtn != null)
         {

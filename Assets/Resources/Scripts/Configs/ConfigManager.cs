@@ -35,6 +35,8 @@ public static class ConfigManager
         SeasonConfig.Load();
         CityDevSearchConfig.Load();
         FairConfig.Load();
+        TechConfig.Load();
+        TechSkillConfig.Load();
         
         ConfigManager.PostModify();      
 

@@ -16,6 +16,8 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
     public Image cityImg;
     public Image heroImg;
     public Image heroImgBG;
+    public Image hero2Img;
+    public Image hero2ImgBG;
     public Image blackMaskImg;
     public Image borderImage;
     public Image attrImg;
@@ -26,6 +28,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
     private bool isSelected = false;
     private bool isRunType = false;
     private bool isViewOnly = false;
+    private int maxSlotCount = 1;
 
     void Start()
     {
@@ -81,6 +84,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         UpdateAttrImg(devCfg);
         UpdateBtnRun();
         UpdateBlackMask();
+        UpdateSlotCount();
     }
 
     private void UpdateAttrImg(CityDevConfig devCfg)
@@ -208,10 +212,18 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         {
             if (heroImg != null) heroImg.gameObject.SetActive(false);
             if (heroImgBG != null) heroImgBG.gameObject.SetActive(false);
+            if (hero2Img != null) hero2Img.gameObject.SetActive(false);
+            if (hero2ImgBG != null) hero2ImgBG.gameObject.SetActive(false);
             UpdateBlackMask();
             return;
         }
 
+        // 第二槽位：未解锁时隐藏
+        bool showSlot2 = maxSlotCount >= 2;
+        if (hero2Img != null) hero2Img.gameObject.SetActive(showSlot2);
+        if (hero2ImgBG != null) hero2ImgBG.gameObject.SetActive(showSlot2);
+
+        // 第一槽位
         if (heroImg != null)
         {
             if (currentHeroIds.Count > 0)
@@ -223,6 +235,21 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
             else
             {
                 heroImg.enabled = false;
+            }
+        }
+
+        // 第二槽位头像
+        if (showSlot2 && hero2Img != null)
+        {
+            if (currentHeroIds.Count > 1)
+            {
+                var heroCfg = HeroConfig.GetConfig(currentHeroIds[1]);
+                hero2Img.enabled = true;
+                hero2Img.sprite = ResourceCache.LoadSpriteUI(ResPath.Texture.HeroIcon(heroCfg.Icon));
+            }
+            else
+            {
+                hero2Img.enabled = false;
             }
         }
 
@@ -381,5 +408,22 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
             float secondAttr = heroData.GetAttr(attrs[1]);
             return firstAttr * (2f / 3f) + secondAttr * (1f / 3f);
         }
+    }
+
+    private void UpdateSlotCount()
+    {
+        if (devId == 0 || isRunType || devId == SystemConst.CityDev.IDLE_DEV_ID)
+        {
+            maxSlotCount = 1;
+            return;
+        }
+        var cityData = GameManager.Instance.GetCity(cityId);
+        int forceId = cityData != null ? cityData.forceId : 0;
+        maxSlotCount = ForceTech.GetEffectiveSlotCount(forceId, devId);
+    }
+
+    public int GetMaxSlotCount()
+    {
+        return maxSlotCount;
     }
 }

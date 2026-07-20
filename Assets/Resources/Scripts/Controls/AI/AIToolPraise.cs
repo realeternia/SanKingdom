@@ -18,10 +18,11 @@ public static class AIToolPraise
         var devCfg = CityDevConfig.GetConfig(devId);
         int currentRound = GameManager.Instance.SaveData.round;
 
-        // 计算本回合剩余可参与人数（HeroCount=0 表示不限）
+        // 计算本回合剩余可参与人数
         int usedCount = force.GetKingActionCount(devId);
-        int remaining = devCfg.HeroCount > 0
-            ? System.Math.Max(0, devCfg.HeroCount - usedCount)
+        int effectiveCount = ForceTech.GetEffectiveSlotCount(force.forceId, devId);
+        int remaining = effectiveCount > 0
+            ? System.Math.Max(0, effectiveCount - usedCount)
             : int.MaxValue;
         if (remaining == 0) return;
 

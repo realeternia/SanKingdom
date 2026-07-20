@@ -75,7 +75,7 @@ public class CityMovePanelManager : MonoBehaviour
         this.selectedDestCityId = 0;
 
         var moveDevCfg = CityDevConfig.GetConfig(SystemConst.CityDev.MOVE_DEV_ID);
-        moveHeroCount = moveDevCfg != null ? moveDevCfg.HeroCount : 0;
+        moveHeroCount = ForceTech.GetEffectiveSlotCount(forceId, SystemConst.CityDev.MOVE_DEV_ID);
 
         var force = GameManager.Instance.GetForce(forceId);
         movedHeroCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.MOVE_DEV_ID) : 0;

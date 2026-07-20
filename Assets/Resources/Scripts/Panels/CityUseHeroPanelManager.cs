@@ -99,7 +99,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
         isCrossCountry = false;
 
         var devCfg = CityDevConfig.GetConfig(devId);
-        useHeroCount = devCfg != null ? devCfg.HeroCount : 0;
+        useHeroCount = ForceTech.GetEffectiveSlotCount(forceId, devId);
 
         InitResCheckItem();
 

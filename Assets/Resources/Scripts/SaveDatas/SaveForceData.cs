@@ -25,6 +25,8 @@ public class SaveForceData
     [NonSerialized]
     private Dictionary<string, int> resUsedCache = new Dictionary<string, int>();
 
+    public List<int> unlockedTechIds = new List<int>();
+
     public List<KingActionCountData> kingActionCountList = new List<KingActionCountData>();
 
     [NonSerialized]
@@ -373,7 +375,11 @@ public class SaveForceData
         
         if (devConfig.GoldCost > 0)
         {
-            AddAttr("gold", -devConfig.GoldCost * heroList.Length, "城市发展扣除金钱");
+            int baseCost = devConfig.GoldCost * heroList.Length;
+            float costReduce = ForceTech.GetDevCostReduce(forceId, devId);
+            int actualCost = ForceTech.ApplyCostReduce(baseCost, costReduce);
+            if (actualCost > 0)
+                AddAttr("gold", -actualCost, "城市发展扣除金钱");
         }
         
         for (int i = 0; i < heroList.Length; i++)
@@ -830,13 +836,18 @@ public class SaveForceData
         var devCfg = CityDevConfig.GetConfig(devId);
         int goldCost = devCfg.GoldCost;
         int heroCount = heroIds.Length;
-        int totalCost = heroCount * goldCost;
+        int baseTotalCost = heroCount * goldCost;
+        float costReduce = ForceTech.GetKingActionCostReduce(forceId, devId);
+        int totalCost = ForceTech.ApplyCostReduce(baseTotalCost, costReduce);
         int totalGain = 0;
+        float tradeAmountMul = ForceTech.GetKingActionAmountMul(forceId, devId, "rate");
         foreach (var heroId in heroIds)
         {
             var hero = GameManager.Instance.GetHero(heroId);
             int inte = hero != null ? hero.inte : 0;
-            totalGain += SysFormula.Economy.CalculateHeroTradeAmount(goldCost, inte);
+            int heroGain = SysFormula.Economy.CalculateHeroTradeAmount(goldCost, inte);
+            heroGain = (int)ForceTech.ApplyAmountMul(heroGain, tradeAmountMul);
+            totalGain += heroGain;
         }
 
         if (gold < totalCost)
@@ -849,7 +860,10 @@ public class SaveForceData
         int resOld = (int)cityData.GetAttr(resType);
         int goldOld = (int)gold;
 
-        AddAttr("gold", -totalCost, "交易扣除金钱");
+        if (totalCost > 0)
+        {
+            AddAttr("gold", -totalCost, "交易扣除金钱");
+        }
         cityData.AddAttr(resType, totalGain, "交易增加" + resType);
 
         attrDatas.Add(new PopResultPanelManager.AttrData()
@@ -1230,14 +1244,19 @@ public class SaveForceData
         // KingAction 人均黄金消耗扣除
         if (devCfg.GoldCost > 0)
         {
-            int totalCost = heroList.Length * devCfg.GoldCost;
+            int baseTotalCost = heroList.Length * devCfg.GoldCost;
+            float costReduce = ForceTech.GetKingActionCostReduce(forceId, devId);
+            int totalCost = ForceTech.ApplyCostReduce(baseTotalCost, costReduce);
             if (gold < totalCost)
             {
                 SystemTip.Instance.ShowTip("黄金不足");
                 return false;
             }
             int goldOld = (int)gold;
-            AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+            if (totalCost > 0)
+            {
+                AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+            }
             attrDatas.Add(new PopResultPanelManager.AttrData()
             {
                 attr = "Gold",
@@ -1247,10 +1266,11 @@ public class SaveForceData
         }
 
         // KingAction 每回合参与人数上限
-        if (devCfg.HeroCount > 0)
+        int effectiveCount = ForceTech.GetEffectiveSlotCount(forceId, devId);
+        if (effectiveCount > 0)
         {
             int usedCount = GetKingActionCount(devId);
-            if (usedCount + heroList.Length > devCfg.HeroCount)
+            if (usedCount + heroList.Length > effectiveCount)
             {
                 SystemTip.Instance.ShowTip($"本回合{devCfg.Cname}已达上限");
                 return false;
@@ -1267,6 +1287,9 @@ public class SaveForceData
             var hero = GameManager.Instance.GetHero(heroId);
             int loyaltyOld = hero.loyalty;
             int loyaltyAdd = SysRandom.Range(kingCfg.EffectMin, kingCfg.EffectMax + 1);
+            // 科技加成：褒奖/奖赏效果提升
+            float amountMul = ForceTech.GetKingActionAmountMul(forceId, devId, "loyalty");
+            loyaltyAdd = (int)ForceTech.ApplyAmountMul(loyaltyAdd, amountMul);
 
             hero.loyalty = System.Math.Min(SystemConst.Hero.MAX_LOYALTY, hero.loyalty + loyaltyAdd);
             int actualAdd = hero.loyalty - loyaltyOld;
@@ -1332,7 +1355,9 @@ public class SaveForceData
         var devCfg = CityDevConfig.GetConfig(devId);
         int goldCost = devCfg.GoldCost;
         int heroCount = heroIds.Length;
-        int totalCost = heroCount * goldCost;
+        int baseTotalCost = heroCount * goldCost;
+        float costReduce = ForceTech.GetKingActionCostReduce(forceId, devId);
+        int totalCost = ForceTech.ApplyCostReduce(baseTotalCost, costReduce);
         if (gold < totalCost)
         {
             SystemTip.Instance.ShowTip("黄金不足");
@@ -1340,7 +1365,10 @@ public class SaveForceData
         }
 
         int goldOld = (int)gold;
-        AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+        if (totalCost > 0)
+        {
+            AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+        }
         attrDatas.Add(new PopResultPanelManager.AttrData()
         {
             attr = "Gold",
@@ -1352,6 +1380,8 @@ public class SaveForceData
         int totalWallReduce = 0;
         int targetForceId = targetCity.forceId;
         var kingCfg = CityDevKingActionConfig.GetConfig(devId);
+        // 科技加成：破坏效果提升
+        float destroyAmountMul = ForceTech.GetKingActionAmountMul(forceId, devId, "wall");
         foreach (var heroId in heroIds)
         {
             string executorName = HeroConfig.GetConfig(heroId).Name;
@@ -1362,6 +1392,7 @@ public class SaveForceData
             if (success)
             {
                 int wallReduce = SysRandom.Range(kingCfg.EffectMin, kingCfg.EffectMax + 1);
+                wallReduce = (int)ForceTech.ApplyAmountMul(wallReduce, destroyAmountMul);
                 targetCity.AddAttr("wall", -wallReduce, devCfg.Cname + "破坏城防");
                 totalWallReduce += wallReduce;
                 attrDatas.Add(new PopResultPanelManager.AttrData()
@@ -1449,7 +1480,9 @@ public class SaveForceData
         var devCfg = CityDevConfig.GetConfig(devId);
         int goldCost = devCfg.GoldCost;
         int heroCount = heroIds.Length;
-        int totalCost = heroCount * goldCost;
+        int baseTotalCost = heroCount * goldCost;
+        float costReduce = ForceTech.GetKingActionCostReduce(forceId, devId);
+        int totalCost = ForceTech.ApplyCostReduce(baseTotalCost, costReduce);
         if (gold < totalCost)
         {
             SystemTip.Instance.ShowTip("黄金不足");
@@ -1457,7 +1490,10 @@ public class SaveForceData
         }
 
         int goldOld = (int)gold;
-        AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+        if (totalCost > 0)
+        {
+            AddAttr("gold", -totalCost, devCfg.Cname + "扣除金钱");
+        }
         attrDatas.Add(new PopResultPanelManager.AttrData()
         {
             attr = "Gold",
@@ -1472,6 +1508,8 @@ public class SaveForceData
         var heroLoyaltyReduceMap = new Dictionary<int, int>();
         int totalLoyaltyReduce = 0;
         var kingCfg = CityDevKingActionConfig.GetConfig(devId);
+        // 科技加成：扰乱效果提升
+        float disturbAmountMul = ForceTech.GetKingActionAmountMul(forceId, devId, "happy");
         foreach (var heroId in heroIds)
         {
             string executorName = HeroConfig.GetConfig(heroId).Name;
@@ -1482,6 +1520,7 @@ public class SaveForceData
             if (success)
             {
                 int happyReduce = SysRandom.Range(kingCfg.EffectMin, kingCfg.EffectMax + 1);
+                happyReduce = (int)ForceTech.ApplyAmountMul(happyReduce, disturbAmountMul);
                 targetCity.AddAttr("happy", -happyReduce, devCfg.Cname + "扰乱民心");
                 totalHappyReduce += happyReduce;
 
@@ -1885,5 +1924,27 @@ public class SaveForceData
         var addons = CalculateForceAttrAddons();
         addons.TryGetValue("gold", out float goldAddon);
         return gold + goldAddon;
+    }
+
+    /// <summary>
+    /// 判断是否已解锁指定科技
+    /// </summary>
+    public bool HasTech(int techId)
+    {
+        return unlockedTechIds != null && unlockedTechIds.Contains(techId);
+    }
+
+    /// <summary>
+    /// 解锁科技
+    /// </summary>
+    public void UnlockTech(int techId)
+    {
+        if (unlockedTechIds == null)
+            unlockedTechIds = new List<int>();
+        if (!unlockedTechIds.Contains(techId))
+        {
+            unlockedTechIds.Add(techId);
+            GameLog.Info($"Force {forceId} unlocked tech {techId}");
+        }
     }
 }

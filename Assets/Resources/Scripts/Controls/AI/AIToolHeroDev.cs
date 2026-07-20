@@ -62,7 +62,7 @@ public static class AIToolHeroDev
         while (assignedHeroIds.Count < maxJobCount)
         {
             var available = devConfigs
-                .Where(c => (devAssignmentCounts.ContainsKey(c.Id) ? devAssignmentCounts[c.Id] : 0) < GetEffectiveHeroCount(c))
+                .Where(c => (devAssignmentCounts.ContainsKey(c.Id) ? devAssignmentCounts[c.Id] : 0) < GetEffectiveHeroCount(force.forceId, c.Id))
                 .ToList();
             if (available.Count == 0) break;
             
@@ -253,8 +253,8 @@ public static class AIToolHeroDev
         return candidates[candidates.Count - 1];
     }
 
-    private static int GetEffectiveHeroCount(CityDevConfig cfg)
+    private static int GetEffectiveHeroCount(int forceId, int devId)
     {
-        return cfg.HeroCount > 0 ? cfg.HeroCount : 1;
+        return ForceTech.GetEffectiveSlotCount(forceId, devId);
     }
 }
