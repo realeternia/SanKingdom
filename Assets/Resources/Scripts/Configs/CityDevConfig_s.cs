@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -201,6 +201,7 @@ namespace CommonConfig
             config[21208] = new CityDevConfig(21208, "扰乱", "扰乱敌人民心和忠诚度", "run", false, true, "EnemyCity", "destroy", 15, 0, "", new float[0], "", new float[0], new string[]{"Inte"}, "", 0f, 0f, 0f);
             config[21209] = new CityDevConfig(21209, "外交", "亲善目标势力", "run", false, true, "Relation", "peace", 30, 0, "", new float[0], "", new float[0], new string[]{"Fair","Inte"}, "", 0f, 0f, 0f);
             config[21210] = new CityDevConfig(21210, "挑拨", "降低两个目标势力间的友好度", "run", false, true, "Relation", "peace", 20, 0, "", new float[0], "", new float[0], new string[]{"Fair","Inte"}, "", 0f, 0f, 0f);
+            config[21211] = new CityDevConfig(21211, "研究", "派遣武将研究科技", "run", false, true, "Tech", "tech", 20, 5, "", new float[0], "", new float[0], new string[]{"Inte"}, "", 0f, 0f, 0f);
             config[21403] = new CityDevConfig(21403, "采石场", "提升石料", "normal", true, false, "", "stone", 0, 0, "stone", new float[]{3f,2.4f,2f,1.6f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f);
             config[21404] = new CityDevConfig(21404, "马场", "提升马场", "normal", true, false, "", "horse", 0, 0, "horse", new float[]{3f,2.4f,2f,1.6f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f);
             config[21405] = new CityDevConfig(21405, "木材场", "提升木材", "normal", false, false, "", "wood", 0, 0, "wood", new float[]{3f,2.4f,2f,1.6f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f);

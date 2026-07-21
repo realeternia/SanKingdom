@@ -1,0 +1,9 @@
+# API 密钥文件，切勿提交
+api_key.txt
+
+# 生成结果（如需保留可删除此行）
+# result.txt
+
+# Python
+__pycache__/
+*.pyc

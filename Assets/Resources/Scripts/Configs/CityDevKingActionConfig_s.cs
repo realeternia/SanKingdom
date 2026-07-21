@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -160,6 +160,7 @@ namespace CommonConfig
             config[21208] = new CityDevKingActionConfig(21208, "扰乱", "派遣武将扰乱敌方，EffectMin/Max=民心降低点数，Effect2Min/Max=忠心降低点数", "destroy.mp4", 0.5f, 75, 0.01f, 0f, false, 3, 5, 3, 5);
             config[21209] = new CityDevKingActionConfig(21209, "外交", "派遣武将亲善目标势力，EffectMin/Max=友好度提升点数", "peace.mp4", 0.5f, 75, 0.01f, 0f, false, 10, 10, 0, 0);
             config[21210] = new CityDevKingActionConfig(21210, "挑拨", "派遣武将挑拨两个目标势力，EffectMin/Max=友好度降低点数", "peace.mp4", 0.5f, 75, 0.01f, 0f, false, 10, 10, 0, 0);
+            config[21211] = new CityDevKingActionConfig(21211, "研究", "派遣武将研究科技，每位武将提升科技值+10", "tech.mp4", 1f, 0, 0f, 0f, false, 10, 10, 0, 0);
 
             RebuildIndex();
 

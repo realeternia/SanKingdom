@@ -119,6 +119,7 @@
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIConst.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellInfoCity.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellInfo.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\ListItem\TechCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyDevelopment.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateEffectAction.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineUIControllerTopDownEffects.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\ChessViewObj.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAidShockWave.cs" />
+    <Compile Include="Assets\Resources\Scripts\SaveDatas\TechProgressData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDumb.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\RampGeneratorTDE.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\Utils\GameLog.cs" />
@@ -184,6 +186,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAddDamage.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHelpAidBuff.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\MoveAction.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\CityTechPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\TipItem\ResTipItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityLevelConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Effects\DissolveEffect.cs" />
@@ -278,6 +281,7 @@
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSuck.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityPraisePanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Panels\TechPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\MapConfig.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\HeroEventCellItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffTimeDamage.cs" />

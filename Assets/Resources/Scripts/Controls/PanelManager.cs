@@ -27,6 +27,8 @@ public class PanelManager : MonoBehaviour
     private GameObject citySearchPanel;
     private GameObject cityEnemyCityPanel;
     private GameObject cityRelationPanel;
+    private GameObject cityTechPanel;
+    private GameObject techPanel;
 
     private GameObject popResultPanel;
     private GameObject popFairPanel;
@@ -463,6 +465,7 @@ public class PanelManager : MonoBehaviour
 
     public void HideCitySearch()
     {
+        if (citySearchPanel == null) return;
         BGMPlayer.Instance.PlaySound("Sounds/deck");
         citySearchPanel.SetActive(false);
         citySearchPanel.GetComponent<CitySearchPanelManager>().OnHide();
@@ -578,6 +581,60 @@ public class PanelManager : MonoBehaviour
         ChangePanelCount(cityRelationPanel, false);
         Destroy(cityRelationPanel);
         cityRelationPanel = null;
+    }
+
+    public void ShowCityTech(int forceId, int cityId, int devId)
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        if (cityTechPanel == null)
+        {
+            var cityTechPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("CityTechPanel"));
+            cityTechPanel = Instantiate(cityTechPanelPrefab, transform);
+        }
+        cityTechPanel.SetActive(true);
+        var cityTechPanelManager = cityTechPanel.GetComponent<CityTechPanelManager>();
+        cityTechPanelManager.Init(forceId, cityId, devId);
+        cityTechPanelManager.OnShow();
+
+        ChangePanelCount(cityTechPanel, true);
+    }
+
+    public void HideCityTech()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        cityTechPanel.SetActive(false);
+        cityTechPanel.GetComponent<CityTechPanelManager>().OnHide();
+
+        ChangePanelCount(cityTechPanel, false);
+        Destroy(cityTechPanel);
+        cityTechPanel = null;
+    }
+
+    public void ShowTechForSelect(System.Action<int> onSelectTech)
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        if (techPanel == null)
+        {
+            var techPanelPrefab = ResourceCache.LoadPrefabUI(ResPath.Prefab.Panel("TechInfoPanel"));
+            techPanel = Instantiate(techPanelPrefab, transform);
+        }
+        techPanel.SetActive(true);
+        var techPanelManager = techPanel.GetComponent<TechPanelManager>();
+        techPanelManager.SetSelectMode(onSelectTech);
+        techPanelManager.OnShow();
+
+        ChangePanelCount(techPanel, true);
+    }
+
+    public void HideTech()
+    {
+        BGMPlayer.Instance.PlaySound("Sounds/deck");
+        techPanel.SetActive(false);
+        techPanel.GetComponent<TechPanelManager>().OnHide();
+
+        ChangePanelCount(techPanel, false);
+        Destroy(techPanel);
+        techPanel = null;
     }
 
 

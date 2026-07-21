@@ -312,6 +312,7 @@ public static class SystemConst
         public const int DISTURB_DEV_ID = 21208;
         public const int DIPLOMACY_DEV_ID = 21209;
         public const int SOW_DISCORD_DEV_ID = 21210;
+        public const int TECH_RESEARCH_DEV_ID = 21211;
         /// <summary>
         /// 扰乱行动每个执行人最多影响的敌方武将数
         /// </summary>

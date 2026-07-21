@@ -27,6 +27,17 @@ public class SaveForceData
 
     public List<int> unlockedTechIds = new List<int>();
 
+    /// <summary>
+    /// 科技研究进度（序列化用），techId → 已积累科技值
+    /// </summary>
+    public List<TechProgressData> techProgressList = new List<TechProgressData>();
+
+    /// <summary>
+    /// 科技研究进度（运行时用），techId → 已积累科技值
+    /// </summary>
+    [NonSerialized]
+    public Dictionary<int, int> techProgressDict = new Dictionary<int, int>();
+
     public List<KingActionCountData> kingActionCountList = new List<KingActionCountData>();
 
     [NonSerialized]
@@ -256,6 +267,7 @@ public class SaveForceData
         posResCache = new Dictionary<string, float>();
         resUsedCache = new Dictionary<string, int>();
         SyncKingActionCountsFromList();
+        SyncTechProgressFromList();
         RecalculatePosRes();
         RecalculateResUsed();
     }
@@ -320,6 +332,42 @@ public class SaveForceData
         kingActionCountList.Clear();
         foreach (var kv in kingActionCounts)
             kingActionCountList.Add(new KingActionCountData(kv.Key, kv.Value));
+    }
+
+    private void SyncTechProgressFromList()
+    {
+        techProgressDict = new Dictionary<int, int>();
+        foreach (var item in techProgressList)
+            techProgressDict[item.techId] = item.progress;
+    }
+
+    private void SyncTechProgressToList()
+    {
+        techProgressList.Clear();
+        foreach (var kv in techProgressDict)
+            techProgressList.Add(new TechProgressData(kv.Key, kv.Value));
+    }
+
+    /// <summary>
+    /// 获取指定科技的已积累研究值
+    /// </summary>
+    public int GetTechProgress(int techId)
+    {
+        if (techProgressDict.TryGetValue(techId, out int progress))
+            return progress;
+        return 0;
+    }
+
+    /// <summary>
+    /// 累加指定科技的研究值
+    /// </summary>
+    public void AddTechProgress(int techId, int value)
+    {
+        if (techProgressDict.ContainsKey(techId))
+            techProgressDict[techId] += value;
+        else
+            techProgressDict.Add(techId, value);
+        SyncTechProgressToList();
     }
 
     public void StartPlanningPhase()
@@ -1309,6 +1357,99 @@ public class SaveForceData
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionPraise(
             GameManager.Instance.SaveData.round, forceId, cityId, devId, heroList, methodId, totalLoyaltyAdd));
+
+        return true;
+    }
+
+    /// <summary>
+    /// 执行科技研究 KingAction：消耗黄金，派遣武将提升科技研究值。
+    /// 当研究值达到 TechConfig.ResearchValue 时自动解锁科技。
+    /// </summary>
+    public bool ExecuteCityTech(int cityId, int devId, int[] heroIds, int techId, out List<PopResultPanelManager.AttrData> attrDatas)
+    {
+        attrDatas = new List<PopResultPanelManager.AttrData>();
+
+        if (heroIds == null || heroIds.Length == 0)
+        {
+            GameLog.Warn("ExecuteCityTech heroIds 为空");
+            return false;
+        }
+
+        if (techId == 0)
+        {
+            GameLog.Warn("ExecuteCityTech techId 无效");
+            return false;
+        }
+
+        // 已解锁的科技无需再研究
+        if (HasTech(techId))
+        {
+            SystemTip.Instance.ShowTip("该科技已解锁");
+            return false;
+        }
+
+        var availableHeroes = FilterAvailableHeroes(heroIds);
+        if (availableHeroes.Count == 0)
+        {
+            SystemTip.Instance.ShowTip("所选武将本回合已行动");
+            return false;
+        }
+        heroIds = availableHeroes.ToArray();
+
+        var devCfg = CityDevConfig.GetConfig(devId);
+
+        // 人均黄金消耗扣除
+        if (devCfg.GoldCost > 0)
+        {
+            int baseTotalCost = heroIds.Length * devCfg.GoldCost;
+            float costReduce = ForceTech.GetKingActionCostReduce(forceId, devId);
+            int totalCost = ForceTech.ApplyCostReduce(baseTotalCost, costReduce);
+
+            if (gold < totalCost)
+            {
+                SystemTip.Instance.ShowTip("黄金不足");
+                return false;
+            }
+            gold -= totalCost;
+        }
+
+        var techCfg = TechConfig.GetConfig(techId);
+        var kingCfg = CityDevKingActionConfig.GetConfig(devId);
+        int progressOld = GetTechProgress(techId);
+        int totalResearchAdd = heroIds.Length * kingCfg.EffectMin;
+        AddTechProgress(techId, totalResearchAdd);
+        int progressNew = GetTechProgress(techId);
+
+        // 判断是否达到研究阈值
+        bool unlocked = progressNew >= techCfg.ResearchValue;
+        if (unlocked)
+        {
+            UnlockTech(techId);
+        }
+
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attrStr = techCfg.Cname + "研究值",
+            valOld = progressOld,
+            valAddon = totalResearchAdd,
+        });
+
+        if (unlocked)
+        {
+            attrDatas.Add(new PopResultPanelManager.AttrData()
+            {
+                attrStr = techCfg.Cname + "已解锁",
+                valStr = "研究完成",
+            });
+        }
+
+        AddKingActionCount(devId, heroIds.Length);
+        MarkHeroesActed(heroIds);
+
+        GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionTech(
+            GameManager.Instance.SaveData.round, forceId, cityId, devId, heroIds, techId, totalResearchAdd, unlocked));
+
+        GameLog.Info($"ExecuteCityTech forceId={forceId} techId={techId} heroCount={heroIds.Length} progressOld={progressOld} progressNew={progressNew} unlocked={unlocked}");
 
         return true;
     }

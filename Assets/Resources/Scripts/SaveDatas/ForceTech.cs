@@ -26,6 +26,15 @@ public static class ForceTech
             : new List<int>();
     }
 
+    /// <summary>
+    /// 获取指定科技的已积累研究值
+    /// </summary>
+    public static int GetTechProgress(int forceId, int techId)
+    {
+        var force = GameManager.Instance.GetForce(forceId);
+        return force != null ? force.GetTechProgress(techId) : 0;
+    }
+
     // ============================================================
     // 核心查询：获取指定目标上的科技加成总量
     // ============================================================

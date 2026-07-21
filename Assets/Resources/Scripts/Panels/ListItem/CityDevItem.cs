@@ -318,6 +318,11 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
                 var cityData = GameManager.Instance.GetCity(cityId);
                 PanelManager.Instance.ShowCityRelation(cityData.forceId, cityId, devId);
             }
+            else if (prefabName == "Tech")
+            {
+                var cityData = GameManager.Instance.GetCity(cityId);
+                PanelManager.Instance.ShowCityTech(cityData.forceId, cityId, devId);
+            }
         });
     }
 

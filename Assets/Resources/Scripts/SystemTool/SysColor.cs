@@ -166,6 +166,27 @@ public static class SysColor
         public static readonly Color RoadHostileColor = new Color(0.9f, 0.2f, 0.2f, 0.4f);
     }
 
+    public static class Tech
+    {
+        public static readonly Color BattleColor = new Color(0.8f, 0.25f, 0.2f, 1f);
+        public static readonly Color DevelopmentColor = new Color(0.2f, 0.65f, 0.3f, 1f);
+        public static readonly Color InstitutionColor = new Color(0.25f, 0.45f, 0.85f, 1f);
+        public static readonly Color EngineeringColor = new Color(0.85f, 0.7f, 0.15f, 1f);
+        public static readonly Color LockedColor = new Color(0.35f, 0.35f, 0.35f, 1f);
+
+        public static Color GetCategoryColor(string category)
+        {
+            switch (category)
+            {
+                case "Battle": return BattleColor;
+                case "Development": return DevelopmentColor;
+                case "Institution": return InstitutionColor;
+                case "Engineering": return EngineeringColor;
+                default: return LockedColor;
+            }
+        }
+    }
+
     public static class City
     {
         public static readonly Color LevelColor = new Color(0.56f, 0.93f, 0.56f, 1f);
