@@ -304,6 +304,7 @@ MonoBehaviour:
   iconPath: 
   configId: 0
   image: {fileID: 5273741718751014261}
+  tipExtra: 
 --- !u!114 &3561510230811992185
 MonoBehaviour:
   m_ObjectHideFlags: 0

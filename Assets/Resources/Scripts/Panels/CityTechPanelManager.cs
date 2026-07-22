@@ -90,7 +90,7 @@ public class CityTechPanelManager : MonoBehaviour
         if (techProgressText != null)
         {
             techProgressText.gameObject.SetActive(true);
-            techProgressText.text = $"研究值：{progress}/{techCfg.ResearchValue}";
+            techProgressText.text = $"研究值：{progress}/{techCfg.SciPointCost}";
         }
     }
 
@@ -98,34 +98,25 @@ public class CityTechPanelManager : MonoBehaviour
     {
         if (resCheckItemGold == null) return;
 
-        resCheckItemGold.Init("gold");
-        RefreshGoldDisplay();
+        resCheckItemGold.Init("scipoint");
+        RefreshScipointDisplay();
     }
 
-    private void RefreshGoldDisplay()
+    private void RefreshScipointDisplay()
     {
         if (resCheckItemGold == null) return;
 
         var force = GameManager.Instance.GetForce(forceId);
-        int gold = force != null ? (int)force.gold : 0;
-        int selectedCount = GetSelectedCount();
+        int scipoint = force != null ? (int)force.scipoint : 0;
+        int cost = SystemConst.CityDev.TECH_RESEARCH_SCIPOINT_COST;
 
-        if (selectedCount == 0)
+        if (cost > scipoint)
         {
-            resCheckItemGold.UpdateDisplay($"{gold}");
+            resCheckItemGold.UpdateDisplay($"<color=red>{cost}</color>/{scipoint}");
         }
         else
         {
-            var devCfg = CityDevConfig.GetConfig(devId);
-            int cost = selectedCount * (devCfg != null ? devCfg.GoldCost : 0);
-            if (cost > gold)
-            {
-                resCheckItemGold.UpdateDisplay($"<color=red>{cost}</color>/{gold}");
-            }
-            else
-            {
-                resCheckItemGold.UpdateDisplay($"{cost}/{gold}");
-            }
+            resCheckItemGold.UpdateDisplay($"{cost}/{scipoint}");
         }
     }
 
@@ -138,7 +129,7 @@ public class CityTechPanelManager : MonoBehaviour
 
     private void OnHeroSelectionChanged()
     {
-        RefreshGoldDisplay();
+        RefreshScipointDisplay();
     }
 
     private int GetSelectedCount()
@@ -189,19 +180,18 @@ public class CityTechPanelManager : MonoBehaviour
         var devCfg = CityDevConfig.GetConfig(devId);
         var force = GameManager.Instance.GetForce(forceId);
 
-        // 黄金消耗检查
-        if (devCfg.GoldCost > 0)
+        // 研究值消耗检查
+        int scipointCost = SystemConst.CityDev.TECH_RESEARCH_SCIPOINT_COST;
+        if (force != null && force.scipoint < scipointCost)
         {
-            int totalCost = heroIds.Length * devCfg.GoldCost;
-            if (force != null && force.gold < totalCost)
-            {
-                SystemTip.Instance.ShowTip("黄金不足");
-                return;
-            }
+            SystemTip.Instance.ShowTip("研究值不足");
+            return;
         }
 
         bool success = force.ExecuteCityTech(cityId, devId, heroIds, selectedTechId, out var attrDatas);
         if (!success) return;
+
+        RefreshScipointDisplay();
 
         PanelManager.Instance.ShowPopResultPanel(devCfg.Cname, attrDatas, () =>
         {

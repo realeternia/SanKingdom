@@ -12,8 +12,8 @@ public class TechCell : MonoBehaviour, IPointerDownHandler
     public TMP_Text techName;
     public Image techIcon;
     public Image backgroundImage;
-    public TMP_Text levelText;
-
+    public TMP_Text techCost;
+    public GameObject techCostNode;
     private bool isUnlocked;
 
     public void Init(int id, bool unlocked)
@@ -24,8 +24,11 @@ public class TechCell : MonoBehaviour, IPointerDownHandler
         var cfg = TechConfig.GetConfig(id);
         if (techName != null)
             techName.text = cfg.Cname;
-        if (levelText != null)
-            levelText.text = $"L{cfg.Level}";
+
+        if (techCostNode != null)
+            techCostNode.SetActive(!isUnlocked);
+        if (techCost != null)
+            techCost.text = cfg.SciPointCost.ToString();
 
         UpdateBackgroundColor();
     }
@@ -33,6 +36,8 @@ public class TechCell : MonoBehaviour, IPointerDownHandler
     public void SetUnlocked(bool unlocked)
     {
         isUnlocked = unlocked;
+        if (techCostNode != null)
+            techCostNode.SetActive(!isUnlocked);
         UpdateBackgroundColor();
     }
 

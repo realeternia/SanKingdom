@@ -55,9 +55,6 @@ public class TechPanelManager : MonoBehaviour
 
         if (selectBtn != null)
             selectBtn.gameObject.SetActive(true);
-
-        if (selectBtnText != null)
-            selectBtnText.text = "确认选择";
     }
 
     public void OnShow()
@@ -98,12 +95,12 @@ public class TechPanelManager : MonoBehaviour
         var unlockedTechs = ForceTech.GetUnlockedTechs(forceId);
         RectTransform regionRect = techRegion.GetComponent<RectTransform>();
 
-        float cellWidth = 140f;
-        float cellHeight = 80f;
-        float spacingX = 10f;
-        float spacingY = 10f;
-        float headerHeight = 30f;
-        float categorySpacing = 15f;
+        float cellWidth = 290f;
+        float cellHeight = 90f;
+        float spacingX = 0f;
+        float spacingY = 0f;
+        float headerHeight = 2f;
+        float categorySpacing = 0f;
 
         float posY = 0f;
         int totalRows = 0;
@@ -180,7 +177,6 @@ public class TechPanelManager : MonoBehaviour
 
         // 设置内容区域高度
         float contentHeight = -posY;
-        regionRect.sizeDelta = new Vector2(regionRect.sizeDelta.x, contentHeight);
     }
 
     public void OnSelectTech(TechCell cell)

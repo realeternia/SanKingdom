@@ -190,6 +190,7 @@ namespace CommonConfig
             config[21003] = new CityDevConfig(21003, "征兵", "提升士兵数量", "normal", false, false, "", "zhengbing", 4, 0, "soldier", new float[]{16f,12f,10f,8f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"LeadShip","Charm"}, "sod", 5f, 8f, 5f);
             config[21004] = new CityDevConfig(21004, "加固城墙", "提升城防", "normal", false, false, "", "wall", 2, 0, "wall", new float[]{18f,14f,12f,10f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"Str"}, "def", 0f, 3f, 5f);
             config[21005] = new CityDevConfig(21005, "治安", "提升城市治安", "normal", false, false, "", "train", 0, 0, "happy", new float[]{5f,4f,3f,2f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"LeadShip","Str"}, "sod", 5f, 2f, 2f);
+            config[21006] = new CityDevConfig(21006, "研究院", "产出研究值", "normal", false, false, "", "research", 0, 0, "scipoint", new float[]{6f,5f,4f,3f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"Inte"}, "dev", 6f, 3f, 5f);
             config[21102] = new CityDevConfig(21102, "移动", "移动到其他城市", "run", false, true, "Move", "move", 0, 5, "", new float[0], "", new float[0], new string[]{"LeadShip","Charm"}, "", 0f, 0f, 0f);
             config[21103] = new CityDevConfig(21103, "出战", "出兵攻打敌人", "run", false, true, "Battle", "battle", 0, 0, "", new float[0], "", new float[0], new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f);
             config[21202] = new CityDevConfig(21202, "走访", "搜集人才和宝物", "run", false, true, "Search", "find", 5, 0, "", new float[0], "", new float[0], new string[]{"Charm","Inte"}, "search", 0f, 0f, 0f);
@@ -201,7 +202,7 @@ namespace CommonConfig
             config[21208] = new CityDevConfig(21208, "扰乱", "扰乱敌人民心和忠诚度", "run", false, true, "EnemyCity", "destroy", 15, 0, "", new float[0], "", new float[0], new string[]{"Inte"}, "", 0f, 0f, 0f);
             config[21209] = new CityDevConfig(21209, "外交", "亲善目标势力", "run", false, true, "Relation", "peace", 30, 0, "", new float[0], "", new float[0], new string[]{"Fair","Inte"}, "", 0f, 0f, 0f);
             config[21210] = new CityDevConfig(21210, "挑拨", "降低两个目标势力间的友好度", "run", false, true, "Relation", "peace", 20, 0, "", new float[0], "", new float[0], new string[]{"Fair","Inte"}, "", 0f, 0f, 0f);
-            config[21211] = new CityDevConfig(21211, "研究", "派遣武将研究科技", "run", false, true, "Tech", "tech", 20, 5, "", new float[0], "", new float[0], new string[]{"Inte"}, "", 0f, 0f, 0f);
+            config[21211] = new CityDevConfig(21211, "研究", "派遣武将研究科技", "run", false, true, "Tech", "tech", 0, 1, "", new float[0], "", new float[0], new string[]{"Inte"}, "", 0f, 0f, 0f);
             config[21403] = new CityDevConfig(21403, "采石场", "提升石料", "normal", true, false, "", "stone", 0, 0, "stone", new float[]{3f,2.4f,2f,1.6f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f);
             config[21404] = new CityDevConfig(21404, "马场", "提升马场", "normal", true, false, "", "horse", 0, 0, "horse", new float[]{3f,2.4f,2f,1.6f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"LeadShip","Str"}, "", 0f, 0f, 0f);
             config[21405] = new CityDevConfig(21405, "木材场", "提升木材", "normal", false, false, "", "wood", 0, 0, "wood", new float[]{3f,2.4f,2f,1.6f}, "exp", new float[]{1.2f,1f,1f,1f}, new string[]{"Fair","Inte"}, "", 0f, 0f, 0f);

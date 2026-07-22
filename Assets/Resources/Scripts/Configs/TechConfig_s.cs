@@ -48,7 +48,7 @@ namespace CommonConfig
             {"SkillId", new FieldMetaInfo("强化模板ID", "int", 60)},
             {"EffectValue", new FieldMetaInfo("效果数值", "float[]", 0)},
             {"EffectId", new FieldMetaInfo("关联实体ID", "int", 60)},
-            {"ResearchValue", new FieldMetaInfo("研究所需值", "int", 60)},
+            {"SciPointCost", new FieldMetaInfo("研究所需值", "int", 60)},
             {"Icon", new FieldMetaInfo("图标", "string", 0)},
             {"AiWeight", new FieldMetaInfo("AI权重", "float", 60)},
         };
@@ -93,7 +93,7 @@ namespace CommonConfig
         /// <summary>
         ///研究所需值
         /// </summary>
-        public int ResearchValue;
+        public int SciPointCost;
         /// <summary>
         ///图标
         /// </summary>
@@ -104,7 +104,7 @@ namespace CommonConfig
         public float AiWeight;
 
 
-        public TechConfig(int Id, string Cname, string Des, string Category, int Level, int SkillId, float[] EffectValue, int EffectId, int ResearchValue, string Icon, float AiWeight)
+        public TechConfig(int Id, string Cname, string Des, string Category, int Level, int SkillId, float[] EffectValue, int EffectId, int SciPointCost, string Icon, float AiWeight)
         {
             this.Id = Id;
             this.Cname = Cname;
@@ -114,7 +114,7 @@ namespace CommonConfig
             this.SkillId = SkillId;
             this.EffectValue = EffectValue;
             this.EffectId = EffectId;
-            this.ResearchValue = ResearchValue;
+            this.SciPointCost = SciPointCost;
             this.Icon = Icon;
             this.AiWeight = AiWeight;
         }
@@ -159,7 +159,6 @@ namespace CommonConfig
             // L4
             config[30030] = new TechConfig(30030, "精锐骑兵", "骑兵攻击+10且+10%", "Battle", 4, 31311, new float[]{10f,0.1f}, 0, 700, "elite_cavalry", 4f);
             config[30031] = new TechConfig(30031, "精锐枪兵", "动员兵攻击+10", "Battle", 4, 31301, new float[]{10f,0f}, 0, 700, "elite_spear", 4f);
-            config[30032] = new TechConfig(30032, "精锐弓兵", "弓兵攻击+10", "Battle", 4, 31331, new float[]{10f,0f}, 0, 700, "elite_archer", 4f);
 
             // ============================================================
             // Development 发展类（Dev行动强化）
@@ -207,18 +206,6 @@ namespace CommonConfig
 
             // L3b 治安(21005)+城墙(21004)
             config[30222] = new TechConfig(30222, "刑律", "治安民心效果+20%", "Institution", 3, 31042, new float[]{0f,0.2f}, 0, 400, "law", 6f);
-            config[30223] = new TechConfig(30223, "徭役", "城墙效果+20%", "Institution", 3, 31032, new float[]{0f,0.2f}, 0, 400, "corvee", 6f);
-            config[30224] = new TechConfig(30224, "执法", "治安成功率+20%", "Institution", 3, 31045, new float[]{0f,0.2f}, 0, 400, "enforce", 6f);
-
-            // L4 登用(21204)
-            config[30230] = new TechConfig(30230, "进士科", "登用成功率+20%", "Institution", 4, 31221, new float[]{0f,0.2f}, 0, 700, "scholar", 5f);
-            config[30231] = new TechConfig(30231, "科举制", "登用消耗-20%", "Institution", 4, 31222, new float[]{0f,0.2f}, 0, 700, "keju", 5f);
-
-            // L5 征兵(21003)+治安(21005)+农田(21001)
-            config[30240] = new TechConfig(30240, "均田制", "农田产出+20%", "Institution", 5, 31002, new float[]{0f,0.2f}, 0, 1000, "land", 4f);
-            config[30241] = new TechConfig(30241, "授田", "治安民心效果+15%", "Institution", 5, 31042, new float[]{0f,0.15f}, 0, 1000, "grant_land", 4f);
-            config[30242] = new TechConfig(30242, "府兵", "征兵产出+25%", "Institution", 5, 31022, new float[]{0f,0.25f}, 0, 1000, "fubing", 4f);
-            config[30243] = new TechConfig(30243, "乡治", "治安效果+20%", "Institution", 5, 31042, new float[]{0f,0.2f}, 0, 1000, "town_gov", 4f);
 
             // ============================================================
             // Engineering 工程类（交通+城防+武备）

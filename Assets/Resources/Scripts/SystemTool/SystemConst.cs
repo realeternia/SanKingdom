@@ -314,6 +314,14 @@ public static class SystemConst
         public const int SOW_DISCORD_DEV_ID = 21210;
         public const int TECH_RESEARCH_DEV_ID = 21211;
         /// <summary>
+        /// 科技研究每次消耗的研究值
+        /// </summary>
+        public const int TECH_RESEARCH_SCIPOINT_COST = 10;
+        /// <summary>
+        /// 科技研究占用的时间周期数（英雄占用天数）
+        /// </summary>
+        public const int TECH_RESEARCH_TIME_PERIODS = 3;
+        /// <summary>
         /// 扰乱行动每个执行人最多影响的敌方武将数
         /// </summary>
         public const int DISTURB_LOYALTY_TARGET_MAX = 5;

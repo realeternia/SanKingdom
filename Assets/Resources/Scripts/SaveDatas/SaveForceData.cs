@@ -11,6 +11,7 @@ public class SaveForceData
     public bool isPlayer;
     public bool isEliminated;
     public float gold;
+    public float scipoint;
 
     [NonSerialized]
     public TurnPhase phase = TurnPhase.None;
@@ -65,11 +66,15 @@ public class SaveForceData
                 oldVal = gold;
                 gold = Math.Min(gold + add, attrConfig.ValMaxForce);
                 break;
+            case "scipoint":
+                oldVal = scipoint;
+                scipoint = Math.Min(scipoint + add, attrConfig.ValMaxForce);
+                break;
             default:
                 break;
         }
 
-        float newVal = gold;
+        float newVal = type.ToLower() == "scipoint" ? scipoint : gold;
         GameLog.Info($"SaveForceData.AddAttr forceId={forceId} type={type} old={oldVal} add={add} new={newVal} reason={reason}");
 
         if (isPlayer)
@@ -93,6 +98,8 @@ public class SaveForceData
         {
             case "gold":
                 return gold;
+            case "scipoint":
+                return scipoint;
             default:
                 return 0;
         }
@@ -1362,8 +1369,9 @@ public class SaveForceData
     }
 
     /// <summary>
-    /// 执行科技研究 KingAction：消耗黄金，派遣武将提升科技研究值。
-    /// 当研究值达到 TechConfig.ResearchValue 时自动解锁科技。
+    /// 执行科技研究 KingAction：消耗研究值(scipoint)，派遣武将提升科技研究进度。
+    /// 占用3个时间周期，不消耗黄金，最多派遣1名武将。
+    /// 当研究进度达到 TechConfig.SciPointCost 时自动解锁科技。
     /// </summary>
     public bool ExecuteCityTech(int cityId, int devId, int[] heroIds, int techId, out List<PopResultPanelManager.AttrData> attrDatas)
     {
@@ -1396,22 +1404,15 @@ public class SaveForceData
         }
         heroIds = availableHeroes.ToArray();
 
-        var devCfg = CityDevConfig.GetConfig(devId);
-
-        // 人均黄金消耗扣除
-        if (devCfg.GoldCost > 0)
+        // 研究值消耗
+        int scipointCost = SystemConst.CityDev.TECH_RESEARCH_SCIPOINT_COST;
+        if (scipoint < scipointCost)
         {
-            int baseTotalCost = heroIds.Length * devCfg.GoldCost;
-            float costReduce = ForceTech.GetKingActionCostReduce(forceId, devId);
-            int totalCost = ForceTech.ApplyCostReduce(baseTotalCost, costReduce);
-
-            if (gold < totalCost)
-            {
-                SystemTip.Instance.ShowTip("黄金不足");
-                return false;
-            }
-            gold -= totalCost;
+            SystemTip.Instance.ShowTip("研究值不足");
+            return false;
         }
+        float scipointOld = scipoint;
+        AddAttr("scipoint", -scipointCost, "科技研究扣除研究值");
 
         var techCfg = TechConfig.GetConfig(techId);
         var kingCfg = CityDevKingActionConfig.GetConfig(devId);
@@ -1421,11 +1422,18 @@ public class SaveForceData
         int progressNew = GetTechProgress(techId);
 
         // 判断是否达到研究阈值
-        bool unlocked = progressNew >= techCfg.ResearchValue;
+        bool unlocked = progressNew >= techCfg.SciPointCost;
         if (unlocked)
         {
             UnlockTech(techId);
         }
+
+        attrDatas.Add(new PopResultPanelManager.AttrData()
+        {
+            attr = "Scipoint",
+            valOld = (int)scipointOld,
+            valAddon = -scipointCost,
+        });
 
         attrDatas.Add(new PopResultPanelManager.AttrData()
         {
@@ -1444,12 +1452,13 @@ public class SaveForceData
         }
 
         AddKingActionCount(devId, heroIds.Length);
-        MarkHeroesActed(heroIds);
+        // 占用3个时间周期：dayDiff = TECH_RESEARCH_TIME_PERIODS - 1
+        MarkHeroesActed(heroIds, SystemConst.CityDev.TECH_RESEARCH_TIME_PERIODS - 1);
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionTech(
             GameManager.Instance.SaveData.round, forceId, cityId, devId, heroIds, techId, totalResearchAdd, unlocked));
 
-        GameLog.Info($"ExecuteCityTech forceId={forceId} techId={techId} heroCount={heroIds.Length} progressOld={progressOld} progressNew={progressNew} unlocked={unlocked}");
+        GameLog.Info($"ExecuteCityTech forceId={forceId} techId={techId} heroCount={heroIds.Length} scipointCost={scipointCost} progressOld={progressOld} progressNew={progressNew} unlocked={unlocked}");
 
         return true;
     }
