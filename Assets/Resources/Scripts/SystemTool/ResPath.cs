@@ -41,6 +41,16 @@ public static class ResPath
         {
             return "Textures/Maps/" + mapName;
         }
+
+        public static string TechIcon(string icon)
+        {
+            return "Textures/techs/" + icon;
+        }
+
+        public static string TechUnknownIcon()
+        {
+            return "Textures/techs/und";
+        }
     }
 
     public static class Prefab

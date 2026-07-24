@@ -27,6 +27,34 @@ public static class ForceTech
     }
 
     /// <summary>
+    /// 判断指定科技是否可学习（前置条件满足）：
+    /// Level 1 始终可学习；Level N 需同分类下至少一个 Level N-1 科技已解锁。
+    /// 已解锁的科技视为不可学习（无需再研究）。
+    /// </summary>
+    public static bool IsTechLearnable(int forceId, int techId)
+    {
+        var techCfg = TechConfig.GetConfig(techId);
+
+        // 已解锁则无需再学习
+        if (HasTech(forceId, techId))
+            return false;
+
+        // Level 1 无前置条件
+        if (techCfg.Level <= 1)
+            return true;
+
+        // Level N：需同分类下至少一个 Level N-1 科技已解锁
+        var unlocked = GetUnlockedTechs(forceId);
+        foreach (int unlockedId in unlocked)
+        {
+            var unlockedCfg = TechConfig.GetConfig(unlockedId);
+            if (unlockedCfg.Category == techCfg.Category && unlockedCfg.Level == techCfg.Level - 1)
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// 获取指定科技的已积累研究值
     /// </summary>
     public static int GetTechProgress(int forceId, int techId)

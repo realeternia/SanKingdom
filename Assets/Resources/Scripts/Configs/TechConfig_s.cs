@@ -137,94 +137,46 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-
-            // ============================================================
-            // Battle 战斗类（兵种属性强化）
-            // ============================================================
-
-            // L1
-            config[30001] = new TechConfig(30001, "青铜兵器", "动员兵攻击+5", "Battle", 1, 31301, new float[]{5f,0f}, 0, 100, "bronze", 10f);
-            config[30002] = new TechConfig(30002, "铜矛", "动员兵防御+3", "Battle", 1, 31302, new float[]{3f,0f}, 0, 100, "spear", 9f);
-            config[30004] = new TechConfig(30004, "狩猎", "动员兵防御+5", "Battle", 1, 31302, new float[]{5f,0f}, 0, 100, "hunting", 9f);
-            config[30005] = new TechConfig(30005, "动物驯养", "骑兵移速+10%", "Battle", 1, 31313, new float[]{0f,0.1f}, 0, 100, "taming", 8f);
-
-            // L2
-            config[30010] = new TechConfig(30010, "炼铁", "动员兵攻击+5", "Battle", 2, 31301, new float[]{5f,0f}, 0, 200, "iron", 8f);
-            config[30011] = new TechConfig(30011, "箭簇改良", "弓兵攻击+5", "Battle", 2, 31331, new float[]{5f,0f}, 0, 200, "arrow", 7f);
-            config[30013] = new TechConfig(30013, "战马", "骑兵攻击+5", "Battle", 2, 31311, new float[]{5f,0f}, 0, 200, "warhorse", 7f);
-
-            // L3
-            config[30024] = new TechConfig(30024, "马铁", "骑兵移动力+2", "Battle", 3, 31313, new float[]{2f,0f}, 0, 400, "horse_iron", 6f);
-
-            // L4
-            config[30030] = new TechConfig(30030, "精锐骑兵", "骑兵攻击+10且+10%", "Battle", 4, 31311, new float[]{10f,0.1f}, 0, 700, "elite_cavalry", 4f);
-            config[30031] = new TechConfig(30031, "精锐枪兵", "动员兵攻击+10", "Battle", 4, 31301, new float[]{10f,0f}, 0, 700, "elite_spear", 4f);
-
-            // ============================================================
-            // Development 发展类（Dev行动强化）
-            // ============================================================
-
-            // L1 农田(21001)
-            config[30101] = new TechConfig(30101, "耒耜", "农田产出+15%", "Development", 1, 31002, new float[]{0f,0.15f}, 0, 100, "leisi", 10f);
-            config[30102] = new TechConfig(30102, "谷仓", "农田消耗-20%", "Development", 1, 31003, new float[]{0f,0.2f}, 0, 100, "granary", 9f);
-
-            // L2 农田(21001)+木材场(21405)
-            config[30110] = new TechConfig(30110, "都江堰", "农田产出+20%", "Development", 2, 31002, new float[]{0f,0.2f}, 0, 200, "dujiangyan", 9f);
-            config[30111] = new TechConfig(30111, "灌渠", "木材场产出+15%", "Development", 2, 31072, new float[]{0f,0.15f}, 0, 200, "canal", 8f);
-
-            // L3a 农田(21001)
-            config[30120] = new TechConfig(30120, "占城稻", "农田产出+25%", "Development", 3, 31002, new float[]{0f,0.25f}, 0, 400, "rice", 6f);
-
-            // L3b 铁匠铺(21406)+采石场(21403)
-            config[30121] = new TechConfig(30121, "曲辕犁", "铁匠铺产出+20%", "Development", 3, 31082, new float[]{0f,0.2f}, 0, 400, "plow", 6f);
-            config[30122] = new TechConfig(30122, "炼焦", "采石场产出+15%", "Development", 3, 31052, new float[]{0f,0.15f}, 0, 400, "coke", 6f);
-
-            // L4 金矿(21408)+市场(21002)
-            config[30131] = new TechConfig(30131, "淘金", "金矿产出+15%", "Development", 4, 31102, new float[]{0f,0.15f}, 0, 700, "pan_gold", 4f);
-            config[30132] = new TechConfig(30132, "商路", "市场消耗-20%", "Development", 4, 31013, new float[]{0f,0.2f}, 0, 700, "trade_route", 4f);
-
-            // L5 市场(21002)
-            config[30140] = new TechConfig(30140, "市舶司", "市场产出+30%", "Development", 5, 31012, new float[]{0f,0.3f}, 0, 1000, "maritime_trade", 3f);
-
-            // ============================================================
-            // Institution 制度类（治理+招募+军事制度）
-            // ============================================================
-
-            // L1 治安(21005)+市场(21002)+城墙(21004)
-            config[30201] = new TechConfig(30201, "礼制", "治安民心效果+15%", "Institution", 1, 31042, new float[]{0f,0.15f}, 0, 100, "rites", 8f);
-            config[30202] = new TechConfig(30202, "井田制", "市场产出+10%", "Institution", 1, 31012, new float[]{0f,0.1f}, 0, 100, "field", 8f);
-            config[30203] = new TechConfig(30203, "礼治", "治安效果+15%", "Institution", 1, 31042, new float[]{0f,0.15f}, 0, 100, "govern", 7f);
-            config[30204] = new TechConfig(30204, "城制", "城墙消耗-20%", "Institution", 1, 31033, new float[]{0f,0.2f}, 0, 100, "wall_sys", 7f);
-
-            // L2 征兵(21003)
-            config[30210] = new TechConfig(30210, "察举制", "征兵产出+15%", "Institution", 2, 31022, new float[]{0f,0.15f}, 0, 200, "recommend", 7f);
-            config[30211] = new TechConfig(30211, "编户齐民", "征兵人数+1", "Institution", 2, 31024, new float[]{1f,0f}, 0, 200, "census", 7f);
-            config[30212] = new TechConfig(30212, "征发", "征兵产出+15%", "Institution", 2, 31022, new float[]{0f,0.15f}, 0, 200, "levy", 6f);
-
-            // L3a 马场(21404)
-            config[30221] = new TechConfig(30221, "马政", "马场人数+1", "Institution", 3, 31064, new float[]{1f,0f}, 0, 400, "horse_admin", 6f);
-
-            // L3b 治安(21005)+城墙(21004)
-            config[30222] = new TechConfig(30222, "刑律", "治安民心效果+20%", "Institution", 3, 31042, new float[]{0f,0.2f}, 0, 400, "law", 6f);
-
-            // ============================================================
-            // Engineering 工程类（交通+城防+武备）
-            // ============================================================
-
-            // L1 移动(21102)
-            config[30401] = new TechConfig(30401, "驿道", "英雄移动效率+15%", "Engineering", 1, 31292, new float[]{0f,0.15f}, 0, 100, "post_road", 9f);
-            config[30402] = new TechConfig(30402, "官道", "部队移动效率+15%", "Engineering", 1, 31293, new float[]{0f,0.15f}, 0, 100, "main_road", 9f);
-
-            // L2 城墙(21004)
-            config[30410] = new TechConfig(30410, "夯土墙", "城墙效果+20%", "Engineering", 2, 31032, new float[]{0f,0.2f}, 0, 200, "rammed_earth", 8f);
-            config[30411] = new TechConfig(30411, "瓮城", "城墙效果+15%", "Engineering", 2, 31032, new float[]{0f,0.15f}, 0, 200, "barbican", 7f);
-            config[30412] = new TechConfig(30412, "地动仪", "城墙效果+30%（防灾）", "Engineering", 2, 31032, new float[]{0f,0.3f}, 0, 200, "seismograph", 7f);
-
-            // L4
-            config[30430] = new TechConfig(30430, "城砖", "城墙效果+30%", "Engineering", 4, 31032, new float[]{0f,0.3f}, 0, 700, "brick", 5f);
-
-            // L5
-            config[30440] = new TechConfig(30440, "烽火台", "城墙效果+25%", "Engineering", 5, 31032, new float[]{0f,0.25f}, 0, 1000, "beacon", 4f);
+            config[30011] = new TechConfig(30011, "青铜兵器", "动员兵攻击+5", "Battle", 1, 31301, new float[]{5f,0f}, 0, 100, "sword", 10f);
+            config[30012] = new TechConfig(30012, "狩猎", "动员兵防御+5", "Battle", 1, 31302, new float[]{5f,0f}, 0, 100, "sword", 9f);
+            config[30021] = new TechConfig(30021, "炼铁", "动员兵攻击+5", "Battle", 2, 31301, new float[]{5f,0f}, 0, 200, "sword", 8f);
+            config[30022] = new TechConfig(30022, "箭簇改良", "弓兵攻击+5", "Battle", 2, 31331, new float[]{5f,0f}, 0, 200, "sword", 7f);
+            config[30031] = new TechConfig(30031, "马铁", "骑兵移动力+2", "Battle", 3, 31313, new float[]{2f,0f}, 0, 400, "sword", 6f);
+            config[30032] = new TechConfig(30032, "精铁锻造", "动员兵攻击+10", "Battle", 3, 31301, new float[]{10f,0f}, 0, 400, "sword", 6f);
+            config[30041] = new TechConfig(30041, "精锐骑兵", "骑兵攻击+10且+10%", "Battle", 4, 31311, new float[]{10f,0.1f}, 0, 700, "sword", 4f);
+            config[30042] = new TechConfig(30042, "精锐枪兵", "动员兵攻击+10", "Battle", 4, 31301, new float[]{10f,0f}, 0, 700, "sword", 4f);
+            config[30051] = new TechConfig(30051, "铁骑", "骑兵攻击+15且+15%", "Battle", 5, 31311, new float[]{15f,0.15f}, 0, 1000, "sword", 3f);
+            config[30052] = new TechConfig(30052, "连弩", "弓兵攻击+15且+15%", "Battle", 5, 31331, new float[]{15f,0.15f}, 0, 1000, "sword", 3f);
+            config[30111] = new TechConfig(30111, "耒耜", "农田产出+15%", "Development", 1, 31002, new float[]{0f,0.15f}, 0, 100, "sword", 10f);
+            config[30112] = new TechConfig(30112, "谷仓", "农田消耗-20%", "Development", 1, 31003, new float[]{0f,0.2f}, 0, 100, "sword", 9f);
+            config[30121] = new TechConfig(30121, "都江堰", "农田产出+20%", "Development", 2, 31002, new float[]{0f,0.2f}, 0, 200, "sword", 9f);
+            config[30122] = new TechConfig(30122, "灌渠", "木材场产出+15%", "Development", 2, 31072, new float[]{0f,0.15f}, 0, 200, "sword", 8f);
+            config[30131] = new TechConfig(30131, "占城稻", "农田产出+25%", "Development", 3, 31002, new float[]{0f,0.25f}, 0, 400, "sword", 6f);
+            config[30132] = new TechConfig(30132, "曲辕犁", "铁匠铺产出+20%", "Development", 3, 31082, new float[]{0f,0.2f}, 0, 400, "sword", 6f);
+            config[30141] = new TechConfig(30141, "淘金", "金矿产出+15%", "Development", 4, 31102, new float[]{0f,0.15f}, 0, 700, "sword", 4f);
+            config[30142] = new TechConfig(30142, "商路", "市场消耗-20%", "Development", 4, 31013, new float[]{0f,0.2f}, 0, 700, "sword", 4f);
+            config[30151] = new TechConfig(30151, "市舶司", "市场产出+30%", "Development", 5, 31012, new float[]{0f,0.3f}, 0, 1000, "sword", 3f);
+            config[30152] = new TechConfig(30152, "海运", "金矿产出+25%", "Development", 5, 31102, new float[]{0f,0.25f}, 0, 1000, "sword", 3f);
+            config[30211] = new TechConfig(30211, "礼制", "治安民心效果+15%", "Institution", 1, 31042, new float[]{0f,0.15f}, 0, 100, "sword", 8f);
+            config[30212] = new TechConfig(30212, "井田制", "市场产出+10%", "Institution", 1, 31012, new float[]{0f,0.1f}, 0, 100, "sword", 8f);
+            config[30221] = new TechConfig(30221, "察举制", "征兵产出+15%", "Institution", 2, 31022, new float[]{0f,0.15f}, 0, 200, "sword", 7f);
+            config[30222] = new TechConfig(30222, "编户齐民", "征兵人数+1", "Institution", 2, 31024, new float[]{1f,0f}, 0, 200, "sword", 7f);
+            config[30231] = new TechConfig(30231, "马政", "马场人数+1", "Institution", 3, 31064, new float[]{1f,0f}, 0, 400, "sword", 6f);
+            config[30232] = new TechConfig(30232, "刑律", "治安民心效果+20%", "Institution", 3, 31042, new float[]{0f,0.2f}, 0, 400, "sword", 6f);
+            config[30241] = new TechConfig(30241, "九品中正", "征兵产出+20%", "Institution", 4, 31022, new float[]{0f,0.2f}, 0, 700, "sword", 4f);
+            config[30242] = new TechConfig(30242, "均田制", "农田产出+15%", "Institution", 4, 31002, new float[]{0f,0.15f}, 0, 700, "sword", 4f);
+            config[30251] = new TechConfig(30251, "科举制", "征兵产出+25%", "Institution", 5, 31022, new float[]{0f,0.25f}, 0, 1000, "sword", 3f);
+            config[30252] = new TechConfig(30252, "府兵制", "征兵人数+2", "Institution", 5, 31024, new float[]{2f,0f}, 0, 1000, "sword", 3f);
+            config[30411] = new TechConfig(30411, "驿道", "英雄移动效率+15%", "Engineering", 1, 31292, new float[]{0f,0.15f}, 0, 100, "sword", 9f);
+            config[30412] = new TechConfig(30412, "官道", "部队移动效率+15%", "Engineering", 1, 31293, new float[]{0f,0.15f}, 0, 100, "sword", 9f);
+            config[30421] = new TechConfig(30421, "夯土墙", "城墙效果+20%", "Engineering", 2, 31032, new float[]{0f,0.2f}, 0, 200, "sword", 8f);
+            config[30422] = new TechConfig(30422, "瓮城", "城墙效果+15%", "Engineering", 2, 31032, new float[]{0f,0.15f}, 0, 200, "sword", 7f);
+            config[30431] = new TechConfig(30431, "地动仪", "城墙效果+30%（防灾）", "Engineering", 3, 31032, new float[]{0f,0.3f}, 0, 400, "sword", 6f);
+            config[30432] = new TechConfig(30432, "抛石机", "城墙效果+25%", "Engineering", 3, 31032, new float[]{0f,0.25f}, 0, 400, "sword", 6f);
+            config[30441] = new TechConfig(30441, "城砖", "城墙效果+30%", "Engineering", 4, 31032, new float[]{0f,0.3f}, 0, 700, "sword", 5f);
+            config[30442] = new TechConfig(30442, "烽火台", "城墙效果+25%", "Engineering", 4, 31032, new float[]{0f,0.25f}, 0, 700, "sword", 5f);
+            config[30451] = new TechConfig(30451, "重甲", "城墙效果+40%", "Engineering", 5, 31032, new float[]{0f,0.4f}, 0, 1000, "sword", 4f);
+            config[30452] = new TechConfig(30452, "塔楼", "城墙效果+35%", "Engineering", 5, 31032, new float[]{0f,0.35f}, 0, 1000, "sword", 4f);
 
             RebuildIndex();
 

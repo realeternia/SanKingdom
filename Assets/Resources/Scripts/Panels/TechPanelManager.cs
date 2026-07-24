@@ -27,8 +27,6 @@ public class TechPanelManager : MonoBehaviour
     private static readonly string[] Categories = { "Battle", "Development", "Institution", "Engineering" };
     private static readonly string[] CategoryNames = { "战斗", "发展", "制度", "工程" };
 
-    private const int COLS_PER_ROW = 5;
-
     void Start()
     {
         closeBtn.onClick.AddListener(() =>
@@ -102,8 +100,11 @@ public class TechPanelManager : MonoBehaviour
         float headerHeight = 2f;
         float categorySpacing = 0f;
 
+        // 5列（对应5个等级），2行（每级2个科技）
+        const int levelCols = 5;
+        const int rowsPerLevel = 2;
+
         float posY = 0f;
-        int totalRows = 0;
 
         for (int catIdx = 0; catIdx < Categories.Length; catIdx++)
         {
@@ -135,44 +136,49 @@ public class TechPanelManager : MonoBehaviour
 
             posY -= headerHeight;
 
-            // 计算行数
-            int rows = (techs.Count + COLS_PER_ROW - 1) / COLS_PER_ROW;
-
             // 计算起始X居中偏移
-            float totalWidth = COLS_PER_ROW * cellWidth + (COLS_PER_ROW - 1) * spacingX;
+            float totalWidth = levelCols * cellWidth + (levelCols - 1) * spacingX;
             float startX = (regionRect.rect.width - totalWidth) / 2f;
 
-            for (int i = 0; i < techs.Count; i++)
+            // 按等级分组：level 1-5，每级2个科技
+            var techsByLevel = techs.GroupBy(t => t.Level).OrderBy(g => g.Key).ToList();
+
+            for (int levelIdx = 0; levelIdx < techsByLevel.Count; levelIdx++)
             {
-                int row = i / COLS_PER_ROW;
-                int col = i % COLS_PER_ROW;
+                int col = levelIdx; // 第levelIdx列对应Level levelIdx+1
+                var levelTechs = techsByLevel[levelIdx].OrderBy(t => t.Id).ToList();
 
-                float posX = startX + col * (cellWidth + spacingX);
-                float cellPosY = posY - row * (cellHeight + spacingY);
-
-                GameObject cellObj = Instantiate(techCellPrefab, techRegion.transform);
-                cellObj.transform.localScale = Vector3.one;
-
-                RectTransform cellRect = cellObj.GetComponent<RectTransform>();
-                if (cellRect != null)
+                for (int row = 0; row < levelTechs.Count && row < rowsPerLevel; row++)
                 {
-                    cellRect.anchorMin = new Vector2(0, 1);
-                    cellRect.anchorMax = new Vector2(0, 1);
-                    cellRect.pivot = new Vector2(0, 1);
-                    cellRect.anchoredPosition = new Vector2(posX, cellPosY);
-                    cellRect.sizeDelta = new Vector2(cellWidth, cellHeight);
-                }
+                    float posX = startX + col * (cellWidth + spacingX);
+                    float cellPosY = posY - row * (cellHeight + spacingY);
 
-                TechCell cell = cellObj.GetComponent<TechCell>();
-                bool unlocked = unlockedTechs.Contains(techs[i].Id);
-                cell.Init(techs[i].Id, unlocked);
-                cell.techPanelManager = this;
-                techCells.Add(cell);
+                    GameObject cellObj = Instantiate(techCellPrefab, techRegion.transform);
+                    cellObj.transform.localScale = Vector3.one;
+
+                    RectTransform cellRect = cellObj.GetComponent<RectTransform>();
+                    if (cellRect != null)
+                    {
+                        cellRect.anchorMin = new Vector2(0, 1);
+                        cellRect.anchorMax = new Vector2(0, 1);
+                        cellRect.pivot = new Vector2(0, 1);
+                        cellRect.anchoredPosition = new Vector2(posX, cellPosY);
+                        cellRect.sizeDelta = new Vector2(cellWidth, cellHeight);
+                    }
+
+                    TechCell cell = cellObj.GetComponent<TechCell>();
+                    int techId = levelTechs[row].Id;
+                    bool unlocked = unlockedTechs.Contains(techId);
+                    bool learnable = ForceTech.IsTechLearnable(forceId, techId);
+                    cell.Init(techId, unlocked, learnable);
+                    cell.techPanelManager = this;
+                    techCells.Add(cell);
+                }
             }
 
-            posY -= rows * (cellHeight + spacingY);
+            // 每组占2行高度
+            posY -= rowsPerLevel * (cellHeight + spacingY);
             posY -= categorySpacing;
-            totalRows += rows;
         }
 
         // 设置内容区域高度
@@ -182,10 +188,10 @@ public class TechPanelManager : MonoBehaviour
     public void OnSelectTech(TechCell cell)
     {
         if (lastSelectedCell != null && lastSelectedCell != cell)
-        {
-            // 可扩展：取消上次选中效果
-        }
+            lastSelectedCell.SetSelected(false);
+
         lastSelectedCell = cell;
+        cell.SetSelected(true);
 
         var cfg = TechConfig.GetConfig(cell.techId);
         if (detailDes != null)
