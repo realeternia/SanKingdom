@@ -86,7 +86,7 @@ public class CityRelationPanelManager : MonoBehaviour
 
     private int GetCurrentDevId()
     {
-        return IsBefriendMode() ? SystemConst.CityDev.DIPLOMACY_DEV_ID : SystemConst.CityDev.SOW_DISCORD_DEV_ID;
+        return IsBefriendMode() ? CityDevConfig.GetConfigByName("Diplomacy").Id : CityDevConfig.GetConfigByName("SowDiscord").Id;
     }
 
     private void OnForce1ButtonClick()

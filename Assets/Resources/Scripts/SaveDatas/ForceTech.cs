@@ -76,6 +76,15 @@ public static class ForceTech
     /// </summary>
     public static float GetTechBonus(int forceId, int targetId, string enhanceType, string effectAttr)
     {
+        return GetTechBonus(forceId, targetId, null, enhanceType, effectAttr);
+    }
+
+    /// <summary>
+    /// 获取指定势力在指定目标上的科技加成总量（带 Category 过滤）
+    /// category: null=不过滤 / "Dev"/"KingAction"/"Arms"/"SysConfig"
+    /// </summary>
+    public static float GetTechBonus(int forceId, int targetId, string category, string enhanceType, string effectAttr)
+    {
         var force = GameManager.Instance.GetForce(forceId);
         if (force == null || force.unlockedTechIds == null || force.unlockedTechIds.Count == 0)
             return 0f;
@@ -84,9 +93,13 @@ public static class ForceTech
         foreach (int techId in force.unlockedTechIds)
         {
             var techCfg = TechConfig.GetConfig(techId);
+            // 解锁型科技（SkillId=0）不关联TechSkillConfig，跳过加成计算
+            if (techCfg.SkillId <= 0) continue;
+
             var skillCfg = TechSkillConfig.GetConfig(techCfg.SkillId);
 
             if (skillCfg.Target == targetId
+                && (category == null || skillCfg.Category == category)
                 && skillCfg.EnhanceType == enhanceType
                 && skillCfg.EffectAttr == effectAttr)
             {
@@ -153,12 +166,52 @@ public static class ForceTech
     }
 
     // ============================================================
+    // SysConfig 常量修正加成查询
+    // ============================================================
+
+    public static float GetSysConfigAmountAdd(int forceId, int sysConfigId)
+    {
+        return GetTechBonus(forceId, sysConfigId, "SysConfig", "AmountAdd", "val");
+    }
+
+    public static float GetSysConfigAmountMul(int forceId, int sysConfigId)
+    {
+        return GetTechBonus(forceId, sysConfigId, "SysConfig", "AmountMul", "val");
+    }
+
+    // ============================================================
     // Arms 兵种加成查询
     // ============================================================
 
     public static int GetArmsAttrAdd(int forceId, int armsId, string attrName)
     {
         return (int)GetTechBonus(forceId, armsId, "ArmsAttrAdd", attrName);
+    }
+
+    /// <summary>
+    /// 判断指定兵种是否已被该势力解锁：
+    /// 若ArmsConfig.NeedUnlock=false，直接返回true；
+    /// 否则需存在已研究的科技，其UnlockArms包含该armsId。
+    /// </summary>
+    public static bool IsArmsUnlocked(int forceId, int armsId)
+    {
+        var armsCfg = ArmsConfig.GetConfig(armsId);
+        if (!armsCfg.NeedUnlock) return true;
+
+        var force = GameManager.Instance.GetForce(forceId);
+        if (force == null || force.unlockedTechIds == null || force.unlockedTechIds.Count == 0)
+            return false;
+
+        foreach (int techId in force.unlockedTechIds)
+        {
+            var techCfg = TechConfig.GetConfig(techId);
+            if (techCfg.UnlockArms == null || techCfg.UnlockArms.Length == 0) continue;
+            foreach (int unlockedArmsId in techCfg.UnlockArms)
+            {
+                if (unlockedArmsId == armsId) return true;
+            }
+        }
+        return false;
     }
 
     // ============================================================

@@ -122,7 +122,7 @@ public class SaveData
                 if (!IsKingHero(hero))
                 {
                     int loyaltyOld = hero.loyalty;
-                    hero.loyalty -= SysFormula.Hero.CalculateCapturedLoyaltyDecay();
+                    hero.loyalty -= SysFormula.Hero.GetSysConfigModifyResult("CapturedLoyaltyDecay", hero.forceId);
                     if (hero.loyalty < 0)
                         hero.loyalty = 0;
                     int actualReduce = loyaltyOld - hero.loyalty;

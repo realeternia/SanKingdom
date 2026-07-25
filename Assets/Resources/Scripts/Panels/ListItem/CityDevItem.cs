@@ -54,7 +54,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         {
             displayName = "★" + displayName;
         }
-        else if (!string.IsNullOrEmpty(devCfg.DevAttr1) && SysFormula.City.CityHasResAddon(cityId, devCfg.DevAttr1))
+        else if (!string.IsNullOrEmpty(devCfg.DevAttr1) && SaveCityData.CityHasResAddon(cityId, devCfg.DevAttr1))
         {
             displayName = "★" + displayName;
         }
@@ -208,7 +208,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
 
     private void UpdateHeroDisplay()
     {
-        if (isRunType || devId == SystemConst.CityDev.IDLE_DEV_ID)
+        if (isRunType || devId == CityDevConfig.GetConfigByName("Idle").Id)
         {
             if (heroImg != null) heroImg.gameObject.SetActive(false);
             if (heroImgBG != null) heroImgBG.gameObject.SetActive(false);
@@ -261,7 +261,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
     {
         if (blackMaskImg != null && blackMaskImg.gameObject != null)
         {
-            if (isRunType || devId == SystemConst.CityDev.IDLE_DEV_ID)
+            if (isRunType || devId == CityDevConfig.GetConfigByName("Idle").Id)
             {
                 blackMaskImg.gameObject.SetActive(false);
             }
@@ -417,7 +417,7 @@ public class CityDevItem : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
 
     private void UpdateSlotCount()
     {
-        if (devId == 0 || isRunType || devId == SystemConst.CityDev.IDLE_DEV_ID)
+        if (devId == 0 || isRunType || devId == CityDevConfig.GetConfigByName("Idle").Id)
         {
             maxSlotCount = 1;
             return;

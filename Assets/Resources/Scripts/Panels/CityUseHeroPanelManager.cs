@@ -236,7 +236,7 @@ public class CityUseHeroPanelManager : MonoBehaviour
             int kingCityId = kingCity != null ? kingCity.cityId : cityId;
             var targetHero = GameManager.Instance.GetHero(selectedHeroIds[0]);
             int targetCityId = targetHero != null ? targetHero.cityId : cityId;
-            recruitDay = SysFormula.City.CalculateHeroDayDistance(kingCityId, targetCityId, isCrossCountry);
+            recruitDay = SysFormula.City.CalculateRecruitDayDistance(kingCityId, targetCityId, forceId);
         }
 
         List<int> heroList = new List<int>();
@@ -332,9 +332,24 @@ public class CityUseHeroPanelManager : MonoBehaviour
     private int CalculateBestRecruitRate(int executorHeroId)
     {
         int bestRate = 0;
+        var cityData = GameManager.Instance.GetCity(cityId);
         foreach (int targetId in selectedHeroIds)
         {
-            int rate = SysFormula.Hero.CalculateRecruitRate(cityId, executorHeroId, targetId);
+            var targetHero = GameManager.Instance.GetHero(targetId);
+            if (targetHero == null || cityData == null) continue;
+
+            // 己方在职武将不可登庸
+            if (targetHero.state == HeroState.Normal && targetHero.forceId == cityData.forceId)
+                continue;
+
+            int rate;
+            if (targetHero.state == HeroState.Wild)
+                rate = SysFormula.Hero.CalculateRecruitWildRate(cityId, executorHeroId, targetId);
+            else if (targetHero.state == HeroState.Catched || (targetHero.state == HeroState.Normal && targetHero.forceId != cityData.forceId))
+                rate = SysFormula.Hero.CalculateRecruitEnemyRate(cityId, executorHeroId, targetId);
+            else
+                continue;
+
             if (rate > bestRate)
             {
                 bestRate = rate;

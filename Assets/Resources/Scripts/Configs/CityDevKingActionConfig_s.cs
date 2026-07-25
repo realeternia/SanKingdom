@@ -149,18 +149,18 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[21102] = new CityDevKingActionConfig(21102, "移动", "派遣武将移动到其他城市", "move2.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
-            config[21103] = new CityDevKingActionConfig(21103, "出战", "派遣武将出兵攻打敌人", "atk2.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
-            config[21202] = new CityDevKingActionConfig(21202, "走访", "派遣武将走访搜集人才和宝物", "search2.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
-            config[21203] = new CityDevKingActionConfig(21203, "交易", "派遣武将购买粮食和士兵", "change.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
-            config[21204] = new CityDevKingActionConfig(21204, "登用", "派遣武将登庸在野/俘虏武将", "wild.mp4", 0f, 75, 0.01f, 0.1f, true, 0, 0, 0, 0);
-            config[21205] = new CityDevKingActionConfig(21205, "褒奖", "派遣武将褒奖（不消耗黄金），EffectMin/Max=提升忠心点数", "praise.mp4", 0f, 0, 0f, 0f, false, 1, 3, 0, 0);
-            config[21206] = new CityDevKingActionConfig(21206, "奖赏", "派遣武将奖赏（消耗黄金），EffectMin/Max=提升忠心点数", "praise.mp4", 0f, 0, 0f, 0f, false, 3, 5, 0, 0);
-            config[21207] = new CityDevKingActionConfig(21207, "破坏", "派遣武将破坏敌方城防，EffectMin/Max=城防降低点数", "destroy.mp4", 0.5f, 75, 0.01f, 0f, false, 5, 10, 0, 0);
-            config[21208] = new CityDevKingActionConfig(21208, "扰乱", "派遣武将扰乱敌方，EffectMin/Max=民心降低点数，Effect2Min/Max=忠心降低点数", "destroy.mp4", 0.5f, 75, 0.01f, 0f, false, 3, 5, 3, 5);
-            config[21209] = new CityDevKingActionConfig(21209, "外交", "派遣武将亲善目标势力，EffectMin/Max=友好度提升点数", "peace.mp4", 0.5f, 75, 0.01f, 0f, false, 10, 10, 0, 0);
-            config[21210] = new CityDevKingActionConfig(21210, "挑拨", "派遣武将挑拨两个目标势力，EffectMin/Max=友好度降低点数", "peace.mp4", 0.5f, 75, 0.01f, 0f, false, 10, 10, 0, 0);
-            config[21211] = new CityDevKingActionConfig(21211, "研究", "派遣武将研究科技，消耗研究值，每位武将提升科技值+10，占用3个时间周期", "tech.mp4", 1f, 0, 0f, 0f, false, 10, 10, 0, 0);
+            config[21501] = new CityDevKingActionConfig(21501, "移动", "派遣武将移动到其他城市", "move2.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
+            config[21502] = new CityDevKingActionConfig(21502, "出战", "派遣武将出兵攻打敌人", "atk2.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
+            config[21601] = new CityDevKingActionConfig(21601, "走访", "派遣武将走访搜集人才和宝物", "search2.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
+            config[21602] = new CityDevKingActionConfig(21602, "交易", "派遣武将购买粮食和士兵", "change.mp4", 0f, 0, 0f, 0f, false, 0, 0, 0, 0);
+            config[21603] = new CityDevKingActionConfig(21603, "登用", "派遣武将登庸在野/俘虏武将", "wild.mp4", 0f, 75, 0.01f, 0.1f, true, 0, 0, 0, 0);
+            config[21604] = new CityDevKingActionConfig(21604, "褒奖", "派遣武将褒奖（不消耗黄金），EffectMin/Max=提升忠心点数", "praise.mp4", 0f, 0, 0f, 0f, false, 1, 3, 0, 0);
+            config[21605] = new CityDevKingActionConfig(21605, "奖赏", "派遣武将奖赏（消耗黄金），EffectMin/Max=提升忠心点数", "praise.mp4", 0f, 0, 0f, 0f, false, 3, 5, 0, 0);
+            config[21606] = new CityDevKingActionConfig(21606, "破坏", "派遣武将破坏敌方城防，EffectMin/Max=城防降低点数", "destroy.mp4", 0.5f, 75, 0.01f, 0f, false, 5, 10, 0, 0);
+            config[21607] = new CityDevKingActionConfig(21607, "扰乱", "派遣武将扰乱敌方，EffectMin/Max=民心降低点数，Effect2Min/Max=忠心降低点数", "destroy.mp4", 0.5f, 75, 0.01f, 0f, false, 3, 5, 3, 5);
+            config[21608] = new CityDevKingActionConfig(21608, "外交", "派遣武将亲善目标势力，EffectMin/Max=友好度提升点数", "peace.mp4", 0.5f, 75, 0.01f, 0f, false, 10, 10, 0, 0);
+            config[21609] = new CityDevKingActionConfig(21609, "挑拨", "派遣武将挑拨两个目标势力，EffectMin/Max=友好度降低点数", "peace.mp4", 0.5f, 75, 0.01f, 0f, false, 10, 10, 0, 0);
+            config[21610] = new CityDevKingActionConfig(21610, "研究", "派遣武将研究科技，消耗研究值，每位武将提升科技值+10，占用3个时间周期", "tech.mp4", 1f, 0, 0f, 0f, false, 10, 10, 0, 0);
 
             RebuildIndex();
 

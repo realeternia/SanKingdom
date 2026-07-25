@@ -154,7 +154,7 @@ public class SaveForceRelation
 
                 if (HasBattle(force1.forceId, force2.forceId))
                 {
-                    int rise = SysFormula.Diplomacy.CalculateBattleRise();
+                    int rise = SysFormula.Hero.GetSysConfigModifyResult("BattleRelationRise", force1.forceId);
                     AddRelation(force1.forceId, force2.forceId, -rise);
                     GameLog.Info($"外交: {force1.Name}与{force2.Name}交战，关系-{rise}，当前{GetRelation(force1.forceId, force2.forceId)}");
                 }

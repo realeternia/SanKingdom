@@ -58,7 +58,7 @@ public class CityEnemyCityPanelManager : MonoBehaviour
     {
         this.forceId = forceId;
         this.cityId = cityId;
-        this.currentDevId = SystemConst.CityDev.DISTURB_DEV_ID;
+        this.currentDevId = CityDevConfig.GetConfigByName("Disturb").Id;
         this.selectedTargetCityId = 0;
         this.resCheckItemInited = false;
 
@@ -110,9 +110,9 @@ public class CityEnemyCityPanelManager : MonoBehaviour
 
     private void OnTypeButtonClick()
     {
-        currentDevId = (currentDevId == SystemConst.CityDev.DISTURB_DEV_ID)
-            ? SystemConst.CityDev.DESTROY_DEV_ID
-            : SystemConst.CityDev.DISTURB_DEV_ID;
+        currentDevId = (currentDevId == CityDevConfig.GetConfigByName("Disturb").Id)
+            ? CityDevConfig.GetConfigByName("Sabotage").Id
+            : CityDevConfig.GetConfigByName("Disturb").Id;
         UpdateTypeButtonText();
         InitResCheckItem();
         CreateHeroHeadItems();
@@ -190,7 +190,7 @@ public class CityEnemyCityPanelManager : MonoBehaviour
     private int CalculateDayDistance()
     {
         if (selectedTargetCityId <= 0 || kingCityId <= 0) return 0;
-        return SysFormula.City.CalculateHeroDayDistance(kingCityId, selectedTargetCityId, true);
+        return SysFormula.City.CalculateMoveDayDistance(kingCityId, selectedTargetCityId, forceId);
     }
 
     /// <summary>
@@ -223,7 +223,7 @@ public class CityEnemyCityPanelManager : MonoBehaviour
 
         bool success;
         List<PopResultPanelManager.AttrData> attrDatas;
-        if (currentDevId == SystemConst.CityDev.DESTROY_DEV_ID)
+        if (currentDevId == CityDevConfig.GetConfigByName("Sabotage").Id)
         {
             success = force.ExecuteCityDestroy(cityId, currentDevId, executorHeroIds, selectedTargetCityId, out attrDatas);
         }
@@ -346,7 +346,7 @@ public class CityEnemyCityPanelManager : MonoBehaviour
     {
         var heroData = GameManager.Instance.GetHero(heroId);
         if (heroData == null) return "";
-        if (currentDevId == SystemConst.CityDev.DESTROY_DEV_ID)
+        if (currentDevId == CityDevConfig.GetConfigByName("Sabotage").Id)
         {
             return $"武{SysColor.GetColoredText("str", heroData.str)}";
         }

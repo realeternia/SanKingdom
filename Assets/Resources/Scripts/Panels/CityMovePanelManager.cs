@@ -74,11 +74,11 @@ public class CityMovePanelManager : MonoBehaviour
         this.sourceCityId = sourceCityId;
         this.selectedDestCityId = 0;
 
-        var moveDevCfg = CityDevConfig.GetConfig(SystemConst.CityDev.MOVE_DEV_ID);
-        moveHeroCount = ForceTech.GetEffectiveSlotCount(forceId, SystemConst.CityDev.MOVE_DEV_ID);
+        var moveDevCfg = CityDevConfig.GetConfig(CityDevConfig.GetConfigByName("Move").Id);
+        moveHeroCount = ForceTech.GetEffectiveSlotCount(forceId, CityDevConfig.GetConfigByName("Move").Id);
 
         var force = GameManager.Instance.GetForce(forceId);
-        movedHeroCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.MOVE_DEV_ID) : 0;
+        movedHeroCount = force != null ? force.GetKingActionCount(CityDevConfig.GetConfigByName("Move").Id) : 0;
 
         if (resCheckItem != null && moveDevCfg != null)
         {
@@ -182,8 +182,8 @@ public class CityMovePanelManager : MonoBehaviour
             heroIds.Add(item.GetHeroId());
         }
 
-        var moveDevCfg = CityDevConfig.GetConfig(SystemConst.CityDev.MOVE_DEV_ID);
-        int devId = SystemConst.CityDev.MOVE_DEV_ID;
+        var moveDevCfg = CityDevConfig.GetConfig(CityDevConfig.GetConfigByName("Move").Id);
+        int devId = CityDevConfig.GetConfigByName("Move").Id;
         PanelManager.Instance.ShowPopResultPanel("移动", new List<PopResultPanelManager.AttrData>(), () =>
         {
             var force = GameManager.Instance.GetForce(forceId);
@@ -203,7 +203,7 @@ public class CityMovePanelManager : MonoBehaviour
             force.AddKingActionCount(devId, heroIds.Count);
 
             PanelManager.Instance.HideCityMove();
-        }, moveDevCfg != null ? CityDevKingActionConfig.GetConfig(SystemConst.CityDev.MOVE_DEV_ID).Mp4 : "");
+        }, moveDevCfg != null ? CityDevKingActionConfig.GetConfig(CityDevConfig.GetConfigByName("Move").Id).Mp4 : "");
     }
 
     private void CreateHeroHeadItems()
@@ -292,7 +292,7 @@ public class CityMovePanelManager : MonoBehaviour
                 int moveDay = 0;
                 if (selectedDestCityId > 0 && heroData != null)
                 {
-                    moveDay = SysFormula.City.CalculateHeroDayDistance(heroData.cityId, selectedDestCityId, false);
+                    moveDay = SysFormula.City.CalculateMoveDayDistance(heroData.cityId, selectedDestCityId, forceId);
                 }
                 itemScript.SetDayText(moveDay);
             }

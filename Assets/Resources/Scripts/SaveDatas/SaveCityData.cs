@@ -352,14 +352,7 @@ public class SaveCityData
 
     public float GetProductionMultiplier()
     {
-        float happyMult = SysFormula.City.GetHappyMultiplier((int)Math.Floor(happy));
-        float result;
-        if (IsInWar)
-            result = SystemConst.City.WAR_PRODUCTION_MULTIPLIER + happyMult - 1f;
-        else
-            result = happyMult;
-        result *= defenceDevDiscount;
-        return result;
+        return SysFormula.City.CalculateProductionMultiplier((int)Math.Floor(happy), IsInWar, defenceDevDiscount);
     }
 
     public void MoveHeroTo(int[] heroIds, int destCityId)
@@ -456,7 +449,7 @@ public class SaveCityData
                     }
                     else
                     {
-                        int catchChance = SysFormula.Hero.CalculateCaptureChance(hero.str);
+                        int catchChance = SysFormula.Hero.CalculateCaptureChance(hero.str, forceLose);
                         if (SysRandom.Range(0, 100) >= catchChance)
                         {
                             SaveTroopsData.RemoveHeroFromTroop(heroId);
@@ -589,7 +582,7 @@ public class SaveCityData
         
         foreach (var assignment in devAssignments)
         {
-            if (assignment.devId == SystemConst.CityDev.IDLE_DEV_ID)
+            if (assignment.devId == CityDevConfig.GetConfigByName("Idle").Id)
                 continue;
 
             var devCfg = CityDevConfig.GetConfig(assignment.devId);

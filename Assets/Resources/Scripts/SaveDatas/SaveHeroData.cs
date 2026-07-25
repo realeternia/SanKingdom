@@ -93,7 +93,7 @@ public class SaveHeroData
 
     public void TryEscape(int round)
     {
-        if (!SysFormula.Hero.CheckEscape())
+        if (SysRandom.Range(0, 100) >= SysFormula.Hero.GetSysConfigModifyResult("EscapeChance", forceId))
             return;
         var destCityId = GameManager.Instance.GetRandomForceCityId(cityId, forceId);
         if (destCityId <= 0)
@@ -115,7 +115,7 @@ public class SaveHeroData
 
     public void TryWildMove()
     {
-        if (!SysFormula.Hero.CheckWildHeroMove())
+        if (SysRandom.Range(0, 100) >= SysFormula.Hero.GetSysConfigModifyResult("WildHeroMoveChance", forceId))
             return;
         var randomCityId = MapTool.GetRandomAdjacentCityId(cityId);
         if (randomCityId == 0)

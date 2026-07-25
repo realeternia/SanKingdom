@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CommonConfig;
+using Unity.VisualScripting;
 
 public enum HeroType
 {
@@ -146,10 +147,6 @@ public static class SysFormula
             return baseRate;
         }
 
-        public static int CalculateFoodCost(int totalHeroHp)
-        {
-            return totalHeroHp / 20;
-        }
     }
 
     public static class Hero
@@ -204,37 +201,47 @@ public static class SysFormula
         }
 
         /// <summary>
-        /// 计算登庸成功率
-        /// 在野：基础RECRUIT_WILD_BASE_RATE，非己方城市×RECRUIT_WILD_NON_OWN_CITY_MULTIPLIER
-        /// 俘虏/敌方在职：rate = diff*3/4 - RECRUIT_ENEMY_BASE_OFFSET（diff=100-忠诚）
-        /// 额外加成（由 USE_HERO_DEV_ID 配置驱动）
+        /// 计算登庸在野武将的成功率
+        /// 基础 SysConfigModify.RecruitWildBaseRate，非己方城市 ×0.5，加上 Recruit 的 KingAction 加成与科技 SuccessMul，封顶 100
+        /// 调用方需先判断 hero.state == HeroState.Wild
         /// </summary>
-        public static int CalculateRecruitRate(int cityId, int myHeroId, int targetHeroId)
+        public static int CalculateRecruitWildRate(int cityId, int myHeroId, int targetHeroId)
         {
             var cityData = GameManager.Instance.GetCity(cityId);
             var hero = GameManager.Instance.GetHero(targetHeroId);
 
-            if (hero.state == HeroState.Normal && hero.forceId == cityData.forceId)
-                return 0;
-
-            int baseSuccessRate = 0;
-
-            if (hero.state == HeroState.Wild)
+            int baseSuccessRate = GetSysConfigModifyResult("RecruitWildBaseRate", cityData.forceId);
+            var heroCity = GameManager.Instance.GetCity(hero.cityId);
+            if (heroCity == null || heroCity.forceId != cityData.forceId)
             {
-                baseSuccessRate = 30;
-                var heroCity = GameManager.Instance.GetCity(hero.cityId);
-                if (heroCity == null || heroCity.forceId != cityData.forceId)
-                {
-                    baseSuccessRate = (int)Math.Round(baseSuccessRate * 0.5f);
-                }
-            }
-            else if (hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
-            {
-                int diff = 100 - hero.loyalty;
-                baseSuccessRate = diff * 3 / 4 - 5;
-                if (baseSuccessRate < 0) baseSuccessRate = 0;
+                baseSuccessRate = (int)Math.Round(baseSuccessRate * 0.5f);
             }
 
+            return ApplyRecruitBonus(baseSuccessRate, cityData.forceId, myHeroId, hero, targetHeroId);
+        }
+
+        /// <summary>
+        /// 计算登庸俘虏/敌方在职武将的成功率
+        /// 公式：RecruitEnemyOffset - 忠诚 * 3/4，最低 0，加上 Recruit 的 KingAction 加成与科技 SuccessMul，封顶 100
+        /// 调用方需先判断 hero.state == HeroState.Catched 或（敌方在职）
+        /// </summary>
+        public static int CalculateRecruitEnemyRate(int cityId, int myHeroId, int targetHeroId)
+        {
+            var cityData = GameManager.Instance.GetCity(cityId);
+            var hero = GameManager.Instance.GetHero(targetHeroId);
+
+            int baseSuccessRate = GetSysConfigModifyResult("RecruitEnemyOffset", cityData.forceId) - hero.loyalty * 3 / 4;
+            if (baseSuccessRate < 0)
+                baseSuccessRate = 0;
+
+            return ApplyRecruitBonus(baseSuccessRate, cityData.forceId, myHeroId, hero, targetHeroId);
+        }
+
+        /// <summary>
+        /// 登庸成功率公共加成：KingAction 加成 + 科技 SuccessMul，封顶 100
+        /// </summary>
+        private static int ApplyRecruitBonus(int baseRate, int forceId, int myHeroId, SaveHeroData hero, int targetHeroId)
+        {
             if (myHeroId > 0)
             {
                 var executorHero = GameManager.Instance.GetHero(myHeroId);
@@ -242,17 +249,17 @@ public static class SysFormula
                 {
                     var targetConfig = HeroConfig.GetConfig(targetHeroId);
                     int targetForceId = hero.forceId;
-                    baseSuccessRate += CalcKingActionBonus(myHeroId, targetForceId, SystemConst.CityDev.USE_HERO_DEV_ID, targetConfig);
+                    baseRate += CalcKingActionBonus(myHeroId, targetForceId, CityDevConfig.GetConfigByName("Recruit").Id, targetConfig);
                 }
             }
 
-            if (baseSuccessRate > 100) baseSuccessRate = 100;
+            if (baseRate > 100) baseRate = 100;
 
             // 科技加成：登用成功率提升
-            float techSuccessMul = ForceTech.GetKingActionSuccessMul(cityData.forceId, SystemConst.CityDev.USE_HERO_DEV_ID);
-            baseSuccessRate = ForceTech.ApplySuccessMul(baseSuccessRate, techSuccessMul);
+            float techSuccessMul = ForceTech.GetKingActionSuccessMul(forceId, CityDevConfig.GetConfigByName("Recruit").Id);
+            baseRate = ForceTech.ApplySuccessMul(baseRate, techSuccessMul);
 
-            return baseSuccessRate;
+            return baseRate;
         }
 
         /// <summary>
@@ -337,78 +344,39 @@ public static class SysFormula
             return bonus;
         }
 
-        /// <summary>
-        /// 乘算关系加成百分比：LikeForces/HateForces（按程度分级计算）
-        /// </summary>
-        private static int GetRelationBonusPercent(HeroConfig targetConfig, int executorForceId)
+        public static int CalculateCaptureChance(int str, int forceId)
         {
-            int bonus = 0;
-
-            int likeDegree = GetForceDegree(targetConfig.LikeForces, executorForceId);
-            if (likeDegree > 0)
-                bonus += likeDegree * 5;
-
-            int hateDegree = GetForceDegree(targetConfig.HateForces, executorForceId);
-            if (hateDegree > 0)
-                bonus += hateDegree * -8;
-
-            return bonus;
-        }
-
-        private static int GetForceDegree(string[] forceEntries, int forceId)
-        {
-            if (forceEntries == null) return 0;
-            string prefix = forceId + ";";
-            for (int i = 0; i < forceEntries.Length; i++)
-            {
-                if (forceEntries[i] != null && forceEntries[i].StartsWith(prefix))
-                {
-                    string degreeStr = forceEntries[i].Substring(prefix.Length);
-                    if (int.TryParse(degreeStr, out int degree))
-                        return degree;
-                }
-            }
-            return 0;
+            int addon = 0;
+            if(str > 70)
+                addon = str - 70;
+            return GetSysConfigModifyResult("CaptureBaseChance", forceId) - addon / 6;
         }
 
         /// <summary>
-        /// 按日程获取登庸敌方武将的忠诚度阈值：1日=90，2日=85，3日=80
+        /// 计算常量修正结果：BaseVal + Random(RandomMin, RandomMax+1) + 科技AmountAdd，再乘科技AmountMul
         /// </summary>
-        public static int GetRecruitLoyaltyThreshold(int dayFilter)
+        public static int GetSysConfigModifyResult(string name, int forceId)
         {
-            switch (dayFilter)
-            {
-                case 2: return 85;
-                case 3: return 80;
-                default: return 90;
-            }
-        }
+            var cfg = SysConfigModify.GetConfigByName(name);
+            int result = cfg.BaseVal;
+            if (cfg.RandomMax > cfg.RandomMin)
+                result += SysRandom.Range(cfg.RandomMin, cfg.RandomMax + 1);
+            else
+                result += cfg.RandomMin;
 
-        public static int CalculateCaptureChance(int str)
-        {
-            int effectiveStr = str > 0 ? str : 50;
-            return 7 + (100 - effectiveStr) * 8 / 100;
+            // 科技加成：AmountAdd + AmountMul
+            float amountAdd = ForceTech.GetSysConfigAmountAdd(forceId, cfg.Id);
+            result += (int)amountAdd;
+            float amountMul = ForceTech.GetSysConfigAmountMul(forceId, cfg.Id);
+            result = (int)ForceTech.ApplyAmountMul(result, amountMul);
+
+            return result;
         }
 
         public static int CalculateAttrGrowth(int baseAttr, int level)
         {
             if (level <= 1) return 0;
             return Math.Max(8 * (level - 1), baseAttr * (level - 1) / 10);
-        }
-
-        public static int CalculateCapturedLoyaltyDecay()
-        {
-            return _random.Next(1, 4);
-        }
-
-        public static bool CheckEscape()
-        {
-            return _random.Next(0, 100) < 20;
-        }
-
-        public static bool CheckWildHeroMove()
-        {
-            return _random.Next(0, 100) < 20;
         }
 
         public static HeroType ClassifyHero(int str, int leadship, int inte, int fair, int charm)
@@ -426,8 +394,7 @@ public static class SysFormula
 
         public static HeroType ClassifyHero(SaveHeroData hero)
         {
-            return ClassifyHero(hero.GetAttr("str"), hero.GetAttr("leadship"), hero.GetAttr("inte"),
-                hero.GetAttr("fair"), hero.GetAttr("charm"));
+            return ClassifyHero(hero.GetAttr("str"), hero.GetAttr("leadship"), hero.GetAttr("inte"), hero.GetAttr("fair"), hero.GetAttr("charm"));
         }
     }
 
@@ -494,37 +461,44 @@ public static class SysFormula
         }
 
         /// <summary>
-        /// 计算两城市间日程数：相邻=1日，曼哈顿距离≤阈值=2日，否则=3日
+        /// 计算两城市间曼哈顿距离
         /// </summary>
-        public static int CalculateCityDayDistance(int cityId1, int cityId2)
+        public static int CalculateManhattanDist(int cityId1, int cityId2)
         {
-            if (cityId1 == cityId2)
-                return 0;
-
+            if (cityId1 == cityId2) return 0;
             var cfg1 = WorldConfig.GetConfig(cityId1);
             var cfg2 = WorldConfig.GetConfig(cityId2);
-
-            int manhattan = Math.Abs(cfg1.X - cfg2.X) + Math.Abs(cfg1.Y - cfg2.Y);
-            if (manhattan <= 800)
-                return 1;
-            if (manhattan <= 2000)
-                return 2;
-
-            return 3;
+            return Math.Abs(cfg1.X - cfg2.X) + Math.Abs(cfg1.Y - cfg2.Y);
         }
 
         /// <summary>
-        /// 武将移动/登庸消耗的统一日程折算。
-        /// 本国内：基础城市间日程（1~3日）。
-        /// 他国家：基础日程 + 1（2~4日）。
-        /// 所有"距离→天数"场景必须走此方法，禁止各处自行折算。
+        /// 武将移动消耗日程：ceil(曼哈顿距离 / MoveBaseDist)，敌方城市距离×1.5且至少+1天
         /// </summary>
-        public static int CalculateHeroDayDistance(int srcCityId, int destCityId, bool isCrossCountry)
+        public static int CalculateMoveDayDistance(int srcCityId, int destCityId, int forceId)
         {
-            int baseDays = CalculateCityDayDistance(srcCityId, destCityId);
-            return isCrossCountry
-                ? baseDays + 1
-                : baseDays;
+            int manhattan = CalculateManhattanDist(srcCityId, destCityId);
+            if (manhattan == 0) return 0;
+            int baseDist = SysFormula.Hero.GetSysConfigModifyResult("MoveBaseDist", forceId);
+            bool isCross = IsCrossCountry(destCityId, forceId);
+            float effectiveDist = isCross ? manhattan * 1.5f : manhattan;
+            int days = (int)Math.Ceiling(effectiveDist / baseDist);
+            if (isCross && days <= 1) days = 2;
+            return days;
+        }
+
+        /// <summary>
+        /// 登庸消耗日程：ceil(曼哈顿距离 / RecruitBaseDist)，敌方城市距离×1.5且至少+1天
+        /// </summary>
+        public static int CalculateRecruitDayDistance(int srcCityId, int destCityId, int forceId)
+        {
+            int manhattan = CalculateManhattanDist(srcCityId, destCityId);
+            if (manhattan == 0) return 0;
+            int baseDist = SysFormula.Hero.GetSysConfigModifyResult("RecruitBaseDist", forceId);
+            bool isCross = IsCrossCountry(destCityId, forceId);
+            float effectiveDist = isCross ? manhattan * 1.5f : manhattan;
+            int days = (int)Math.Ceiling(effectiveDist / baseDist);
+            if (isCross && days <= 1) days = 2;
+            return days;
         }
 
         /// <summary>
@@ -537,20 +511,28 @@ public static class SysFormula
             return destCity == null || destCity.forceId != currentForceId;
         }
 
-        public static bool CityHasResAddon(int cityId, string attrName)
+        /// <summary>
+        /// 城市产出倍率：民心分级（≥95=1.2, ≥60=1.0, ≥30=0.8, 否则0.6），
+        /// 战争状态额外叠加 WAR_PRODUCTION_MULTIPLIER-1（即-0.3），
+        /// 最终 × 防御打折
+        /// </summary>
+        public static float CalculateProductionMultiplier(int happy, bool isInWar, float defenceDevDiscount)
         {
-            return SaveCityData.CityHasResAddon(cityId, attrName);
-        }
-
-        public static float GetHappyMultiplier(int happy)
-        {
+            float happyMult;
             if (happy >= 95)
-                return 1.2f;
-            if (happy >= 60)
-                return 1f;
-            if (happy >= 30)
-                return 0.8f;
-            return 0.6f;
+                happyMult = 1.2f;
+            else if (happy >= 60)
+                happyMult = 1f;
+            else if (happy >= 30)
+                happyMult = 0.8f;
+            else
+                happyMult = 0.6f;
+
+            float result = isInWar
+                ? SystemConst.City.WAR_PRODUCTION_MULTIPLIER + happyMult - 1f
+                : happyMult;
+            result *= defenceDevDiscount;
+            return result;
         }
 
         /// <summary>
@@ -572,111 +554,17 @@ public static class SysFormula
 
     public static class Economy
     {
-        public static int CalculateTradeAmount(int goldCost)
-        {
-            return (int)(goldCost * 2f);
-        }
-
         /// <summary>
-        /// 计算单个武将的交易量：基数为 goldCost × 2，智力＞70时每点加 2%
+        /// 计算单个武将的交易量：基数为 goldCost × TradeBaseMultiplier，智力＞70时每点加 2%
         /// </summary>
         public static int CalculateHeroTradeAmount(int goldCost, int intelligence)
         {
-            int baseAmount = CalculateTradeAmount(goldCost);
+            int baseAmount = goldCost * SystemConst.Economy.TRADE_BASE_MULTIPLIER;
             int overThreshold = Math.Max(0, intelligence - 70);
             float bonus = overThreshold * 0.02f;
             return (int)(baseAmount * (1f + bonus));
         }
 
-    }
-
-    public static class AIStrategy
-    {
-        public static float CalculateAdvantageRatio(int mySoldier, int targetSoldier)
-        {
-            return mySoldier > 0 ? (float)mySoldier / Math.Max(1, targetSoldier) : 0;
-        }
-
-        public static int CalculateEffectiveSoldier(int citySoldier, int heroCount)
-        {
-            int maxSoldierByHeroes = (heroCount - 1) * AIConst.AIStrategy.MAX_SOLDIER_PER_HERO;
-            return Math.Min(citySoldier, maxSoldierByHeroes);
-        }
-
-        public static bool CheckOwnCityAttackAdvantage(int mySoldier, int targetSoldier)
-        {
-            return mySoldier >= targetSoldier * AIConst.AIStrategy.AI_OWN_CITY_ATTACK_ADVANTAGE_RATIO;
-        }
-
-        public static bool CheckAttackFoodSufficient(int soldier, int food)
-        {
-            return food >= soldier / AIConst.AIStrategy.AI_ATTACK_FOOD_DIVISOR;
-        }
-
-        public static bool HasThreat(int enemySoldier)
-        {
-            return enemySoldier >= AIConst.AIStrategy.AI_THREAT_ENEMY_SOLDIER_THRESHOLD;
-        }
-
-        public static int CalculateFoodNeeded(int totalSoldier)
-        {
-            return totalSoldier / AIConst.AIStrategy.AI_FOOD_NEED_DIVISOR;
-        }
-
-        public static int CalculateTroopLimit(int commanderCount, int heroCount, int citySoldier)
-        {
-            int limitByCommander = commanderCount;
-            int soldierPerCorps = CalculateSoldierPerCorps(heroCount);
-            int limitBySoldier = citySoldier / soldierPerCorps;
-            int hardLimit = AIConst.AIStrategy.TROOP_CITY_HARD_LIMIT;
-
-            return Math.Max(0, Math.Min(hardLimit, Math.Min(limitByCommander, limitBySoldier)));
-        }
-
-        /// <summary>
-        /// 梯度计算每个军团所需士兵数：武将越多，每个军团所需士兵越少
-        /// ≤6武将=50，7~11武将线性递减至30，11+武将保持30
-        /// </summary>
-        public static int CalculateSoldierPerCorps(int heroCount)
-        {
-            int baseValue = AIConst.AIStrategy.TROOP_SOLDIER_PER_CORPS;
-            int minValue = AIConst.AIStrategy.TROOP_SOLDIER_PER_CORPS_RELAXED;
-            int startThreshold = AIConst.AIStrategy.TROOP_HERO_RICH_THRESHOLD;
-            int endThreshold = AIConst.AIStrategy.TROOP_HERO_FULL_RICH_THRESHOLD;
-
-            if (heroCount <= startThreshold) return baseValue;
-            if (heroCount >= endThreshold) return minValue;
-
-            int range = baseValue - minValue;
-            int steps = endThreshold - startThreshold;
-            int progress = heroCount - startThreshold;
-
-            return baseValue - progress * range / steps;
-        }
-
-        /// <summary>
-        /// 计算登庸目标优先级分数
-        /// 优先级：1日名将 > 2日名将 > 1日普通 > 2日普通
-        /// 忠诚越低优先级系数越高
-        /// </summary>
-        public static int CalculateRecruitPriority(int dayDistance, bool isStarHero, int loyalty)
-        {
-            // 组别基础分：1日名将 > 2日名将 > 1日普通 > 2日普通（间距10000确保组别优先于忠诚差异）
-            int groupBase;
-            if (dayDistance <= 1 && isStarHero)
-                groupBase = 40000;
-            else if (dayDistance <= 2 && isStarHero)
-                groupBase = 30000;
-            else if (dayDistance <= 1)
-                groupBase = 20000;
-            else
-                groupBase = 10000;
-
-            // 忠诚越低系数越高（0~100）
-            int loyaltyBonus = (100 - loyalty) * 10;
-
-            return groupBase + loyaltyBonus;
-        }
     }
 
     public static class Game
@@ -694,11 +582,4 @@ public static class SysFormula
         }
     }
 
-    public static class Diplomacy
-    {
-        public static int CalculateBattleRise()
-        {
-            return SysRandom.Range(3, 8 + 1);
-        }
-    }
 }

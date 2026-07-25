@@ -786,8 +786,7 @@ public class SaveForceData
 
         if (useDayDistance)
         {
-            bool crossCountry = SysFormula.City.IsCrossCountry(destCityId, forceId);
-            int distance = SysFormula.City.CalculateHeroDayDistance(srcCityId, destCityId, crossCountry);
+            int distance = SysFormula.City.CalculateMoveDayDistance(srcCityId, destCityId, forceId);
             MarkHeroesActed(heroIds, distance - 1);
         }
         else
@@ -1174,7 +1173,20 @@ public class SaveForceData
 
     private int CalculateRecruitRate(int cityId, int myHeroId, int targetHeroId)
     {
-        return SysFormula.Hero.CalculateRecruitRate(cityId, myHeroId, targetHeroId);
+        var cityData = GameManager.Instance.GetCity(cityId);
+        var hero = GameManager.Instance.GetHero(targetHeroId);
+
+        // 己方在职武将不可登庸
+        if (hero.state == HeroState.Normal && hero.forceId == cityData.forceId)
+            return 0;
+
+        if (hero.state == HeroState.Wild)
+            return SysFormula.Hero.CalculateRecruitWildRate(cityId, myHeroId, targetHeroId);
+
+        if (hero.state == HeroState.Catched || (hero.state == HeroState.Normal && hero.forceId != cityData.forceId))
+            return SysFormula.Hero.CalculateRecruitEnemyRate(cityId, myHeroId, targetHeroId);
+
+        return 0;
     }
 
     public bool ExecuteCityUseHero(int cityId, int devId, int[] myHeroIds, int[] targetHeroIds, out List<PopResultPanelManager.AttrData> attrDatas)
@@ -1266,8 +1278,7 @@ public class SaveForceData
         int targetHeroId = targetHeroIds.Length > 0 ? targetHeroIds[0] : 0;
         var targetHero = GameManager.Instance.GetHero(targetHeroId);
         int targetCityId = targetHero != null ? targetHero.cityId : cityId;
-        bool crossCountry = SysFormula.City.IsCrossCountry(targetCityId, forceId);
-        int distance = SysFormula.City.CalculateHeroDayDistance(sourceCityId, targetCityId, crossCountry);
+        int distance = SysFormula.City.CalculateRecruitDayDistance(sourceCityId, targetCityId, forceId);
         MarkHeroesActed(myHeroIds, distance - 1);
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionRecruit(
@@ -1332,8 +1343,8 @@ public class SaveForceData
             }
         }
 
-        // 根据 devId 推导 methodId：21206=奖赏(methodId=2)，其余=褒奖(methodId=1)
-        int methodId = (devId == SystemConst.CityDev.PRAISE_PAID_DEV_ID) ? 2 : 1;
+        // 根据 devId 推导 methodId：21605=奖赏(methodId=2)，其余=褒奖(methodId=1)
+        int methodId = (devId == CityDevConfig.GetConfigByName("Reward").Id) ? 2 : 1;
         var kingCfg = CityDevKingActionConfig.GetConfig(devId);
         int totalLoyaltyAdd = 0;
 
@@ -1576,7 +1587,7 @@ public class SaveForceData
         // dayDiff 按主公所在城市到目标城市的日程计算：distance - 1（目标必为敌方，crossCountry=true）
         var kingCity = GetKingCity();
         int sourceCityId = kingCity != null ? kingCity.cityId : cityId;
-        int distance = SysFormula.City.CalculateHeroDayDistance(sourceCityId, targetCityId, true);
+        int distance = SysFormula.City.CalculateMoveDayDistance(sourceCityId, targetCityId, forceId);
         MarkHeroesActed(heroIds, distance - 1);
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionDestroy(
@@ -1753,7 +1764,7 @@ public class SaveForceData
         // dayDiff 按主公所在城市到目标城市的日程计算：distance - 1（目标必为敌方，crossCountry=true）
         var kingCity = GetKingCity();
         int sourceCityId = kingCity != null ? kingCity.cityId : cityId;
-        int distance = SysFormula.City.CalculateHeroDayDistance(sourceCityId, targetCityId, true);
+        int distance = SysFormula.City.CalculateMoveDayDistance(sourceCityId, targetCityId, forceId);
         MarkHeroesActed(heroIds, distance - 1);
 
         GameManager.Instance.GameEventLog?.RecordEvent(GameEventData.CreateKingActionDisturb(

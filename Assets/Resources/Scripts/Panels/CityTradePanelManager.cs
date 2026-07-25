@@ -57,7 +57,7 @@ public class CityTradePanelManager : MonoBehaviour
         this.cityId = sourceCityId;
         this.buySoldier = true;
 
-        var devCfg = CityDevConfig.GetConfig(SystemConst.CityDev.TRADE_DEV_ID);
+        var devCfg = CityDevConfig.GetConfig(CityDevConfig.GetConfigByName("Trade").Id);
         goldCost = devCfg.GoldCost;
 
         resCheckItemGold.Init("gold");
@@ -237,17 +237,17 @@ public class CityTradePanelManager : MonoBehaviour
             return;
         }
 
-        bool success = force.ExecuteCityTrade(cityId, SystemConst.CityDev.TRADE_DEV_ID, heroIds, buySoldier, out var attrDatas);
+        bool success = force.ExecuteCityTrade(cityId, CityDevConfig.GetConfigByName("Trade").Id, heroIds, buySoldier, out var attrDatas);
         if (!success) return;
 
-        var devCfg = CityDevConfig.GetConfig(SystemConst.CityDev.TRADE_DEV_ID);
+        var devCfg = CityDevConfig.GetConfig(CityDevConfig.GetConfigByName("Trade").Id);
         PanelManager.Instance.ShowPopResultPanel(devCfg.Cname, attrDatas, () =>
         {
             RefreshCityDisplay();
             RefreshGoldDisplay();
             RefreshBuyDisplay();
             CreateHeroHeadItems();
-        }, CityDevKingActionConfig.GetConfig(SystemConst.CityDev.TRADE_DEV_ID).Mp4, false);
+        }, CityDevKingActionConfig.GetConfig(CityDevConfig.GetConfigByName("Trade").Id).Mp4, false);
     }
 
     private void CreateHeroHeadItems()

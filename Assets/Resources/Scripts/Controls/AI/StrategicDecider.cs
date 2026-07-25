@@ -19,7 +19,7 @@ public class AttackCandidate
         targetCityId = targetId;
         mySoldier = mySold;
         targetSoldier = targetSold;
-        advantage = SysFormula.AIStrategy.CalculateAdvantageRatio(mySold, targetSold);
+        advantage = AIFormula.CalculateAdvantageRatio(mySold, targetSold);
         sourceType = type;
     }
 }
@@ -47,7 +47,7 @@ public class StrategicDecider
     {
         int citySoldier = (int)Math.Floor(city.GetAttr("soldier"));
         int heroCount = city.GetNormalHeroList().Count;
-        return SysFormula.AIStrategy.CalculateEffectiveSoldier(citySoldier, heroCount);
+        return AIFormula.CalculateEffectiveSoldier(citySoldier, heroCount);
     }
     
     /// <summary>
@@ -301,7 +301,7 @@ public class StrategicDecider
                     
                     int targetSoldier = (int)Math.Floor(nearCity.GetAttr("soldier"));
                     
-                    if (SysFormula.AIStrategy.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && SysFormula.AIStrategy.CheckAttackFoodSufficient(soldier, (int)city.food))
+                    if (AIFormula.CheckOwnCityAttackAdvantage(soldier, targetSoldier) && AIFormula.CheckAttackFoodSufficient(soldier, (int)city.food))
                     {
                         if (targetSoldier < minTargetSoldier)
                         {
@@ -330,7 +330,7 @@ public class StrategicDecider
             if (nearCity != null)
             {
                 int enemySoldier = (int)Math.Floor(nearCity.GetAttr("soldier"));
-                if (SysFormula.AIStrategy.HasThreat(enemySoldier))
+                if (AIFormula.HasThreat(enemySoldier))
                 {
                     return true;
                 }

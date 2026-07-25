@@ -97,7 +97,7 @@ public class CityStrategyAttack : CityStrategyBase
         if (totalSoldier < AIConst.AIStrategy.AI_MIN_ATTACK_SOLDIER)
             return;
 
-        int foodNeeded = SysFormula.AIStrategy.CalculateFoodNeeded(totalSoldier);
+        int foodNeeded = AIFormula.CalculateFoodNeeded(totalSoldier);
 
         if (City.food < foodNeeded)
             return;

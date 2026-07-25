@@ -37,6 +37,7 @@ public static class ConfigManager
         FairConfig.Load();
         TechConfig.Load();
         TechSkillConfig.Load();
+        SysConfigModify.Load();
         
         ConfigManager.PostModify();      
 

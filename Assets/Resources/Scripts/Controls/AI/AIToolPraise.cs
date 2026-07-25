@@ -5,7 +5,7 @@ using CommonConfig;
 /// <summary>
 /// AI褒奖工具类
 /// 忠心 ≤ 阈值的武将进行褒奖（methodId=1 褒奖，不花黄金）
-/// 仅处理免费褒奖（21205），不管付费奖赏（21206）
+/// 仅处理免费褒奖（21604），不管付费奖赏（21605）
 /// </summary>
 public static class AIToolPraise
 {
@@ -14,7 +14,7 @@ public static class AIToolPraise
     /// </summary>
     public static void Process(SaveForceData force, HashSet<int> excludedHeroIds)
     {
-        int devId = SystemConst.CityDev.PRAISE_DEV_ID;
+        int devId = CityDevConfig.GetConfigByName("Praise").Id;
         var devCfg = CityDevConfig.GetConfig(devId);
         int currentRound = GameManager.Instance.SaveData.round;
 

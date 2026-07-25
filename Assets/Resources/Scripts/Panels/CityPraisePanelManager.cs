@@ -54,11 +54,11 @@ public class CityPraisePanelManager : MonoBehaviour
         this.forceId = forceId;
         this.cityId = cityId;
         this.devId = devId;
-        // 根据入口 devId 决定默认 methodId（21205→褒奖, 21206→奖赏）
-        this.methodId = (devId == SystemConst.CityDev.PRAISE_PAID_DEV_ID) ? 2 : 1;
+        // 根据入口 devId 决定默认 methodId（21604→褒奖, 21605→奖赏）
+        this.methodId = (devId == CityDevConfig.GetConfigByName("Reward").Id) ? 2 : 1;
 
-        var praiseDevCfg = CityDevConfig.GetConfig(SystemConst.CityDev.PRAISE_DEV_ID);
-        praiseHeroCount = ForceTech.GetEffectiveSlotCount(forceId, SystemConst.CityDev.PRAISE_DEV_ID);
+        var praiseDevCfg = CityDevConfig.GetConfig(CityDevConfig.GetConfigByName("Praise").Id);
+        praiseHeroCount = ForceTech.GetEffectiveSlotCount(forceId, CityDevConfig.GetConfigByName("Praise").Id);
 
         if (checkBtn != null)
         {
@@ -75,14 +75,14 @@ public class CityPraisePanelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 根据 methodId 获取实际的 devId（褒奖=21205, 奖赏=21206）
+    /// 根据 methodId 获取实际的 devId（褒奖=21604, 奖赏=21605）
     /// 面板集成两个行动，读取配置时需按当前 methodId 取对应 devId
     /// </summary>
     private int GetActualDevId()
     {
         return methodId == 2
-            ? SystemConst.CityDev.PRAISE_PAID_DEV_ID
-            : SystemConst.CityDev.PRAISE_DEV_ID;
+            ? CityDevConfig.GetConfigByName("Reward").Id
+            : CityDevConfig.GetConfigByName("Praise").Id;
     }
 
     private void InitResCheckItem()
@@ -95,7 +95,7 @@ public class CityPraisePanelManager : MonoBehaviour
         if (methodId == 1)
         {
             var force = GameManager.Instance.GetForce(forceId);
-            int praisedCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.PRAISE_DEV_ID) : 0;
+            int praisedCount = force != null ? force.GetKingActionCount(CityDevConfig.GetConfigByName("Praise").Id) : 0;
             resCheckItem.Init("hero");
             resCheckItem.UpdateDisplay($"{praisedCount}/{praiseHeroCount}");
         }
@@ -111,7 +111,7 @@ public class CityPraisePanelManager : MonoBehaviour
         if (methodId == 1)
         {
             var force = GameManager.Instance.GetForce(forceId);
-            int praisedCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.PRAISE_DEV_ID) : 0;
+            int praisedCount = force != null ? force.GetKingActionCount(CityDevConfig.GetConfigByName("Praise").Id) : 0;
             return praisedCount + GetSelectedItems().Count < praiseHeroCount;
         }
         return true;
@@ -129,7 +129,7 @@ public class CityPraisePanelManager : MonoBehaviour
         if (methodId == 1)
         {
             var force = GameManager.Instance.GetForce(forceId);
-            int praisedCount = force != null ? force.GetKingActionCount(SystemConst.CityDev.PRAISE_DEV_ID) : 0;
+            int praisedCount = force != null ? force.GetKingActionCount(CityDevConfig.GetConfigByName("Praise").Id) : 0;
             int totalCount = praisedCount + GetSelectedItems().Count;
             if (totalCount >= praiseHeroCount)
             {
@@ -181,7 +181,7 @@ public class CityPraisePanelManager : MonoBehaviour
             return;
         }
 
-        // 面板集成 21205/21206，按 methodId 取实际 devId 的配置
+        // 面板集成 21604/21605，按 methodId 取实际 devId 的配置
         int actualDevId = GetActualDevId();
         var devCfg = CityDevConfig.GetConfig(actualDevId);
 

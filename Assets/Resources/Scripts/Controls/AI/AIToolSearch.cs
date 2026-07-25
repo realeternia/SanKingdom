@@ -11,7 +11,7 @@ public static class AIToolSearch
 {
     public static void Process(SaveForceData force, HashSet<int> excludedHeroIds)
     {
-        int devId = SystemConst.CityDev.SEARCH_DEV_ID;
+        int devId = CityDevConfig.GetConfigByName("Search").Id;
         int currentRound = GameManager.Instance.SaveData.round;
 
         // 1. 收集所有空闲武将（按城市分组）：排除 WarPlan、已委派、已行动

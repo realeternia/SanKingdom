@@ -56,7 +56,7 @@ public class CitySearchPanelManager : MonoBehaviour
         }
         else
         {
-            var devCfg = CityDevConfig.GetConfig(SystemConst.CityDev.SEARCH_DEV_ID);
+            var devCfg = CityDevConfig.GetConfig(CityDevConfig.GetConfigByName("Search").Id);
             int cost = selectedCount * (devCfg != null ? devCfg.GoldCost : 0);
             if (cost > gold)
             {
@@ -125,15 +125,15 @@ public class CitySearchPanelManager : MonoBehaviour
             return;
         }
 
-        bool success = force.ExecuteCitySearch(cityId, SystemConst.CityDev.SEARCH_DEV_ID, heroIds, out var attrDatas);
+        bool success = force.ExecuteCitySearch(cityId, CityDevConfig.GetConfigByName("Search").Id, heroIds, out var attrDatas);
         if (!success) return;
 
-        var devCfg = CityDevConfig.GetConfig(SystemConst.CityDev.SEARCH_DEV_ID);
+        var devCfg = CityDevConfig.GetConfig(CityDevConfig.GetConfigByName("Search").Id);
         PanelManager.Instance.ShowPopResultPanel(devCfg.Cname, attrDatas, () =>
         {
             RefreshGoldDisplay();
             CreateHeroHeadItems();
-        }, CityDevKingActionConfig.GetConfig(SystemConst.CityDev.SEARCH_DEV_ID).Mp4, false);
+        }, CityDevKingActionConfig.GetConfig(CityDevConfig.GetConfigByName("Search").Id).Mp4, false);
     }
 
     private void CreateHeroHeadItems()

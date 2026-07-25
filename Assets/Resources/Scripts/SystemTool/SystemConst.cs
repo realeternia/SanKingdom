@@ -42,20 +42,6 @@ public static class SystemConst
         /// </summary>
         public const int RECRUIT_ENEMY_LOYALTY_THRESHOLD = 90;
         /// <summary>
-        /// 登用在野英雄基础成功率(%)
-        /// </summary>
-        public const int RECRUIT_WILD_BASE_RATE = 30;
-        /// <summary>
-        /// 登用在野英雄非己方城市成功率倍率
-        /// </summary>
-        public const float RECRUIT_WILD_NON_OWN_CITY_MULTIPLIER = 0.5f;
-        /// <summary>
-        /// 登用俘虏/敌方英雄基础率 = (100-忠诚)*3/4 - RECRUIT_ENEMY_BASE_OFFSET
-        /// </summary>
-        public const int RECRUIT_ENEMY_LOYALTY_MULTIPLIER_NUM = 3;
-        public const int RECRUIT_ENEMY_LOYALTY_MULTIPLIER_DEN = 4;
-        public const int RECRUIT_ENEMY_BASE_OFFSET = 5;
-        /// <summary>
         /// 默认兵种ID
         /// </summary>
         public const int DEFAULT_ARMS_ID = 1;
@@ -301,20 +287,8 @@ public static class SystemConst
 
     public static class CityDev
     {
-        public const int MOVE_DEV_ID = 21102;
-        public const int IDLE_DEV_ID = 21999;
-        public const int USE_HERO_DEV_ID = 21204;
-        public const int PRAISE_DEV_ID = 21205;
-        public const int PRAISE_PAID_DEV_ID = 21206;
-        public const int TRADE_DEV_ID = 21203;
-        public const int SEARCH_DEV_ID = 21202;
-        public const int DESTROY_DEV_ID = 21207;
-        public const int DISTURB_DEV_ID = 21208;
-        public const int DIPLOMACY_DEV_ID = 21209;
-        public const int SOW_DISCORD_DEV_ID = 21210;
-        public const int TECH_RESEARCH_DEV_ID = 21211;
         /// <summary>
-        /// 科技研究每次消耗的研究值
+        ///科技研究每次消耗的研究值
         /// </summary>
         public const int TECH_RESEARCH_SCIPOINT_COST = 10;
         /// <summary>
@@ -329,6 +303,14 @@ public static class SystemConst
         /// 城市日程最大日数
         /// </summary>
         public const int CITY_DAY_MAX = 3;
+    }
+
+    public static class Economy
+    {
+        /// <summary>
+        /// 交易基础倍率
+        /// </summary>
+        public const int TRADE_BASE_MULTIPLIER = 2;
     }
 
     public static class Diplomacy

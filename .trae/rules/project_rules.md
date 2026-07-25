@@ -104,6 +104,13 @@ Unity (C#) | JsonUtility | UGUI | TextMeshPro
 
 领域专属概念见各 skill：battle skill（战斗层）、save skill（战略层）、ai skill（AI）
 
+## 文档目录 - Doc
+
+项目文档统一存放于 `Doc/` 目录（项目根目录下）：
+- 系统设计、数值公式整理、架构说明等长篇文档均放此目录
+- 命名规范：小写连字符（kebab-case），如 `non-combat-calculations.md`
+- 文档内引用代码位置时使用 `file:///` 绝对路径 + 行号锚点，便于 IDE 跳转
+
 ## 禁止事项
 
 - 禁止 `UnityEngine.Random`，用 `BattleRandom` 或 `SysRandom`

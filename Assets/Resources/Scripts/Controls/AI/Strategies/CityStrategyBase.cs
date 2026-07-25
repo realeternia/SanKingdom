@@ -124,7 +124,7 @@ public abstract class CityStrategyBase
 
         int citySoldier = (int)Math.Floor(City.GetAttr("soldier"));
 
-        int troopLimit = SysFormula.AIStrategy.CalculateTroopLimit(commanders.Count, normalHeroes.Count, citySoldier);
+        int troopLimit = AIFormula.CalculateTroopLimit(commanders.Count, normalHeroes.Count, citySoldier);
 
         int newTroopCount = Math.Min(troopLimit, commanders.Count);
 

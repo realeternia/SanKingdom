@@ -20,8 +20,8 @@ public static class AIToolRecruit
 
         // 2. 按优先级排序目标（降序）
         recruitTargets.Sort((a, b) =>
-            SysFormula.AIStrategy.CalculateRecruitPriority(b.dayDistance, b.isStarHero, b.loyalty)
-            .CompareTo(SysFormula.AIStrategy.CalculateRecruitPriority(a.dayDistance, a.isStarHero, a.loyalty)));
+            AIFormula.CalculateRecruitPriority(b.dayDistance, b.isStarHero, b.loyalty)
+            .CompareTo(AIFormula.CalculateRecruitPriority(a.dayDistance, a.isStarHero, a.loyalty)));
 
         // 3. 收集空闲英雄（无委派、未被占用、魅力或智力 > 阈值）
         var executors = CollectRecruitExecutors(force, excludedHeroIds);
@@ -42,7 +42,7 @@ public static class AIToolRecruit
 
             usedExecutorIds.Add(executor.heroId);
 
-            force.ExecuteCityUseHero(target.cityId, SystemConst.CityDev.USE_HERO_DEV_ID,
+            force.ExecuteCityUseHero(target.cityId, CityDevConfig.GetConfigByName("Recruit").Id,
                 new int[] { executor.heroId }, new int[] { target.heroId }, out var attrDatas);
 
             assignedCount++;
@@ -85,7 +85,7 @@ public static class AIToolRecruit
 
             var heroCfg = HeroConfig.GetConfig(hero.heroId);
             int dayDistance = kingCityId > 0
-                ? SysFormula.City.CalculateHeroDayDistance(kingCityId, hero.cityId, false)
+                ? SysFormula.City.CalculateRecruitDayDistance(kingCityId, hero.cityId, force.forceId)
                 : SystemConst.CityDev.CITY_DAY_MAX;
 
             targets.Add(new RecruitTarget

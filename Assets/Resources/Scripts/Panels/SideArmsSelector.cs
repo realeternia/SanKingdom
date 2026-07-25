@@ -52,6 +52,10 @@ public class SideArmysSelector : MonoBehaviour
             if (!config.CanAssign || !HasResourceProduction(config, force))
                 continue;
 
+            // 需解锁型兵种：未研究对应科技时不在sidearms中显示
+            if (config.NeedUnlock && !ForceTech.IsArmsUnlocked(force.forceId, config.Id))
+                continue;
+
             GameObject item = Instantiate(itemPrefab.gameObject, subRegionMain.transform);
             item.transform.localScale = Vector3.one;
             SideArmsItem armsItem = item.GetComponent<SideArmsItem>();

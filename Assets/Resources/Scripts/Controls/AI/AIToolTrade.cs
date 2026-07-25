@@ -15,10 +15,10 @@ public static class AIToolTrade
     /// </summary>
     public static void Process(SaveForceData force, HashSet<int> excludedHeroIds)
     {
-        int devId = SystemConst.CityDev.TRADE_DEV_ID;
+        int devId = CityDevConfig.GetConfigByName("Trade").Id;
         var devCfg = CityDevConfig.GetConfig(devId);
         int goldCost = devCfg.GoldCost;
-        int tradeAmount = SysFormula.Economy.CalculateTradeAmount(goldCost);
+        int tradeAmount = goldCost * SystemConst.Economy.TRADE_BASE_MULTIPLIER;
         int threshold = AIConst.AIKingAction.TRADE_RESOURCE_THRESHOLD;
         int currentRound = GameManager.Instance.SaveData.round;
 

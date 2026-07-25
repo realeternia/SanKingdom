@@ -441,12 +441,12 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
             if (isKing && !cfg.KingAction) continue;
             if (!isKing && cfg.KingAction) continue;
             if (!SaveCityData.IsDevAvailableForCity(cityId, cfg)) continue;
-            // 21206(奖赏)集成在21205(褒奖)面板中，不在城市开发列表单独显示
-            if (cfg.Id == SystemConst.CityDev.PRAISE_PAID_DEV_ID) continue;
-            // 21207(破坏)集成在21208(扰乱)面板中，不在城市开发列表单独显示
-            if (cfg.Id == SystemConst.CityDev.DESTROY_DEV_ID) continue;
-            // 21210(调拨)集成在21209(外交)面板中，不在城市开发列表单独显示
-            if (cfg.Id == SystemConst.CityDev.SOW_DISCORD_DEV_ID) continue;
+            // 21605(奖赏)集成在21604(褒奖)面板中，不在城市开发列表单独显示
+            if (cfg.Id == CityDevConfig.GetConfigByName("Reward").Id) continue;
+            // 21606(破坏)集成在21607(扰乱)面板中，不在城市开发列表单独显示
+            if (cfg.Id == CityDevConfig.GetConfigByName("Sabotage").Id) continue;
+            // 21609(调拨)集成在21608(外交)面板中，不在城市开发列表单独显示
+            if (cfg.Id == CityDevConfig.GetConfigByName("SowDiscord").Id) continue;
             int row = devIndex / itemsPerRow;
             int col = devIndex % itemsPerRow;
 
@@ -558,7 +558,7 @@ public class CityPanelManager : MonoBehaviour, IPanelEvent
         
         var cityData = GameManager.Instance.GetCity(cityId);
         var devCfg = CityDevConfig.GetConfig(targetNode.GetDevId());
-        bool isIdleDev = targetNode.GetDevId() == SystemConst.CityDev.IDLE_DEV_ID;
+        bool isIdleDev = targetNode.GetDevId() == CityDevConfig.GetConfigByName("Idle").Id;
 
         if (isIdleDev)
         {
