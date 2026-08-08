@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillInitAddDodge : Skill
+public class SkillInitAddDodge : BattleSkill
 {
     public SkillInitAddDodge(int id, Chess unit) : base(id, unit)
     {

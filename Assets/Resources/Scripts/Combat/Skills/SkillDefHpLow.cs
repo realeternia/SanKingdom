@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillDefHpLow : Skill
+public class SkillDefHpLow : BattleSkill
 {
     public SkillDefHpLow(int id, Chess unit) : base(id, unit)
     {
@@ -18,7 +18,7 @@ public class SkillDefHpLow : Skill
         }
     }
 
-    public override void OnBeDoSkillDamage(Chess caster, SkillConfig checkSkillCfg, ref int damage, bool isFeedback)
+    public override void OnBeDoSkillDamage(Chess caster, BattleSkillConfig checkSkillCfg, ref int damage, bool isFeedback)
     {
         if(isFeedback)
             return;

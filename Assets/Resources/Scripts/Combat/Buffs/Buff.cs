@@ -17,7 +17,7 @@ public class Buff : IRecoverable
     [NonSerialized]
     public BuffConfig buffCfg;
     [NonSerialized]
-    public SkillConfig skillCfg;
+    public BattleSkillConfig skillCfg;
 
     public int endRound;
     [NonSerialized]
@@ -32,13 +32,13 @@ public class Buff : IRecoverable
         this.skillId = skillId;
         this.endRound = endRound;
         buffCfg = BuffConfig.GetConfig(id);
-        skillCfg = SkillConfig.GetConfig(skillId);
+        skillCfg = BattleSkillConfig.GetConfig(skillId);
     }
 
     public void OnRecover()
     {
         buffCfg = BuffConfig.GetConfig(id);
-        skillCfg = SkillConfig.GetConfig(skillId);
+        skillCfg = BattleSkillConfig.GetConfig(skillId);
     }
 
     public virtual void OnAdd(Chess chess, Chess caster)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillInitAddRege : Skill
+public class SkillInitAddRege : BattleSkill
 {
     public SkillInitAddRege(int id, Chess unit) : base(id, unit)
     {

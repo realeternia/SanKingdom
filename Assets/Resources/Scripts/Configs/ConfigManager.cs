@@ -6,7 +6,7 @@ using CommonConfig;
 using UnityEngine;
 public static class ConfigManager
 {
-    private static Dictionary<string, SkillConfig> skillDict = new Dictionary<string, SkillConfig>();
+    private static Dictionary<string, BattleSkillConfig> skillDict = new Dictionary<string, BattleSkillConfig>();
 
     private static bool hasInit = false;
 
@@ -17,7 +17,7 @@ public static class ConfigManager
         hasInit = true;
         
         HeroConfig.Load();
-        SkillConfig.Load();
+        BattleSkillConfig.Load();
         BuffConfig.Load();
         ItemConfig.Load();
         BattleUnitConfig.Load();
@@ -46,7 +46,7 @@ public static class ConfigManager
 
     public static void PostModify()
     {
-        foreach (var skillCfg in SkillConfig.ConfigList)
+        foreach (var skillCfg in BattleSkillConfig.ConfigList)
         {
             skillDict.Add(skillCfg.Sname, skillCfg);
         }
@@ -69,7 +69,7 @@ public static class ConfigManager
         var heroCfg = HeroConfig.GetConfig(heroId);
         foreach(var skill in heroCfg.Skills)
         {
-            var skillCfg = SkillConfig.GetConfig(skill);
+            var skillCfg = BattleSkillConfig.GetConfig(skill);
             if (skillCfg.UnitHelpType <= 0)
                 continue;
 
@@ -104,9 +104,9 @@ public static class ConfigManager
         return cardId < 200000;
     }
 
-    public static SkillConfig GetSkillConfig(string skillName)
+    public static BattleSkillConfig GetBattleSkillConfig(string skillName)
     {
-        if (skillDict.TryGetValue(skillName, out SkillConfig value))
+        if (skillDict.TryGetValue(skillName, out BattleSkillConfig value))
         {
             return value;
         }

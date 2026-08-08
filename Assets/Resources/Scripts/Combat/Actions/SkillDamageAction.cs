@@ -31,7 +31,7 @@ public class SkillDamageAction : ChessAction
             if(casterChess != targetChess)
                 targetChess.lastDamagedPlayerId = casterChess.forceId;
 
-            var skillCfg = SkillConfig.GetConfig(SkillId);
+            var skillCfg = BattleSkillConfig.GetConfig(SkillId);
             if(!string.IsNullOrEmpty(skillCfg.EffectHit))
                 EffectManager.PlaySkillEffect(targetChess, skillCfg.EffectHit);
 

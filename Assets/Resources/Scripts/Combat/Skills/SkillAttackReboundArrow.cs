@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillAttackReboundArrow : Skill
+public class SkillAttackReboundArrow : BattleSkill
 {
     public SkillAttackReboundArrow(int id, Chess unit) : base(id, unit)
     {

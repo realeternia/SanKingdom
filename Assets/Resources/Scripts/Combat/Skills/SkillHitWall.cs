@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillHitWall : Skill
+public class SkillHitWall : BattleSkill
 {
     public List<Vector3> targetPosList;
     public SkillHitWall(int id, Chess unit) : base(id, unit)

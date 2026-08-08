@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillHitBuff : Skill
+public class SkillHitBuff : BattleSkill
 {
     public SkillHitBuff(int id, Chess unit) : base(id, unit)
     {

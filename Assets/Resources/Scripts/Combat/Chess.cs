@@ -74,7 +74,7 @@ public class Chess : SceneObj
     public int lastAttackTime = 0;
     public int lastTargetUpdateTick; // 上次更新目标的时间
 
-    public List<Skill> skills = new List<Skill>();
+    public List<BattleSkill> skills = new List<BattleSkill>();
 
     public List<Buff> buffs = new List<Buff>();
     public int noMoveCount = 0;
@@ -474,7 +474,7 @@ public class Chess : SceneObj
 
         GameLog.Info($"DoSkillDamage[aid={actionId}] caster={caster.id} tgt={id} skill={skillId} dmg={damage}");
 
-        var skillCfg = SkillConfig.GetConfig(skillId);
+        var skillCfg = BattleSkillConfig.GetConfig(skillId);
         SkillManager.OnDoSkillDamage(this, caster, skillCfg, ref damage, isFeedback);          
 
         // 创建SkillDamageAction并添加到BattleManager

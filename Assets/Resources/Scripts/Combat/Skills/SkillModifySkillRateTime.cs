@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 using System.Linq;
-public class SkillModifySkillRateTime : Skill
+public class SkillModifySkillRateTime : BattleSkill
 {
     public SkillModifySkillRateTime(int id, Chess unit) : base(id, unit)
     {
     }
 
-    public override void OnCheckBurst(SkillConfig checkSkillCfg, ref float rate)
+    public override void OnCheckBurst(BattleSkillConfig checkSkillCfg, ref float rate)
     {
         if(checkSkillCfg.Rate == 0)
             return;
@@ -23,14 +23,14 @@ public class SkillModifySkillRateTime : Skill
     {
         if(skillCfg.BuffTime == 0)
             return;
-        if (skillCfg.CheckAttrs != null && !skillCfg.CheckAttrs.Contains(SkillConfig.GetConfig(checkSkillId).Attr))
+        if (skillCfg.CheckAttrs != null && !skillCfg.CheckAttrs.Contains(BattleSkillConfig.GetConfig(checkSkillId).Attr))
             return;              
         var buffCfg = BuffConfig.GetConfig(buffId);
         if(!buffCfg.IsPositive)
             time += Math.Max(1, time / 2) * skillCfg.BuffTime;
     }
     
-    public override void OnCheckCD(SkillConfig checkSkillCfg, ref float cdTime)
+    public override void OnCheckCD(BattleSkillConfig checkSkillCfg, ref float cdTime)
     {
         if(skillCfg.Strength == 0)
             return;

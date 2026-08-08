@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillAttackSpinAttack : Skill
+public class SkillAttackSpinAttack : BattleSkill
 {
     public SkillAttackSpinAttack(int id, Chess unit) : base(id, unit)
     {

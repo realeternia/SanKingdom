@@ -153,6 +153,10 @@ public static class SystemConst
         /// 防守方布阵区域起始格子Z
         /// </summary>
         public const int DEPLOY_SIDE2_BASE_GZ = 13;
+        /// <summary>
+        /// 城墙/城门一排相对防守方布阵起始X的前移格数（朝攻方方向）
+        /// </summary>
+        public const int WALL_FRONT_OFFSET = 3;
 
         /// <summary>
         /// 城门BattleUnitId

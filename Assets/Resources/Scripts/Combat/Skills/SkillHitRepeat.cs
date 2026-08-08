@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillHitRepeat : Skill
+public class SkillHitRepeat : BattleSkill
 {
     public int defenderId;
     public int damage;

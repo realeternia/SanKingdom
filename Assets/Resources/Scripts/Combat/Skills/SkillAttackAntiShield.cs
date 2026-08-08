@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillAttackAntiShield : Skill
+public class SkillAttackAntiShield : BattleSkill
 {
     public SkillAttackAntiShield(int id, Chess unit) : base(id, unit)
     {

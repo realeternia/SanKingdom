@@ -82,7 +82,7 @@ public class Missile : SceneObj
     {
         if(skillId > 0)
         {
-            var skillCfg = SkillConfig.GetConfig(skillId);
+            var skillCfg = BattleSkillConfig.GetConfig(skillId);
             effectName = skillCfg.EffectHit;
             hitEffectName = effectName;
             missileSpeed = skillCfg.SummonSpeed;

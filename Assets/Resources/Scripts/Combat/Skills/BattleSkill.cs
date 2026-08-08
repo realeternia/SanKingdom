@@ -8,7 +8,7 @@ using UnityEngine;
 /// 技能类，处理技能相关逻辑
 /// </summary>
 [Serializable]
-public class Skill : IRecoverable
+public class BattleSkill : IRecoverable
 {
     public int id;
     public int ownerId;
@@ -16,7 +16,7 @@ public class Skill : IRecoverable
     public Chess owner;
     public bool isGivenSkill; //别人给的技能
     [NonSerialized]
-    public SkillConfig skillCfg;
+    public BattleSkillConfig skillCfg;
     public int lastUseRound; // 上次更新CD的回合
     [NonSerialized]
     public bool isBurst;
@@ -24,19 +24,19 @@ public class Skill : IRecoverable
 
     public List<int> delayedFrames = new List<int>();
 
-    public Skill(int id, Chess unit)
+    public BattleSkill(int id, Chess unit)
     {
         this.id = id;
         this.owner = unit;
         ownerId = unit.id;
 
-        skillCfg = SkillConfig.GetConfig(id);
+        skillCfg = BattleSkillConfig.GetConfig(id);
     }
 
     public void OnRecover()
     {
         owner = BattleManager.Instance.GetChess(ownerId);
-        skillCfg = SkillConfig.GetConfig(id);
+        skillCfg = BattleSkillConfig.GetConfig(id);
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public class Skill : IRecoverable
         return false;
     }
 
-    public virtual void OnCheckBurst(SkillConfig checkSkillCfg, ref float rate)
+    public virtual void OnCheckBurst(BattleSkillConfig checkSkillCfg, ref float rate)
     {
         
     }
@@ -157,7 +157,7 @@ public class Skill : IRecoverable
         
     }
 
-    public virtual void OnCheckCD(SkillConfig checkSkillCfg, ref float cdTime)
+    public virtual void OnCheckCD(BattleSkillConfig checkSkillCfg, ref float cdTime)
     {
 
     }
@@ -167,12 +167,12 @@ public class Skill : IRecoverable
         
     }
 
-    public virtual void OnDoSkillDamage(Chess target, SkillConfig checkSkillCfg, ref int damage, bool isFeedback)
+    public virtual void OnDoSkillDamage(Chess target, BattleSkillConfig checkSkillCfg, ref int damage, bool isFeedback)
     {
         
     }
 
-    public virtual void OnBeDoSkillDamage(Chess caster, SkillConfig checkSkillCfg, ref int damage, bool isFeedback)
+    public virtual void OnBeDoSkillDamage(Chess caster, BattleSkillConfig checkSkillCfg, ref int damage, bool isFeedback)
     {
         
     }
@@ -182,7 +182,7 @@ public class Skill : IRecoverable
         
     }
 
-    public virtual void OnCheckSummonTime(SkillConfig checkSkillCfg, ref float summonTime)
+    public virtual void OnCheckSummonTime(BattleSkillConfig checkSkillCfg, ref float summonTime)
     {
 
     }

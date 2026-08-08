@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillAttackedShadow : Skill
+public class SkillAttackedShadow : BattleSkill
 {
     private int count;
     public SkillAttackedShadow(int id, Chess unit) : base(id, unit)

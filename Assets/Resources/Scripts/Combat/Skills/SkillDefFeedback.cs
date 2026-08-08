@@ -4,7 +4,7 @@ using System.Linq;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillDefFeedback : Skill
+public class SkillDefFeedback : BattleSkill
 {
     public SkillDefFeedback(int id, Chess unit) : base(id, unit)
     {
@@ -15,7 +15,7 @@ public class SkillDefFeedback : Skill
         DoFeedback(attacker, damType, damage);
     }
 
-    public override void OnBeDoSkillDamage(Chess caster, SkillConfig checkSkillCfg, ref int damage, bool isFeedback)
+    public override void OnBeDoSkillDamage(Chess caster, BattleSkillConfig checkSkillCfg, ref int damage, bool isFeedback)
     {
         if(isFeedback)
             return;

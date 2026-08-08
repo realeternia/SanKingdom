@@ -1133,7 +1133,7 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        int gx = SystemConst.Battle.DEPLOY_SIDE2_BASE_GX - 1;
+        int gx = SystemConst.Battle.DEPLOY_SIDE2_BASE_GX - SystemConst.Battle.WALL_FRONT_OFFSET;
         int baseGz = SystemConst.Battle.DEPLOY_SIDE2_BASE_GZ;
         int cols = SystemConst.Battle.DEPLOY_GRID_COLS;
         var defForce = GameManager.Instance.GetForce(playerInfoList[1].forceId);
@@ -1151,7 +1151,7 @@ public class BattleManager : MonoBehaviour
         }
 
         // 在两个城门中间的后方一格生成箭塔（城防300以上才有）
-        int towerGx = SystemConst.Battle.DEPLOY_SIDE2_BASE_GX;
+        int towerGx = gx + 1;
         int towerGz = baseGz + 2;
         if (wallValue >= SystemConst.City.TOWER_MIN_WALL)
         {

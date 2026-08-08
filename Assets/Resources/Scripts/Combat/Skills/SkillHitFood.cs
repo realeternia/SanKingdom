@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillHitFood : Skill
+public class SkillHitFood : BattleSkill
 {
     public SkillHitFood(int id, Chess unit) : base(id, unit)
     {

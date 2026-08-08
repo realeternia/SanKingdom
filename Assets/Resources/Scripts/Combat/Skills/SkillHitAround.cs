@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillHitAround : Skill
+public class SkillHitAround : BattleSkill
 {
     public SkillHitAround(int id, Chess unit) : base(id, unit)
     {

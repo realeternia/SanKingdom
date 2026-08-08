@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillAidSuddenArrow : Skill
+public class SkillAidSuddenArrow : BattleSkill
 {
     public SkillAidSuddenArrow(int id, Chess unit) : base(id, unit)
     {

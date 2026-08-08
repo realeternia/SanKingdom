@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillHitRegion : Skill
+public class SkillHitRegion : BattleSkill
 {
     private Vector3 targetPos;
     public SkillHitRegion(int id, Chess unit) : base(id, unit)

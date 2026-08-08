@@ -7,9 +7,9 @@ public static class SkillManager
 {
     public static bool isReplay = false;
 
-    public static Skill CreateSkill(int skillId, Chess owner)
+    public static BattleSkill CreateSkill(int skillId, Chess owner)
     {
-        var skillCfg = SkillConfig.GetConfig(skillId);
+        var skillCfg = BattleSkillConfig.GetConfig(skillId);
 
         switch (skillCfg.ScriptName)
         {
@@ -34,8 +34,6 @@ public static class SkillManager
                 return new SkillAttackMultiArrow(skillId, owner);
             case "AttackReboundArrow":
                 return new SkillAttackReboundArrow(skillId, owner);
-            case "DefPlantSkin":
-                return new SkillDefPlantSkin(skillId, owner);
             case "DefHpLow":
                 return new SkillDefHpLow(skillId, owner);
             case "DefSkillDamageReduce":
@@ -67,8 +65,6 @@ public static class SkillManager
                 return new SkillAidSuddenArrow(skillId, owner);
             case "ModifySkillRateTime":
                 return new SkillModifySkillRateTime(skillId, owner);
-            case "ModifyShootSpeed":
-                return new SkillModifyShootSpeed(skillId, owner);
             case "ModifySummonTime":
                 return new SkillModifySummonTime(skillId, owner);
             case "InitAddCrit":
@@ -98,7 +94,7 @@ public static class SkillManager
             {
                 var unitsInRange = BattleManager.Instance.GetUnitsMyForce(chess.position, 0, chess.forceId);
                 unitsInRange.Remove(chess);
-                var helpSkillId = ConfigManager.GetSkillConfig(skill.skillCfg.HelpSkill).Id;
+                var helpSkillId = ConfigManager.GetBattleSkillConfig(skill.skillCfg.HelpSkill).Id;
                 foreach (var unit in unitsInRange)
                 {
                     if (!unit.isHero)
@@ -139,7 +135,7 @@ public static class SkillManager
         }
     }
 
-    public static void OnCheckBurst(Chess caster, SkillConfig skillCfg, ref float rate)
+    public static void OnCheckBurst(Chess caster, BattleSkillConfig skillCfg, ref float rate)
     {
         if(isReplay)
             return;
@@ -150,7 +146,7 @@ public static class SkillManager
         }
     }
 
-    public static void OnCheckCD(Chess caster, SkillConfig skillCfg, ref float cdTime)
+    public static void OnCheckCD(Chess caster, BattleSkillConfig skillCfg, ref float cdTime)
     {
         if(isReplay)
             return;
@@ -160,7 +156,7 @@ public static class SkillManager
                 skill.OnCheckCD(skillCfg, ref cdTime);
         }
     }
-    public static void OnCheckSummonTime(Chess caster, SkillConfig skillCfg, ref float summonTime)
+    public static void OnCheckSummonTime(Chess caster, BattleSkillConfig skillCfg, ref float summonTime)
     {
         if(isReplay)
             return;
@@ -260,7 +256,7 @@ public static class SkillManager
         }
     }
 
-    public static void OnDoSkillDamage(Chess target, Chess caster, SkillConfig skillCfg, ref int damage, bool isFeedback)
+    public static void OnDoSkillDamage(Chess target, Chess caster, BattleSkillConfig skillCfg, ref int damage, bool isFeedback)
     {
         if(isReplay)
             return;

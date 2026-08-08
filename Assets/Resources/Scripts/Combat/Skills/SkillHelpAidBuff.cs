@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillHelpAidBuff : Skill
+public class SkillHelpAidBuff : BattleSkill
 {
     public SkillHelpAidBuff(int id, Chess unit) : base(id, unit)
     {

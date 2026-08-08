@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillHitTeleport : Skill
+public class SkillHitTeleport : BattleSkill
 {
     public SkillHitTeleport(int id, Chess unit) : base(id, unit)
     {

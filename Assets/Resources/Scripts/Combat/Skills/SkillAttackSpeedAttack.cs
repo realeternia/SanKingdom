@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
-public class SkillAttackSpeedAttack : Skill
+public class SkillAttackSpeedAttack : BattleSkill
 {
     public SkillAttackSpeedAttack(int id, Chess unit) : base(id, unit)
     {

@@ -4,13 +4,13 @@ using System.Linq;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillDefSkillDamageReduce : Skill
+public class SkillDefSkillDamageReduce : BattleSkill
 {
     public SkillDefSkillDamageReduce(int id, Chess unit) : base(id, unit)
     {
     }
 
-    public override void OnBeDoSkillDamage(Chess caster, SkillConfig checkSkillCfg, ref int damage, bool isFeedback)
+    public override void OnBeDoSkillDamage(Chess caster, BattleSkillConfig checkSkillCfg, ref int damage, bool isFeedback)
     {
         if (skillCfg.CheckAttrs != null && !skillCfg.CheckAttrs.Contains(checkSkillCfg.Attr))
             return;

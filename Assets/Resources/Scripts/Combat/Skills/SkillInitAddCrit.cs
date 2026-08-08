@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CommonConfig;
 using UnityEngine;
 
-public class SkillInitAddCrit : Skill
+public class SkillInitAddCrit : BattleSkill
 {
     public SkillInitAddCrit(int id, Chess unit) : base(id, unit)
     {
