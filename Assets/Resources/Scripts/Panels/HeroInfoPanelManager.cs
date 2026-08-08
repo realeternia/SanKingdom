@@ -408,6 +408,11 @@ public class HeroInfoPanelManager : MonoBehaviour
         string imgPath = ResPath.Texture.HeroBigIcon(heroConfig.Icon);
         Sprite sprite = ResourceCache.LoadSpriteUI(imgPath);
         heroImage.sprite = sprite;
+        // 高度固定，按图片比例动态调整宽度
+        RectTransform heroRt = heroImage.rectTransform;
+        float heroHeight = heroRt.rect.height;
+        float heroAspect = sprite.rect.width / sprite.rect.height;
+        heroRt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, heroHeight * heroAspect);
         
         int age = (int)GameManager.Instance.GetCurrentYear() - heroConfig.BornYear;
         ageText.text = age.ToString();
