@@ -1,7 +1,7 @@
 using CommonConfig;
 public static class BuffManager
 {
-    public static void AddBuff(Chess target, Chess caster, int skillId, int buffId, float lastTime)
+    public static void AddBuff(Chess target, Chess caster, int skillId, int buffId, int lastTime)
     {
         SkillManager.OnAddBuff(target, caster, ref buffId, skillId, ref lastTime);
 
@@ -12,10 +12,9 @@ public static class BuffManager
         BattleManager.Instance.AddChessAction(action);
     }
 
-    public static void DoAddBuff(Chess target, Chess caster, int skillId, int buffId, float lastTime, int actionId = 0)
+    public static void DoAddBuff(Chess target, Chess caster, int skillId, int buffId, int lastTime, int actionId = 0)
     {
-        // lastTime now represents rounds instead of seconds
-        var endRound = BattleManager.Instance.round + (int)lastTime;
+        var endRound = BattleManager.Instance.round + lastTime;
 
         GameLog.Info($"DoAddBuff[aid={actionId}] tgt={target.id} caster={caster.id} skill={skillId} buff={buffId} last={lastTime}");
 

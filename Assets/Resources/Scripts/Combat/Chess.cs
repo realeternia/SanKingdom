@@ -57,6 +57,11 @@ public class Chess : SceneObj
 
     [NonSerialized]
     public float moveSpeed = 5f;
+    /// <summary>
+    /// 行动速度(1-20)，决定回合行动顺序（speed 大者先行动，相同则随机）
+    /// </summary>
+    [NonSerialized]
+    public int speed = 10;
     [NonSerialized]
     public float attackRange = 10f;
     public int atk;
@@ -182,6 +187,7 @@ public class Chess : SceneObj
             missileSpeed = towerArmsCfg.MissileSpeed;
             missileHeight = towerArmsCfg.MissileHight;
             attackRange = towerArmsCfg.Range;
+            speed = towerArmsCfg.Speed;
             return;
         }
 
@@ -197,6 +203,7 @@ public class Chess : SceneObj
         missileHeight = armsConfig.MissileHight;
         moveSpeed = armsConfig.MoveSpeed;
         attackRange = armsConfig.Range;
+        speed = armsConfig.Speed;
 
         // 科技加成：兵种移速加算
         int techMoveSpeed = ForceTech.GetArmsAttrAdd(forceId, armsId, "MoveSpeed");
@@ -346,6 +353,9 @@ public class Chess : SceneObj
                 }
             }
         }
+
+        // 格子持续效果结算：棋子轮到时，若所在格子有effect则结算伤害
+        BattleManager.Instance.TriggerCellEffectsAtChess(this);
     }
 
     public void OnTurnAction()

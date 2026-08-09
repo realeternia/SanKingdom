@@ -26,8 +26,7 @@ namespace CommonConfig
             {"Type", new FieldMetaInfo("分类", "string")},
             {"Lv", new FieldMetaInfo("等级", "int")},
             {"Rate", new FieldMetaInfo("发动概率", "float")},
-            {"CD", new FieldMetaInfo("发动cd", "float")},
-            {"AttackPointReduce", new FieldMetaInfo("攻击时间惩罚", "float")},
+            {"RoundCd", new FieldMetaInfo("发动cd回合数", "int")},
             {"ConditionParm", new FieldMetaInfo("条件参数", "float")},
             {"Attr", new FieldMetaInfo("相关属性", "string")},
             {"CheckAttrs", new FieldMetaInfo("判定属性", "string[]")},
@@ -47,11 +46,11 @@ namespace CommonConfig
             {"HelpSkillJob", new FieldMetaInfo("职业限定", "string")},
             {"BuffId", new FieldMetaInfo("BuffId", "int")},
             {"NegBuff", new FieldMetaInfo("是否针对负面buff", "bool")},
-            {"BuffTime", new FieldMetaInfo("Buff持续", "float")},
+            {"BuffTime", new FieldMetaInfo("持续回合数", "int")},
             {"SummonTag", new FieldMetaInfo("召唤物标签", "string")},
             {"SummonCount", new FieldMetaInfo("技能场数", "int")},
             {"SummonArea", new FieldMetaInfo("技能场范围", "float")},
-            {"SummonTime", new FieldMetaInfo("技能场持续", "float")},
+            {"RoundCount", new FieldMetaInfo("持续回合数", "int")},
             {"SummonHitInterval", new FieldMetaInfo("技能场间隔", "float")},
             {"SummonSpeed", new FieldMetaInfo("技能场速度", "float")},
             {"ScriptName", new FieldMetaInfo("脚本名", "string")},
@@ -60,7 +59,6 @@ namespace CommonConfig
             {"EffectArea", new FieldMetaInfo("区域", "string")},
             {"EffectHit", new FieldMetaInfo("hit", "string")},
             {"EffectSize", new FieldMetaInfo("size", "float")},
-            {"Price", new FieldMetaInfo("价值", "int")},
             {"Icon", new FieldMetaInfo("图标", "string")},
         };
 
@@ -95,13 +93,9 @@ namespace CommonConfig
         /// </summary>
         public float Rate;
         /// <summary>
-        ///发动cd
+        ///发动cd回合数
         /// </summary>
-        public float CD;
-        /// <summary>
-        ///攻击时间惩罚
-        /// </summary>
-        public float AttackPointReduce;
+        public int RoundCd;
         /// <summary>
         ///条件参数
         /// </summary>
@@ -179,9 +173,9 @@ namespace CommonConfig
         /// </summary>
         public bool NegBuff;
         /// <summary>
-        ///Buff持续
+        ///持续回合数
         /// </summary>
-        public float BuffTime;
+        public int BuffTime;
         /// <summary>
         ///召唤物标签
         /// </summary>
@@ -195,9 +189,9 @@ namespace CommonConfig
         /// </summary>
         public float SummonArea;
         /// <summary>
-        ///技能场持续
+        ///持续回合数
         /// </summary>
-        public float SummonTime;
+        public int RoundCount;
         /// <summary>
         ///技能场间隔
         /// </summary>
@@ -231,16 +225,12 @@ namespace CommonConfig
         /// </summary>
         public float EffectSize;
         /// <summary>
-        ///价值
-        /// </summary>
-        public int Price;
-        /// <summary>
         ///图标
         /// </summary>
         public string Icon;
 
 
-        public BattleSkillConfig(int Id, string Name, string Sname, string Descript, string Type, int Lv, float Rate, float CD, float AttackPointReduce, float ConditionParm, string Attr, string[] CheckAttrs, float Range, bool RangeOut, string TargetType, int TargetCount, float Strength, int StrengthInt, float SkillAttrRate, float SkillDamageRate, float SkillDamageAttrRate, int DoCount, float TimeDelay, int UnitHelpType, string HelpSkill, string HelpSkillJob, int BuffId, bool NegBuff, float BuffTime, string SummonTag, int SummonCount, float SummonArea, float SummonTime, float SummonHitInterval, float SummonSpeed, string ScriptName, string Action, string EffectSelf, string EffectArea, string EffectHit, float EffectSize, int Price, string Icon)
+        public BattleSkillConfig(int Id, string Name, string Sname, string Descript, string Type, int Lv, float Rate, float RoundCd, float AttackPointReduce, float ConditionParm, string Attr, string[] CheckAttrs, float Range, bool RangeOut, string TargetType, int TargetCount, float Strength, int StrengthInt, float SkillAttrRate, float SkillDamageRate, float SkillDamageAttrRate, int DoCount, float TimeDelay, int UnitHelpType, string HelpSkill, string HelpSkillJob, int BuffId, bool NegBuff, float BuffTime, string SummonTag, int SummonCount, float SummonArea, float RoundCount, float SummonHitInterval, float SummonSpeed, string ScriptName, string Action, string EffectSelf, string EffectArea, string EffectHit, float EffectSize, int Price, string Icon)
         {
             this.Id = Id;
             this.Name = Name;
@@ -249,8 +239,7 @@ namespace CommonConfig
             this.Type = Type;
             this.Lv = Lv;
             this.Rate = Rate;
-            this.CD = CD;
-            this.AttackPointReduce = AttackPointReduce;
+            this.RoundCd = (int)RoundCd;
             this.ConditionParm = ConditionParm;
             this.Attr = Attr;
             this.CheckAttrs = CheckAttrs;
@@ -270,11 +259,11 @@ namespace CommonConfig
             this.HelpSkillJob = HelpSkillJob;
             this.BuffId = BuffId;
             this.NegBuff = NegBuff;
-            this.BuffTime = BuffTime;
+            this.BuffTime = (int)BuffTime;
             this.SummonTag = SummonTag;
             this.SummonCount = SummonCount;
             this.SummonArea = SummonArea;
-            this.SummonTime = SummonTime;
+            this.RoundCount = (int)RoundCount;
             this.SummonHitInterval = SummonHitInterval;
             this.SummonSpeed = SummonSpeed;
             this.ScriptName = ScriptName;
@@ -283,7 +272,6 @@ namespace CommonConfig
             this.EffectArea = EffectArea;
             this.EffectHit = EffectHit;
             this.EffectSize = EffectSize;
-            this.Price = Price;
             this.Icon = Icon;
 
         }
@@ -305,7 +293,7 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[200001] = new BattleSkillConfig(200001, "王", "帅", "给与我方同阵营单位17%生命值护盾", "职业", 1, 0, 0, 0, 0, "", null, 0, false, "", 0, 0, 0, 0.17f, 0, 0, 0, 0, 0, "", "", 300001, false, 999f, "", 0, 0, 0, 0, 0, "InitMasterShield", "", "", "", "", 0, 4, "shuai");
+            config[200001] = new BattleSkillConfig(200001, "王", "帅", "给与我方同阵营单位17%生命值护盾", "职业", 1, 0, 0, 0, 0, "", null, 0, false, "", 0, 0, 0, 0.17f, 0, 0, 0, 0, 0, "", "", 300001, false, 999, "", 0, 0, 0, 0, 0, "InitMasterShield", "", "", "", "", 0, 4, "shuai");
             config[200002] = new BattleSkillConfig(200002, "羽扇", "扇", "击中目标时触发弹射", "职业", 1, 0, 0, 0, 0, "inte", null, 30f, false, "", 1, 0, 0, 0, 0.15f, 0, 0, 0, 0, "", "", 0, false, 0, "", 0, 0, 0, 0, 0, "AttackReboundArrow", "sway", "", "", "", 0, 2, "shan");
             config[200003] = new BattleSkillConfig(200003, "刀兵", "刀", "攻击几率造成额外伤害", "职业", 1, 0.15f, 5f, 0, 0, "leadShip", null, 0, false, "", 0, 0, 10, 0, 0, 0, 0, 0, 0, "", "", 0, false, 0, "", 0, 0, 0, 0, 0, "AttackAddDamage", "sway", "", "", "SwordHitRedCritical", 0, 1, "dao");
             config[200004] = new BattleSkillConfig(200004, "坚韧", "士", "受击时几率发动减伤", "职业", 1, 0.35f, 7f, 0, 0, "str", null, 0, false, "", 0, 0.5f, 0, 0, 0, 0, 0, 0, 0, "", "", 300002, false, 4.5f, "", 0, 0, 0, 0, 0, "AttackedBuff", "spin", "", "", "", 0, 3, "shi");
@@ -318,10 +306,10 @@ namespace CommonConfig
             config[200011] = new BattleSkillConfig(200011, "冲锋", "车", "移动时穿越敌人,降低目标防御", "职业", 1, 1f, 7f, 0, 0, "leadShip", null, 0, false, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", 301003, false, 3f, "", 0, 0, 0, 0, 0, "AttackRunCrossPlus", "", "LightningExplosionRed", "", "", 0, 2, "che");
             config[200012] = new BattleSkillConfig(200012, "声乐", "乐", "给与友军攻速祝福", "职业", 1, 1f, 3.5f, 1f, 0, "inte", null, 50f, false, "", 0, 0.45f, 0, 0, 0, 0, 0, 0, 0, "", "", 300005, false, 5f, "", 0, 0, 0, 0, 0, "HelpAidBuff", "sway", "", "", "MagicChargePink", 0, 2, "song");
             config[200013] = new BattleSkillConfig(200013, "治疗", "医", "给与友军治疗", "职业", 1, 1f, 3f, 1f, 0, "inte", null, 50f, false, "", 0, 0, 0, 0.7f, 0, 0, 0, 0, 0, "", "", 0, false, 0, "", 0, 0, 0, 0, 0, "HelpAidHeal", "sway", "", "", "MagicBuffGreen", 0, 2, "heal");
-            config[200014] = new BattleSkillConfig(200014, "枪阵", "枪", "一定几率混乱目标单位2s", "职业", 1, 0.15f, 4f, 0, 0, "leadShip", null, 0, false, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", 301001, false, 2f, "", 0, 0, 0, 0, 0, "HitBuff", "spin", "", "", "MagicChargeYellow", 0, 2, "qiang");
+            config[200014] = new BattleSkillConfig(200014, "枪阵", "枪", "一定几率混乱目标单位2s", "职业", 1, 0.15f, 4f, 0, 0, "leadShip", null, 0, false, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", 301001, false, 2, "", 0, 0, 0, 0, 0, "HitBuff", "spin", "", "", "MagicChargeYellow", 0, 2, "qiang");
             config[200015] = new BattleSkillConfig(200015, "戟阵", "戟", "攻击目标时伤害周边敌人", "职业", 1, 0.35f, 4f, 0, 0, "leadShip", null, 25f, false, "", 2, 0, 0, 0, 0.6f, 0, 0, 0, 0, "", "", 0, false, 0, "", 0, 0, 0, 0, 0, "HitAround", "throw", "", "", "SwordSlashMiniWhite", 0, 2, "ji");
-            config[200016] = new BattleSkillConfig(200016, "战鼓", "鼓", "给与友军攻击力祝福", "职业", 1, 1f, 3.5f, 1f, 0, "inte", null, 50f, false, "", 0, 0.4f, 0, 0, 0, 0, 0, 0, 0, "", "", 300004, false, 5f, "", 0, 0, 0, 0, 0, "HelpAidBuff", "sway", "", "", "MagicChargeYellow", 0, 2, "gu");
-            config[201002] = new BattleSkillConfig(201002, "铁骑", "铁", "自己和同行[马车]技能附带混乱效果", "攻击up", 1, 0, 0, 0, 0, "leadShip", null, 0, false, "", 0, 0, 0, 0, 0, 0, 0, 0, 1, "铁", "马车", 301001, false, 2f, "", 0, 0, 0, 0, 0, "BuffTieqi", "", "", "", "", 0, 2, "tie");
+            config[200016] = new BattleSkillConfig(200016, "战鼓", "鼓", "给与友军攻击力祝福", "职业", 1, 1f, 3.5f, 1f, 0, "inte", null, 50f, false, "", 0, 0.4f, 0, 0, 0, 0, 0, 0, 0, "", "", 300004, false, 5, "", 0, 0, 0, 0, 0, "HelpAidBuff", "sway", "", "", "MagicChargeYellow", 0, 2, "gu");
+            config[201002] = new BattleSkillConfig(201002, "铁骑", "铁", "自己和同行[马车]技能附带混乱效果", "攻击up", 1, 0, 0, 0, 0, "leadShip", null, 0, false, "", 0, 0, 0, 0, 0, 0, 0, 0, 1, "铁", "马车", 301001, false, 2, "", 0, 0, 0, 0, 0, "BuffTieqi", "", "", "", "", 0, 2, "tie");
             config[201003] = new BattleSkillConfig(201003, "奇袭", "奇", "自己和同行队友统帅技能造成的混乱时间增加50%", "攻击up", 1, 0, 0, 0, 0, "leadShip", new string[]{"leadShip"}, 0, false, "", 0, 0.5f, 0, 0, 0, 0, 0, 0, 1, "奇", "", 301001, true, 0, "", 0, 0, 0, 0, 0, "ModifyBuffTime", "", "", "", "", 0, 2, "qi");
             config[201004] = new BattleSkillConfig(201004, "瓦解小", "透", "提升20%暴击率", "攻击up", 1, 0, 0, 0, 0, "str", null, 0, false, "", 0, 0.2f, 0, 0, 0, 0, 0, 0, 0, "", "", 0, false, 0, "", 0, 0, 0, 0, 0, "InitAddCrit", "", "", "", "", 0, 2, "jie3");
             config[201005] = new BattleSkillConfig(201005, "瓦解", "解", "自己和同行队友提升20%暴击率", "攻击up", 1, 0, 0, 0, 0, "str", null, 0, false, "", 0, 0.2f, 0, 0, 0, 0, 0, 0, 1, "透", "", 0, false, 0, "", 0, 0, 0, 0, 0, "InitAddCrit", "", "", "", "", 0, 4, "jie");

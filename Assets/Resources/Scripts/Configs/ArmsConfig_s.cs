@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -62,6 +62,7 @@ namespace CommonConfig
             {"CanAssign", new FieldMetaInfo("可配给军队", "bool", 60)},
             {"AttackAnimCount", new FieldMetaInfo("攻击动画数量", "int", 60)},
             {"NeedUnlock", new FieldMetaInfo("需要解锁", "bool", 60)},
+            {"Speed", new FieldMetaInfo("行动速度(1-20)", "int", 60)},
         };
 
         public static Dictionary<string, FieldMetaInfo> FieldMeta { get { return fieldMeta; } }
@@ -145,9 +146,13 @@ namespace CommonConfig
         ///是否需要科技解锁（true: 需解锁型科技UnlockArms包含本兵种ID后才在sidearms中可见）
         /// </summary>
         public bool NeedUnlock;
+        /// <summary>
+        ///行动速度(1-20)，用于战斗回合行动顺序排序（倒序，大值优先）
+        /// </summary>
+        public int Speed;
 
 
-        public ArmsConfig(int Id, string Name, string NameS, ArmsType Type, int Level, int Atk, int Def, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, string HitEffect, string Model, float HitDelay, int ModelCountFactor, int HorseCost, int SteelCost, int WoodCost, int StoneCost, bool CanAssign, int AttackAnimCount, bool NeedUnlock)
+        public ArmsConfig(int Id, string Name, string NameS, ArmsType Type, int Level, int Atk, int Def, int MoveSpeed, int Range, int MissileSpeed, float MissileHight, string HitEffect, string Model, float HitDelay, int ModelCountFactor, int HorseCost, int SteelCost, int WoodCost, int StoneCost, bool CanAssign, int AttackAnimCount, bool NeedUnlock, int Speed)
         {
             this.Id = Id;
             this.Name = Name;
@@ -171,6 +176,7 @@ namespace CommonConfig
             this.CanAssign = CanAssign;
             this.AttackAnimCount = AttackAnimCount;
             this.NeedUnlock = NeedUnlock;
+            this.Speed = Speed;
         }
 
         public ArmsConfig() { }
@@ -191,15 +197,15 @@ namespace CommonConfig
         public static void Load()
         {
             config.Clear();
-            config[1] = new ArmsConfig(1, "dyb", "动员兵", ArmsType.SodWalk, 0, 0, 0, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 1f, 4, 0, 0, 0, 0, true, 1, false);
-            config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 1, 35, 5, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHorseSpear", 1f, 8, 2, 0, 0, 0, true, 1, false);
-            config[109] = new ArmsConfig(109, "elephant", "象兵", ArmsType.SodHorse, 1, 40, 20, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodElephantSpear", 1f, 20, 99, 0, 0, 0, true, 1, false);
-            config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 1, 10, 0, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 1f, 4, 0, 0, 1, 0, true, 1, false);
-            config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 1, 10, 8, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodDao", 1f, 4, 0, 1, 0, 0, true, 2, false);
-            config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 20, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodSpear", 1f, 4, 0, 1, 1, 0, true, 1, false);
-            config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 10, 20, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHalberd", 1f, 4, 0, 1, 1, 0, true, 1, false);
-            config[604] = new ArmsConfig(604, "teng", "藤甲", ArmsType.SodWalk, 1, 0, 40, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodTeng", 1f, 4, 0, 0, 0, 99, true, 1, false);
-            config[901] = new ArmsConfig(901, "jianta", "箭塔", ArmsType.SodBow, 1, 0, 0, 10, 45, 60, 10f, "BulletExplosionBlue", "SodBow", 1f, 4, 0, 0, 1, 0, false, 1, false);
+            config[1] = new ArmsConfig(1, "dyb", "动员兵", ArmsType.SodWalk, 0, 0, 0, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodStick", 1f, 4, 0, 0, 0, 0, true, 1, false, 10);
+            config[101] = new ArmsConfig(101, "ma", "骑兵", ArmsType.SodHorse, 1, 35, 5, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHorseSpear", 1f, 8, 2, 0, 0, 0, true, 1, false, 18);
+            config[109] = new ArmsConfig(109, "elephant", "象兵", ArmsType.SodHorse, 1, 40, 20, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodElephantSpear", 1f, 20, 99, 0, 0, 0, true, 1, false, 8);
+            config[201] = new ArmsConfig(201, "gong", "弓兵", ArmsType.SodBow, 1, 10, 0, 10, 40, 40, 5f, "BulletExplosionBlue", "SodBow", 1f, 4, 0, 0, 1, 0, true, 1, false, 9);
+            config[601] = new ArmsConfig(601, "dao", "刀", ArmsType.SodWalk, 1, 10, 8, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodDao", 1f, 4, 0, 1, 0, 0, true, 2, false, 11);
+            config[602] = new ArmsConfig(602, "daoqiang", "枪", ArmsType.SodWalk, 1, 20, 10, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodSpear", 1f, 4, 0, 1, 1, 0, true, 1, false, 12);
+            config[603] = new ArmsConfig(603, "daoji", "戟", ArmsType.SodWalk, 1, 10, 20, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodHalberd", 1f, 4, 0, 1, 1, 0, true, 1, false, 10);
+            config[604] = new ArmsConfig(604, "teng", "藤甲", ArmsType.SodWalk, 1, 0, 40, 10, 17, 0, 0f, "SwordHitYellowCritical", "SodTeng", 1f, 4, 0, 0, 0, 99, true, 1, false, 7);
+            config[901] = new ArmsConfig(901, "jianta", "箭塔", ArmsType.SodBow, 1, 0, 0, 10, 45, 60, 10f, "BulletExplosionBlue", "SodBow", 1f, 4, 0, 0, 1, 0, false, 1, false, 1);
 
             RebuildIndex();
 

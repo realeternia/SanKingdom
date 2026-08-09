@@ -19,25 +19,25 @@ public class SkillModifySkillRateTime : BattleSkill
         rate += Math.Min(rate, checkSkillCfg.Rate);
     }
 
-    public override void OnAddBuff(Chess target, ref int buffId, int checkSkillId, ref float time)
+    public override void OnAddBuff(Chess target, ref int buffId, int checkSkillId, ref int time)
     {
         if(skillCfg.BuffTime == 0)
             return;
         if (skillCfg.CheckAttrs != null && !skillCfg.CheckAttrs.Contains(BattleSkillConfig.GetConfig(checkSkillId).Attr))
-            return;              
+            return;
         var buffCfg = BuffConfig.GetConfig(buffId);
         if(!buffCfg.IsPositive)
             time += Math.Max(1, time / 2) * skillCfg.BuffTime;
     }
     
-    public override void OnCheckCD(BattleSkillConfig checkSkillCfg, ref float cdTime)
+    public override void OnCheckCD(BattleSkillConfig checkSkillCfg, ref int cdTime)
     {
         if(skillCfg.Strength == 0)
             return;
         if (skillCfg.CheckAttrs != null && !skillCfg.CheckAttrs.Contains(checkSkillCfg.Attr))
-            return; 
-        
+            return;
+
         GameLog.Info(owner.id + " OnCheckCD " + cdTime + " skillId " + skillId);
-        cdTime = Math.Max(1, cdTime * skillCfg.Strength);
+        cdTime = (int)Math.Max(1, cdTime * skillCfg.Strength);
     }    
 }

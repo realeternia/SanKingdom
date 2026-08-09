@@ -50,7 +50,7 @@ public class BattleManager : MonoBehaviour
     public List<Missile> missileList = new List<Missile>(); // 所有导弹
 
     [NonSerialized]
-    public List<(int gridX, int gridZ, int chessId)> gridOccupancy = new List<(int, int, int)>();
+    public MapCell[,] mapCells;
 
     [NonSerialized]
     private NLCoroutineManager coroutineManager = new NLCoroutineManager();
@@ -144,7 +144,7 @@ public class BattleManager : MonoBehaviour
         chessList.Clear();
         missileList.Clear();
         actions.Clear();
-        gridOccupancy.Clear();
+        InitMapCells();
         idCounter = 100;
         actionIdCounter = 1;
         battleId = GameManager.Instance.SaveData.battleStatManager.OnNewBattle();
@@ -230,7 +230,7 @@ public class BattleManager : MonoBehaviour
 
         chessList.Clear();
         missileList.Clear();
-        gridOccupancy.Clear();
+        InitMapCells();
         GameManager.Instance.SaveData.battleStatManager.LoadBattleForReplay(battleId);
 
         gameFinish = false;
@@ -545,15 +545,16 @@ public class BattleManager : MonoBehaviour
     {
         turnOrder.Clear();
         var aliveChess = chessList.Where(x => x != null && x.hp > 0 && !x.isShadow && !x.isGate && !x.isWall).ToList();
-        aliveChess.Sort((a, b) =>
+        // 按 speed 倒序，相同 speed 时随机排序
+        // 为每个棋子预生成随机键，避免在 Sort 比较函数内调用随机导致不稳定
+        var keyed = aliveChess.Select(c => new { chess = c, randKey = BattleRandom.Range(0, 1 << 20) }).ToList();
+        keyed.Sort((a, b) =>
         {
-            int speedCompare = b.moveSpeed.CompareTo(a.moveSpeed);
+            int speedCompare = b.chess.speed.CompareTo(a.chess.speed);
             if (speedCompare != 0) return speedCompare;
-            int forceCompare = a.forceId.CompareTo(b.forceId);
-            if (forceCompare != 0) return forceCompare;
-            return a.id.CompareTo(b.id);
+            return a.randKey.CompareTo(b.randKey);
         });
-        turnOrder = aliveChess.Select(x => x.id).ToList();
+        turnOrder = keyed.Select(x => x.chess.id).ToList();
     }
 
     public void ProcessTurnState()
@@ -771,6 +772,7 @@ public class BattleManager : MonoBehaviour
                 isDoingAction = true;
                 actions.FindAll(x => x.Tick == tickIndex).ForEach(x => x.Doing());
                 isDoingAction = false;
+                OnCellEffectsRoundUpdate(round);
                 coroutineManager.Update(tickTimeReal);
 
                 // 每Tick检查死亡单位（在Action执行之后，确保伤害已结算；回放模式由保存的RemoveChessAction处理，跳过）
@@ -1035,18 +1037,140 @@ public class BattleManager : MonoBehaviour
     public void OccupyGrid(int chessId, Vector3 worldPos)
     {
         var (gx, gz) = WorldToGridCoord(worldPos);
-        gridOccupancy.Add((gx, gz, chessId));
+        var cell = GetMapCell(gx, gz);
+        if (cell != null)
+            cell.Occupy(chessId);
     }
 
     public void ReleaseGrid(int chessId)
     {
-        gridOccupancy.RemoveAll(g => g.chessId == chessId);
+        if (mapCells == null) return;
+        int width = mapCells.GetLength(0);
+        int height = mapCells.GetLength(1);
+        for (int x = 0; x < width; x++)
+        {
+            for (int z = 0; z < height; z++)
+            {
+                if (mapCells[x, z].chessId == chessId)
+                    mapCells[x, z].Release();
+            }
+        }
     }
 
     public void UpdateGrid(int chessId, Vector3 newWorldPos)
     {
         ReleaseGrid(chessId);
         OccupyGrid(chessId, newWorldPos);
+    }
+
+    public void InitMapCells()
+    {
+        ClearCellEffects();
+        int width = SystemConst.Battle.GRID_MAX_GX - SystemConst.Battle.GRID_MIN_GX + 1;
+        int height = SystemConst.Battle.GRID_MAX_GZ - SystemConst.Battle.GRID_MIN_GZ + 1;
+        lastCellEffectRound = -1;
+        mapCells = new MapCell[width, height];
+        for (int x = 0; x < width; x++)
+        {
+            for (int z = 0; z < height; z++)
+            {
+                mapCells[x, z] = new MapCell(SystemConst.Battle.GRID_MIN_GX + x, SystemConst.Battle.GRID_MIN_GZ + z);
+            }
+        }
+    }
+
+    public void ClearCellEffects()
+    {
+        if (mapCells == null) return;
+        int width = mapCells.GetLength(0);
+        int height = mapCells.GetLength(1);
+        for (int x = 0; x < width; x++)
+        {
+            for (int z = 0; z < height; z++)
+            {
+                var cell = mapCells[x, z];
+                if (cell.effects == null || cell.effects.Count == 0) continue;
+                foreach (var effect in cell.effects)
+                    effect.DestroyView();
+                cell.effects.Clear();
+            }
+        }
+    }
+
+    public MapCell GetMapCell(int gx, int gz)
+    {
+        if (gx < SystemConst.Battle.GRID_MIN_GX || gx > SystemConst.Battle.GRID_MAX_GX ||
+            gz < SystemConst.Battle.GRID_MIN_GZ || gz > SystemConst.Battle.GRID_MAX_GZ)
+        {
+            GameLog.Warn($"GetMapCell 越界 gx={gx} gz={gz}");
+            return null;
+        }
+        return mapCells[gx - SystemConst.Battle.GRID_MIN_GX, gz - SystemConst.Battle.GRID_MIN_GZ];
+    }
+
+    public void AddCellEffect(int gx, int gz, CellEffect effect)
+    {
+        var action = new AddCellEffectAction(0, tickIndex, gx, gz, effect);
+        AddChessAction(action);
+    }
+
+    public void DoAddCellEffect(int gx, int gz, CellEffect effect)
+    {
+        var cell = GetMapCell(gx, gz);
+        if (cell == null) return;
+        cell.AddEffect(effect);
+    }
+
+    private int lastCellEffectRound = -1;
+
+    public void OnCellEffectsRoundUpdate(int round)
+    {
+        if (SkillManager.isReplay) return;
+        if (round == lastCellEffectRound) return;
+        lastCellEffectRound = round;
+
+        if (mapCells == null) return;
+        int width = mapCells.GetLength(0);
+        int height = mapCells.GetLength(1);
+        for (int x = 0; x < width; x++)
+        {
+            for (int z = 0; z < height; z++)
+            {
+                var cell = mapCells[x, z];
+                if (cell.effects == null || cell.effects.Count == 0) continue;
+                for (int i = cell.effects.Count - 1; i >= 0; i--)
+                {
+                    var effect = cell.effects[i];
+                    if (effect.IsExpired(round))
+                    {
+                        effect.DestroyView();
+                        cell.effects.RemoveAt(i);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 在棋子轮到时结算其所在格子的持续效果伤害，并清理该格已过期的效果
+    /// </summary>
+    public void TriggerCellEffectsAtChess(Chess chess)
+    {
+        if (SkillManager.isReplay) return;
+        if (mapCells == null || chess == null || chess.hp <= 0) return;
+        var (gx, gz) = WorldToGridCoord(chess.position);
+        var cell = GetMapCell(gx, gz);
+        if (cell == null || cell.effects == null || cell.effects.Count == 0) return;
+        for (int i = cell.effects.Count - 1; i >= 0; i--)
+        {
+            var effect = cell.effects[i];
+            effect.Trigger(gx, gz);
+            if (effect.IsExpired(round))
+            {
+                effect.DestroyView();
+                cell.effects.RemoveAt(i);
+            }
+        }
     }
 
     public (int gx, int gz) WorldToGridCoord(Vector3 worldPos)
@@ -1063,12 +1187,14 @@ public class BattleManager : MonoBehaviour
 
     public bool IsGridOccupied(int gx, int gz)
     {
-        return gridOccupancy.Exists(g => g.gridX == gx && g.gridZ == gz);
+        var cell = GetMapCell(gx, gz);
+        return cell != null && cell.IsOccupied();
     }
 
     public bool IsGridOccupiedByOther(int gx, int gz, int excludeChessId)
     {
-        return gridOccupancy.Exists(g => g.gridX == gx && g.gridZ == gz && g.chessId != excludeChessId);
+        var cell = GetMapCell(gx, gz);
+        return cell != null && cell.IsOccupied() && cell.chessId != excludeChessId;
     }
 
     // 世界坐标转格子坐标

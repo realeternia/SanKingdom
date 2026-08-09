@@ -94,6 +94,22 @@ public static class SystemConst
         /// </summary>
         public const int GRID_CELL_SIZE = 15;
         /// <summary>
+        /// 地图边界格子X最小值
+        /// </summary>
+        public const int GRID_MIN_GX = 14;
+        /// <summary>
+        /// 地图边界格子X最大值
+        /// </summary>
+        public const int GRID_MAX_GX = 36;
+        /// <summary>
+        /// 地图边界格子Z最小值
+        /// </summary>
+        public const int GRID_MIN_GZ = 8;
+        /// <summary>
+        /// 地图边界格子Z最大值
+        /// </summary>
+        public const int GRID_MAX_GZ = 22;
+        /// <summary>
         /// 最大回合数
         /// </summary>
         public const int MAX_ROUND = 30;

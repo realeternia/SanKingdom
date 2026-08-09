@@ -140,6 +140,7 @@
     <Compile Include="Assets\DOTween\Modules\DOTweenModulePhysics.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\PopResultCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\HeroConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\MapCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\EffectManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\ConfigNameHelper.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillDamageAction.cs" />
@@ -270,7 +271,9 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellMode.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillPlayAction.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SystemTip.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\CellEffect.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\ReplayCellControl.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddCellEffectAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Effect\GlowBeamController.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\SaveCityData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddDodge.cs" />

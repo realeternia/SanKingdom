@@ -44,18 +44,17 @@ public class BattleSkill : IRecoverable
     /// </summary>
     public void UpdateCD()
     {
-        if (skillCfg.CD > 0)
+        if (skillCfg.RoundCd > 0)
         {
             if (IsInCD())
             {
                 return;
             }
 
-            var cdTime = skillCfg.CD;
+            var cdTime = skillCfg.RoundCd;
             SkillManager.OnCheckCD(owner, skillCfg, ref cdTime);
 
-            // CD now represents rounds instead of seconds
-            lastUseRound = BattleManager.Instance.round + (int)cdTime;
+            lastUseRound = BattleManager.Instance.round + cdTime;
         }
     }
 
@@ -65,7 +64,7 @@ public class BattleSkill : IRecoverable
     /// <returns>如果在CD中返回true，否则返回false</returns>
     public bool IsInCD()
     {
-        if(skillCfg.CD <= 0)
+        if(skillCfg.RoundCd <= 0)
             return false;
 
         return BattleManager.Instance.round < lastUseRound;
@@ -152,19 +151,19 @@ public class BattleSkill : IRecoverable
         
     }
 
-    public virtual void OnAddBuff(Chess target, ref int buffId, int skillId, ref float lastTime)
-    {
-        
-    }
-
-    public virtual void OnCheckCD(BattleSkillConfig checkSkillCfg, ref float cdTime)
+    public virtual void OnAddBuff(Chess target, ref int buffId, int skillId, ref int lastTime)
     {
 
     }
 
-    public virtual void OnBeAddBuff(Chess caster, ref int buffId, int checkSkillId, ref float lastTime)
+    public virtual void OnCheckCD(BattleSkillConfig checkSkillCfg, ref int cdTime)
     {
-        
+
+    }
+
+    public virtual void OnBeAddBuff(Chess caster, ref int buffId, int checkSkillId, ref int lastTime)
+    {
+
     }
 
     public virtual void OnDoSkillDamage(Chess target, BattleSkillConfig checkSkillCfg, ref int damage, bool isFeedback)
@@ -182,21 +181,21 @@ public class BattleSkill : IRecoverable
         
     }
 
-    public virtual void OnCheckSummonTime(BattleSkillConfig checkSkillCfg, ref float summonTime)
+    public virtual void OnCheckRoundCount(BattleSkillConfig checkSkillCfg, ref int roundCount)
     {
 
     }
 
     public virtual void OnPlaySkill(Chess target, int parm1)
     {
-        
+
     }
 
-    public float GetSummonTime()
+    public int GetRoundCount()
     {
-        var summonTime = skillCfg.SummonTime;
-        SkillManager.OnCheckSummonTime(owner, skillCfg, ref summonTime);
-        return summonTime;
+        var roundCount = skillCfg.RoundCount;
+        SkillManager.OnCheckRoundCount(owner, skillCfg, ref roundCount);
+        return roundCount;
     }
 
 }

@@ -146,7 +146,7 @@ public static class SkillManager
         }
     }
 
-    public static void OnCheckCD(Chess caster, BattleSkillConfig skillCfg, ref float cdTime)
+    public static void OnCheckCD(Chess caster, BattleSkillConfig skillCfg, ref int cdTime)
     {
         if(isReplay)
             return;
@@ -156,14 +156,14 @@ public static class SkillManager
                 skill.OnCheckCD(skillCfg, ref cdTime);
         }
     }
-    public static void OnCheckSummonTime(Chess caster, BattleSkillConfig skillCfg, ref float summonTime)
+    public static void OnCheckRoundCount(Chess caster, BattleSkillConfig skillCfg, ref int roundCount)
     {
         if(isReplay)
             return;
         foreach (var skill in caster.skills)
         {
             if(skill.skillId != skillCfg.Id) //防止自己判定自己
-                skill.OnCheckSummonTime(skillCfg, ref summonTime);
+                skill.OnCheckRoundCount(skillCfg, ref roundCount);
         }
     }
 
@@ -235,14 +235,13 @@ public static class SkillManager
         {
             if (!skill.IsInCD() && skill.CheckAidSkill(tickIndex))
             {
-                attacker.attackPoint -= (int)skill.skillCfg.AttackPointReduce;
                 return true;
             }
         }
         return false;
     }
 
-    public static void OnAddBuff(Chess target, Chess caster, ref int buffId, int skillId, ref float lastTime)
+    public static void OnAddBuff(Chess target, Chess caster, ref int buffId, int skillId, ref int lastTime)
     {
         if(isReplay)
             return;
