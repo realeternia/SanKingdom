@@ -16,7 +16,7 @@ public class SkillHitArea : BattleSkill
         {
             var targetPos = defender.position;
             //创建一个hitEffect
-            SkillManager.AddSkillAction(owner, defender, id, 0);
+            this.OnPlaySkill(defender, 0);
 
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetPos, skillCfg.Range, owner.forceId, true);
             unitsInRange.Remove(defender);

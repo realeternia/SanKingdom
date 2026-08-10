@@ -17,7 +17,11 @@ public class SkillHitRegion : BattleSkill
             var roundCount = GetRoundCount();
             var currentRound = BattleManager.Instance.round;
 
-            var (gx, gz) = BattleManager.Instance.WorldToGridCoord(targetPos);
+            var bm = BattleManager.Instance;
+            var (gx, gz) = bm.WorldToGridCoord(targetPos);
+            var cellId = bm.GetCellId(gx, gz);
+            if (cellId <= 0)
+                return;
             var effect = new CellEffect
             {
                 skillId = id,
@@ -27,9 +31,9 @@ public class SkillHitRegion : BattleSkill
                 damageRate = skillCfg.SkillDamageAttrRate,
                 endRound = currentRound + roundCount
             };
-            BattleManager.Instance.AddCellEffect(gx, gz, effect);
+            bm.AddCellEffect(cellId, effect);
 
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
         }
     }
 

@@ -13,7 +13,7 @@ public class SkillHitBuff : BattleSkill
     {
         if(CheckBurst(defender))
         {
-            SkillManager.AddSkillAction(owner, defender, id, 0);
+            this.OnPlaySkill(defender, 0);
             BuffManager.AddBuff(defender, owner, id, skillCfg.BuffId, skillCfg.BuffTime);
         }
     }

@@ -3,8 +3,8 @@ public class RemoveBuffAction : ChessAction
 {
     public int BuffId;
 
-    public RemoveBuffAction(int sourceId, int tick, int buffId)
-        : base(sourceId, tick)
+    public RemoveBuffAction(int sourceId, float time, int buffId)
+        : base(sourceId, time)
     {
         BuffId = buffId;
     }

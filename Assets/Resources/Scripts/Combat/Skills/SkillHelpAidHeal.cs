@@ -11,7 +11,7 @@ public class SkillHelpAidHeal : BattleSkill
     {
     }
 
-    public override bool CheckAidSkill(int tickIndex)
+    public override bool CheckAidSkill()
     {
         var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range, owner.forceId, false);
         unitsInRange = unitsInRange.FindAll(x => x.hp < x.maxHp * SystemConst.Battle.HEAL_TARGET_HP_RATE && x != owner);
@@ -35,7 +35,7 @@ public class SkillHelpAidHeal : BattleSkill
         var targetUnit = unitsInRange[0];
         owner.HealTarget(targetUnit, skillId, (int)(owner.inte * skillCfg.SkillAttrRate));
 
-        SkillManager.AddSkillAction(owner, targetUnit, id, 0);
+        this.OnPlaySkill(targetUnit, 0);
 
         return true;
     }

@@ -13,7 +13,7 @@ public class SkillDefHpLow : BattleSkill
     {
         if (owner.HpRate < skillCfg.ConditionParm && CheckBurst(attacker))
         {
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
             damageMulti -= skillCfg.Strength;
         }
     }
@@ -24,7 +24,7 @@ public class SkillDefHpLow : BattleSkill
             return;
         if (owner.HpRate < skillCfg.ConditionParm && CheckBurst(caster))
         {
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
             damage = (int)(damage * (1 - skillCfg.Strength));
         }
     }

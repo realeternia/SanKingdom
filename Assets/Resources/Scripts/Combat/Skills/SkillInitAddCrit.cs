@@ -13,7 +13,7 @@ public class SkillInitAddCrit : BattleSkill
     public override void BattleBegin()
     {
         owner.critRate += skillCfg.Strength;
-        SkillManager.AddSkillAction(owner, null, id, 0);
+        this.OnPlaySkill(null, 0);
     }
     public override void OnPlaySkill(Chess target, int parm1)
     {

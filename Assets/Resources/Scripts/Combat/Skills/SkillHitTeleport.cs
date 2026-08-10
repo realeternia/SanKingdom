@@ -13,7 +13,7 @@ public class SkillHitTeleport : BattleSkill
     {
         if(!BattleManager.CheckInRange(owner.position, attacker.position, skillCfg.Range) && CheckBurst(attacker))
         {
-            SkillManager.AddSkillAction(owner, attacker, id, 0);
+            this.OnPlaySkill(attacker, 0);
 
             Vector3 direction = (attacker.position - owner.position).normalized;
             Vector3 randomPosition = attacker.position - direction * SystemConst.Battle.TELEPORT_DISTANCE;

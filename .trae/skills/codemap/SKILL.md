@@ -26,7 +26,7 @@ Assets/Resources/Scripts/
 │   │   ├── ChessAction.cs       # 动作基类（SourceId, Tick, Doing()）
 │   │   ├── AttackAction.cs      # 普通攻击
 │   │   ├── SkillDamageAction.cs # 技能伤害
-│   │   ├── ChessChangeHpAction.cs # 血量变更
+│   │   ├── AddHpAction.cs       # 血量变更
 │   │   ├── CreateChessAction.cs # 创建棋子
 │   │   ├── RemoveChessAction.cs # 移除棋子
 │   │   ├── MoveAction.cs        # 移动
@@ -37,7 +37,6 @@ Assets/Resources/Scripts/
 │   │   ├── CreateEffectAction.cs # 播放特效
 │   │   ├── FoodCostAction.cs    # 粮食消耗
 │   │   ├── RoundUpdateAction.cs # 回合更新
-│   │   └── SkillPlayAction.cs   # 技能播放
 │   ├── Buffs/                   # Buff系统
 │   │   ├── Buff.cs              # Buff基类
 │   │   ├── BuffManager.cs       # Buff管理器（静态工厂+事件分发）

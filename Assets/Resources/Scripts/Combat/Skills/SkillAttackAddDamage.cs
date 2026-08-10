@@ -17,7 +17,7 @@ public class SkillAttackAddDamage : BattleSkill
 
         if(CheckBurst(defender))
         {
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
 
             damageBase += skillCfg.StrengthInt;
             if(skillCfg.SkillDamageRate > 0)

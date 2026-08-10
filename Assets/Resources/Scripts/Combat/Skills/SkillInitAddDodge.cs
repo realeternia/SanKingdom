@@ -13,7 +13,7 @@ public class SkillInitAddDodge : BattleSkill
     public override void BattleBegin()
     {
         owner.dodgeRate += skillCfg.Strength;
-        SkillManager.AddSkillAction(owner, null, id, 0);
+        this.OnPlaySkill(null, 0);
     }
     public override void OnPlaySkill(Chess target, int parm1)
     {

@@ -23,7 +23,7 @@ public class SkillHitAround : BattleSkill
             var startPos = owner.position;
             var targetPos = defender.position;
 
-            SkillManager.AddSkillAction(owner, defender, id, 0);
+            this.OnPlaySkill(defender, 0);
 
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(startPos, skillCfg.Range, owner.forceId, true);
             unitsInRange.Remove(defender);

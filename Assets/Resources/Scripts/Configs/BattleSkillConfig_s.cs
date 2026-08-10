@@ -40,7 +40,6 @@ namespace CommonConfig
             {"SkillDamageRate", new FieldMetaInfo("技能强度伤害比例", "float")},
             {"SkillDamageAttrRate", new FieldMetaInfo("技能强度属性比例", "float")},
             {"DoCount", new FieldMetaInfo("计数次数", "int")},
-            {"TimeDelay", new FieldMetaInfo("计数延迟", "float")},
             {"UnitHelpType", new FieldMetaInfo("效果范围(1横向，2纵向)", "int")},
             {"HelpSkill", new FieldMetaInfo("光环技能", "string")},
             {"HelpSkillJob", new FieldMetaInfo("职业限定", "string")},
@@ -149,10 +148,6 @@ namespace CommonConfig
         /// </summary>
         public int DoCount;
         /// <summary>
-        ///计数延迟
-        /// </summary>
-        public float TimeDelay;
-        /// <summary>
         ///效果范围(1横向，2纵向)
         /// </summary>
         public int UnitHelpType;
@@ -253,7 +248,6 @@ namespace CommonConfig
             this.SkillDamageRate = SkillDamageRate;
             this.SkillDamageAttrRate = SkillDamageAttrRate;
             this.DoCount = DoCount;
-            this.TimeDelay = TimeDelay;
             this.UnitHelpType = UnitHelpType;
             this.HelpSkill = HelpSkill;
             this.HelpSkillJob = HelpSkillJob;

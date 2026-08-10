@@ -1,21 +1,19 @@
 [System.Serializable]
 public class AddCellEffectAction : ChessAction
 {
-    public int gridX;
-    public int gridZ;
+    public int CellId;
     public CellEffect effect;
 
-    public AddCellEffectAction(int sourceId, int tick, int gridX, int gridZ, CellEffect effect)
-        : base(sourceId, tick)
+    public AddCellEffectAction(int sourceId, float time, int cellId, CellEffect effect)
+        : base(sourceId, time)
     {
-        this.gridX = gridX;
-        this.gridZ = gridZ;
+        CellId = cellId;
         this.effect = effect;
     }
 
     public override void Doing()
     {
-        GameLog.Info($"AddCellEffectAction[{ActionId}] gridX={gridX} gridZ={gridZ} skillId={effect.skillId}");
-        BattleManager.Instance.DoAddCellEffect(gridX, gridZ, effect);
+        GameLog.Info($"AddCellEffectAction[{ActionId}] cellId={CellId} skillId={effect.skillId}");
+        BattleManager.Instance.DoAddCellEffect(CellId, effect);
     }
 }

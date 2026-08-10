@@ -21,7 +21,7 @@ public class SkillAttackSpinAttack : BattleSkill
                 unit.DoSkillDamage(owner, skillId, (int)(damage * skillCfg.SkillDamageRate), false, 0);
             }
 
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
         }
     }
 

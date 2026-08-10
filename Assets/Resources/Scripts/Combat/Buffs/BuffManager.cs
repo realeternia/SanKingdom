@@ -8,7 +8,7 @@ public static class BuffManager
         if(lastTime == 0) //有的技能会先填0，等待buff
             return;
 
-        var action = new AddBuffAction(target.id, BattleManager.Instance.tickIndex, caster.id, skillId, buffId, lastTime);
+        var action = new AddBuffAction(target.id, BattleManager.Instance.battleTime, caster.id, skillId, buffId, lastTime);
         BattleManager.Instance.AddChessAction(action);
     }
 
@@ -71,7 +71,7 @@ public static class BuffManager
 
     public static void RemoveBuff(Chess chess, int buffId)
     {
-        var action = new RemoveBuffAction(chess.id, BattleManager.Instance.tickIndex, buffId);
+        var action = new RemoveBuffAction(chess.id, BattleManager.Instance.battleTime, buffId);
         BattleManager.Instance.AddChessAction(action);
     }
 

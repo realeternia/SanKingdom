@@ -22,8 +22,6 @@ public class BattleSkill : IRecoverable
     public bool isBurst;
     public int skillId{ get{ return id; } }
 
-    public List<int> delayedFrames = new List<int>();
-
     public BattleSkill(int id, Chess unit)
     {
         this.id = id;
@@ -92,31 +90,12 @@ public class BattleSkill : IRecoverable
         return isBurst;
     }
 
-    protected void RegisterDelayEffect(int currentRound, float roundsDelay, int count)
-    {
-        delayedFrames.Clear();
-        for (int i = 0; i < count; i++)
-        {
-            var roundDelay = (int)(roundsDelay * (i + 1) / count);
-            delayedFrames.Add(currentRound + roundDelay);
-        }
-    }
-
     public virtual void BattleBegin()
     {
 
     }
 
-    public virtual void LogicUpdate(int tickIndex)
-    {
-        if(delayedFrames.Count > 0 && delayedFrames[0] <= BattleManager.Instance.round)
-        {
-            delayedFrames.RemoveAt(0);
-            OnDelayEffectHit();
-        }
-    }
-
-    public virtual void OnDelayEffectHit()
+    public virtual void LogicUpdate()
     {
     }
 
@@ -141,7 +120,7 @@ public class BattleSkill : IRecoverable
     {
     }
 
-    public virtual bool CheckAidSkill(int tickIndex)
+    public virtual bool CheckAidSkill()
     {
         return false;
     }

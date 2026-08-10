@@ -148,22 +148,12 @@ MonoBehaviour:
     attackPoint: 0
     attackRate: 0
     lastAttackTime: 0
-    lastTargetUpdateTick: 0
     skills: []
     buffs: []
     noMoveCount: 0
     noActionCount: 0
     isInAttackRange: 0
-    jumpState:
-      PosStart: {x: 0, y: 0, z: 0}
-      PosTar: {x: 0, y: 0, z: 0}
-      Height: 0
-      TickTotal: 0
-      TickPast: 0
     dotStates: []
-    dieAfterLifeTime: 0
-    lifeTickCount: 0
-    regeTickCount: 0
     regeHp: 0
   rend: {fileID: 965843959451955951}
   material: {fileID: 0}

@@ -29,7 +29,7 @@ public class SkillAttackedShadow : BattleSkill
                 shadowUnit.maxHp = (int)(owner.maxHp * skillCfg.SkillAttrRate);
                 shadowUnit.hp = (int)(shadowUnit.maxHp * owner.HpRate);
 
-                SkillManager.AddSkillAction(owner, shadowUnit, id, 0);
+                this.OnPlaySkill(shadowUnit, 0);
             });
 
             count--;

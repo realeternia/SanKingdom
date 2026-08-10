@@ -6,8 +6,8 @@ public class AddBuffAction : ChessAction
     public int BuffId;
     public int LastRounds;
 
-    public AddBuffAction(int sourceId, int tick, int casterId, int skillId, int buffId, int lastRounds)
-        : base(sourceId, tick)
+    public AddBuffAction(int sourceId, float time, int casterId, int skillId, int buffId, int lastRounds)
+        : base(sourceId, time)
     {
         CasterId = casterId;
         SkillId = skillId;

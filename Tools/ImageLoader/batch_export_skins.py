@@ -7,7 +7,8 @@
 其中 name = 子目录名去掉 "done" 前缀。
 
 用法：
-    python batch_export_skins.py            # 实际执行
+    python batch_export_skins.py            # 实际执行（跳过已处理的）
+    python batch_export_skins.py --force    # 强制重新处理所有
     python batch_export_skins.py --dry-run  # 仅打印映射，不写文件
     python batch_export_skins.py --only sunhuan,caocao  # 只处理指定 name
 """
@@ -54,6 +55,7 @@ def collect_tasks(only_names=None):
 
 def main():
     dry = "--dry-run" in sys.argv
+    force = "--force" in sys.argv
     only = None
     for a in sys.argv[1:]:
         if a.startswith("--only="):
@@ -67,7 +69,18 @@ def main():
         print("没有找到可处理的 result.png。")
         return
 
-    print(f"共 {len(tasks)} 个任务{'（dry-run，不写文件）' if dry else ''}：\n")
+    # 默认跳过已处理的（大图和头像都已存在），--force 可强制重新处理
+    if not force:
+        tasks = [(rp, name) for rp, name in tasks
+                 if not (os.path.isfile(os.path.join(SKINS_BIG, name + ".jpg"))
+                         and os.path.isfile(os.path.join(SKINS, name + ".jpg")))]
+
+    print(f"共 {len(tasks)} 个任务{'（dry-run，不写文件）' if dry else ''}"
+          f"{'（强制重新处理）' if force and not dry else ''}：\n")
+
+    if not tasks:
+        print("没有需要处理的新任务（之前执行过的已跳过）。")
+        return
 
     miss_big = miss_skin = 0
     for rp, name in tasks:

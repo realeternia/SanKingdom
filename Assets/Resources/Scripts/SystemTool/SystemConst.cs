@@ -90,6 +90,26 @@ public static class SystemConst
     public static class Battle
     {
         /// <summary>
+        /// 战斗逻辑时钟步长(秒)
+        /// </summary>
+        public const float LOGIC_STEP = 0.1f;
+        /// <summary>
+        /// 召唤英雄延迟(秒)
+        /// </summary>
+        public const float SUMMON_HERO_DELAY_SECONDS = 0.3f;
+        /// <summary>
+        /// 召唤出生特效时长(秒)
+        /// </summary>
+        public const float SUMMON_EFFECT_DURATION = 0.7f;
+        /// <summary>
+        /// 攻击方出生延迟(秒)
+        /// </summary>
+        public const float ATTACKER_SPAWN_DELAY_SECONDS = 1.0f;
+        /// <summary>
+        /// 战斗中时间阈值(秒)
+        /// </summary>
+        public const float IN_FIGHT_TIME_THRESHOLD = 0.3f;
+        /// <summary>
         /// 网格单元格大小
         /// </summary>
         public const int GRID_CELL_SIZE = 15;
@@ -134,17 +154,13 @@ public static class SystemConst
         /// </summary>
         public const int SUMMON_BATCH_THRESHOLD = 6;
         /// <summary>
-        /// 召唤英雄延迟帧数
-        /// </summary>
-        public const int SUMMON_HERO_DELAY_TICKS = 3;
-        /// <summary>
-        /// 攻击方出生延迟帧数
-        /// </summary>
-        public const int ATTACKER_SPAWN_DELAY_TICKS = 10;
-        /// <summary>
         /// 魔法辅助单位ID
         /// </summary>
         public const int MAGIC_HELPER_UNIT_ID = 501001;
+        /// <summary>
+        /// 魔法辅助单位存活回合数
+        /// </summary>
+        public const int MAGIC_HELPER_LIFE_ROUND = 5;
         /// <summary>
         /// 布阵区域行数
         /// </summary>
@@ -191,10 +207,6 @@ public static class SystemConst
         /// </summary>
         public const float DEFAULT_CRIT_DAMAGE_MULTI = 0.5f;
         /// <summary>
-        /// 回血间隔帧数
-        /// </summary>
-        public const int REGE_INTERVAL_TICKS = 10;
-        /// <summary>
         /// 攻击点阈值
         /// </summary>
         public const int ATTACK_POINT_THRESHOLD = 20;
@@ -206,10 +218,6 @@ public static class SystemConst
         /// 防御方主动出击的战力倍率阈值（防御方战力 > 攻击方战力 * 此值时出击）
         /// </summary>
         public const float DEFENDER_SALLY_POWER_RATIO = 1.5f;
-        /// <summary>
-        /// 战斗中帧数阈值
-        /// </summary>
-        public const int IN_FIGHT_TICK_THRESHOLD = 3;
         /// <summary>
         /// 被攻击buff最小伤害
         /// </summary>

@@ -41,7 +41,7 @@ public class SkillDefFeedback : BattleSkill
             var damageBack = (int)(damage * skillCfg.Strength);
             attacker.DoSkillDamage(owner, skillId, damageBack, true, 0);
 
-            SkillManager.AddSkillAction(owner, null, id, damageBack);
+            this.OnPlaySkill(null, damageBack);
         }
     }
 

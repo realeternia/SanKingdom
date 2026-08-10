@@ -17,12 +17,12 @@ public class SceneObj : IRecoverable
     }
     
     //计算用update
-    public virtual void LogicUpdate(int tickIndex)
+    public virtual void LogicUpdate()
     {
     }
 
     //表现update
-    public virtual void RenderUpdate(int tickIndex, float indexMini, float timeElapsed)
+    public virtual void RenderUpdate()
     {
     }
     

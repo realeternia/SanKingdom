@@ -18,7 +18,7 @@ public class SkillAttackAntiShield : BattleSkill
             var shield = buff as BuffShield;
             if (shield != null)
             {
-                SkillManager.AddSkillAction(owner, null, id, 0);
+                this.OnPlaySkill(null, 0);
                 
                 shield.SubHp((int)(damageBase * skillCfg.Strength));
             }

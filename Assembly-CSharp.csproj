@@ -95,6 +95,7 @@
     <Compile Include="Assets\Resources\Scripts\Panels\CityBattlePanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateChessAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityUseHeroPanelManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddHpAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellForce.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleAudio.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefHpLow.cs" />
@@ -122,7 +123,6 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\TechCell.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyDevelopment.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\CreateEffectAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevSearchConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleUIManager.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\UIColorChanger.cs" />
@@ -160,7 +160,6 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\RoundUpdateAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyFactory.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackHitAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\PopFairPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysFormula.cs" />
@@ -206,7 +205,6 @@
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\BattleResultHeroCellControl.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\BGMPlayer.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\CityPanelManager.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\ChessChangeHpAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevKingActionConfig_s.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUI.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\ArmsType.cs" />
@@ -269,7 +267,6 @@
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleEPOOutline.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackAntiShield.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\RankCellMode.cs" />
-    <Compile Include="Assets\Resources\Scripts\Combat\Actions\SkillPlayAction.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SystemTip.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\CellEffect.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\ReplayCellControl.cs" />

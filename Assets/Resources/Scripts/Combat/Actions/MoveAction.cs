@@ -2,13 +2,13 @@
 public class MoveAction : ChessAction
 {
     public int TargetId;
-    public UnityEngine.Vector3 TargetPosition;
+    public int TargetCellId;
 
-    public MoveAction(int sourceId, int tick, int targetId, UnityEngine.Vector3 targetPosition)
-        : base(sourceId, tick)
+    public MoveAction(int sourceId, float time, int targetId, int targetCellId)
+        : base(sourceId, time)
     {
         TargetId = targetId;
-        TargetPosition = targetPosition;
+        TargetCellId = targetCellId;
     }
 
     public override void Doing()
@@ -19,9 +19,16 @@ public class MoveAction : ChessAction
             GameLog.Error($"MoveAction[{ActionId}] SourceId not found {SourceId}");
             return;
         }
-        GameLog.Info($"MoveAction[{ActionId}] src={SourceId} pos={TargetPosition}");
-        chess?.viewObj?.FaceTo(TargetPosition);
-        BattleManager.Instance.MoveTo(chess, TargetPosition, true);
+        var cell = BattleManager.Instance.GetMapCellById(TargetCellId);
+        if (cell == null)
+        {
+            GameLog.Error($"MoveAction[{ActionId}] TargetCellId not found {TargetCellId}");
+            return;
+        }
+        var targetPosition = BattleManager.Instance.GridCoordToWorld(cell.gridX, cell.gridZ, chess.position.y);
+        GameLog.Info($"MoveAction[{ActionId}] src={SourceId} cell={TargetCellId} pos={targetPosition}");
+        chess?.viewObj?.FaceTo(targetPosition);
+        BattleManager.Instance.MoveTo(chess, targetPosition, true);
         chess?.viewObj?.PlaySodAnim("sodmove");
     }
 }

@@ -17,17 +17,22 @@ public class CreateChessAction : ChessAction
     public int Atk;
     public int Def;
     public bool IsFakeHero;
-    public float SummonTime;
+    public int SummonRound;
 
     public int Inte;
     public int NoActionCount;
+
+    /// <summary>
+    /// 出生特效名，非空时先播放特效，延迟片刻后再真正创建棋子
+    /// </summary>
+    public string SpawnEffect;
 
     [NonSerialized]
     public Action<int> CallBack;
 
 
-    public CreateChessAction(int sourceId, int tick, int id, int forceId, int heroId, int heroId2, int heroId3, int level, int soldierNum, int armsId, int atk, int def, int inte, UnityEngine.Vector3 spawnPos)
-        : base(sourceId, tick)
+    public CreateChessAction(int sourceId, float time, int id, int forceId, int heroId, int heroId2, int heroId3, int level, int soldierNum, int armsId, int atk, int def, int inte, UnityEngine.Vector3 spawnPos)
+        : base(sourceId, time)
     {
         Id = id;
         ForceId = forceId;
@@ -44,8 +49,8 @@ public class CreateChessAction : ChessAction
         Inte = inte;
     }
 
-    public CreateChessAction(int sourceId, int tick, int id, int forceId, int battleUnitId, int soldierNum, int armsId, int atk, int def, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb, int noActionCount = 0)
-        : base(sourceId, tick)
+    public CreateChessAction(int sourceId, float time, int id, int forceId, int battleUnitId, int soldierNum, int armsId, int atk, int def, UnityEngine.Vector3 spawnPos, int summonRound, Action<int> cb, int noActionCount = 0)
+        : base(sourceId, time)
     {
         Id = id;
         ForceId = forceId;
@@ -55,17 +60,49 @@ public class CreateChessAction : ChessAction
         Atk = atk;
         Def = def;
         SpawnPos = spawnPos;
-        SummonTime = summonTime;
+        SummonRound = summonRound;
         CallBack = cb;
         Inte = 50;
         NoActionCount = noActionCount;
     }
 
+    // 出生特效延迟创建副本：时间顺延delaySeconds，且不再重复播放特效
+    private CreateChessAction(CreateChessAction src, float delaySeconds)
+        : base(src.SourceId, src.Time + delaySeconds)
+    {
+        Id = src.Id;
+        ForceId = src.ForceId;
+        SpawnPos = src.SpawnPos;
+        IsHero = src.IsHero;
+        HeroId = src.HeroId;
+        HeroId2 = src.HeroId2;
+        HeroId3 = src.HeroId3;
+        Level = src.Level;
+        SoldierNum = src.SoldierNum;
+        ArmsId = src.ArmsId;
+        Atk = src.Atk;
+        Def = src.Def;
+        IsFakeHero = src.IsFakeHero;
+        SummonRound = src.SummonRound;
+        Inte = src.Inte;
+        NoActionCount = src.NoActionCount;
+        CallBack = src.CallBack;
+    }
+
     public override void Doing()
     {
+        var battleManager = BattleManager.Instance;
+
+        // 出生特效：先播放特效，延迟片刻后再真正创建棋子
+        if (!string.IsNullOrEmpty(SpawnEffect))
+        {
+            EffectManager.PlayPosSkillEffect(null, SpawnPos, 1f, SpawnEffect, SystemConst.Battle.SUMMON_EFFECT_DURATION);
+            battleManager.AddChessAction(new CreateChessAction(this, SystemConst.Battle.SUMMON_HERO_DELAY_SECONDS));
+            return;
+        }
+
         GameLog.Info($"CreateChessAction[{ActionId}] {Id} {ForceId} {SpawnPos} {IsHero} {HeroId} {Level} {SoldierNum}");
 
-        var battleManager = BattleManager.Instance;
         var chessObj = new Chess(Id);
         chessObj.forceId = ForceId;
         chessObj.position = SpawnPos;
@@ -111,8 +148,8 @@ public class CreateChessAction : ChessAction
             battleManager.OccupyGrid(chessObj.id, chessObj.position);
         chessObj.Init(ForceId);
 
-        if (SummonTime > 0)
-            chessObj.SetLifeTime(SummonTime);
+        if (SummonRound > 0)
+            chessObj.SetLifeRound(SummonRound);
 
         if (CallBack != null)
             CallBack(Id);

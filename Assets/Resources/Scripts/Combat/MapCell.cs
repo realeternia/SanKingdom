@@ -7,6 +7,7 @@ using System.Collections.Generic;
 [Serializable]
 public class MapCell
 {
+    public int id; // 格子唯一ID，从1开始自增
     public int gridX;
     public int gridZ;
     public int chessId; // 占用该格的棋子ID，0表示空
@@ -16,12 +17,14 @@ public class MapCell
 
     public void AddEffect(CellEffect effect)
     {
+        effect.cellId = id;
         effects.Add(effect);
-        effect.CreateView(gridX, gridZ);
+        effect.CreateView();
     }
 
-    public MapCell(int gridX, int gridZ)
+    public MapCell(int id, int gridX, int gridZ)
     {
+        this.id = id;
         this.gridX = gridX;
         this.gridZ = gridZ;
         chessId = 0;

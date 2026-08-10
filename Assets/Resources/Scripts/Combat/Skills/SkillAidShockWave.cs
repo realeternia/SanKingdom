@@ -10,7 +10,7 @@ public class SkillAidShockWave : BattleSkill
     {
     }
 
-    public override bool CheckAidSkill(int tickIndex)
+    public override bool CheckAidSkill()
     {
         var targetChess = BattleManager.Instance.GetChess(owner.targetChessId);
         if (targetChess == null)
@@ -25,7 +25,7 @@ public class SkillAidShockWave : BattleSkill
         var targetPos = targetChess.position; // 使用目标位置而不是自身位置
 
         var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
-        SkillManager.AddSkillAction(owner, targetChess, id, damage);
+        this.OnPlaySkill(targetChess, damage);
         BattleManager.Instance.CreateSpellMissile(owner, targetPos, GetRoundCount(), skillCfg.Id, damage);
         GameLog.Debug($"SkillAidShockWave[aid=0] id={id} damage={damage}");
 

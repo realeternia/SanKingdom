@@ -2,8 +2,8 @@ using UnityEngine;
 [System.Serializable]
 public class RemoveChessAction : ChessAction
 {
-    public RemoveChessAction(int sourceId, int tick)
-        : base(sourceId, tick)
+    public RemoveChessAction(int sourceId, float time)
+        : base(sourceId, time)
     {
     }
 

@@ -3,8 +3,8 @@ public class RoundUpdateAction : ChessAction
 {
     public int Round;
 
-    public RoundUpdateAction(int sourceId, int tick, int round)
-        : base(sourceId, tick)
+    public RoundUpdateAction(int sourceId, float time, int round)
+        : base(sourceId, time)
     {
         Round = round;
     }

@@ -12,7 +12,7 @@ public class SkillHitWall : BattleSkill
     {
         if (CheckBurst(defender))
         {
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
 
             var targetPos = defender.position;
             var roundCount = GetRoundCount();
@@ -39,7 +39,14 @@ public class SkillHitWall : BattleSkill
 
             foreach (var pos in posList)
             {
-                var (gx, gz) = BattleManager.Instance.WorldToGridCoord(pos);
+                var bm = BattleManager.Instance;
+                var (gx, gz) = bm.WorldToGridCoord(pos);
+                var cellId = bm.GetCellId(gx, gz);
+                if (cellId <= 0)
+                {
+                    GameLog.Warn($"SkillHitWall 格子越界 gx={gx} gz={gz}，跳过生成火墙");
+                    continue;
+                }
                 var effect = new CellEffect
                 {
                     skillId = id,
@@ -49,7 +56,7 @@ public class SkillHitWall : BattleSkill
                     damageRate = skillCfg.SkillDamageAttrRate,
                     endRound = endRound
                 };
-                BattleManager.Instance.AddCellEffect(gx, gz, effect);
+                bm.AddCellEffect(cellId, effect);
             }
         }
     }

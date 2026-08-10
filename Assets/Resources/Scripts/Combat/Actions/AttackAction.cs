@@ -9,8 +9,8 @@ public class AttackAction : ChessAction
     public string DamType;
     public bool IsRanged;
 
-    public AttackAction(int sourceId, int tick, int targetId, string hitEffect, string damType, bool isRanged)
-        : base(sourceId, tick)
+    public AttackAction(int sourceId, float time, int targetId, string hitEffect, string damType, bool isRanged)
+        : base(sourceId, time)
     {
         TargetId = targetId;
         HitEffect = hitEffect;
@@ -45,20 +45,30 @@ public class AttackAction : ChessAction
         if (damage <= 0 && !isCrit && !isDodge)
             return;
 
-        // 根据ArmsConfig.HitDelay延迟伤害结算
-        var hitDelayTicks = BattleManager.Instance.GetTickFromTime(armsConfig.HitDelay);
+        var battleManager = BattleManager.Instance;
 
-        if (hitDelayTicks <= 0)
+        // 命中延迟：先播攻击动画，延迟HitDelay秒后结算伤害
+        if (armsConfig.HitDelay > 0)
         {
-            if (IsRanged)
-                BattleManager.Instance.CreateAttackMissile(sourceChess, targetChess, damage, isCrit, isDodge, effect, DamType, ActionId);
-            else
-                sourceChess.OnAttackDamage(targetChess, damage, isCrit, isDodge, effect, DamType, ActionId);
+            battleManager.DelayedCall(armsConfig.HitDelay, () =>
+            {
+                var src = battleManager.GetChess(SourceId);
+                var tgt = battleManager.GetChess(TargetId);
+                if (src == null || tgt == null)
+                    return;
+                if (IsRanged)
+                    battleManager.CreateAttackMissile(src, tgt, damage, isCrit, isDodge, effect, DamType, ActionId);
+                else
+                    src.OnAttackDamage(tgt, damage, isCrit, isDodge, effect, DamType, ActionId);
+            });
+        }
+        else if (IsRanged)
+        {
+            battleManager.CreateAttackMissile(sourceChess, targetChess, damage, isCrit, isDodge, effect, DamType, ActionId);
         }
         else
         {
-            var hitAction = new AttackHitAction(SourceId, Tick + hitDelayTicks, TargetId, damage, isCrit, isDodge, effect, DamType, IsRanged);
-            BattleManager.Instance.AddChessAction(hitAction);
+            sourceChess.OnAttackDamage(targetChess, damage, isCrit, isDodge, effect, DamType, ActionId);
         }
     }
 }

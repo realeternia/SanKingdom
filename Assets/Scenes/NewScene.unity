@@ -5346,7 +5346,6 @@ MonoBehaviour:
   actions: []
   idCounter: 100
   actionIdCounter: 1
-  tickIndex: 1
   round: 0
   turnPhase: 0
   currentTurnIndex: 0

@@ -143,7 +143,7 @@ public static class ChessAI
     /// 回合制：棋子行动决策。由 Chess.OnTurnAction 调用。
     /// 攻击时设置 self.hasPendingAction=true，其余情况由调用方结束回合。
     /// </summary>
-    public static void ProcessTurn(Chess self, int tickIndex)
+    public static void ProcessTurn(Chess self)
     {
         // Buff 系统的硬限制（BuffNoAction）
         if (self.noActionCount > 0)
@@ -163,7 +163,7 @@ public static class ChessAI
         if (targetChess == null || targetChess.hp <= 0)
             return;
 
-        if (SkillManager.CheckAidSkill(self, tickIndex))
+        if (SkillManager.CheckAidSkill(self))
             return;
 
         // 射程内攻击
@@ -175,7 +175,7 @@ public static class ChessAI
                 self.viewObj?.PlaySodAnim("idle");
             }
             SkillManager.AimTarget(self, targetChess);
-            self.Attack(targetChess, self.hitEffect, tickIndex);
+            self.Attack(targetChess, self.hitEffect);
             self.hasPendingAction = true;
             return;
         }
@@ -193,9 +193,12 @@ public static class ChessAI
         var moveDest = GetMoveDest(self);
         if (moveDest != Vector3.zero)
         {
-            targetChess = BattleManager.Instance.GetChess(self.targetChessId);
-            var moveAction = new MoveAction(self.id, tickIndex, targetChess != null ? targetChess.id : -1, moveDest);
-            BattleManager.Instance.AddChessAction(moveAction);
+            var bm = BattleManager.Instance;
+            targetChess = bm.GetChess(self.targetChessId);
+            var (gx, gz) = bm.WorldToGridCoord(moveDest);
+            var cellId = bm.GetCellId(gx, gz);
+            var moveAction = new MoveAction(self.id, bm.battleTime, targetChess != null ? targetChess.id : -1, cellId);
+            bm.AddChessAction(moveAction);
         }
     }
 

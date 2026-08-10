@@ -59,10 +59,10 @@ description: "战斗系统规则，包含Tick驱动架构、ChessAction队列、
 |------|----------|------|
 | `AttackAction` | `TargetId, Damage, IsCrit, IsDodge, HitEffect, DamType` | 普通攻击结算 |
 | `SkillDamageAction` | `TargetChessId, SkillId, Damage` | 技能伤害结算 |
-| `ChessChangeHpAction` | `Value`（正数加血，负数减血，clamp 到 1~maxHp） | 血量变更 |
+| `AddHpAction` | `Value`（正数加血，负数减血，clamp 到 1~maxHp） | 血量变更 |
 | `CreateChessAction` | `Id, ForceId, IsHero, HeroId, Level, SoldierNum, ArmsId, Atk, Def, Str, LeadShip, Inte, SpawnPos, SummonTime` | 创建棋子 |
 | `RemoveChessAction` | 无额外字段，用 `SourceId` 标识死者 | 移除棋子 |
-| `MoveAction` | `TargetId, TargetPosition` | 棋子移动 |
+| `MoveAction` | `TargetId, TargetCellId` | 棋子移动（目标格用格子ID） |
 | `CreateMissileAction` | `Id, TargetChessId, TargetPos, StartPos, SkillId, Damage, Time, IsDirectional` | 创建投射物 |
 | `RemoveMissileAction` | `MissileId` | 移除投射物 |
 | `AddBuffAction` | `CasterId, SkillId, BuffId, LastTime` | 添加 Buff |
@@ -70,7 +70,6 @@ description: "战斗系统规则，包含Tick驱动架构、ChessAction队列、
 | `CreateEffectAction` | `TargetPos, EffectName, Time` | 播放位置特效 |
 | `FoodCostAction` | `ForceId, CostAmount` | 粮食消耗 |
 | `RoundUpdateAction` | `Round` | 回合数更新 |
-| `SkillPlayAction` | `TargetChessId, SkillId, Parm1` | 触发技能播放 |
 
 ### 新增战斗动作
 
@@ -82,7 +81,7 @@ description: "战斗系统规则，包含Tick驱动架构、ChessAction队列、
 
 所有对战斗状态的修改都不直接执行，而是通过创建对应的 `ChessAction` 加入队列，在对应 Tick 由 `Doing()` 统一执行：
 - `Chess.Attack()` → 创建 `AttackAction`
-- `Chess.AddHp()` → 创建 `ChessChangeHpAction`
+- `Chess.AddHp()` → 创建 `AddHpAction`
 - `Chess.Ondying()` → 创建 `RemoveChessAction`
 - `BuffManager.AddBuff()` → 创建 `AddBuffAction`
 - `BuffManager.RemoveBuff()` → 创建 `RemoveBuffAction`
@@ -163,7 +162,7 @@ public class FoodInfo { public int forceId, food, maxFood, soldierNumInit; }
 | `FindTarget()` | 寻找目标：距离排序 → 射程内优先 → 打分选择 |
 | `MoveAndFight(int tickIndex)` | 移动与战斗主逻辑 |
 | `Attack(victim, hitEffectName, tickIndex)` | 普通攻击：伤害计算 → 暴击/闪避 → 创建 AttackAction |
-| `AddHp(int addon)` | 加血：创建 ChessChangeHpAction |
+| `AddHp(int addon)` | 加血：创建 AddHpAction |
 | `Ondying()` | 死亡：创建 RemoveChessAction |
 | `AddBuff(Buff, Chess caster, int endTick)` | 添加 Buff（同 ID 刷新） |
 | `JumpToPosition(targetPos, jumpHeight, moveDuration)` | 跳跃移动（quickMode 下跳过） |
@@ -234,14 +233,13 @@ IRecoverable
     └── SkillDumb (空技能/默认)
 
 ChessAction (SourceId, Tick, Doing())
-├── AttackAction / SkillDamageAction / ChessChangeHpAction
+├── AttackAction / SkillDamageAction / AddHpAction
 ├── CreateChessAction / RemoveChessAction
 ├── MoveAction
 ├── CreateMissileAction / RemoveMissileAction
 ├── AddBuffAction / RemoveBuffAction
 ├── CreateEffectAction
 ├── FoodCostAction / RoundUpdateAction
-└── SkillPlayAction
 ```
 
 ## 战斗系统修改注意事项

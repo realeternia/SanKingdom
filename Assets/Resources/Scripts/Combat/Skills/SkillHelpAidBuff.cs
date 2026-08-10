@@ -10,10 +10,10 @@ public class SkillHelpAidBuff : BattleSkill
     {
     }
 
-    public override bool CheckAidSkill(int tickIndex)
+    public override bool CheckAidSkill()
     {
         var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range, owner.forceId, false);
-        unitsInRange = unitsInRange.FindAll(x => x != owner && x.IsInFight(tickIndex) && !x.HasBuff(skillCfg.BuffId));
+        unitsInRange = unitsInRange.FindAll(x => x != owner && x.IsInFight(BattleManager.Instance.battleTime) && !x.HasBuff(skillCfg.BuffId));
 
         if (unitsInRange.Count == 0)
             return false;
@@ -34,7 +34,7 @@ public class SkillHelpAidBuff : BattleSkill
         var targetUnit = unitsInRange[0];
         BuffManager.AddBuff(targetUnit, owner, id, skillCfg.BuffId, skillCfg.BuffTime);
 
-        SkillManager.AddSkillAction(owner, targetUnit, id, 0);
+        this.OnPlaySkill(targetUnit, 0);
 
         return true;
     }

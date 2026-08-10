@@ -16,7 +16,7 @@ public class SkillAttackMultiArrow : BattleSkill
 
         if (unitsInRange.Count > 0 && CheckBurst(defender))
         {
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
             BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
             foreach (var unit in unitsInRange)
             {

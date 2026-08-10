@@ -2,12 +2,12 @@ using System;
 using UnityEngine;
 
 [System.Serializable]
-public class ChessChangeHpAction : ChessAction
+public class AddHpAction : ChessAction
 {
     public int Value;
 
-    public ChessChangeHpAction(int sourceId, int tick, int changeVal)
-        : base(sourceId, tick)
+    public AddHpAction(int sourceId, float time, int changeVal)
+        : base(sourceId, time)
     {
         Value = changeVal;
     }
@@ -20,7 +20,7 @@ public class ChessChangeHpAction : ChessAction
             if(Value == 0)
                 return;
 
-            GameLog.Info($"ChessChangeHpAction[{ActionId}] chess={SourceId} val={Value}");
+            GameLog.Info($"AddHpAction[{ActionId}] chess={SourceId} val={Value}");
 
             var hpval = Math.Clamp(sourceChess.hp + Value, 1, sourceChess.maxHp);
             sourceChess.hp = hpval;

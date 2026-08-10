@@ -11,7 +11,7 @@ public class SkillAidSuddenArrow : BattleSkill
     {
     }
 
-    public override bool CheckAidSkill(int tickIndex)
+    public override bool CheckAidSkill()
     {
         var unitsInRange = BattleManager.Instance.GetUnitsInRange(owner.position, skillCfg.Range, owner.forceId, true);
         unitsInRange.Remove(owner);
@@ -36,7 +36,7 @@ public class SkillAidSuddenArrow : BattleSkill
 
         var targetChess = unitsInRange[0];
 
-        SkillManager.AddSkillAction(owner, targetChess, id, 0);
+        this.OnPlaySkill(targetChess, 0);
 
         var attrDiff = Math.Max(10, owner.GetAttr(skillCfg.Attr) - targetChess.GetAttr(skillCfg.Attr));
         var damage = (int)(attrDiff * skillCfg.SkillDamageAttrRate);

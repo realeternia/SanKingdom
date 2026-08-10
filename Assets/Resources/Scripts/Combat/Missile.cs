@@ -47,8 +47,8 @@ public class Missile : SceneObj
     public Vector3 direction;
     public Vector3 startPos;
 
-    public int startTick;
-    public int tickTotal;
+    public float startTime; // 发射时刻(秒)
+    public float travelSeconds; // 飞行时长(秒)
     public List<int> checkedIdList; //已结算单位id列表
 
     public Missile(int id, Chess sourceChess, Vector3 startPos, int skillId, int damage, int attackDamage = 0, bool attackIsCrit = false, bool attackIsDodge = false, string attackDamType = "str")
@@ -70,7 +70,7 @@ public class Missile : SceneObj
         moveState = MoveState.None;
         targetChessId = 0;
         checkedIdList = new List<int>();
-        startTick = BattleManager.Instance.tickIndex;
+        startTime = BattleManager.Instance.battleTime;
     }
 
     public void Init()
@@ -158,11 +158,11 @@ public class Missile : SceneObj
         
         // Ensure missileSpeed is not zero
         float speed = missileSpeed > 0 ? missileSpeed : 10f; // Default speed if not set
-        tickTotal = BattleManager.Instance.GetTickFromTime(distance / speed);
+        travelSeconds = distance / speed;
         
         // Ensure minimum travel time to avoid division by zero
-        if (tickTotal <= 0)
-            tickTotal = 1;
+        if (travelSeconds <= 0f)
+            travelSeconds = 0.1f;
     }
 
     public void MoveToDirection(Vector3 targetPos, float time)
@@ -171,26 +171,27 @@ public class Missile : SceneObj
         moveState = MoveState.ToDirection;
         direction = (targetPos - position).normalized;
         direction.y = 0;
-        tickTotal = BattleManager.Instance.GetTickFromTime(time);
+        travelSeconds = time;
         checkedIdList = new List<int>();
     }
 
-    public override void RenderUpdate(int tickIndex, float indexMini, float timeElapsed)
+    public override void RenderUpdate()
     {
-        float tickReal = tickIndex + indexMini;
+        float battleTime = BattleManager.Instance.battleTime;
         switch (moveState)
         {
             case MoveState.ToTarget:
-                UpdateMoveToTarget(tickReal);
+                UpdateMoveToTarget(battleTime);
                 break;
             case MoveState.ToDirection:
-                UpdateMoveToDirection(tickReal);
+                UpdateMoveToDirection(battleTime);
                 break;
         }
     }
     
-    public override void LogicUpdate(int tickIndex)
+    public override void LogicUpdate()
     {
+        var battleTime = BattleManager.Instance.battleTime;
         if(targetCount > 0 && checkedIdList.Count < targetCount)
         {
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, forceId, true);
@@ -203,7 +204,7 @@ public class Missile : SceneObj
                 foreach (var unit in unitsInRange)
                 {
                     checkedIdList.Add(unit.id);
-                    OnCrash(unit, tickIndex);
+                    OnCrash(unit);
                 }
             }
         }
@@ -222,13 +223,13 @@ public class Missile : SceneObj
                 return;
             }
         }
-        if((tickIndex - startTick) >= tickTotal)
+        if ((battleTime - startTime) >= travelSeconds)
         {
             if(targetChessId > 0)
             {
                 var targetChess = BattleManager.Instance.GetChess(targetChessId);
                 if (targetChess != null)
-                    OnCrash(targetChess, tickIndex);
+                    OnCrash(targetChess);
             }
             Cleanup();
             return;
@@ -236,7 +237,7 @@ public class Missile : SceneObj
        
     }
 
-    private void UpdateMoveToTarget(float tickTimeReal)
+    private void UpdateMoveToTarget(float battleTime)
     {
         var targetChess = BattleManager.Instance.GetChess(targetChessId);
         if (targetChess == null)
@@ -245,7 +246,7 @@ public class Missile : SceneObj
         var targetPos = targetChess.position + new Vector3(0f, 7f, 0f); // 修正目标点
 
         // Calculate movement
-        float fractionOfJourney = (tickTimeReal - startTick) / (float)tickTotal;
+        float fractionOfJourney = (battleTime - startTime) / travelSeconds;
         
         if (maxY > 0)
         {
@@ -265,10 +266,11 @@ public class Missile : SceneObj
         }
     }
 
-    private void UpdateMoveToDirection(float tickTimeReal)
+    private void UpdateMoveToDirection(float battleTime)
     {
         // Calculate movement distance based on speed and time
-        float moveDistance = missileSpeed * (tickTimeReal - startTick);
+        // 保持原"单位/逻辑步"速度语义
+        float moveDistance = missileSpeed * ((battleTime - startTime) / SystemConst.Battle.LOGIC_STEP);
         // Move in direction
         SetPosition(position + direction * moveDistance);
         SetDirection(Quaternion.LookRotation(direction));
@@ -288,7 +290,7 @@ public class Missile : SceneObj
             viewObj.transform.rotation = dir;
     }    
 
-    private void OnCrash(Chess target, int tickIndex)
+    private void OnCrash(Chess target)
     {
         var ownerChess = BattleManager.Instance.GetChess(ownerId);
         if (target == null || target.hp <= 0 || ownerChess == null || ownerChess.hp <= 0)

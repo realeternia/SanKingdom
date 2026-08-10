@@ -16,7 +16,7 @@ public class SkillHitAttr : BattleSkill
             var roll = Random.Range(0, 3);
             var attr = roll == 0 ? "inte" : (roll == 1 ? "str" : "leadShip");
             owner.AddAttr(attr, skillCfg.StrengthInt);
-            SkillManager.AddSkillAction(owner, defender, id, 0);
+            this.OnPlaySkill(defender, 0);
 
         }
     }

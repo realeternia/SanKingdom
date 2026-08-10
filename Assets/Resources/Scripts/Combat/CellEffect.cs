@@ -8,6 +8,7 @@ using UnityEngine;
 [Serializable]
 public class CellEffect
 {
+    public int cellId; // 所属格子ID，由 MapCell.AddEffect 在加入格子时赋值
     public int skillId;
     public int casterId;
     public int forceId;
@@ -32,12 +33,12 @@ public class CellEffect
     /// <summary>
     /// 每回合结算：若格子被敌方单位占用则对其造成伤害
     /// </summary>
-    public void Trigger(int gridX, int gridZ)
+    public void Trigger()
     {
         var caster = BattleManager.Instance.GetChess(casterId);
         if (caster == null || caster.hp <= 0) return;
 
-        var cell = BattleManager.Instance.GetMapCell(gridX, gridZ);
+        var cell = BattleManager.Instance.GetMapCellById(cellId);
         if (cell == null || !cell.IsOccupied()) return;
 
         var target = BattleManager.Instance.GetChess(cell.chessId);
@@ -50,11 +51,13 @@ public class CellEffect
     /// <summary>
     /// 创建持久视觉特效，生命周期与 CellEffect 一致；quickMode 或已存在则跳过
     /// </summary>
-    public void CreateView(int gridX, int gridZ)
+    public void CreateView()
     {
         if (viewEffect != null) return;
+        var cell = BattleManager.Instance.GetMapCellById(cellId);
+        if (cell == null) return;
         var cfg = BattleSkillConfig.GetConfig(skillId);
-        var worldPos = BattleManager.Instance.GridCoordToWorld(gridX, gridZ);
+        var worldPos = BattleManager.Instance.GridCoordToWorld(cell.gridX, cell.gridZ);
         viewEffect = EffectManager.PlayPosSkillEffect(null, worldPos, cfg.EffectSize, cfg.EffectArea, 0f);
     }
 

@@ -115,13 +115,13 @@ public static class SkillManager
         }
     }
 
-    public static void LogicUpdate(Chess chess, int tickIndex)
+    public static void LogicUpdate(Chess chess)
     {
         if(isReplay)
             return;
         foreach (var skill in chess.skills)
         {
-            skill.LogicUpdate(tickIndex);
+            skill.LogicUpdate();
         }
     }
 
@@ -227,13 +227,13 @@ public static class SkillManager
         }
     }
 
-    public static bool CheckAidSkill(Chess attacker, int tickIndex)
+    public static bool CheckAidSkill(Chess attacker)
     {
         if(isReplay)
             return false;
         foreach (var skill in attacker.skills)
         {
-            if (!skill.IsInCD() && skill.CheckAidSkill(tickIndex))
+            if (!skill.IsInCD() && skill.CheckAidSkill())
             {
                 return true;
             }
@@ -281,14 +281,6 @@ public static class SkillManager
         {
             skill.OnHealTarget(target, checkSkillId, ref addon);
         }
-    }
-
-    public static void AddSkillAction(Chess caster, Chess target, int skillId, int parm1)
-    {
-        if(isReplay)
-            return;
-        var skillPlayAction = new SkillPlayAction(caster.id, BattleManager.Instance.tickIndex, target != null ? target.id : 0, skillId, parm1);
-        BattleManager.Instance.AddChessAction(skillPlayAction);
     }
 
 }

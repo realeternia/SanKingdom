@@ -16,7 +16,7 @@ public class SkillAttackReboundArrow : BattleSkill
 
         if (unitsInRange.Count > 0 && CheckBurst(defender))
         {
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
             BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
             var reboundDamage = (int)(damage * skillCfg.SkillDamageRate);

@@ -13,7 +13,7 @@ public class SkillAttackedBuff : BattleSkill
     {
         if(damage > SystemConst.Battle.ATTACKED_BUFF_MIN_DAMAGE && CheckBurst(attacker))
         {
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
 
             BuffManager.AddBuff(owner, owner, id, skillCfg.BuffId, skillCfg.BuffTime);
         }

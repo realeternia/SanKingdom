@@ -18,7 +18,7 @@ public class SkillHitBuffArea : BattleSkill
             var unitsInRange = BattleManager.Instance.GetUnitsInRange(targetUnit.position, skillCfg.Range, owner.forceId, true);
             if (unitsInRange.Count > 0)
             {
-                SkillManager.AddSkillAction(owner, targetUnit, id, 0);
+                this.OnPlaySkill(targetUnit, 0);
                 BattleManager.RandomSelect(unitsInRange, skillCfg.TargetCount);
 
                 foreach (var unit in unitsInRange)

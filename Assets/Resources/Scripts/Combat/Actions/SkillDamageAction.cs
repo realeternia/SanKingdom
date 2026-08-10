@@ -8,8 +8,8 @@ public class SkillDamageAction : ChessAction
     public int SkillId;
     public int Damage;
 
-    public SkillDamageAction(int sourceId, int tick, int targetChessId, int skillId, int damage)
-        : base(sourceId, tick)
+    public SkillDamageAction(int sourceId, float time, int targetChessId, int skillId, int damage)
+        : base(sourceId, time)
     {
         TargetChessId = targetChessId;
         SkillId = skillId;

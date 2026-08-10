@@ -76,8 +76,7 @@ public class Chess : SceneObj
     // 攻击冷却时间
     public int attackPoint;
     public int attackRate; //攻击频率
-    public int lastAttackTime = 0;
-    public int lastTargetUpdateTick; // 上次更新目标的时间
+    public float lastAttackTime = 0; // 上次攻击时刻(秒)，当前未赋值，保留现状
 
     public List<BattleSkill> skills = new List<BattleSkill>();
 
@@ -98,14 +97,11 @@ public class Chess : SceneObj
         public int casterId;
         public int skillId;
         public float damage;
-        public int tickCount;
-        public int tickInterval;
     }
 
-    public bool dieAfterLifeTime;
-    public int lifeTickCount; //1s死亡一次
+    public bool dieAfterLife;
+    public int lifeRoundCount; //剩余存活回合数
 
-    public int regeTickCount; //1s回复一次
     public int regeHp; //回复血量
 
     public Chess(int id)
@@ -270,44 +266,6 @@ public class Chess : SceneObj
         CreateChessView();
     }    
 
-    public override void LogicUpdate(int tickIndex)
-    {
-        // 死亡判定
-        if (dieAfterLifeTime)
-        {
-            lifeTickCount--;
-            if (lifeTickCount <= 0)
-            {
-                Ondying();
-            }
-        }
-
-        SkillManager.LogicUpdate(this, tickIndex);
-
-        CheckHpReg();
-
-        // 处理持续伤害逻辑
-        for (int i = dotStates.Count - 1; i >= 0; i--)
-        {
-            var dotState = dotStates[i];
-            dotState.tickCount++;
-
-            if (dotState.tickCount >= dotState.tickInterval)
-            {
-                dotState.tickCount = 0;
-
-                if (hp > 0)
-                {
-                    var caster = BattleManager.Instance.GetChess(dotState.casterId);
-                    if (caster != null)
-                    {
-                        DoSkillDamage(caster, dotState.skillId, (int)dotState.damage, false, 0);
-                    }
-                }
-            }
-        }
-    }
-
     public void OnTurnStart()
     {
         isTurnFinished = false;
@@ -315,11 +273,11 @@ public class Chess : SceneObj
         // 重置攻击点数
         attackPoint = SystemConst.Battle.ATTACK_POINT_THRESHOLD; // 回合制下每回合可以行动一次
 
-        // 召唤物生命周期
-        if (dieAfterLifeTime)
+        // 召唤物生命周期（按回合）
+        if (dieAfterLife)
         {
-            lifeTickCount--;
-            if (lifeTickCount <= 0)
+            lifeRoundCount--;
+            if (lifeRoundCount <= 0)
             {
                 Ondying();
                 isTurnFinished = true;
@@ -327,29 +285,23 @@ public class Chess : SceneObj
             }
         }
 
-        // 技能延迟效果
-        SkillManager.LogicUpdate(this, BattleManager.Instance.tickIndex);
+        // 技能回合更新
+        SkillManager.LogicUpdate(this);
 
         // 生命回复
         CheckHpReg();
 
-        // 持续伤害（DoT）
+        // 持续伤害（每回合结算一次）
         for (int i = dotStates.Count - 1; i >= 0; i--)
         {
             var dotState = dotStates[i];
-            dotState.tickCount++;
 
-            if (dotState.tickCount >= dotState.tickInterval)
+            if (hp > 0)
             {
-                dotState.tickCount = 0;
-
-                if (hp > 0)
+                var caster = BattleManager.Instance.GetChess(dotState.casterId);
+                if (caster != null)
                 {
-                    var caster = BattleManager.Instance.GetChess(dotState.casterId);
-                    if (caster != null)
-                    {
-                        DoSkillDamage(caster, dotState.skillId, (int)dotState.damage, false, 0);
-                    }
+                    DoSkillDamage(caster, dotState.skillId, (int)dotState.damage, false, 0);
                 }
             }
         }
@@ -366,7 +318,7 @@ public class Chess : SceneObj
             return;
         }
 
-        ChessAI.ProcessTurn(this, BattleManager.Instance.tickIndex);
+        ChessAI.ProcessTurn(this);
 
         if (!hasPendingAction)
             isTurnFinished = true;
@@ -390,22 +342,15 @@ public class Chess : SceneObj
         }
     }
 
-    public override void RenderUpdate(int tickIndex, float indexMini, float timeElapsed)
+    public override void RenderUpdate()
     {
-        base.RenderUpdate(tickIndex, indexMini, timeElapsed);
+        base.RenderUpdate();
     }
 
     private void CheckHpReg()
     {
         if (regeHp > 0)
-        {
-            regeTickCount++;
-            if (regeTickCount >= SystemConst.Battle.REGE_INTERVAL_TICKS)
-            {
-                regeTickCount -= SystemConst.Battle.REGE_INTERVAL_TICKS;
-                AddHp(regeHp);
-            }
-        }
+            AddHp(regeHp);
     }
 
     public override void SetPosition(Vector3 position)
@@ -421,17 +366,16 @@ public class Chess : SceneObj
     public void LockTarget(Chess target1)
     {
         targetChessId = target1.id;
-        // lastTargetUpdateTick = BattleManager.Instance.time;
     }
 
     // 发起攻击（仅创建AttackAction，伤害计算在AttackAction中延迟执行）
-    public void Attack(Chess victim, string hitEffectName, int tickIndex)
+    public void Attack(Chess victim, string hitEffectName)
     {
         if (victim == null)
             return;
 
         var isRanged = attackRange >= SystemConst.Battle.RANGE_ATTACK_THRESHOLD;
-        var attackAction = new AttackAction(id, tickIndex, victim.id, hitEffectName, "str", isRanged);
+        var attackAction = new AttackAction(id, BattleManager.Instance.battleTime, victim.id, hitEffectName, "str", isRanged);
         BattleManager.Instance.AddChessAction(attackAction);
     }
 
@@ -488,7 +432,7 @@ public class Chess : SceneObj
         SkillManager.OnDoSkillDamage(this, caster, skillCfg, ref damage, isFeedback);          
 
         // 创建SkillDamageAction并添加到BattleManager
-        var action = new SkillDamageAction(caster.id, BattleManager.Instance.tickIndex, id, skillId, damage);
+        var action = new SkillDamageAction(caster.id, BattleManager.Instance.battleTime, id, skillId, damage);
         BattleManager.Instance.AddChessAction(action);
     }
 
@@ -511,7 +455,7 @@ public class Chess : SceneObj
     {
         if (isDying) return;
         isDying = true;
-        var action = new RemoveChessAction(id, BattleManager.Instance.tickIndex);
+        var action = new RemoveChessAction(id, BattleManager.Instance.battleTime);
         BattleManager.Instance.AddChessAction(action);
     }
 
@@ -565,7 +509,7 @@ public class Chess : SceneObj
         if(addon <= 0)
             throw new Exception("添加的血量不能小于等于0");
 
-        var action = new ChessChangeHpAction(id, BattleManager.Instance.tickIndex, addon);
+        var action = new AddHpAction(id, BattleManager.Instance.battleTime, addon);
         BattleManager.Instance.AddChessAction(action);
     }
 
@@ -580,10 +524,10 @@ public class Chess : SceneObj
         attackPoint += time;
     }
 
-    public void SetLifeTime(float time)
+    public void SetLifeRound(int round)
     {
-        dieAfterLifeTime = true;
-        lifeTickCount = BattleManager.Instance.GetTickFromTime(time);
+        dieAfterLife = true;
+        lifeRoundCount = round;
     }
 
     public SaveForceData GetForceInfo()
@@ -591,9 +535,9 @@ public class Chess : SceneObj
         return GameManager.Instance.GetForce(forceId);
     }
 
-    public bool IsInFight(int nowTick)
+    public bool IsInFight(float nowTime)
     {
-        return nowTick < lastAttackTime + SystemConst.Battle.IN_FIGHT_TICK_THRESHOLD;
+        return nowTime < lastAttackTime + SystemConst.Battle.IN_FIGHT_TIME_THRESHOLD;
     }
 
     public void AddBuff(Buff buff, Chess caster, int endRound)
@@ -612,16 +556,14 @@ public class Chess : SceneObj
         buff.OnAdd(this, caster);
     }
 
-    // 添加持续伤害状态
+    // 添加持续伤害状态（回合制：每回合结算一次）
     public void AddDamageOverTimeState(int casterId, int skillId, float damage)
     {
         var dotState = new DamageOverTimeState
         {
             casterId = casterId,
             skillId = skillId,
-            damage = damage,
-            tickCount = 0,
-            tickInterval = BattleManager.Instance.GetTickFromTime(1) // 1秒 = 10 tick
+            damage = damage
         };
         dotStates.Add(dotState);
     }

@@ -3,12 +3,12 @@ public class ChessAction
 {
     public int ActionId;
     public int SourceId;
-    public int Tick;
+    public float Time; // 执行时刻(秒)
 
-    public ChessAction(int sourceId, int tick)
+    public ChessAction(int sourceId, float time)
     {
         SourceId = sourceId;
-        Tick = tick;
+        Time = time;
     }
 
     public virtual void Doing()

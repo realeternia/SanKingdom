@@ -12,7 +12,7 @@ public class SkillAttackSpeedAttack : BattleSkill
     {
         if (CheckBurst(defender))
         {
-            SkillManager.AddSkillAction(owner, null, id, 0);
+            this.OnPlaySkill(null, 0);
             GameLog.Debug("SkillSpeedAttack");
 
             owner.Cooldown((int)(2 * skillCfg.Strength));

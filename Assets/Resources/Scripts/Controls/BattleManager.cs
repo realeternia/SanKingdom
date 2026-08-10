@@ -42,8 +42,6 @@ public class BattleManager : MonoBehaviour
     public int battleId;
     [NonSerialized]
     public int cityId;
-
-
     public List<BattlePlayerINfo> playerInfoList = new List<BattlePlayerINfo>();
 
     public List<Chess> chessList = new List<Chess>(); // 所有棋子
@@ -51,9 +49,6 @@ public class BattleManager : MonoBehaviour
 
     [NonSerialized]
     public MapCell[,] mapCells;
-
-    [NonSerialized]
-    private NLCoroutineManager coroutineManager = new NLCoroutineManager();
 
     [SerializeReference]
     public List<ChessAction> actions = new List<ChessAction>();    
@@ -64,8 +59,10 @@ public class BattleManager : MonoBehaviour
     private BattleResult battleResult;
     public int idCounter = 100;
     public int actionIdCounter = 1;
-    public int tickIndex = 1;
+    public float battleTime = 0f; // 战斗逻辑时钟(秒)
     public int round = 0;
+    [NonSerialized]
+    private readonly List<(float time, Action callback)> delayedCallbacks = new List<(float time, Action callback)>(); // 逻辑时间延迟回调
     public const int MaxRound = SystemConst.Battle.MAX_ROUND;
 
     public BattleTurnPhase turnPhase = BattleTurnPhase.RoundStart;
@@ -89,9 +86,6 @@ public class BattleManager : MonoBehaviour
     private List<SaveTroopsData> attackTroops;
     [NonSerialized]
     private List<SaveTroopsData> defenderTroops;
-
-    [NonSerialized]
-    private bool isDoingAction = false;
 
     [NonSerialized]
     public bool isDeployPhase = false;
@@ -504,7 +498,7 @@ public class BattleManager : MonoBehaviour
             return new Vector3(435 + row * 15, 7, 255 - zRow * 15);
     }
 
-    public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, float summonTime, Action<int> cb = null, int customHp = -1)
+    public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, int summonRound, Action<int> cb = null, int customHp = -1)
     {
         var id = idCounter++;
 
@@ -514,13 +508,13 @@ public class BattleManager : MonoBehaviour
         var def = battleUnitConfig.Def;
         var soldierNum = customHp > 0 ? customHp : battleUnitConfig.Hp;
         
-        var action = new CreateChessAction(0, tickIndex, id, force.forceId, battleUnitId, soldierNum, armsId, atk, def, spawnPos, summonTime, cb);
+        var action = new CreateChessAction(0, battleTime, id, force.forceId, battleUnitId, soldierNum, armsId, atk, def, spawnPos, summonRound, cb);
         AddChessAction(action);
 
         return id;
     }
 
-    private void SpawnTroopForRegion(SaveForceData force, int tickAdd, UnityEngine.Vector3 spawnPoint, SaveTroopsData troop, int soldierCount, int noActionCount = 0)
+    private void SpawnTroopForRegion(SaveForceData force, float timeAdd, UnityEngine.Vector3 spawnPoint, SaveTroopsData troop, int soldierCount, int noActionCount = 0, string spawnEffect = "")
     {
         if (troop.heroId1 <= 0)
             return;
@@ -531,15 +525,14 @@ public class BattleManager : MonoBehaviour
         var (atk, def) = SysFormula.Battle.CalculateCombatAttrForTroop(troop);
 
         var id = idCounter++;
-        var action = new CreateChessAction(0, tickAdd, id, force.forceId,
+        var action = new CreateChessAction(0, timeAdd, id, force.forceId,
             troop.heroId1, troop.heroId2, troop.heroId3, 
             heroData1.GetLevel(), 
             soldierCount, troop.armsId, atk, def, inte, spawnPoint);
         action.NoActionCount = noActionCount;
+        action.SpawnEffect = spawnEffect;
         AddChessAction(action);
     }
-
-    public static float tickTimeReal = 0.1f; //加速功能
 
     public void SortTurnOrder()
     {
@@ -580,7 +573,7 @@ public class BattleManager : MonoBehaviour
                     currentTurnIndex = 0;
                     if (showUI)
                         BattleInfoTop.Instance.UpdateRound(round, MaxRound);
-                    AddChessAction(new RoundUpdateAction(0, tickIndex, round));
+                    AddChessAction(new RoundUpdateAction(0, battleTime, round));
                     // 回合开始：检查Buff过期
                     foreach (var chess in chessList.ToArray())
                     {
@@ -641,8 +634,8 @@ public class BattleManager : MonoBehaviour
                 case BattleTurnPhase.NextTurn:
                     if (!quickMode)
                     {
-                        turnEndWaitTimer++;
-                        if (turnEndWaitTimer < GetTickFromTime(TURN_END_WAIT_TIME))
+                        turnEndWaitTimer += SystemConst.Battle.LOGIC_STEP;
+                        if (turnEndWaitTimer < TURN_END_WAIT_TIME)
                             return;
                     }
                     currentTurnIndex++;
@@ -657,7 +650,7 @@ public class BattleManager : MonoBehaviour
                         turnPhase = BattleTurnPhase.RoundEnd;
                     else
                         turnPhase = BattleTurnPhase.TurnStart;
-                    return; // 切换棋子，return让tick推进
+                    return; // 切换棋子，return让逻辑步推进
 
                 case BattleTurnPhase.RoundEnd:
                     turnPhase = BattleTurnPhase.RoundStart;
@@ -672,17 +665,18 @@ public class BattleManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         GameLog.Debug($"GameUpdatett start battleId={battleId} realTime={Time.time} cityId={cityId}");
-        tickIndex = 1;
+        battleTime = 0f;
 
-        var waitTick = GetTickFromTime(SystemConst.Battle.WAIT_TIME);
-        var battleBeginTick = GetTickFromTime(SystemConst.Battle.BATTLE_BEGIN_TIME);
+        var waitSeconds = SystemConst.Battle.WAIT_TIME;
+        var battleBeginSeconds = SystemConst.Battle.BATTLE_BEGIN_TIME;
 
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
-        var magicHelperUnitId = SpawnUnitsForRegion(player1, SystemConst.Battle.MAGIC_HELPER_UNIT_ID, new Vector3(1, 7, 1), 10);
+        // 魔法辅助单位：纯单位创建，返回值不再使用
+        SpawnUnitsForRegion(player1, SystemConst.Battle.MAGIC_HELPER_UNIT_ID, new Vector3(1, 7, 1), SystemConst.Battle.MAGIC_HELPER_LIFE_ROUND);
 
         bool battleInitialized = false;
-        float tickAccumulator = 0f;
-        int replayMaxTick = replay && actions.Count > 0 ? actions.Max(x => x.Tick) : 0;
+        float stepAccumulator = 0f;
+        float replayMaxTime = replay && actions.Count > 0 ? actions.Max(x => x.Time) : 0f;
 
         while (!gameFinish)
         {
@@ -695,36 +689,36 @@ public class BattleManager : MonoBehaviour
                 {
                     var missile = missileList[j];
                     if (missile != null)
-                        missile.RenderUpdate(tickIndex, 0, frameDelta);
+                        missile.RenderUpdate();
                 }
                 foreach (var chess in chessList.ToArray())
                 {
                     if (chess != null)
-                        chess.RenderUpdate(tickIndex, 0, frameDelta);
+                        chess.RenderUpdate();
                 }
             }
 
-            // quickMode下每帧执行多个Tick，正常模式按真实时间推进
-            int ticksThisFrame = quickMode ? (showUI ? 10 : 100) : 1;
+            // quickMode下每帧执行多个逻辑步，正常模式按真实时间推进
+            int stepsThisFrame = quickMode ? (showUI ? 10 : 100) : 1;
             if (!quickMode)
-                tickAccumulator += frameDelta;
+                stepAccumulator += frameDelta;
 
-            for (int t = 0; t < ticksThisFrame; t++)
+            for (int t = 0; t < stepsThisFrame; t++)
             {
                 if (gameFinish) break;
 
                 if (!quickMode)
                 {
-                    if (tickAccumulator < tickTimeReal)
+                    if (stepAccumulator < SystemConst.Battle.LOGIC_STEP)
                         break;
-                    tickAccumulator -= tickTimeReal;
+                    stepAccumulator -= SystemConst.Battle.LOGIC_STEP;
                 }
 
                 // Missile逻辑更新（不受回合制影响）
                 foreach (var missile in missileList.ToArray())
                 {
                     if (missile != null)
-                        missile.LogicUpdate(tickIndex);
+                        missile.LogicUpdate();
                 }
 
                 // 初始化阶段：召唤棋子和技能初始化
@@ -738,20 +732,20 @@ public class BattleManager : MonoBehaviour
                     }
                     else
                     {
-                        if (waitTick > 0 && tickIndex >= waitTick)
+                        if (waitSeconds > 0 && battleTime >= waitSeconds)
                         {
-                            InitSummon(magicHelperUnitId, attackSoldierMap, defenderSoldierMap);
+                            InitSummon(attackSoldierMap, defenderSoldierMap);
                             InitWallsAndGates();
-                            waitTick = 0;
+                            waitSeconds = 0;
                         }
 
-                        if (battleBeginTick > 0 && tickIndex >= battleBeginTick)
+                        if (battleBeginSeconds > 0 && battleTime >= battleBeginSeconds)
                         {
                             foreach (var chess in chessList.ToArray())
                                 SkillManager.CheckAddSkill(chess);
                             foreach (var chess in chessList.ToArray())
                                 SkillManager.BattleBegin(chess);
-                            battleBeginTick = 0;
+                            battleBeginSeconds = 0;
                             battleInitialized = true;
                             ChessAI.SetBattleStarted();
                             turnPhase = BattleTurnPhase.RoundStart;
@@ -769,13 +763,25 @@ public class BattleManager : MonoBehaviour
                 }
 
                 // 执行Action队列
-                isDoingAction = true;
-                actions.FindAll(x => x.Tick == tickIndex).ForEach(x => x.Doing());
-                isDoingAction = false;
-                OnCellEffectsRoundUpdate(round);
-                coroutineManager.Update(tickTimeReal);
+                var dueActions = actions.Where(a => a.Time <= battleTime).ToList();
+                actions.RemoveAll(a => a.Time <= battleTime);
+                foreach (var action in dueActions)
+                    action.Doing();
 
-                // 每Tick检查死亡单位（在Action执行之后，确保伤害已结算；回放模式由保存的RemoveChessAction处理，跳过）
+                // 执行到期的延迟回调（随逻辑时钟推进，quickMode/回放下均正确）
+                for (int i = delayedCallbacks.Count - 1; i >= 0; i--)
+                {
+                    if (delayedCallbacks[i].time <= battleTime)
+                    {
+                        var cb = delayedCallbacks[i].callback;
+                        delayedCallbacks.RemoveAt(i);
+                        cb?.Invoke();
+                    }
+                }
+
+                OnCellEffectsRoundUpdate(round);
+
+                // 每个逻辑步检查死亡单位（在Action执行之后，确保伤害已结算；回放模式由保存的RemoveChessAction处理，跳过）
                 if (!replay)
                 {
                     foreach (var chess in chessList.ToArray())
@@ -786,14 +792,14 @@ public class BattleManager : MonoBehaviour
                 }
 
                 // 回放模式：所有Action执行完毕后结束战斗
-                if (replay && replayMaxTick > 0 && tickIndex > replayMaxTick)
+                if (replay && replayMaxTime > 0 && battleTime > replayMaxTime)
                 {
                     gameFinish = true;
                     if (battleResult == default(BattleResult))
                         battleResult = BattleResult.Draw;
                 }
 
-                tickIndex++;
+                battleTime += SystemConst.Battle.LOGIC_STEP;
             }
 
             if (showUI)
@@ -868,7 +874,7 @@ public class BattleManager : MonoBehaviour
         currentBattleCoroutine = null;
     }
 
-    private void InitSummon(int magicHelperUnitId, Dictionary<int, int> attackSoldierMap, Dictionary<int, int> defenderSoldierMap)
+    private void InitSummon(Dictionary<int, int> attackSoldierMap, Dictionary<int, int> defenderSoldierMap)
     {
         var player1 = GameManager.Instance.GetForce(playerInfoList[0].forceId);
         var player2 = GameManager.Instance.GetForce(playerInfoList[1].forceId);
@@ -891,10 +897,8 @@ public class BattleManager : MonoBehaviour
             {
                 spawnPos = GetDefenderSpawnPosition(defenderTroops, i, defRowCounts);
             }
-            var tick = tickIndex + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
-            var eff = new CreateEffectAction(magicHelperUnitId, tick, spawnPos, "SoftFireBigRed", 0.7f);
-            AddChessAction(eff);
-            SpawnTroopForRegion(player2, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, spawnPos, defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0);
+            var time = battleTime + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i) * SystemConst.Battle.LOGIC_STEP;
+            SpawnTroopForRegion(player2, time, spawnPos, defenderTroops[i], defenderSoldierMap.ContainsKey(defenderTroops[i].heroId1) ? defenderSoldierMap[defenderTroops[i].heroId1] : 0, 0, "SoftFireBigRed");
         }
 
         // 攻击方出生点：远程兵种固定放第二排(row=1)，近战先放第一排(row=0)再放第三排(row=2)
@@ -912,10 +916,8 @@ public class BattleManager : MonoBehaviour
             {
                 spawnPos = GetAISpawnPosition(attackTroops, i, 1, ref atkMeleeR0Col, ref atkMeleeR2Col, ref atkRangedCol);
             }
-            var tick = tickIndex + SystemConst.Battle.ATTACKER_SPAWN_DELAY_TICKS + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i);
-            var eff = new CreateEffectAction(magicHelperUnitId, tick, spawnPos, "LightningExplosionBlue", 0.7f);
-            AddChessAction(eff);
-            SpawnTroopForRegion(player1, tick + SystemConst.Battle.SUMMON_HERO_DELAY_TICKS, spawnPos, attackTroops[i], attackSoldierMap.ContainsKey(attackTroops[i].heroId1) ? attackSoldierMap[attackTroops[i].heroId1] : 0);
+            var time = battleTime + SystemConst.Battle.ATTACKER_SPAWN_DELAY_SECONDS + (count > SystemConst.Battle.SUMMON_BATCH_THRESHOLD ? (i/2) : i) * SystemConst.Battle.LOGIC_STEP;
+            SpawnTroopForRegion(player1, time, spawnPos, attackTroops[i], attackSoldierMap.ContainsKey(attackTroops[i].heroId1) ? attackSoldierMap[attackTroops[i].heroId1] : 0, 0, "LightningExplosionBlue");
         }
 
         GameLog.Info($"InitSummon {player1.Name} {attackTroops.Count} {player2.Name} {defenderTroops.Count}");
@@ -979,11 +981,6 @@ public class BattleManager : MonoBehaviour
             }
         }
     }
-
-    public int GetTickFromTime(float time)
-    {
-        return (int)(time / tickTimeReal);
-    } 
 
     public void CreateAttackMissile(Chess sourceChess, Chess targetChess, int attackDamage = 0, bool attackIsCrit = false, bool attackIsDodge = false, string hitEffect = "", string attackDamType = "str", int actionId = 0)
     {
@@ -1074,7 +1071,7 @@ public class BattleManager : MonoBehaviour
         {
             for (int z = 0; z < height; z++)
             {
-                mapCells[x, z] = new MapCell(SystemConst.Battle.GRID_MIN_GX + x, SystemConst.Battle.GRID_MIN_GZ + z);
+                mapCells[x, z] = new MapCell(x * height + z + 1, SystemConst.Battle.GRID_MIN_GX + x, SystemConst.Battle.GRID_MIN_GZ + z);
             }
         }
     }
@@ -1108,16 +1105,51 @@ public class BattleManager : MonoBehaviour
         return mapCells[gx - SystemConst.Battle.GRID_MIN_GX, gz - SystemConst.Battle.GRID_MIN_GZ];
     }
 
-    public void AddCellEffect(int gx, int gz, CellEffect effect)
+    /// <summary>
+    /// 按格子ID查找格子，ID由 InitMapCells 从1开始按 x*height+z+1 分配
+    /// </summary>
+    public MapCell GetMapCellById(int cellId)
     {
-        var action = new AddCellEffectAction(0, tickIndex, gx, gz, effect);
+        if (mapCells == null || cellId <= 0)
+            return null;
+        int width = mapCells.GetLength(0);
+        int height = mapCells.GetLength(1);
+        int idx = cellId - 1;
+        int x = idx / height;
+        int z = idx % height;
+        if (x < 0 || x >= width || z < 0 || z >= height)
+            return null;
+        return mapCells[x, z];
+    }
+
+    /// <summary>
+    /// 坐标转格子ID，越界返回0
+    /// </summary>
+    public int GetCellId(int gx, int gz)
+    {
+        var cell = GetMapCell(gx, gz);
+        return cell != null ? cell.id : 0;
+    }
+
+    public void AddCellEffect(int cellId, CellEffect effect)
+    {
+        if (cellId <= 0)
+        {
+            GameLog.Warn($"AddCellEffect cellId={cellId} 无效，跳过");
+            return;
+        }
+        var action = new AddCellEffectAction(0, battleTime, cellId, effect);
         AddChessAction(action);
     }
 
-    public void DoAddCellEffect(int gx, int gz, CellEffect effect)
+    public void DoAddCellEffect(int cellId, CellEffect effect)
     {
-        var cell = GetMapCell(gx, gz);
-        if (cell == null) return;
+        var cell = GetMapCellById(cellId);
+        if (cell == null)
+        {
+            GameLog.Error($"DoAddCellEffect cellId={cellId} 未找到对应格子");
+            return;
+        }
         cell.AddEffect(effect);
     }
 
@@ -1164,7 +1196,7 @@ public class BattleManager : MonoBehaviour
         for (int i = cell.effects.Count - 1; i >= 0; i--)
         {
             var effect = cell.effects[i];
-            effect.Trigger(gx, gz);
+            effect.Trigger();
             if (effect.IsExpired(round))
             {
                 effect.DestroyView();
@@ -1273,7 +1305,7 @@ public class BattleManager : MonoBehaviour
 
             int unitId = (i == 1 || i == 3) ? SystemConst.Battle.GATE_UNIT_ID : SystemConst.Battle.WALL_UNIT_ID;
             int hp = (i == 1 || i == 3) ? gateHp : -1;
-            SpawnUnitsForRegion(defForce, unitId, GridCoordToWorld(gx, gz), 0f, null, hp);
+            SpawnUnitsForRegion(defForce, unitId, GridCoordToWorld(gx, gz), 0, null, hp);
         }
 
         // 在两个城门中间的后方一格生成箭塔（城防300以上才有）
@@ -1282,7 +1314,7 @@ public class BattleManager : MonoBehaviour
         if (wallValue >= SystemConst.City.TOWER_MIN_WALL)
         {
             int towerHp = Math.Max(1, gateHp / 2);
-            SpawnUnitsForRegion(defForce, SystemConst.Battle.TOWER_UNIT_ID, GridCoordToWorld(towerGx, towerGz), 0f, null, towerHp);
+            SpawnUnitsForRegion(defForce, SystemConst.Battle.TOWER_UNIT_ID, GridCoordToWorld(towerGx, towerGz), 0, null, towerHp);
             GameLog.Info($"InitWallsAndGates cityId={cityId} wall={wallValue} gateHp={gateHp} towerHp={towerHp}");
         }
         else
@@ -1388,7 +1420,7 @@ public class BattleManager : MonoBehaviour
 
         chessList.Remove(dieUnit);
 
-        // 回放模式由replayMaxTick控制结束，不修改gameFinish
+        // 回放模式由replayMaxTime控制结束，不修改gameFinish
         if (!SkillManager.isReplay)
         {
             gameFinish = false;
@@ -1540,10 +1572,15 @@ public class BattleManager : MonoBehaviour
             return;
 
         action.ActionId = actionIdCounter++;
-        if(isDoingAction && action.Tick == tickIndex)
-            action.Tick ++; //顺延到下一帧
-        
         actions.Add(action);
+    }
+
+    /// <summary>
+    /// 按战斗逻辑时间延迟delaySeconds后执行回调，随逻辑步推进（表现类延迟）
+    /// </summary>
+    public void DelayedCall(float delaySeconds, Action callback)
+    {
+        delayedCallbacks.Add((battleTime + delaySeconds, callback));
     }
 
     // 序列化到文件
