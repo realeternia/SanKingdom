@@ -62,6 +62,8 @@ public class BattleManager : MonoBehaviour
     public float battleTime = 0f; // 战斗逻辑时钟(秒)
     public int round = 0;
     [NonSerialized]
+    private int firstPendingActionIndex = 0; // 第一个未执行动作的下标，避免每步从0重扫已执行前缀
+    [NonSerialized]
     private readonly List<(float time, Action callback)> delayedCallbacks = new List<(float time, Action callback)>(); // 逻辑时间延迟回调
     public const int MaxRound = SystemConst.Battle.MAX_ROUND;
 
@@ -138,6 +140,7 @@ public class BattleManager : MonoBehaviour
         chessList.Clear();
         missileList.Clear();
         actions.Clear();
+        firstPendingActionIndex = 0;
         InitMapCells();
         idCounter = 100;
         actionIdCounter = 1;
@@ -762,11 +765,22 @@ public class BattleManager : MonoBehaviour
                     }
                 }
 
-                // 执行Action队列
-                var dueActions = actions.Where(a => a.Time <= battleTime).ToList();
-                actions.RemoveAll(a => a.Time <= battleTime);
-                foreach (var action in dueActions)
-                    action.Doing();
+                // 执行Action队列：从第一个未执行动作开始扫描，只执行到期且未执行的动作
+                // 快照列表长度而非ToList快照，Doing期间新增动作超出长度，顺延到下一步执行
+                // 动作保留在列表中（不移除），战斗结束存盘时保留全程历史供回放使用
+                int actionCount = actions.Count;
+                for (int i = firstPendingActionIndex; i < actionCount; i++)
+                {
+                    var action = actions[i];
+                    if (action.Time <= battleTime && !action.done)
+                    {
+                        action.done = true;
+                        action.Doing();
+                    }
+                }
+                // 前移扫描起点：只跳过已执行动作。Time非单调，未到期动作只能逐遍判断，不能跳过
+                while (firstPendingActionIndex < actions.Count && actions[firstPendingActionIndex].done)
+                    firstPendingActionIndex++;
 
                 // 执行到期的延迟回调（随逻辑时钟推进，quickMode/回放下均正确）
                 for (int i = delayedCallbacks.Count - 1; i >= 0; i--)
@@ -866,6 +880,9 @@ public class BattleManager : MonoBehaviour
 
             LogBattleResult();
             SaveToFile("battlereplayer" + battleId + ".json");
+
+            // 战斗结束后立即存档（含GM指令发起的战斗），避免玩家在下一回合前退出丢失战果
+            GameManager.Instance.SaveToFile();
         }
 
         ResourceCache.ClearBattleCache();
@@ -1599,6 +1616,7 @@ public class BattleManager : MonoBehaviour
         {
             string json = System.IO.File.ReadAllText(filePath);
             JsonUtility.FromJsonOverwrite(json, this);
+            firstPendingActionIndex = 0; // 回放加载后done全部重置为false，从头开始扫描
 
             foreach (var chessComponent in chessList)
             {
