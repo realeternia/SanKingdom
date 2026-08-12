@@ -156,14 +156,14 @@ public static class SkillManager
                 skill.OnCheckCD(skillCfg, ref cdTime);
         }
     }
-    public static void OnCheckRoundCount(Chess caster, BattleSkillConfig skillCfg, ref int roundCount)
+    public static void OnCheckSummonRoundCount(Chess caster, BattleSkillConfig skillCfg, ref int roundCount)
     {
         if(isReplay)
             return;
         foreach (var skill in caster.skills)
         {
             if(skill.skillId != skillCfg.Id) //防止自己判定自己
-                skill.OnCheckRoundCount(skillCfg, ref roundCount);
+                skill.OnCheckSummonRoundCount(skillCfg, ref roundCount);
         }
     }
 

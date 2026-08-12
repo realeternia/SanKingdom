@@ -15,7 +15,7 @@ public class SkillHitWall : BattleSkill
             this.OnPlaySkill(null, 0);
 
             var targetPos = defender.position;
-            var roundCount = GetRoundCount();
+            var roundCount = GetSummonRoundCount();
             var currentRound = BattleManager.Instance.round;
 
             Vector3 direction = (defender.position - owner.position).normalized;

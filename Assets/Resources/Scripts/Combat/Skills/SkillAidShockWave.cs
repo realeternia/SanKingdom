@@ -26,7 +26,7 @@ public class SkillAidShockWave : BattleSkill
 
         var damage = (int)(owner.GetAttr(skillCfg.Attr) * skillCfg.SkillDamageAttrRate);
         this.OnPlaySkill(targetChess, damage);
-        BattleManager.Instance.CreateSpellMissile(owner, targetPos, GetRoundCount(), skillCfg.Id, damage);
+        BattleManager.Instance.CreateSpellMissile(owner, targetPos, GetSummonRoundCount(), skillCfg.Id, damage);
         GameLog.Debug($"SkillAidShockWave[aid=0] id={id} damage={damage}");
 
         return true;

@@ -7,15 +7,15 @@ public class SkillModifySummonTime : BattleSkill
     {
     }
 
-    public override void OnCheckRoundCount(BattleSkillConfig checkSkillCfg, ref int roundCount)
+    public override void OnCheckSummonRoundCount(BattleSkillConfig checkSkillCfg, ref int roundCount)
     {
-        if (checkSkillCfg.RoundCount <= 0)
+        if (checkSkillCfg.SummonRoundCount <= 0)
             return;
 
         if(checkSkillCfg.SummonTag != skillCfg.SummonTag)
             return;
 
-        roundCount += skillCfg.RoundCount;
+        roundCount += skillCfg.SummonRoundCount;
     }
 
 }

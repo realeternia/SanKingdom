@@ -160,7 +160,7 @@ public class BattleSkill : IRecoverable
         
     }
 
-    public virtual void OnCheckRoundCount(BattleSkillConfig checkSkillCfg, ref int roundCount)
+    public virtual void OnCheckSummonRoundCount(BattleSkillConfig checkSkillCfg, ref int roundCount)
     {
 
     }
@@ -170,10 +170,10 @@ public class BattleSkill : IRecoverable
 
     }
 
-    public int GetRoundCount()
+    public int GetSummonRoundCount()
     {
-        var roundCount = skillCfg.RoundCount;
-        SkillManager.OnCheckRoundCount(owner, skillCfg, ref roundCount);
+        var roundCount = skillCfg.SummonRoundCount;
+        SkillManager.OnCheckSummonRoundCount(owner, skillCfg, ref roundCount);
         return roundCount;
     }
 

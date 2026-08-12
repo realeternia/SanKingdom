@@ -306,8 +306,8 @@ public class Chess : SceneObj
             }
         }
 
-        // 格子持续效果结算：棋子轮到时，若所在格子有effect则结算伤害
-        BattleManager.Instance.TriggerCellEffectsAtChess(this);
+        // 格子持续效果结算：施法者行动时，对其施放的效果在其所在格结算一次伤害（城门/箭塔等不行动单位也可被结算）
+        BattleManager.Instance.TriggerCellEffectsByCaster(this);
     }
 
     public void OnTurnAction()

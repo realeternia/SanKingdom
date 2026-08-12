@@ -1140,6 +1140,27 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 获取占据指定格子的单位：优先取格子占用记录，否则按坐标匹配城门/箭塔/城墙等不占格建筑
+    /// </summary>
+    public Chess GetChessOnCell(int cellId)
+    {
+        var cell = GetMapCellById(cellId);
+        if (cell == null) return null;
+        if (cell.chessId != 0)
+            return GetChess(cell.chessId);
+        for (int i = 0; i < chessList.Count; i++)
+        {
+            var chess = chessList[i];
+            if (chess == null || chess.hp <= 0) continue;
+            if (!chess.isGate && !chess.isWall && !chess.isTower) continue;
+            var (gx, gz) = WorldToGridCoord(chess.position);
+            if (gx == cell.gridX && gz == cell.gridZ)
+                return chess;
+        }
+        return null;
+    }
+
+    /// <summary>
     /// 坐标转格子ID，越界返回0
     /// </summary>
     public int GetCellId(int gx, int gz)
@@ -1201,23 +1222,31 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 在棋子轮到时结算其所在格子的持续效果伤害，并清理该格已过期的效果
+    /// 施法者每次行动时，对其施放的所有格子持续效果在其所在格结算一次伤害（不依赖目标单位是否行动），并清理已过期效果
     /// </summary>
-    public void TriggerCellEffectsAtChess(Chess chess)
+    public void TriggerCellEffectsByCaster(Chess caster)
     {
         if (SkillManager.isReplay) return;
-        if (mapCells == null || chess == null || chess.hp <= 0) return;
-        var (gx, gz) = WorldToGridCoord(chess.position);
-        var cell = GetMapCell(gx, gz);
-        if (cell == null || cell.effects == null || cell.effects.Count == 0) return;
-        for (int i = cell.effects.Count - 1; i >= 0; i--)
+        if (mapCells == null || caster == null || caster.hp <= 0) return;
+        int width = mapCells.GetLength(0);
+        int height = mapCells.GetLength(1);
+        for (int x = 0; x < width; x++)
         {
-            var effect = cell.effects[i];
-            effect.Trigger();
-            if (effect.IsExpired(round))
+            for (int z = 0; z < height; z++)
             {
-                effect.DestroyView();
-                cell.effects.RemoveAt(i);
+                var cell = mapCells[x, z];
+                if (cell.effects == null || cell.effects.Count == 0) continue;
+                for (int i = cell.effects.Count - 1; i >= 0; i--)
+                {
+                    var effect = cell.effects[i];
+                    if (effect.casterId != caster.id) continue;
+                    effect.Trigger();
+                    if (effect.IsExpired(round))
+                    {
+                        effect.DestroyView();
+                        cell.effects.RemoveAt(i);
+                    }
+                }
             }
         }
     }

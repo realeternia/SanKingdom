@@ -31,17 +31,14 @@ public class CellEffect
     }
 
     /// <summary>
-    /// 每回合结算：若格子被敌方单位占用则对其造成伤害
+    /// 每回合结算：若格子被敌方单位占用则对其造成伤害（含不占格的城门/箭塔/城墙）
     /// </summary>
     public void Trigger()
     {
         var caster = BattleManager.Instance.GetChess(casterId);
         if (caster == null || caster.hp <= 0) return;
 
-        var cell = BattleManager.Instance.GetMapCellById(cellId);
-        if (cell == null || !cell.IsOccupied()) return;
-
-        var target = BattleManager.Instance.GetChess(cell.chessId);
+        var target = BattleManager.Instance.GetChessOnCell(cellId);
         if (target == null || target.forceId == forceId || target.hp <= 0) return;
 
         var damage = (int)(caster.GetAttr(attr) * damageRate);

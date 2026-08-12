@@ -85,7 +85,7 @@ public class GmPanelManager : MonoBehaviour
 
         // 五虎上将
         attackTroops.Add(new SaveTroopsData{ heroId1 = 101002, armsId = 101 }); // 关羽-骑兵
-        attackTroops.Add(new SaveTroopsData{ heroId1 = 101001, armsId = 201 }); // 张飞-枪兵
+        attackTroops.Add(new SaveTroopsData{ heroId1 = 103006, armsId = 201 }); // 张飞-枪兵
        // attackTroops.Add(new SaveTroopsData{ heroId1 = 101008, armsId = 101 }); // 赵云-骑兵
        // attackTroops.Add(new SaveTroopsData{ heroId1 = 106001, armsId = 101 }); // 马超-骑兵
        // attackTroops.Add(new SaveTroopsData{ heroId1 = 107002, armsId = 201 }); // 黄忠-弓兵

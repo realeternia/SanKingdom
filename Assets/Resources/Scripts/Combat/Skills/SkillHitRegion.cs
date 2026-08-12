@@ -14,7 +14,7 @@ public class SkillHitRegion : BattleSkill
         if (CheckBurst(defender))
         {
             targetPos = defender.position;
-            var roundCount = GetRoundCount();
+            var roundCount = GetSummonRoundCount();
             var currentRound = BattleManager.Instance.round;
 
             var bm = BattleManager.Instance;
