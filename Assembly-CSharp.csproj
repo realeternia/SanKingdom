@@ -192,6 +192,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\CityLevelConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Effects\DissolveEffect.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleManager.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\AStarPathfinding.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\MissileEffName.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillModifySummonTime.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitRegion.cs" />

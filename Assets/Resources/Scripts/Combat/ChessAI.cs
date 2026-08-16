@@ -295,38 +295,54 @@ public static class ChessAI
 
     private static Vector3 GetMoveDest(Chess self)
     {
-        var targetChess = BattleManager.Instance.GetChess(self.targetChessId);
+        var bm = BattleManager.Instance;
+        var targetChess = bm.GetChess(self.targetChessId);
         if (targetChess == null)
             return Vector3.zero;
 
-        var bm = BattleManager.Instance;
         var (curGx, curGz) = bm.WorldToGridCoord(self.position);
         var (tarGx, tarGz) = bm.WorldToGridCoord(targetChess.position);
-
         if (curGx == tarGx && curGz == tarGz)
             return Vector3.zero;
 
-        // 六方向邻格中筛选可行格，按接近目标的六边形距离排序
-        var candidates = new List<(int gx, int gz)>();
-        foreach (var (ngx, ngz) in HexUtil.GetNeighbors(curGx, curGz))
+        int rangeCells = BattleManager.RangeToCells(self.attackRange);
+
+        // 目标集合：目标射程内且可通行的格
+        bool IsGoal((int gx, int gz) c)
         {
-            if (bm.IsGridOccupiedByOther(ngx, ngz, self.id) || bm.IsGridBlockedByObstacle(ngx, ngz, self.forceId))
-                continue;
-            candidates.Add((ngx, ngz));
+            return bm.CanEnterCell(c.gx, c.gz, self)
+                && HexUtil.HexDistance(c.gx, c.gz, tarGx, tarGz) <= rangeCells;
         }
-        if (candidates.Count == 0)
+
+        // 可采纳启发：到目标的最短格距减去射程
+        int Heuristic((int gx, int gz) c)
+        {
+            return Math.Max(0, HexUtil.HexDistance(c.gx, c.gz, tarGx, tarGz) - rangeCells);
+        }
+
+        // 邻格扩展：可通行格 cost=1；友方城门生成 cost=2 的跳边（门后格）
+        IEnumerable<((int gx, int gz) cell, int cost)> Expand((int gx, int gz) c)
+        {
+            foreach (var (ngx, ngz) in HexUtil.GetNeighbors(c.gx, c.gz))
+            {
+                if (bm.CanEnterCell(ngx, ngz, self))
+                {
+                    yield return ((ngx, ngz), 1);
+                    continue;
+                }
+                if (!bm.IsFriendlyGateCell(ngx, ngz, self))
+                    continue;
+                var beyond = HexUtil.GetCellBeyond(c.gx, c.gz, ngx, ngz);
+                if (beyond != null && bm.CanEnterCell(beyond.Value.gx, beyond.Value.gz, self))
+                    yield return ((beyond.Value.gx, beyond.Value.gz), 2);
+            }
+        }
+
+        var path = AStarPathfinding.FindPath((curGx, curGz), IsGoal, Expand, Heuristic);
+        if (path == null || path.Count < 2)
             return Vector3.zero;
 
-        candidates.Sort((a, b) => HexUtil.HexDistance(a.gx, a.gz, tarGx, tarGz)
-            .CompareTo(HexUtil.HexDistance(b.gx, b.gz, tarGx, tarGz)));
-
-        // 优先选择能缩短距离的格；全部被堵时回退到最近可行格（绕行）
-        int curDist = HexUtil.HexDistance(curGx, curGz, tarGx, tarGz);
-        foreach (var (ngx, ngz) in candidates)
-        {
-            if (HexUtil.HexDistance(ngx, ngz, tarGx, tarGz) < curDist)
-                return bm.GridCoordToWorld(ngx, ngz, self.position.y);
-        }
-        return bm.GridCoordToWorld(candidates[0].gx, candidates[0].gz, self.position.y);
+        var next = path[1];
+        return bm.GridCoordToWorld(next.gx, next.gz, self.position.y);
     }
 }

@@ -144,8 +144,8 @@ public class CreateChessAction : ChessAction
         chessObj.hp = chessObj.maxHp;
         chessObj.noActionCount = NoActionCount;
         battleManager.chessList.Add(chessObj);
-        if (!chessObj.isGate && !chessObj.isTower)
-            battleManager.OccupyGrid(chessObj.id, chessObj.position);
+        // 所有棋子（含城门/城墙/箭塔）占格，一格最多一棋
+        battleManager.OccupyGrid(chessObj.id, chessObj.position);
         chessObj.Init(ForceId);
 
         if (SummonRound > 0)

@@ -1142,24 +1142,13 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 获取占据指定格子的单位：优先取格子占用记录，否则按坐标匹配城门/箭塔/城墙等不占格建筑
+    /// 获取占据指定格子的单位（一格最多一棋，以格子占用记录为准）
     /// </summary>
     public Chess GetChessOnCell(int cellId)
     {
         var cell = GetMapCellById(cellId);
-        if (cell == null) return null;
-        if (cell.chessId != 0)
-            return GetChess(cell.chessId);
-        for (int i = 0; i < chessList.Count; i++)
-        {
-            var chess = chessList[i];
-            if (chess == null || chess.hp <= 0) continue;
-            if (!chess.isGate && !chess.isWall && !chess.isTower) continue;
-            var (gx, gz) = WorldToGridCoord(chess.position);
-            if (gx == cell.gridX && gz == cell.gridZ)
-                return chess;
-        }
-        return null;
+        if (cell == null || cell.chessId == 0) return null;
+        return GetChess(cell.chessId);
     }
 
     /// <summary>
@@ -1281,30 +1270,37 @@ public class BattleManager : MonoBehaviour
     public bool IsPositionFree(Chess unit, Vector3 targetPosition)
     {
         var (gx, gz) = WorldToGridCoord(targetPosition);
-        if (IsGridOccupiedByOther(gx, gz, unit.id))
-            return false;
-        if (IsGridBlockedByObstacle(gx, gz, unit.forceId))
-            return false;
-        return true;
+        return CanEnterCell(gx, gz, unit);
     }
 
     /// <summary>
-    /// 检查目标格子是否被敌方墙/城门阻挡（墙阻挡所有人，城门只阻挡敌方）
+    /// 目标格对单位是否可停留（严格一人一格）：
+    /// - 空格可进入
+    /// - 城墙/箭塔阻挡所有人（不可停留也不可跳过）
+    /// - 城门阻挡敌方；友方城门不可停留，但可通过 GetCellBeyond 跳过到门后相邻格
+    /// - 其他单位占格不可进入
     /// </summary>
-    public bool IsGridBlockedByObstacle(int gx, int gz, int moverForceId)
+    public bool CanEnterCell(int gx, int gz, Chess unit)
     {
-        foreach (var chess in chessList)
-        {
-            if (chess.hp <= 0 || (!chess.isGate && !chess.isWall && !chess.isTower)) continue;
-            var (cgx, cgz) = WorldToGridCoord(chess.position);
-            if (cgx == gx && cgz == gz)
-            {
-                if (chess.isWall) return true; // 墙阻挡所有人
-                if ((chess.isGate || chess.isTower) && chess.forceId != moverForceId) return true; // 城门/箭塔阻挡敌方
-                return false; // 友方城门/箭塔放行
-            }
-        }
+        var cell = GetMapCell(gx, gz);
+        if (cell == null) return false;
+        if (cell.chessId == 0) return true;
+        var chess = GetChess(cell.chessId);
+        if (chess == null || chess.hp <= 0) return true; // 已移除/濒死未清理，视为空
+        if (chess.isWall || chess.isTower) return false;
+        if (chess.isGate) return false; // 城门任何人不可停留，友方走跳过逻辑
         return false;
+    }
+
+    /// <summary>
+    /// 目标格是否为友方城门格（友方可从相邻格跳过到门后）
+    /// </summary>
+    public bool IsFriendlyGateCell(int gx, int gz, Chess unit)
+    {
+        var cell = GetMapCell(gx, gz);
+        if (cell == null || cell.chessId == 0) return false;
+        var chess = GetChess(cell.chessId);
+        return chess != null && chess.hp > 0 && chess.isGate && chess.forceId == unit.forceId;
     }
 
     private void InitWallsAndGates()
@@ -1332,7 +1328,8 @@ public class BattleManager : MonoBehaviour
         {
             int gz = baseGz + i + 1;
             var (gridX, gridZ) = WorldToGridCoord(GridCoordToWorld(gx, gz));
-            if (IsGridOccupiedByOtherOrObstacle(gridX, gridZ, -1)) continue;
+            // 所有棋子（含城墙/城门/箭塔）占格，已被占用的格子不再生成
+            if (IsGridOccupiedByOther(gridX, gridZ, -1)) continue;
 
             // 中间 3 格均为城门（i=1/2/3），首尾两端为城墙；3 个城门共享血量，见 SyncGateDamage
             int unitId = (i == 1 || i == 2 || i == 3) ? SystemConst.Battle.GATE_UNIT_ID : SystemConst.Battle.WALL_UNIT_ID;
@@ -1431,12 +1428,6 @@ public class BattleManager : MonoBehaviour
             return availableCols[counter];
         }
         return counter;
-    }
-
-    private bool IsGridOccupiedByOtherOrObstacle(int gx, int gz, int unitId)
-    {
-        if (IsGridOccupiedByOther(gx, gz, unitId)) return true;
-        return IsGridBlockedByObstacle(gx, gz, -1);
     }
 
     public bool MoveTo(Chess unit, Vector3 targetPosition, bool isForce = false)

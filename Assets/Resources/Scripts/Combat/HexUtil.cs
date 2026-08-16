@@ -81,4 +81,27 @@ public static class HexUtil
         var (gx2, gz2) = WorldToGrid(pos2);
         return HexDistance(gx1, gz1, gx2, gz2);
     }
+
+    /// <summary>
+    /// 计算从 from 格沿 from→gate 方向再走一格的"门后格"坐标（轴向坐标同方向加一步）。
+    /// from 与 gate 必须相邻，否则返回 null。用于友方跳过城门格直达门后。
+    /// </summary>
+    public static (int gx, int gz)? GetCellBeyond(int fromGx, int fromGz, int gateGx, int gateGz)
+    {
+        if (HexDistance(fromGx, fromGz, gateGx, gateGz) != 1)
+            return null;
+
+        int fq = fromGx;
+        int fr = fromGz - (fromGx - (fromGx & 1)) / 2;
+        int gq = gateGx;
+        int gr = gateGz - (gateGx - (gateGx & 1)) / 2;
+        int dq = gq - fq;
+        int dr = gr - fr;
+
+        int bq = gq + dq;
+        int br = gr + dr;
+        int bgx = bq;
+        int bgz = br + (bq - (bq & 1)) / 2;
+        return (bgx, bgz);
+    }
 }
