@@ -1050,12 +1050,37 @@ public class BattleManager : MonoBehaviour
         return missileList.Find(x => x.id == id);
     }
 
-    public void OccupyGrid(int chessId, Vector3 worldPos)
+    /// <summary>
+    /// 按世界坐标占格，返回所占格子ID（0 表示未命中任何格），并同步棋子 cellId
+    /// </summary>
+    public int OccupyGrid(int chessId, Vector3 worldPos)
     {
         var (gx, gz) = WorldToGridCoord(worldPos);
         var cell = GetMapCell(gx, gz);
-        if (cell != null)
-            cell.Occupy(chessId);
+        if (cell == null)
+            return 0;
+        cell.Occupy(chessId);
+        var chess = GetChess(chessId);
+        if (chess != null)
+            chess.cellId = cell.id;
+        return cell.id;
+    }
+
+    /// <summary>
+    /// 直接按格子ID占格，并同步棋子 cellId
+    /// </summary>
+    public void OccupyGridCell(int cellId, int chessId)
+    {
+        var cell = GetMapCellById(cellId);
+        if (cell == null)
+        {
+            GameLog.Warn($"OccupyGridCell cellId={cellId} 未找到，跳过占格 chessId={chessId}");
+            return;
+        }
+        cell.Occupy(chessId);
+        var chess = GetChess(chessId);
+        if (chess != null)
+            chess.cellId = cell.id;
     }
 
     public void ReleaseGrid(int chessId)
@@ -1073,12 +1098,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void UpdateGrid(int chessId, Vector3 newWorldPos)
-    {
-        ReleaseGrid(chessId);
-        OccupyGrid(chessId, newWorldPos);
-    }
-
     public void InitMapCells()
     {
         ClearCellEffects();
@@ -1090,7 +1109,11 @@ public class BattleManager : MonoBehaviour
         {
             for (int z = 0; z < height; z++)
             {
-                mapCells[x, z] = new MapCell(x * height + z + 1, SystemConst.Battle.GRID_MIN_GX + x, SystemConst.Battle.GRID_MIN_GZ + z);
+                int gx = SystemConst.Battle.GRID_MIN_GX + x;
+                int gz = SystemConst.Battle.GRID_MIN_GZ + z;
+                var cell = new MapCell(x * height + z + 1, gx, gz);
+                cell.worldPos = HexUtil.GridToWorld(gx, gz);
+                mapCells[x, z] = cell;
             }
         }
     }
@@ -1267,12 +1290,6 @@ public class BattleManager : MonoBehaviour
         return cell != null && cell.IsOccupied() && cell.chessId != excludeChessId;
     }
 
-    public bool IsPositionFree(Chess unit, Vector3 targetPosition)
-    {
-        var (gx, gz) = WorldToGridCoord(targetPosition);
-        return CanEnterCell(gx, gz, unit);
-    }
-
     /// <summary>
     /// 目标格对单位是否可停留（严格一人一格）：
     /// - 空格可进入
@@ -1327,9 +1344,8 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < cols; i++)
         {
             int gz = baseGz + i + 1;
-            var (gridX, gridZ) = WorldToGridCoord(GridCoordToWorld(gx, gz));
             // 所有棋子（含城墙/城门/箭塔）占格，已被占用的格子不再生成
-            if (IsGridOccupiedByOther(gridX, gridZ, -1)) continue;
+            if (IsGridOccupiedByOther(gx, gz, -1)) continue;
 
             // 中间 3 格均为城门（i=1/2/3），首尾两端为城墙；3 个城门共享血量，见 SyncGateDamage
             int unitId = (i == 1 || i == 2 || i == 3) ? SystemConst.Battle.GATE_UNIT_ID : SystemConst.Battle.WALL_UNIT_ID;
@@ -1430,23 +1446,30 @@ public class BattleManager : MonoBehaviour
         return counter;
     }
 
+    /// <summary>
+    /// 按格子ID移动单位：释放旧格、占新格、同步 cellId 并更新视图位置（y 由 Chess.SetPosition 统一叠层）
+    /// </summary>
+    public bool MoveToCell(Chess unit, int targetCellId, bool isForce = false)
+    {
+        var cell = GetMapCellById(targetCellId);
+        if (cell == null)
+        {
+            GameLog.Error($"MoveToCell 目标格不存在 cellId={targetCellId} unit={unit.id}");
+            return false;
+        }
+        if (!isForce && !CanEnterCell(cell.gridX, cell.gridZ, unit))
+            return false;
+
+        ReleaseGrid(unit.id);
+        OccupyGridCell(cell.id, unit.id);
+        unit.SetPosition(cell.worldPos);
+        return true;
+    }
+
     public bool MoveTo(Chess unit, Vector3 targetPosition, bool isForce = false)
     {
-        if (isForce)
-        {
-            UpdateGrid(unit.id, targetPosition);
-            unit.SetPosition(targetPosition);
-            return true;
-        }
-        else
-        { 
-            if(!IsPositionFree(unit, targetPosition))
-                return false;
-            
-            UpdateGrid(unit.id, targetPosition);
-            unit.SetPosition(targetPosition);
-            return true;
-        }
+        var (gx, gz) = WorldToGridCoord(targetPosition);
+        return MoveToCell(unit, GetCellId(gx, gz), isForce);
     }
 
     public void OnUnitDying(Chess dieUnit)
@@ -1501,55 +1524,102 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 射程（格数，float 语义）→ 格数（int，最小1格）。战斗距离已统一以格子为单位，直接取整直通。
-    /// </summary>
-    public static int RangeToCells(float range)
-    {
-        return Mathf.Max(1, Mathf.CeilToInt(range));
-    }
-
-    /// <summary>
     /// 判断两点是否在射程内（射程按六边形格数换算）
     /// </summary>
-    public static bool CheckInRange(Vector3 pos1, Vector3 pos2, float range)
+    public static bool CheckInRange(Vector3 pos1, Vector3 pos2, int cellrange)
     {
-        return HexUtil.WorldDistance(pos1, pos2) <= RangeToCells(range);
+        return HexUtil.WorldDistance(pos1, pos2) <= cellrange;
     }
 
     /// <summary>
-    /// 两点间的六边形格数距离（0 = 同格）
+    /// 两格间的六边形格数距离（0 = 同格），任一格子无效返回 -1
     /// </summary>
-    public static float GetRange(Vector3 pos1, Vector3 pos2)
+    public int GetCellRange(int cellId1, int cellId2)
     {
-        return HexUtil.WorldDistance(pos1, pos2);
+        var cell1 = GetMapCellById(cellId1);
+        var cell2 = GetMapCellById(cellId2);
+        if (cell1 == null || cell2 == null) return -1;
+        return HexUtil.HexDistance(cell1.gridX, cell1.gridZ, cell2.gridX, cell2.gridZ);
     }
 
-    public List<Chess> GetUnitsInRange(Vector3 wPos, float range, int myForceId, bool findEnemy)
+    /// <summary>
+    /// 判断两格是否在射程内（按六边形格数换算）
+    /// </summary>
+    public bool CheckInCellRange(int cellId1, int cellId2, int cellrange)
     {
-        var (cgx, cgz) = WorldToGridCoord(wPos);
-        int rangeCells = range <= 0 ? -1 : RangeToCells(range);
+        int dist = GetCellRange(cellId1, cellId2);
+        return dist >= 0 && dist <= cellrange;
+    }
+
+    /// <summary>
+    /// 获取棋子所在格ID（cellId 未同步时回退按世界坐标反算）
+    /// </summary>
+    public int GetChessCellId(Chess chess)
+    {
+        if (chess == null) return 0;
+        if (chess.cellId > 0) return chess.cellId;
+        var (gx, gz) = WorldToGridCoord(chess.position);
+        return GetCellId(gx, gz);
+    }
+
+    /// <summary>
+    /// 获取以格子为中心的射程内单位（findEnemy=true 取敌方，false 取友方）
+    /// </summary>
+    public List<Chess> GetUnitsInCellRange(int cellId, int cellrange, int myForceId, bool findEnemy)
+    {
+        var center = GetMapCellById(cellId);
+        if (center == null)
+            return new List<Chess>();
         List<Chess> unitsInRange = new List<Chess>();
         foreach (var chessComponent in chessList)
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow && !chessComponent.isWall)
             {
-                var (ugx, ugz) = WorldToGridCoord(chessComponent.position);
-                if (rangeCells < 0 || HexUtil.HexDistance(cgx, cgz, ugx, ugz) <= rangeCells)
+                var unitCell = GetMapCellById(GetChessCellId(chessComponent));
+                if (unitCell == null) continue;
+                if (cellrange < 0 || HexUtil.HexDistance(center.gridX, center.gridZ, unitCell.gridX, unitCell.gridZ) <= cellrange)
                 {
-                    if(findEnemy)
+                    if (findEnemy)
                     {
-                        if(chessComponent.forceId != myForceId)
+                        if (chessComponent.forceId != myForceId)
                             unitsInRange.Add(chessComponent);
                     }
                     else
                     {
-                        if(chessComponent.forceId == myForceId) 
+                        if (chessComponent.forceId == myForceId)
                             unitsInRange.Add(chessComponent);
                     }
                 }
             }
         }
+        return unitsInRange;
+    }
 
+    public List<Chess> GetUnitsInRange(Vector3 wPos, int cellrange, int myForceId, bool findEnemy)
+    {
+        var (cgx, cgz) = WorldToGridCoord(wPos);
+        List<Chess> unitsInRange = new List<Chess>();
+        foreach (var chessComponent in chessList)
+        {
+            if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow && !chessComponent.isWall)
+            {
+                var unitCell = GetMapCellById(GetChessCellId(chessComponent));
+                if (unitCell == null) continue;
+                if (cellrange < 0 || HexUtil.HexDistance(cgx, cgz, unitCell.gridX, unitCell.gridZ) <= cellrange)
+                {
+                    if (findEnemy)
+                    {
+                        if (chessComponent.forceId != myForceId)
+                            unitsInRange.Add(chessComponent);
+                    }
+                    else
+                    {
+                        if (chessComponent.forceId == myForceId)
+                            unitsInRange.Add(chessComponent);
+                    }
+                }
+            }
+        }
         return unitsInRange;
     }
 
@@ -1570,22 +1640,23 @@ public class BattleManager : MonoBehaviour
     public List<Chess> GetUnitsMyForce(Vector3 wPos, float range, int myForceId)
     {
         var (cgx, cgz) = WorldToGridCoord(wPos);
-        int rangeCells = range <= 0 ? -1 : RangeToCells(range);
+        int rangeCells = range <= 0 ? -1 : Mathf.Max(1, Mathf.CeilToInt(range));
         List<Chess> unitsInRange = new List<Chess>();
         foreach (var chessComponent in chessList)
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
             {
-                var (ugx, ugz) = WorldToGridCoord(chessComponent.position);
-                if (rangeCells < 0 || HexUtil.HexDistance(cgx, cgz, ugx, ugz) <= rangeCells)
+                var unitCell = GetMapCellById(GetChessCellId(chessComponent));
+                if (unitCell == null) continue;
+                if (rangeCells < 0 || HexUtil.HexDistance(cgx, cgz, unitCell.gridX, unitCell.gridZ) <= rangeCells)
                 {
-                    if(chessComponent.forceId == myForceId)
+                    if (chessComponent.forceId == myForceId)
                         unitsInRange.Add(chessComponent);
                 }
             }
         }
         return unitsInRange;
-    } 
+    }
 
     public List<Chess> GetUnitsByForceId(int forceId)
     {

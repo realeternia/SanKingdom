@@ -25,10 +25,9 @@ public class MoveAction : ChessAction
             GameLog.Error($"MoveAction[{ActionId}] TargetCellId not found {TargetCellId}");
             return;
         }
-        var targetPosition = BattleManager.Instance.GridCoordToWorld(cell.gridX, cell.gridZ, chess.position.y);
-        GameLog.Info($"MoveAction[{ActionId}] src={SourceId} cell={TargetCellId} pos={targetPosition}");
-        chess?.viewObj?.FaceTo(targetPosition);
-        BattleManager.Instance.MoveTo(chess, targetPosition, true);
+        GameLog.Info($"MoveAction[{ActionId}] src={SourceId} cell={TargetCellId} pos={cell.worldPos}");
+        chess?.viewObj?.FaceTo(cell.worldPos);
+        BattleManager.Instance.MoveToCell(chess, cell.id, true);
         chess?.viewObj?.PlaySodAnim("sodmove");
     }
 }

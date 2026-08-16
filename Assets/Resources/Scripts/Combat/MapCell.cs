@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
-/// 战斗地图格子，封装格子坐标与占用关系，一格最多一棋子
+/// 战斗地图格子，封装格子坐标、世界位置与占用关系，一格最多一棋子
 /// </summary>
 [Serializable]
 public class MapCell
@@ -11,6 +12,9 @@ public class MapCell
     public int gridX;
     public int gridZ;
     public int chessId; // 占用该格的棋子ID，0表示空
+
+    [NonSerialized]
+    public Vector3 worldPos; // 格心世界坐标（由 gridX/gridZ 计算，逻辑与视图直接取用）
 
     [NonSerialized]
     public List<CellEffect> effects = new List<CellEffect>();

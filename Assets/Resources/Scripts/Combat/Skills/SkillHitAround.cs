@@ -20,38 +20,38 @@ public class SkillHitAround : BattleSkill
     {
         if (isBurst)
         {
-            var startPos = owner.position;
-            var targetPos = defender.position;
-
             this.OnPlaySkill(defender, 0);
 
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(startPos, skillCfg.Range, owner.forceId, true);
-            unitsInRange.Remove(defender);
-            
-            // 筛选startPos到targetPos方向，左右各60°开角内的单位
-            if (unitsInRange.Count > 0)
+            var bm = BattleManager.Instance;
+            var defenderCell = bm.GetMapCellById(defender.cellId);
+            if (defenderCell == null)
             {
-                Vector3 direction = (targetPos - startPos).normalized;
-                List<Chess> filteredUnits = new List<Chess>();
-                
-                foreach (var unit in unitsInRange)
-                {
-                    Vector3 unitDirection = (unit.position - startPos).normalized;
-                    float angle = Vector3.Angle(direction, unitDirection);
-                    
-                    // 检查是否在左右各60°开角内（总共120°扇形）
-                    if (angle <= SystemConst.Battle.AROUND_ATTACK_ANGLE_THRESHOLD)
-                        filteredUnits.Add(unit);
-                }
-                
-                if (filteredUnits.Count > 0)
-                {
-                    BattleManager.RandomSelect(filteredUnits, skillCfg.TargetCount);
-                    var damage2 = (int)(damage * skillCfg.SkillDamageRate);
-                    foreach(var unit in filteredUnits)
-                        unit.DoSkillDamage(owner, skillId, damage2, false, 0);
-                }
+                GameLog.Warn($"SkillHitAround 目标 {defender.id} cellId={defender.cellId} 无效，跳过");
+                return;
             }
+
+            // 候选目标 = 当前单位射程内 且 位于目标周围1格
+            var unitsInRange = bm.GetUnitsInCellRange(owner.cellId, skillCfg.Range, owner.forceId, true);
+            List<Chess> aroundTargets = new List<Chess>();
+            foreach (var unit in unitsInRange)
+            {
+                if (unit == defender) continue;
+                var unitCell = bm.GetMapCellById(unit.cellId);
+                if (unitCell == null) continue;
+                if (HexUtil.HexDistance(unitCell.gridX, unitCell.gridZ, defenderCell.gridX, defenderCell.gridZ) <= 1)
+                    aroundTargets.Add(unit);
+            }
+
+            if (aroundTargets.Count == 0)
+                return;
+
+            // TargetCount 非0且目标数超过时随机选取
+            if (skillCfg.TargetCount > 0 && aroundTargets.Count > skillCfg.TargetCount)
+                BattleManager.RandomSelect(aroundTargets, skillCfg.TargetCount);
+
+            var damage2 = (int)(damage * skillCfg.SkillDamageRate);
+            foreach (var unit in aroundTargets)
+                unit.DoSkillDamage(owner, skillId, damage2, false, 0);
         }
     }
 

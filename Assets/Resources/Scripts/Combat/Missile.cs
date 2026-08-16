@@ -194,7 +194,7 @@ public class Missile : SceneObj
         var battleTime = BattleManager.Instance.battleTime;
         if(targetCount > 0 && checkedIdList.Count < targetCount)
         {
-            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, detectArea, forceId, true);
+            var unitsInRange = BattleManager.Instance.GetUnitsInRange(position, Mathf.Max(1, Mathf.CeilToInt(detectArea)), forceId, true);
             unitsInRange.RemoveAll(x => checkedIdList.Contains(x.id) || x.hp <= 0); // Each unit only once
             if (unitsInRange.Count > 0)
             {

@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class SkillHitRegion : BattleSkill
 {
-    private Vector3 targetPos;
-
     public SkillHitRegion(int id, Chess unit) : base(id, unit)
     {
     }
@@ -13,15 +11,16 @@ public class SkillHitRegion : BattleSkill
     {
         if (CheckBurst(defender))
         {
-            targetPos = defender.position;
             var roundCount = GetSummonRoundCount();
             var currentRound = BattleManager.Instance.round;
 
             var bm = BattleManager.Instance;
-            var (gx, gz) = bm.WorldToGridCoord(targetPos);
-            var cellId = bm.GetCellId(gx, gz);
+            var cellId = defender.cellId;
             if (cellId <= 0)
+            {
+                GameLog.Warn($"SkillHitRegion 目标 {defender.id} cellId={cellId} 无效，跳过落雷");
                 return;
+            }
             // 落雷暂无专用派生类，走通用基类（只伤敌方）
             var effect = CellEffect.Create("", skillCfg, owner, currentRound + roundCount);
             bm.AddCellEffect(cellId, effect);

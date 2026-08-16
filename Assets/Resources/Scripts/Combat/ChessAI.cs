@@ -95,16 +95,22 @@ public static class ChessAI
     }
 
     /// <summary>
-    /// 查找距指定位置最近的存活城门
+    /// 查找距指定格子最近的存活城门
     /// </summary>
-    private static Chess FindNearestGate(Vector3 pos)
+    private static Chess FindNearestGate(int cellId)
     {
+        var bm = BattleManager.Instance;
+        var center = bm.GetMapCellById(cellId);
+        if (center == null)
+            return null;
         Chess nearest = null;
         int nearestDist = int.MaxValue;
-        foreach (var chess in BattleManager.Instance.chessList)
+        foreach (var chess in bm.chessList)
         {
             if (!chess.isGate || chess.hp <= 0) continue;
-            int dist = HexUtil.WorldDistance(pos, chess.position);
+            var gateCell = bm.GetMapCellById(chess.cellId);
+            if (gateCell == null) continue;
+            int dist = HexUtil.HexDistance(center.gridX, center.gridZ, gateCell.gridX, gateCell.gridZ);
             if (dist < nearestDist)
             {
                 nearestDist = dist;
@@ -121,13 +127,14 @@ public static class ChessAI
         if (self.attackRange == 0)
             return;
 
-        int rangeCells = BattleManager.RangeToCells(self.attackRange);
+        var bm = BattleManager.Instance;
+        int rangeCells = (int)self.attackRange;
         int aliveGates = CountAliveGates();
 
         // 攻击方优先破门：防御方龟缩且仍有城门存活（3 门共享血量）时，全体锁定最近的城门（集中火力）
         if (IsAttacker(self) && !defenderSally && aliveGates >= 2)
         {
-            Chess nearestGate = FindNearestGate(self.position);
+            Chess nearestGate = FindNearestGate(self.cellId);
             if (nearestGate != null)
             {
                 self.targetChessId = nearestGate.id;
@@ -137,14 +144,14 @@ public static class ChessAI
             }
         }
 
-        var allChess = BattleManager.Instance.GetUnitsInRange(self.position, 0, self.forceId, true);
+        var allChess = bm.GetUnitsInCellRange(self.cellId, 0, self.forceId, true);
         List<(Chess chess, float distance)> validTargets = new List<(Chess, float)>();
 
         foreach (Chess chess in allChess)
         {
             if (chess != self)
             {
-                float distance = BattleManager.GetRange(self.position, chess.position);
+                float distance = bm.GetCellRange(self.cellId, chess.cellId);
                 validTargets.Add((chess, distance));
             }
         }
@@ -162,7 +169,7 @@ public static class ChessAI
         if (nearestDistance <= rangeCells)
             filteredTargets = validTargets.Where(t => t.distance <= rangeCells).ToList();
         else
-            filteredTargets = validTargets.Where(t => t.distance <= nearestDistance + BattleManager.RangeToCells(SystemConst.Battle.TARGET_SEARCH_EXTRA_RANGE)).ToList();
+            filteredTargets = validTargets.Where(t => t.distance <= nearestDistance + (int)SystemConst.Battle.TARGET_SEARCH_EXTRA_RANGE).ToList();
 
         int takeCount = Mathf.Min(SystemConst.Battle.TARGET_SCORE_SELECT_COUNT, filteredTargets.Count);
         List<(Chess chess, float distance)> topTargets = filteredTargets.Take(takeCount).ToList();
@@ -230,17 +237,19 @@ public static class ChessAI
         if (!battleStarted && IsDefender(self))
             return;
 
+        var bm = BattleManager.Instance;
+
         FindTarget(self);
 
-        var targetChess = BattleManager.Instance.GetChess(self.targetChessId);
+        var targetChess = bm.GetChess(self.targetChessId);
         if (targetChess == null || targetChess.hp <= 0)
             return;
 
         if (SkillManager.CheckAidSkill(self))
             return;
 
-        // 射程内攻击
-        if (BattleManager.CheckInRange(self.position, targetChess.position, self.attackRange))
+        // 射程内攻击（attackRange 为 float，转 int 截断与原世界坐标比较语义一致）
+        if (bm.CheckInCellRange(self.cellId, targetChess.cellId, (int)self.attackRange))
         {
             if (!self.isInAttackRange)
             {
@@ -263,14 +272,11 @@ public static class ChessAI
             self.viewObj?.PlaySodAnim("sodmove");
         }
 
-        var moveDest = GetMoveDest(self);
-        if (moveDest != Vector3.zero)
+        var moveDestCellId = GetMoveDest(self);
+        if (moveDestCellId > 0)
         {
-            var bm = BattleManager.Instance;
             targetChess = bm.GetChess(self.targetChessId);
-            var (gx, gz) = bm.WorldToGridCoord(moveDest);
-            var cellId = bm.GetCellId(gx, gz);
-            var moveAction = new MoveAction(self.id, bm.battleTime, targetChess != null ? targetChess.id : -1, cellId);
+            var moveAction = new MoveAction(self.id, bm.battleTime, targetChess != null ? targetChess.id : -1, moveDestCellId);
             bm.AddChessAction(moveAction);
         }
     }
@@ -293,19 +299,23 @@ public static class ChessAI
         return true;
     }
 
-    private static Vector3 GetMoveDest(Chess self)
+    private static int GetMoveDest(Chess self)
     {
         var bm = BattleManager.Instance;
         var targetChess = bm.GetChess(self.targetChessId);
         if (targetChess == null)
-            return Vector3.zero;
+            return 0;
 
-        var (curGx, curGz) = bm.WorldToGridCoord(self.position);
-        var (tarGx, tarGz) = bm.WorldToGridCoord(targetChess.position);
+        var curCell = bm.GetMapCellById(self.cellId);
+        var tarCell = bm.GetMapCellById(targetChess.cellId);
+        if (curCell == null || tarCell == null)
+            return 0;
+        var (curGx, curGz) = (curCell.gridX, curCell.gridZ);
+        var (tarGx, tarGz) = (tarCell.gridX, tarCell.gridZ);
         if (curGx == tarGx && curGz == tarGz)
-            return Vector3.zero;
+            return 0;
 
-        int rangeCells = BattleManager.RangeToCells(self.attackRange);
+        int rangeCells = (int)self.attackRange;
 
         // 目标集合：目标射程内且可通行的格
         bool IsGoal((int gx, int gz) c)
@@ -340,9 +350,9 @@ public static class ChessAI
 
         var path = AStarPathfinding.FindPath((curGx, curGz), IsGoal, Expand, Heuristic);
         if (path == null || path.Count < 2)
-            return Vector3.zero;
+            return 0;
 
         var next = path[1];
-        return bm.GridCoordToWorld(next.gx, next.gz, self.position.y);
+        return bm.GetCellId(next.gx, next.gz);
     }
 }

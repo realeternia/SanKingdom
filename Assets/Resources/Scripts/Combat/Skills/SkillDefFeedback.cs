@@ -30,9 +30,7 @@ public class SkillDefFeedback : BattleSkill
         if (skillCfg.Range > 0)
         {
             var isInRange = BattleManager.CheckInRange(owner.position, attacker.position, skillCfg.Range);
-            if (skillCfg.RangeOut && isInRange)
-                return;
-            if (!skillCfg.RangeOut && !isInRange)
+            if (!isInRange)
                 return;
         }
 

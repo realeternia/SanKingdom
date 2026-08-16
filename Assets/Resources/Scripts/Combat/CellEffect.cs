@@ -72,8 +72,7 @@ public class CellEffect
         var cell = BattleManager.Instance.GetMapCellById(cellId);
         if (cell == null) return;
         var cfg = BattleSkillConfig.GetConfig(skillId);
-        var worldPos = BattleManager.Instance.GridCoordToWorld(cell.gridX, cell.gridZ);
-        viewEffect = EffectManager.PlayPosSkillEffect(null, worldPos, cfg.EffectSize, cfg.EffectArea, 0f);
+        viewEffect = EffectManager.PlayPosSkillEffect(null, cell.worldPos, cfg.EffectSize, cfg.EffectArea, 0f);
     }
 
     /// <summary>

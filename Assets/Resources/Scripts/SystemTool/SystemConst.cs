@@ -271,10 +271,6 @@ public static class SystemConst
         /// </summary>
         public const int BATTLE_STAT_UID_MULTIPLIER = 1000000;
         /// <summary>
-        /// 周围攻击角度阈值
-        /// </summary>
-        public const int AROUND_ATTACK_ANGLE_THRESHOLD = 90;
-        /// <summary>
         /// 目标评分城门
         /// </summary>
         public const int TARGET_SCORE_GATE = 1;

@@ -20,7 +20,13 @@ public class SkillHitWall : BattleSkill
             var endRound = currentRound + roundCount;
 
             // 火墙沿六边形纵向(同列 gz±1)展开，呈一条连通直线
-            var (tgx, tgz) = bm.WorldToGridCoord(defender.position);
+            var defenderCell = bm.GetMapCellById(defender.cellId);
+            if (defenderCell == null)
+            {
+                GameLog.Warn($"SkillHitWall 目标 {defender.id} cellId={defender.cellId} 无效，跳过生成火墙");
+                return;
+            }
+            var (tgx, tgz) = (defenderCell.gridX, defenderCell.gridZ);
             var offsets = new List<int> { 0 };
             if (skillCfg.SummonCount > 1)
             {

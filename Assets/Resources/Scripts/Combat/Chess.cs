@@ -39,6 +39,8 @@ public class Chess : SceneObj
 
     public int targetChessId;
     // 目标单位
+
+    public int cellId; // 所在格子ID（逻辑主键），0 表示未占格（布阵占位棋子/回放旧档回填前）
     // 移动速度
 
     public int level = 1;
