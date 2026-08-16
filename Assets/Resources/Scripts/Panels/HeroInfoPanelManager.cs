@@ -509,14 +509,21 @@ public class HeroInfoPanelManager : MonoBehaviour
 
         float itemWidth = 180f;
         float spacing = 10f;
-        float startX = -(armsAttrs.Count - 1) * (itemWidth + spacing) / 2f;
+        const int perRow = 5;
+        const float startX = -470f;
+        const float startY = 110f;
 
         for (int i = 0; i < armsAttrs.Count; i++)
         {
             var attrConfig = armsAttrs[i];
             GameObject item = Instantiate(armsItemPrefab, armsPanel.transform);
             item.transform.localScale = Vector3.one;
-            item.transform.localPosition = new Vector3(startX + i * (itemWidth + spacing), 30, 0);
+
+            int row = i / perRow;
+            int col = i % perRow;
+            RectTransform itemRect = item.GetComponent<RectTransform>();
+            float itemHeight = itemRect != null && itemRect.sizeDelta.y > 0 ? itemRect.sizeDelta.y : 40f;
+            item.transform.localPosition = new Vector3(startX + col * (itemWidth + spacing), startY - row * (itemHeight + 3), 0);
 
             ArmsItemControl control = item.GetComponent<ArmsItemControl>();
             if (control != null)

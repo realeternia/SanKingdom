@@ -101,14 +101,17 @@ namespace CommonConfig
             config[5] = new HeroAttrConfig(5, "leadShip", "统帅", "", "95:#FF0000,90:#FFFF00,0:#FFFFFF", "herolead", false);
             config[6] = new HeroAttrConfig(6, "loyalty", "忠诚度", "", "90:#FFFFFF,80-89:#FFFF00,70-79:#FFA500,0-69:#FF0000", "", false);
             config[7] = new HeroAttrConfig(7, "weightedAttr", "加权属性2", "", "90:#FF0000,80:#FFFF00,70:#00FF00,0:#FFFFFF", "", false);
-            config[8] = new HeroAttrConfig(8, "SodWalk", "步兵驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms1", true);
-            config[9] = new HeroAttrConfig(9, "SodHorse", "骑兵驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms2", true);
-            config[10] = new HeroAttrConfig(10, "SodBow", "弓兵驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms3", true);
-            config[11] = new HeroAttrConfig(11, "SodWater", "水军驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms4", true);
-            config[12] = new HeroAttrConfig(12, "SodTank", "车炮驾驭", "10:S,9:A+,8:A,7:B+,6:B,4-5:C+,2-3:C,0-1:D", "10:#FF9900,8-9:#995500,6-7:#33CC33,4-5:#3333CC", "arms5", true);
+            config[8] = new HeroAttrConfig(8, "SodSword", "步兵驾驭", "10:S,9:A,7-8:B,5-6:C,3-4:D,2:E,0-1:F", "10:#FF9900,9:#995500,7-8:#33CC33,5-6:#3333CC", "arms1", true);
+            config[9] = new HeroAttrConfig(9, "SodHorse", "骑兵驾驭", "10:S,9:A,7-8:B,5-6:C,3-4:D,2:E,0-1:F", "10:#FF9900,9:#995500,7-8:#33CC33,5-6:#3333CC", "arms2", true);
+            config[10] = new HeroAttrConfig(10, "SodBow", "弓兵驾驭", "10:S,9:A,7-8:B,5-6:C,3-4:D,2:E,0-1:F", "10:#FF9900,9:#995500,7-8:#33CC33,5-6:#3333CC", "arms3", true);
+            config[11] = new HeroAttrConfig(11, "SodWater", "水军驾驭", "10:S,9:A,7-8:B,5-6:C,3-4:D,2:E,0-1:F", "10:#FF9900,9:#995500,7-8:#33CC33,5-6:#3333CC", "arms4", true);
+            config[12] = new HeroAttrConfig(12, "SodTank", "车炮驾驭", "10:S,9:A,7-8:B,5-6:C,3-4:D,2:E,0-1:F", "10:#FF9900,9:#995500,7-8:#33CC33,5-6:#3333CC", "arms5", true);
             config[13] = new HeroAttrConfig(13, "atk", "攻击", "", "", "armsatk", false);
             config[14] = new HeroAttrConfig(14, "def", "防御", "", "", "armsdef", false);
             config[15] = new HeroAttrConfig(15, "sodnum", "士兵数", "", "", "armscount", false);
+            config[16] = new HeroAttrConfig(16, "SodSpear", "枪兵驾驭", "10:S,9:A,7-8:B,5-6:C,3-4:D,2:E,0-1:F", "10:#FF9900,9:#995500,7-8:#33CC33,5-6:#3333CC", "arms6", true);
+            config[17] = new HeroAttrConfig(17, "SodHalberd", "戟兵驾驭", "10:S,9:A,7-8:B,5-6:C,3-4:D,2:E,0-1:F", "10:#FF9900,9:#995500,7-8:#33CC33,5-6:#3333CC", "arms7", true);
+            config[18] = new HeroAttrConfig(18, "SodElephant", "象兵驾驭", "10:S,9:A,7-8:B,5-6:C,3-4:D,2:E,0-1:F", "10:#FF9900,9:#995500,7-8:#33CC33,5-6:#3333CC", "arms8", true);
 
             RebuildIndex();
 

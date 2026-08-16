@@ -1,8 +1,11 @@
 public enum ArmsType
 {
-    SodWalk = 0,
+    SodSword = 0,
     SodHorse = 1,
     SodBow = 2,
     SodWater = 3,
-    SodTank = 4
+    SodTank = 4,
+    SodSpear = 5,
+    SodHalberd = 6,
+    SodElephant = 7
 }

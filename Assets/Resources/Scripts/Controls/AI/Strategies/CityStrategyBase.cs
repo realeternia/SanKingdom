@@ -328,15 +328,19 @@ public abstract class CityStrategyBase
             case ArmsType.SodBow:
                 attrScore = inte * AIConst.AIStrategy.ARMS_FIT_BOW_WEIGHT;
                 break;
-            case ArmsType.SodWalk:
+            case ArmsType.SodSword:
+            case ArmsType.SodSpear:
+            case ArmsType.SodHalberd:
+            case ArmsType.SodElephant:
                 attrScore = str * AIConst.AIStrategy.ARMS_FIT_WALK_WEIGHT
                           + leadship * AIConst.AIStrategy.ARMS_FIT_WALK_LEADSHIP_WEIGHT;
                 break;
         }
 
-        // 基础分微调（枪/戟>刀），步兵类型加随机扰动避免枪戟始终同分
+        // 基础分微调（枪/戟>刀），步兵类型加随机扰动避免同分
         float baseBonus = (arms.Atk + arms.Def) * AIConst.AIStrategy.ARMS_BASE_STAT_WEIGHT;
-        float jitter = arms.Type == ArmsType.SodWalk ? SysRandom.Range(0, 100) * 0.0005f : 0f;
+        float jitter = (arms.Type == ArmsType.SodSword || arms.Type == ArmsType.SodSpear || arms.Type == ArmsType.SodHalberd)
+            ? SysRandom.Range(0, 100) * 0.0005f : 0f;
 
         return attrScore + baseBonus + jitter;
     }

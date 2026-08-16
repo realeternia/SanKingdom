@@ -49,11 +49,14 @@ public class ArmsItemControl : MonoBehaviour
     {
         switch (attrName)
         {
-            case "SodWalk": return heroConfig.SodWalk;
+            case "SodSword": return heroConfig.SodSword;
             case "SodHorse": return heroConfig.SodHorse;
             case "SodBow": return heroConfig.SodBow;
             case "SodWater": return heroConfig.SodWater;
             case "SodTank": return heroConfig.SodTank;
+            case "SodSpear": return heroConfig.SodSpear;
+            case "SodHalberd": return heroConfig.SodHalberd;
+            case "SodElephant": return heroConfig.SodElephant;
             default: return 0;
         }
     }

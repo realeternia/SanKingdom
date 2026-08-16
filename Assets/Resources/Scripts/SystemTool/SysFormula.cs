@@ -28,11 +28,14 @@ public static class SysFormula
             var heroConfig = HeroConfig.GetConfig(heroData.heroId);
             return armsType switch
             {
-                ArmsType.SodWalk => heroConfig.SodWalk,
+                ArmsType.SodSword => heroConfig.SodSword,
                 ArmsType.SodHorse => heroConfig.SodHorse,
                 ArmsType.SodBow => heroConfig.SodBow,
                 ArmsType.SodWater => heroConfig.SodWater,
                 ArmsType.SodTank => heroConfig.SodTank,
+                ArmsType.SodSpear => heroConfig.SodSpear,
+                ArmsType.SodHalberd => heroConfig.SodHalberd,
+                ArmsType.SodElephant => heroConfig.SodElephant,
                 _ => 0
             };
         }
