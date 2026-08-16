@@ -63,7 +63,7 @@ public class Chess : SceneObj
     [NonSerialized]
     public int speed = 10;
     [NonSerialized]
-    public float attackRange = 10f;
+    public float attackRange = 1;
     public int atk;
     public int def;
     [NonSerialized]
@@ -153,7 +153,7 @@ public class Chess : SceneObj
                 if (prefab != null)
                 {
                     var model = UnityEngine.Object.Instantiate(prefab, go.transform);
-                    model.transform.position = new Vector3(position.x - 4f, position.y, position.z);
+                    model.transform.position = position;
                 }
             }
             return;
@@ -174,7 +174,7 @@ public class Chess : SceneObj
                 if (prefab != null)
                 {
                     var model = UnityEngine.Object.Instantiate(prefab, go.transform);
-                    model.transform.position = new Vector3(position.x - 4f, position.y, position.z);
+                    model.transform.position = position;
                 }
             }
 
@@ -388,6 +388,10 @@ public class Chess : SceneObj
         victim.hp -= damage;
         if (id != victim.id)
             victim.lastDamagedPlayerId = id;
+
+        // 城门血量同步：一扇门受伤，其余城门同损
+        if (victim.isGate)
+            BattleManager.Instance.SyncGateDamage(victim, damage);
 
         if(isCrit)
             BattleManager.Instance.AddBattleText("暴!", position, new UnityEngine.Vector2(0, 40), Color.red, 3);

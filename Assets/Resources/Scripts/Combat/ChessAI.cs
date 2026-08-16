@@ -72,12 +72,70 @@ public static class ChessAI
         return false;
     }
 
+    /// <summary>
+    /// 判断是否为攻击方作战单位（非防御方、非城墙/城门/箭塔）
+    /// </summary>
+    private static bool IsAttacker(Chess self)
+    {
+        return self.forceId != defenderForceId && !self.isGate && !self.isWall && !self.isTower;
+    }
+
+    /// <summary>
+    /// 统计存活的城门数（含双方）
+    /// </summary>
+    private static int CountAliveGates()
+    {
+        int count = 0;
+        foreach (var chess in BattleManager.Instance.chessList)
+        {
+            if (chess.isGate && chess.hp > 0)
+                count++;
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// 查找距指定位置最近的存活城门
+    /// </summary>
+    private static Chess FindNearestGate(Vector3 pos)
+    {
+        Chess nearest = null;
+        int nearestDist = int.MaxValue;
+        foreach (var chess in BattleManager.Instance.chessList)
+        {
+            if (!chess.isGate || chess.hp <= 0) continue;
+            int dist = HexUtil.WorldDistance(pos, chess.position);
+            if (dist < nearestDist)
+            {
+                nearestDist = dist;
+                nearest = chess;
+            }
+        }
+        return nearest;
+    }
+
     // ===== 索敌 =====
 
     public static void FindTarget(Chess self)
     {
         if (self.attackRange == 0)
             return;
+
+        int rangeCells = BattleManager.RangeToCells(self.attackRange);
+        int aliveGates = CountAliveGates();
+
+        // 攻击方优先破门：防御方龟缩且仍有城门存活（3 门共享血量）时，全体锁定最近的城门（集中火力）
+        if (IsAttacker(self) && !defenderSally && aliveGates >= 2)
+        {
+            Chess nearestGate = FindNearestGate(self.position);
+            if (nearestGate != null)
+            {
+                self.targetChessId = nearestGate.id;
+                if (self.viewObj != null)
+                    self.viewObj.lockTargetId = self.targetChessId;
+                return;
+            }
+        }
 
         var allChess = BattleManager.Instance.GetUnitsInRange(self.position, 0, self.forceId, true);
         List<(Chess chess, float distance)> validTargets = new List<(Chess, float)>();
@@ -101,10 +159,10 @@ public static class ChessAI
 
         float nearestDistance = validTargets[0].distance;
         List<(Chess chess, float distance)> filteredTargets;
-        if (nearestDistance <= self.attackRange)
-            filteredTargets = validTargets.Where(t => t.distance <= self.attackRange).ToList();
+        if (nearestDistance <= rangeCells)
+            filteredTargets = validTargets.Where(t => t.distance <= rangeCells).ToList();
         else
-            filteredTargets = validTargets.Where(t => t.distance <= nearestDistance + SystemConst.Battle.TARGET_SEARCH_EXTRA_RANGE).ToList();
+            filteredTargets = validTargets.Where(t => t.distance <= nearestDistance + BattleManager.RangeToCells(SystemConst.Battle.TARGET_SEARCH_EXTRA_RANGE)).ToList();
 
         int takeCount = Mathf.Min(SystemConst.Battle.TARGET_SCORE_SELECT_COUNT, filteredTargets.Count);
         List<(Chess chess, float distance)> topTargets = filteredTargets.Take(takeCount).ToList();
@@ -112,7 +170,7 @@ public static class ChessAI
         List<(Chess chess, float score)> scoredTargets = new List<(Chess, float)>();
         foreach (var (chess, distance) in topTargets)
         {
-            float score = CalculateTargetScore(self, chess, distance);
+            float score = CalculateTargetScore(self, chess, distance, rangeCells, aliveGates);
             scoredTargets.Add((chess, score));
         }
 
@@ -122,17 +180,32 @@ public static class ChessAI
             self.viewObj.lockTargetId = self.targetChessId;
     }
 
-    private static float CalculateTargetScore(Chess self, Chess target, float distance)
+    private static float CalculateTargetScore(Chess self, Chess target, float distance, int rangeCells, int aliveGates)
     {
+        // 攻击方索敌规则：
+        // - 城墙永远不是目标（破口通行，无需拆墙）
+        // - 城门存活时门必须为最高分（sally 出击时除外，直接与出击敌军交战）
+        // - 城门全破后（aliveGates<=1）剩余城门不再是目标，转打城内箭塔/敌人
+        if (IsAttacker(self))
+        {
+            if (target.isWall)
+                return float.MinValue;
+            if (target.isGate)
+                return (aliveGates <= 1 || defenderSally) ? float.MinValue : float.MaxValue;
+            if (target.isTower && aliveGates >= 2 && !defenderSally)
+                return float.MinValue;
+        }
+
+        // 城门/箭塔加分（破门后箭塔成为优先目标）
         if (target.isGate || target.isTower)
         {
             float score = SystemConst.Battle.TARGET_SCORE_GATE;
-            if (distance < self.attackRange * 2)
+            if (distance < rangeCells * 2)
                 score += 100f / (distance + 1f);
             return score;
         }
         return SysFormula.Battle.CalculateTargetScore(
-            target.isHero, distance, self.attackRange,
+            target.isHero, distance, rangeCells,
             SysFormula.Battle.CalculateDamage(self.atk, self.hp, target.def),
             self.level, target.level, (float)target.hp / target.maxHp);
     }
@@ -230,61 +303,30 @@ public static class ChessAI
         var (curGx, curGz) = bm.WorldToGridCoord(self.position);
         var (tarGx, tarGz) = bm.WorldToGridCoord(targetChess.position);
 
-        int dx = tarGx - curGx;
-        int dz = tarGz - curGz;
-
-        if (dx == 0 && dz == 0)
+        if (curGx == tarGx && curGz == tarGz)
             return Vector3.zero;
 
-        List<(int gx, int gz, int priority)> candidates = new List<(int, int, int)>();
+        // 六方向邻格中筛选可行格，按接近目标的六边形距离排序
+        var candidates = new List<(int gx, int gz)>();
+        foreach (var (ngx, ngz) in HexUtil.GetNeighbors(curGx, curGz))
+        {
+            if (bm.IsGridOccupiedByOther(ngx, ngz, self.id) || bm.IsGridBlockedByObstacle(ngx, ngz, self.forceId))
+                continue;
+            candidates.Add((ngx, ngz));
+        }
+        if (candidates.Count == 0)
+            return Vector3.zero;
 
-        if (Math.Abs(dx) >= Math.Abs(dz))
-        {
-            int stepX = dx > 0 ? 1 : -1;
-            candidates.Add((curGx + stepX, curGz, 0));
-            if (dz != 0)
-            {
-                int stepZ = dz > 0 ? 1 : -1;
-                candidates.Add((curGx, curGz + stepZ, 1));
-            }
-        }
-        else
-        {
-            int stepZ = dz > 0 ? 1 : -1;
-            candidates.Add((curGx, curGz + stepZ, 0));
-            if (dx != 0)
-            {
-                int stepX = dx > 0 ? 1 : -1;
-                candidates.Add((curGx + stepX, curGz, 1));
-            }
-        }
+        candidates.Sort((a, b) => HexUtil.HexDistance(a.gx, a.gz, tarGx, tarGz)
+            .CompareTo(HexUtil.HexDistance(b.gx, b.gz, tarGx, tarGz)));
 
-        foreach (var (gx, gz, _) in candidates)
+        // 优先选择能缩短距离的格；全部被堵时回退到最近可行格（绕行）
+        int curDist = HexUtil.HexDistance(curGx, curGz, tarGx, tarGz);
+        foreach (var (ngx, ngz) in candidates)
         {
-            if (!bm.IsGridOccupiedByOther(gx, gz, self.id) && !bm.IsGridBlockedByObstacle(gx, gz, self.forceId))
-                return bm.GridCoordToWorld(gx, gz, self.position.y);
+            if (HexUtil.HexDistance(ngx, ngz, tarGx, tarGz) < curDist)
+                return bm.GridCoordToWorld(ngx, ngz, self.position.y);
         }
-
-        int[] sideOffsets = { 1, -1 };
-        if (Math.Abs(dx) >= Math.Abs(dz))
-        {
-            foreach (int offset in sideOffsets)
-            {
-                int newGz = curGz + offset;
-                if (!bm.IsGridOccupiedByOther(curGx, newGz, self.id) && !bm.IsGridBlockedByObstacle(curGx, newGz, self.forceId))
-                    return bm.GridCoordToWorld(curGx, newGz, self.position.y);
-            }
-        }
-        else
-        {
-            foreach (int offset in sideOffsets)
-            {
-                int newGx = curGx + offset;
-                if (!bm.IsGridOccupiedByOther(newGx, curGz, self.id) && !bm.IsGridBlockedByObstacle(newGx, curGz, self.forceId))
-                    return bm.GridCoordToWorld(newGx, curGz, self.position.y);
-            }
-        }
-
-        return Vector3.zero;
+        return bm.GridCoordToWorld(candidates[0].gx, candidates[0].gz, self.position.y);
     }
 }

@@ -22,15 +22,8 @@ public class SkillHitRegion : BattleSkill
             var cellId = bm.GetCellId(gx, gz);
             if (cellId <= 0)
                 return;
-            var effect = new CellEffect
-            {
-                skillId = id,
-                casterId = owner.id,
-                forceId = owner.forceId,
-                attr = skillCfg.Attr,
-                damageRate = skillCfg.SkillDamageAttrRate,
-                endRound = currentRound + roundCount
-            };
+            // 落雷暂无专用派生类，走通用基类（只伤敌方）
+            var effect = CellEffect.Create("", skillCfg, owner, currentRound + roundCount);
             bm.AddCellEffect(cellId, effect);
 
             this.OnPlaySkill(null, 0);

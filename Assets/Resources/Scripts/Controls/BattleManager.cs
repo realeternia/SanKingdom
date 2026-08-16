@@ -494,11 +494,13 @@ public class BattleManager : MonoBehaviour
 
     private Vector3 GetSpawnPosition(int side, int row, int col)
     {
-        int zRow = (col + 1) % 5;
-        if(side == 1)
-            return new Vector3(330 - row * 15, 7, 255 - zRow * 15);
-        else
-            return new Vector3(435 + row * 15, 7, 255 - zRow * 15);
+        // 攻方(side=1)行号反向（row越大越靠前），守方(side=2)行号正向；列映射沿用原 (col+1)%5 的散布顺序
+        int baseGx = side == 1
+            ? SystemConst.Battle.DEPLOY_SIDE1_BASE_GX + (SystemConst.Battle.DEPLOY_GRID_ROWS - 1 - row)
+            : SystemConst.Battle.DEPLOY_SIDE2_BASE_GX + row;
+        int zRow = (col + 1) % SystemConst.Battle.DEPLOY_GRID_COLS;
+        int baseGz = SystemConst.Battle.DEPLOY_SIDE1_BASE_GZ + (SystemConst.Battle.DEPLOY_GRID_COLS - 1 - zRow);
+        return HexUtil.GridToWorld(baseGx, baseGz);
     }
 
     public int SpawnUnitsForRegion(SaveForceData force, int battleUnitId, UnityEngine.Vector3 spawnPos, int summonRound, Action<int> cb = null, int customHp = -1)
@@ -1193,9 +1195,12 @@ public class BattleManager : MonoBehaviour
 
     private int lastCellEffectRound = -1;
 
+    /// <summary>
+    /// 每回合清理已过期的格子持续效果。回放模式下也执行（RoundUpdateAction 已恢复 round，
+    /// 效果由 AddCellEffectAction 重建且带 endRound），否则回放时火墙等效果视觉会一直烧到战斗结束
+    /// </summary>
     public void OnCellEffectsRoundUpdate(int round)
     {
-        if (SkillManager.isReplay) return;
         if (round == lastCellEffectRound) return;
         lastCellEffectRound = round;
 
@@ -1253,14 +1258,12 @@ public class BattleManager : MonoBehaviour
 
     public (int gx, int gz) WorldToGridCoord(Vector3 worldPos)
     {
-        int gx = Mathf.RoundToInt(worldPos.x / SystemConst.Battle.GRID_CELL_SIZE);
-        int gz = Mathf.RoundToInt(worldPos.z / SystemConst.Battle.GRID_CELL_SIZE);
-        return (gx, gz);
+        return HexUtil.WorldToGrid(worldPos);
     }
 
     public Vector3 GridCoordToWorld(int gx, int gz, float y = 7f)
     {
-        return new Vector3(gx * SystemConst.Battle.GRID_CELL_SIZE, y, gz * SystemConst.Battle.GRID_CELL_SIZE);
+        return HexUtil.GridToWorld(gx, gz, y);
     }
 
     public bool IsGridOccupied(int gx, int gz)
@@ -1273,24 +1276,6 @@ public class BattleManager : MonoBehaviour
     {
         var cell = GetMapCell(gx, gz);
         return cell != null && cell.IsOccupied() && cell.chessId != excludeChessId;
-    }
-
-    // 世界坐标转格子坐标
-    public static Vector2Int WorldToGridPosition(Vector3 worldPosition, bool FloorToInt)
-    {
-        int x = 0;
-        int z = 0;
-        if (FloorToInt)
-        {
-            x = Mathf.FloorToInt(worldPosition.x / SystemConst.Battle.GRID_CELL_SIZE) * SystemConst.Battle.GRID_CELL_SIZE;
-                z = Mathf.FloorToInt(worldPosition.z / SystemConst.Battle.GRID_CELL_SIZE) * SystemConst.Battle.GRID_CELL_SIZE;
-        }
-        else
-        {
-            x = Mathf.CeilToInt(worldPosition.x / SystemConst.Battle.GRID_CELL_SIZE) * SystemConst.Battle.GRID_CELL_SIZE;
-            z = Mathf.CeilToInt(worldPosition.z / SystemConst.Battle.GRID_CELL_SIZE) * SystemConst.Battle.GRID_CELL_SIZE;
-        }
-        return new Vector2Int(x, z);
     }
 
     public bool IsPositionFree(Chess unit, Vector3 targetPosition)
@@ -1345,18 +1330,19 @@ public class BattleManager : MonoBehaviour
         int gateHp = Math.Max(1, (int)wallValue);
         for (int i = 0; i < cols; i++)
         {
-            int gz = baseGz + i;
+            int gz = baseGz + i + 1;
             var (gridX, gridZ) = WorldToGridCoord(GridCoordToWorld(gx, gz));
             if (IsGridOccupiedByOtherOrObstacle(gridX, gridZ, -1)) continue;
 
-            int unitId = (i == 1 || i == 3) ? SystemConst.Battle.GATE_UNIT_ID : SystemConst.Battle.WALL_UNIT_ID;
-            int hp = (i == 1 || i == 3) ? gateHp : -1;
+            // 中间 3 格均为城门（i=1/2/3），首尾两端为城墙；3 个城门共享血量，见 SyncGateDamage
+            int unitId = (i == 1 || i == 2 || i == 3) ? SystemConst.Battle.GATE_UNIT_ID : SystemConst.Battle.WALL_UNIT_ID;
+            int hp = (i == 1 || i == 2 || i == 3) ? gateHp : -1;
             SpawnUnitsForRegion(defForce, unitId, GridCoordToWorld(gx, gz), 0, null, hp);
         }
 
         // 在两个城门中间的后方一格生成箭塔（城防300以上才有）
         int towerGx = gx + 1;
-        int towerGz = baseGz + 2;
+        int towerGz = baseGz + 3;
         if (wallValue >= SystemConst.City.TOWER_MIN_WALL)
         {
             int towerHp = Math.Max(1, gateHp / 2);
@@ -1380,6 +1366,21 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 城门血量同步：任意城门受到伤害时，其他存活城门承受等量伤害。
+    /// 3 个城门血量始终一致，一个阵亡（hp<=0 触发 Ondying）则全部同时阵亡，实现"一 die 全 die"。
+    /// </summary>
+    public void SyncGateDamage(Chess gate, int damage)
+    {
+        if (!gate.isGate || damage <= 0) return;
+        foreach (var chess in chessList)
+        {
+            if (chess == gate || !chess.isGate || chess.hp <= 0 || chess.isDying) continue;
+            chess.hp -= damage;
+            chess.OnHpChanged();
+        }
+    }
+
+    /// <summary>
     /// 判断格子是否为防御方箭塔预定格（玩家防御方布阵时需跳过）
     /// </summary>
     private bool IsTowerSpawnGrid(int gx, int gz)
@@ -1387,7 +1388,7 @@ public class BattleManager : MonoBehaviour
         if (playerSideIndex != 1) return false;
         if (!DefenderTowerExists()) return false;
         return gx == SystemConst.Battle.DEPLOY_SIDE2_BASE_GX
-            && gz == SystemConst.Battle.DEPLOY_SIDE2_BASE_GZ + 2;
+            && gz == SystemConst.Battle.DEPLOY_SIDE2_BASE_GZ + 3;
     }
 
     /// <summary>
@@ -1416,17 +1417,17 @@ public class BattleManager : MonoBehaviour
         }
 
         GameLog.Warn($"防御方布阵溢出，回退到箭塔格 index={index}");
-        return GetSpawnPosition(2, 0, 1);
+        return GetSpawnPosition(2, 0, 0);
     }
 
     /// <summary>
-    /// 防御方列号映射：row=0且有箭塔时跳过col=1
+    /// 防御方列号映射：row=0且有箭塔时跳过col=0（箭塔格）
     /// </summary>
     private int GetDefenderCol(int row, int counter, bool towerExists)
     {
         if (towerExists && row == 0)
         {
-            int[] availableCols = { 0, 2, 3, 4 };
+            int[] availableCols = { 1, 2, 3, 4 };
             return availableCols[counter];
         }
         return counter;
@@ -1508,33 +1509,41 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 射程（格数，float 语义）→ 格数（int，最小1格）。战斗距离已统一以格子为单位，直接取整直通。
+    /// </summary>
+    public static int RangeToCells(float range)
+    {
+        return Mathf.Max(1, Mathf.CeilToInt(range));
+    }
+
+    /// <summary>
+    /// 判断两点是否在射程内（射程按六边形格数换算）
+    /// </summary>
     public static bool CheckInRange(Vector3 pos1, Vector3 pos2, float range)
     {
-        Vector2Int pos1a = WorldToGridPosition(pos1, true);
-        Vector2Int pos2a = WorldToGridPosition(pos2, true);
-
-        return Vector2Int.Distance(pos1a, pos2a) <= range;
+        return HexUtil.WorldDistance(pos1, pos2) <= RangeToCells(range);
     }
 
+    /// <summary>
+    /// 两点间的六边形格数距离（0 = 同格）
+    /// </summary>
     public static float GetRange(Vector3 pos1, Vector3 pos2)
     {
-        Vector2Int pos1a = WorldToGridPosition(pos1, true);
-        Vector2Int pos2a = WorldToGridPosition(pos2, true);
-
-        return Vector2Int.Distance(pos1a, pos2a);
+        return HexUtil.WorldDistance(pos1, pos2);
     }
-
 
     public List<Chess> GetUnitsInRange(Vector3 wPos, float range, int myForceId, bool findEnemy)
     {
-        Vector2Int center = WorldToGridPosition(wPos, true);
+        var (cgx, cgz) = WorldToGridCoord(wPos);
+        int rangeCells = range <= 0 ? -1 : RangeToCells(range);
         List<Chess> unitsInRange = new List<Chess>();
         foreach (var chessComponent in chessList)
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow && !chessComponent.isWall)
             {
-                Vector2Int chessPos = WorldToGridPosition(chessComponent.position, true);
-                if (Vector2Int.Distance(center, chessPos) <= range || range == 0)
+                var (ugx, ugz) = WorldToGridCoord(chessComponent.position);
+                if (rangeCells < 0 || HexUtil.HexDistance(cgx, cgz, ugx, ugz) <= rangeCells)
                 {
                     if(findEnemy)
                     {
@@ -1569,14 +1578,15 @@ public class BattleManager : MonoBehaviour
 
     public List<Chess> GetUnitsMyForce(Vector3 wPos, float range, int myForceId)
     {
-        Vector2Int center = WorldToGridPosition(wPos, true);
+        var (cgx, cgz) = WorldToGridCoord(wPos);
+        int rangeCells = range <= 0 ? -1 : RangeToCells(range);
         List<Chess> unitsInRange = new List<Chess>();
         foreach (var chessComponent in chessList)
         {
             if (chessComponent != null && chessComponent.hp > 0 && !chessComponent.isShadow)
             {
-                Vector2Int chessPos = WorldToGridPosition(chessComponent.position, true);
-                if (range == 0 || Vector2Int.Distance(center, chessPos) <= range)
+                var (ugx, ugz) = WorldToGridCoord(chessComponent.position);
+                if (rangeCells < 0 || HexUtil.HexDistance(cgx, cgz, ugx, ugz) <= rangeCells)
                 {
                     if(chessComponent.forceId == myForceId)
                         unitsInRange.Add(chessComponent);

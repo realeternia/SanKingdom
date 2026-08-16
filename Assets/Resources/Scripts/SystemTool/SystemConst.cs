@@ -110,9 +110,25 @@ public static class SystemConst
         /// </summary>
         public const float IN_FIGHT_TIME_THRESHOLD = 0.3f;
         /// <summary>
-        /// 网格单元格大小
+        /// 网格列间距(世界单位)，平顶六边形下等于 1.5 * HEX_RADIUS，作为射程换算基准
         /// </summary>
         public const int GRID_CELL_SIZE = 15;
+        /// <summary>
+        /// 六边形外接圆半径(世界单位)
+        /// </summary>
+        public const float HEX_RADIUS = 10f;
+        /// <summary>
+        /// 六边形列间距 = 1.5 * HEX_RADIUS（与 GRID_CELL_SIZE 一致）
+        /// </summary>
+        public const float HEX_COL_SPACING = 15f;
+        /// <summary>
+        /// 六边形行高 = √3 * HEX_RADIUS
+        /// </summary>
+        public const float HEX_ROW_HEIGHT = 17.320508f;
+        /// <summary>
+        /// 六边形奇数列垂直偏移 = 半行高
+        /// </summary>
+        public const float HEX_HALF_ROW = 8.660254f;
         /// <summary>
         /// 地图边界格子X最小值
         /// </summary>
@@ -174,17 +190,17 @@ public static class SystemConst
         /// </summary>
         public const int DEPLOY_SIDE1_BASE_GX = 20;
         /// <summary>
-        /// 攻击方布阵区域起始格子Z
+        /// 攻击方布阵区域起始格子Z（整体下移3格）
         /// </summary>
-        public const int DEPLOY_SIDE1_BASE_GZ = 13;
+        public const int DEPLOY_SIDE1_BASE_GZ = 10;
         /// <summary>
         /// 防守方布阵区域起始格子X
         /// </summary>
         public const int DEPLOY_SIDE2_BASE_GX = 29;
         /// <summary>
-        /// 防守方布阵区域起始格子Z
+        /// 防守方布阵区域起始格子Z（整体下移3格）
         /// </summary>
-        public const int DEPLOY_SIDE2_BASE_GZ = 13;
+        public const int DEPLOY_SIDE2_BASE_GZ = 10;
         /// <summary>
         /// 城墙/城门一排相对防守方布阵起始X的前移格数（朝攻方方向）
         /// </summary>
@@ -211,9 +227,9 @@ public static class SystemConst
         /// </summary>
         public const int ATTACK_POINT_THRESHOLD = 20;
         /// <summary>
-        /// 远程攻击阈值
+        /// 远程攻击阈值（格数：近战1，远程2）
         /// </summary>
-        public const int RANGE_ATTACK_THRESHOLD = 20;
+        public const int RANGE_ATTACK_THRESHOLD = 2;
         /// <summary>
         /// 防御方主动出击的战力倍率阈值（防御方战力 > 攻击方战力 * 此值时出击）
         /// </summary>
@@ -243,9 +259,9 @@ public static class SystemConst
         /// </summary>
         public const float HEAL_TARGET_HP_RATE = 0.8f;
         /// <summary>
-        /// 传送距离
+        /// 传送距离（格数）
         /// </summary>
-        public const int TELEPORT_DISTANCE = 12;
+        public const int TELEPORT_DISTANCE = 1;
         /// <summary>
         /// 初始战斗ID
         /// </summary>
@@ -259,18 +275,6 @@ public static class SystemConst
         /// </summary>
         public const int AROUND_ATTACK_ANGLE_THRESHOLD = 90;
         /// <summary>
-        /// 墙壁偏移距离
-        /// </summary>
-        public const int WALL_OFFSET_DISTANCE = 10;
-        /// <summary>
-        /// 墙壁远距离偏移
-        /// </summary>
-        public const int WALL_OFFSET_DISTANCE_FAR = 20;
-        /// <summary>
-        /// 墙壁伤害区域扩展
-        /// </summary>
-        public const float WALL_DAMAGE_AREA_EXPAND = 1.5f;
-        /// <summary>
         /// 目标评分城门
         /// </summary>
         public const int TARGET_SCORE_GATE = 1;
@@ -283,9 +287,9 @@ public static class SystemConst
         /// </summary>
         public const int INIT_ATTACK_POINT_MAX = 10;
         /// <summary>
-        /// 目标搜索额外距离
+        /// 目标搜索额外距离（格数）
         /// </summary>
-        public const float TARGET_SEARCH_EXTRA_RANGE = 10f;
+        public const float TARGET_SEARCH_EXTRA_RANGE = 1;
         /// <summary>
         /// 目标评分选取数量
         /// </summary>

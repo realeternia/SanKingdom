@@ -16,7 +16,7 @@ public class SkillHitTeleport : BattleSkill
             this.OnPlaySkill(attacker, 0);
 
             Vector3 direction = (attacker.position - owner.position).normalized;
-            Vector3 randomPosition = attacker.position - direction * SystemConst.Battle.TELEPORT_DISTANCE;
+            Vector3 randomPosition = attacker.position - direction * SystemConst.Battle.TELEPORT_DISTANCE * SystemConst.Battle.GRID_CELL_SIZE;
 
             owner.MoveTo(randomPosition, true);
             owner.LockTarget(attacker);

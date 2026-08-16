@@ -31,6 +31,10 @@ public class SkillDamageAction : ChessAction
             if(casterChess != targetChess)
                 targetChess.lastDamagedPlayerId = casterChess.forceId;
 
+            // 城门血量同步：一扇门受伤，其余城门同损（回放时同步确定性由同一条 Action 保证）
+            if (targetChess.isGate)
+                battleManager.SyncGateDamage(targetChess, Damage);
+
             var skillCfg = BattleSkillConfig.GetConfig(SkillId);
             if(!string.IsNullOrEmpty(skillCfg.EffectHit))
                 EffectManager.PlaySkillEffect(targetChess, skillCfg.EffectHit);
