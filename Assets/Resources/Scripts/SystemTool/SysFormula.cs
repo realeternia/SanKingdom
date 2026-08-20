@@ -320,18 +320,12 @@ public static class SysFormula
         }
 
         /// <summary>
-        /// 加法加成：派系相同、爱好相同，直接返回加到基础率的数值
+        /// 加法加成：爱好相同，直接返回加到基础率的数值
         /// </summary>
         private static int GetAdditiveBonus(HeroConfig targetConfig, HeroConfig executorConfig)
         {
             int bonus = 0;
 
-            // 派系相同（非空、非"无"）+5
-            if (!string.IsNullOrEmpty(targetConfig.Paixi) && targetConfig.Paixi != "无"
-                && targetConfig.Paixi == executorConfig.Paixi)
-            {
-                bonus += 5;
-            }
             // 每个相同爱好 +1
             if (targetConfig.Aihao != null && executorConfig.Aihao != null)
             {

@@ -20,7 +20,6 @@ public class HeroInfoPanelManager : MonoBehaviour
     public TMP_Text gexingText;
     public TMP_Text pinzhiText;
     public TMP_Text aihaoText;
-    public TMP_Text paixiText;
     public TMP_Text likesText;
     public TMP_Text hatesText;
     public TMP_Text storyText;
@@ -457,9 +456,8 @@ public class HeroInfoPanelManager : MonoBehaviour
         gexingText.text = string.IsNullOrEmpty(heroConfig.Xingge) ? "无" : heroConfig.Xingge;
         pinzhiText.text = heroConfig.Pinzhi != null && heroConfig.Pinzhi.Length > 0 
             ? string.Join(" ", heroConfig.Pinzhi) : "无";
-        aihaoText.text = heroConfig.Aihao != null && heroConfig.Aihao.Length > 0 
+        aihaoText.text = heroConfig.Aihao != null && heroConfig.Aihao.Length > 0
             ? string.Join(" ", heroConfig.Aihao) : "无";
-        paixiText.text = string.IsNullOrEmpty(heroConfig.Paixi) ? "无" : heroConfig.Paixi;
         likesText.text = heroConfig.LikeForces != null && heroConfig.LikeForces.Length > 0 
             ? FormatForceEntries(heroConfig.LikeForces) : "无";
         hatesText.text = heroConfig.HateForces != null && heroConfig.HateForces.Length > 0 
