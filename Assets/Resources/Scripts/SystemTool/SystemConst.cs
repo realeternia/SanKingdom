@@ -294,6 +294,18 @@ public static class SystemConst
         /// 回合间等待时间（秒）
         /// </summary>
         public const float TURN_END_WAIT_TIME = 0.5f;
+        /// <summary>
+        /// 兵种技能掌握等级阈值：S级（驾驭值10，掌握技能1/2/3）
+        /// </summary>
+        public const int SOD_SKILL_LEVEL_S = 10;
+        /// <summary>
+        /// 兵种技能掌握等级阈值：A级（驾驭值9，掌握技能1/2）
+        /// </summary>
+        public const int SOD_SKILL_LEVEL_A = 9;
+        /// <summary>
+        /// 兵种技能掌握等级阈值：B级（驾驭值7，掌握技能1）
+        /// </summary>
+        public const int SOD_SKILL_LEVEL_B = 7;
     }
 
     public static class WorldMap

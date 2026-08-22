@@ -144,7 +144,7 @@ public static class ChessAI
             }
         }
 
-        var allChess = bm.GetUnitsInCellRange(self.cellId, 0, self.forceId, true);
+        var allChess = bm.GetUnitsInCellRange(self.cellId, -1, self.forceId, true);
         List<(Chess chess, float distance)> validTargets = new List<(Chess, float)>();
 
         foreach (Chess chess in allChess)

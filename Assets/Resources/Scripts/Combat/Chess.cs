@@ -124,13 +124,24 @@ public class Chess : SceneObj
         {
             GameLog.Info("Init Hero" + heroId);
 
-            var heroCfg = HeroConfig.GetConfig(heroId);
-            if (heroCfg.Skills != null)
+            // 兵种技能：按 ArmsConfig.Skill1/2/3 与三将兵种驾驭值（B/A/S 累加掌握）创建
+            var armsConfig = ArmsConfig.GetConfig(armsId);
+            int maxSod = GetTroopMaxSod(armsConfig.Type);
+            if (maxSod >= SystemConst.Battle.SOD_SKILL_LEVEL_S)
             {
-                foreach (var skillId in heroCfg.Skills)
-                    skills.Add(SkillManager.CreateSkill(skillId, this));
+                AddArmSkill(armsConfig.Skill3);
+                AddArmSkill(armsConfig.Skill2);
+                AddArmSkill(armsConfig.Skill1);
             }
-
+            else if (maxSod >= SystemConst.Battle.SOD_SKILL_LEVEL_A)
+            {
+                AddArmSkill(armsConfig.Skill2);
+                AddArmSkill(armsConfig.Skill1);
+            }
+            else if (maxSod >= SystemConst.Battle.SOD_SKILL_LEVEL_B)
+            {
+                AddArmSkill(armsConfig.Skill1);
+            }
         }
 
         // 创建UI
@@ -657,6 +668,54 @@ public class Chess : SceneObj
         var skillAdd = SkillManager.CreateSkill(skillId, this);
         skillAdd.isGivenSkill = true;
         skills.Add(skillAdd);
+    }
+
+    /// <summary>
+    /// 获取指定英雄对兵种的驾驭值（同 SysFormula.Battle 的映射）
+    /// </summary>
+    private int GetSodValue(int targetHeroId, ArmsType armsType)
+    {
+        if (targetHeroId <= 0) return 0;
+        var heroConfig = HeroConfig.GetConfig(targetHeroId);
+        return armsType switch
+        {
+            ArmsType.SodSword => heroConfig.SodSword,
+            ArmsType.SodHorse => heroConfig.SodHorse,
+            ArmsType.SodBow => heroConfig.SodBow,
+            ArmsType.SodWater => heroConfig.SodWater,
+            ArmsType.SodTank => heroConfig.SodTank,
+            ArmsType.SodSpear => heroConfig.SodSpear,
+            ArmsType.SodHalberd => heroConfig.SodHalberd,
+            ArmsType.SodElephant => heroConfig.SodElephant,
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// 取部队三将（heroId/heroId2/heroId3）对指定兵种的最大驾驭值
+    /// </summary>
+    private int GetTroopMaxSod(ArmsType armsType)
+    {
+        int sod1 = GetSodValue(heroId, armsType);
+        int sod2 = GetSodValue(heroId2, armsType);
+        int sod3 = GetSodValue(heroId3, armsType);
+        return Math.Max(Math.Max(sod1, sod2), sod3);
+    }
+
+    /// <summary>
+    /// 按技能全名创建兵种技能
+    /// </summary>
+    private void AddArmSkill(string skillName)
+    {
+        if (string.IsNullOrEmpty(skillName))
+            return;
+        var skillCfg = ConfigManager.GetBattleSkillConfig(skillName);
+        if (skillCfg == null)
+        {
+            GameLog.Error($"兵种技能 {skillName} 未在 BattleSkillConfig 中找到");
+            return;
+        }
+        skills.Add(SkillManager.CreateSkill(skillCfg.Id, this));
     }
 }
 

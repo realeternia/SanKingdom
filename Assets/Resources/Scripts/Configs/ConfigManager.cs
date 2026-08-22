@@ -46,59 +46,17 @@ public static class ConfigManager
 
     public static void PostModify()
     {
-        foreach (var skillCfg in BattleSkillConfig.ConfigList)
+        // 按 Id 升序插入，保证兵种技能(21xxxx)在后，覆盖同名老技能（如 戟阵/旋风斩）
+        var sorted = new List<BattleSkillConfig>(BattleSkillConfig.ConfigList);
+        sorted.Sort((a, b) => a.Id.CompareTo(b.Id));
+        foreach (var skillCfg in sorted)
         {
-            skillDict.Add(skillCfg.Sname, skillCfg);
-        }
-
-        foreach (var heroCfg in HeroConfig.ConfigList)
-        {
-            if (!string.IsNullOrEmpty(heroCfg.Skill1))
-            { 
-                AddSkill(heroCfg, skillDict[heroCfg.Skill1].Id);
-            }
-            if (!string.IsNullOrEmpty(heroCfg.Skill2))
-            { 
-                AddSkill(heroCfg, skillDict[heroCfg.Skill2].Id);
-            }
+            if (skillDict.ContainsKey(skillCfg.Name))
+                GameLog.Warn($"技能 Name 重名，后加载配置覆盖：{skillCfg.Name}({skillDict[skillCfg.Name].Id} -> {skillCfg.Id})");
+            skillDict[skillCfg.Name] = skillCfg;
         }
     }
     
-    public static int GetShowHelpSkillId(int heroId, int targetHeroId, int srcPos, int targetPos)
-    {
-        var heroCfg = HeroConfig.GetConfig(heroId);
-        foreach(var skill in heroCfg.Skills)
-        {
-            var skillCfg = BattleSkillConfig.GetConfig(skill);
-            if (skillCfg.UnitHelpType <= 0)
-                continue;
-
-            var targetHeroCfg = HeroConfig.GetConfig(targetHeroId);
-            if (targetHeroCfg.Skills.Contains(skill))
-                continue;
-
-            if (skillCfg.UnitHelpType == 1 && srcPos / 3 == targetPos / 3)
-                return skill;
-            else if (skillCfg.UnitHelpType == 2 && ((srcPos % 3) == (targetPos % 3)))
-                return skill;
-        }
-
-        return 0;
-    }
-
-    private static void AddSkill(HeroConfig heroCfg, int skillId)
-    {
-        if (heroCfg.Skills == null)
-        {
-            heroCfg.Skills = new int[1] { skillId };
-        }
-        else
-        {
-            System.Array.Resize(ref heroCfg.Skills, heroCfg.Skills.Length + 1);
-            heroCfg.Skills[heroCfg.Skills.Length - 1] = skillId;
-        }   
-    }
-
     public static bool IsHeroCard(int cardId)
     {
         return cardId < 200000;

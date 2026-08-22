@@ -59,6 +59,18 @@ public static class SkillManager
                 return new SkillHitArea(skillId, owner);
             case "HitAround":
                 return new SkillHitAround(skillId, owner);
+            case "HitKnockBack":
+                return new SkillHitKnockBack(skillId, owner);
+            case "HitPull":
+                return new SkillHitPull(skillId, owner);
+            case "SkillJumpOver":
+                return new SkillJumpOver(skillId, owner);
+            case "SkillPierceArrow":
+                return new SkillPierceArrow(skillId, owner);
+            case "SkillCounterAttack":
+                return new SkillCounterAttack(skillId, owner);
+            case "SkillRandomArea":
+                return new SkillRandomArea(skillId, owner);
             case "AidShockWave":
                 return new SkillAidShockWave(skillId, owner);
             case "AidSuddenArrow":

@@ -83,6 +83,48 @@ public static class HexUtil
     }
 
     /// <summary>
+    /// 计算 from→to 的轴向坐标单位方向（差分按最大公约数归一化）。
+    /// from 与 to 重合时返回 null。用于击退/拉拽/穿透等沿方向推进的计算。
+    /// </summary>
+    public static (int dq, int dr)? GetUnitDirection(int fromGx, int fromGz, int toGx, int toGz)
+    {
+        int fq = fromGx;
+        int fr = fromGz - (fromGx - (fromGx & 1)) / 2;
+        int tq = toGx;
+        int tr = toGz - (toGx - (toGx & 1)) / 2;
+        int dq = tq - fq;
+        int dr = tr - fr;
+        if (dq == 0 && dr == 0)
+            return null;
+        int g = Gcd(Mathf.Abs(dq), Mathf.Abs(dr));
+        return (dq / g, dr / g);
+    }
+
+    /// <summary>
+    /// 计算从 from 格沿 from→to 连线方向推进 distance 格后的格子坐标。
+    /// reverse=true 时沿 to→from 方向推进。from 与 to 重合时返回 null。
+    /// </summary>
+    public static (int gx, int gz)? GetCellTowards(int fromGx, int fromGz, int toGx, int toGz, int distance, bool reverse = false)
+    {
+        var dir = GetUnitDirection(fromGx, fromGz, toGx, toGz);
+        if (dir == null)
+            return null;
+        int udq = dir.Value.dq;
+        int udr = dir.Value.dr;
+        if (reverse)
+        {
+            udq = -udq;
+            udr = -udr;
+        }
+
+        int tq = toGx;
+        int tr = toGz - (toGx - (toGx & 1)) / 2;
+        int bq = tq + udq * distance;
+        int br = tr + udr * distance;
+        return (bq, br + (bq - (bq & 1)) / 2);
+    }
+
+    /// <summary>
     /// 计算从 from 格沿 from→gate 方向再走一格的"门后格"坐标（轴向坐标同方向加一步）。
     /// from 与 gate 必须相邻，否则返回 null。用于友方跳过城门格直达门后。
     /// </summary>
@@ -103,5 +145,16 @@ public static class HexUtil
         int bgx = bq;
         int bgz = br + (bq - (bq & 1)) / 2;
         return (bgx, bgz);
+    }
+
+    private static int Gcd(int a, int b)
+    {
+        while (b != 0)
+        {
+            int t = a % b;
+            a = b;
+            b = t;
+        }
+        return a;
     }
 }

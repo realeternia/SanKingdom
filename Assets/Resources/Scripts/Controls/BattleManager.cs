@@ -400,6 +400,12 @@ public class BattleManager : MonoBehaviour
 
     public void SwapChessPosition(Chess chess1, Chess chess2)
     {
+        // 城门/城墙/箭塔（UnitType 非 0）为静态建筑，布阵换位亦不可改变其位置
+        if (chess1.isGate || chess1.isWall || chess1.isTower || chess2.isGate || chess2.isWall || chess2.isTower)
+        {
+            GameLog.Warn($"SwapChessPosition 禁止与建筑换位 chess1={chess1.id} chess2={chess2.id}");
+            return;
+        }
         var pos1 = chess1.position;
         var pos2 = chess2.position;
 
@@ -1448,15 +1454,25 @@ public class BattleManager : MonoBehaviour
 
     /// <summary>
     /// 按格子ID移动单位：释放旧格、占新格、同步 cellId 并更新视图位置（y 由 Chess.SetPosition 统一叠层）
+    /// 城门/城墙/箭塔（UnitType 非 0）为静态建筑，任何路径（移动/位移）均禁止改变位置
     /// </summary>
     public bool MoveToCell(Chess unit, int targetCellId, bool isForce = false)
     {
+        if (unit.isGate || unit.isWall || unit.isTower)
+        {
+            GameLog.Warn($"MoveToCell 禁止移动建筑 unit={unit.id}(gate={unit.isGate} wall={unit.isWall} tower={unit.isTower})");
+            return false;
+        }
         var cell = GetMapCellById(targetCellId);
         if (cell == null)
         {
             GameLog.Error($"MoveToCell 目标格不存在 cellId={targetCellId} unit={unit.id}");
             return false;
         }
+        // 目标格为存活的建筑（城门/墙/箭塔）时禁止进入：建筑不可停留也不可穿越，isForce 亦不可覆盖其占格
+        var cellChess = GetChess(cell.chessId);
+        if (cellChess != null && cellChess.hp > 0 && (cellChess.isGate || cellChess.isWall || cellChess.isTower))
+            return false;
         if (!isForce && !CanEnterCell(cell.gridX, cell.gridZ, unit))
             return false;
 

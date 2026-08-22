@@ -102,6 +102,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\FormulaLearnAttrConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillInitAddRege.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\SideArmsItem.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillCounterAttack.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\HeroInfoCell.cs" />
     <Compile Include="Assets\Resources\Scripts\SaveDatas\ForceRelation.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\NLMutiCheckButton.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AttackAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitBuffArea.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\ShopConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillPierceArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\ListItem\CityDevItem.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\HexUtil.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\AIToolTrade.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyDevelopment.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\CityDevSearchConfig_s.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitPull.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\BattleUIManager.cs" />
     <Compile Include="Assets\Resources\Scripts\UIScripts\UIColorChanger.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\SineUIControllerTopDownEffects.cs" />
@@ -133,6 +136,7 @@
     <Compile Include="Assets\Resources\Scripts\SaveDatas\TechProgressData.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDumb.cs" />
     <Compile Include="Assets\SineVFX\TopDownEffects\Scripts\RampGeneratorTDE.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillRandomArea.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\Utils\GameLog.cs" />
     <Compile Include="Assets\Epic Toon FX\Scripts\ETFXRotation.cs" />
     <Compile Include="Assets\DOTween\Modules\DOTweenModuleUnityVersion.cs" />
@@ -162,6 +166,7 @@
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyFactory.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\GameManager.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\SceneObj.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Actions\DisplaceAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\PopFairPanelManager.cs" />
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysFormula.cs" />
     <Compile Include="Assets\Resources\Scripts\EventSystem\GameEventLog.cs" />
@@ -173,6 +178,7 @@
     <Compile Include="Assets\Resources\Scripts\SystemTool\SysRandom.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefSkillDamageReduce.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillDefFeedback.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillJumpOver.cs" />
     <Compile Include="Assets\Resources\Scripts\Controls\AI\Strategies\CityStrategyBase.cs" />
     <Compile Include="Assets\Resources\Scripts\PO\PanelEvent.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\UnityMeshMgr.cs" />
@@ -279,6 +285,7 @@
     <Compile Include="Assets\Resources\Scripts\Combat\Actions\AddBuffAction.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillAttackReboundArrow.cs" />
     <Compile Include="Assets\Resources\Scripts\Panels\SideForceSelector.cs" />
+    <Compile Include="Assets\Resources\Scripts\Combat\Skills\SkillHitKnockBack.cs" />
     <Compile Include="Assets\Resources\Scripts\ChessHUD.cs" />
     <Compile Include="Assets\Resources\Scripts\Configs\BattleSkillConfig_s.cs" />
     <Compile Include="Assets\Resources\Scripts\Combat\Buffs\BuffSuck.cs" />
